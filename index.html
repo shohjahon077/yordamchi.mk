@@ -1,359 +1,1097 @@
-
-     
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Yordamchi Maktab</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yordamchi Maktab | 3D Neumorphism</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --base-color: #ecf0f3;
+            /* Asosiy fon (Juda ochiq kulrang) */
+            --primary-color: #3d5a80;
+            /* To'q ko'k (Asosiy matn) */
+            --accent-color: #98c1d9;
+            /* Och ko'k/Yalpiz (Aksent) */
+            --light-shadow: #ffffff;
+            /* Yorqin soya */
+            --dark-shadow: #a8b0c2;
+            /* To'q soya */
+            --transition-speed: 0.3s;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e0f7fa, #f0f4ff);
-      color: #212529;
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-    }
+        /* Mavzular (Theme) uchun o'zgaruvchilar */
+        .theme-ocean {
+            --primary-color: #1a535c;
+            --accent-color: #4ecdc4;
+            --dark-shadow: #4a5d73;
+        }
 
-    /* Kirish sahifasi */
-    #intro {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background: linear-gradient(120deg, #4361ee, #3a0ca3);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: white;
-      animation: fadeIn 1s forwards;
-    }
+        .theme-green {
+            --primary-color: #4CAF50;
+            --accent-color: #8BC34A;
+            --dark-shadow: #90a4ae;
+        }
 
-    .intro-logo {
-      font-size: 4rem;
-      font-weight: 800;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px rgba(255,255,255,0.7);
-      animation: float 3s ease-in-out infinite, scaleIn 1s ease-out;
-    }
+        .theme-violet {
+            --primary-color: #673AB7;
+            --accent-color: #B39DDB;
+            --dark-shadow: #9e8fb8;
+        }
 
-    .intro-sub {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      animation: fadeIn 1.5s 0.5s forwards;
-      opacity: 0;
-    }
+        .theme-dark-red {
+            --primary-color: #7f1d1d;
+            --accent-color: #fca5a5;
+            --dark-shadow: #a39999;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        /* Kun/Tun rejimi (Dark Mode) */
+        .dark-mode {
+            --base-color: #2c2f33;
+            /* To'q fon */
+            --primary-color: #ffffff;
+            /* Oq matn */
+            --accent-color: #7289da;
+            /* Aksent rang */
+            --light-shadow: #3b3f45;
+            /* To'q rejim uchun yorug' soya */
+            --dark-shadow: #1e1e21;
+            /* To'q rejim uchun to'q soya */
+        }
 
-    @keyframes scaleIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+        .dark-mode .neumorphic {
+            /* Tun rejimida Neumorphism stili o'zgartiriladi */
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+        }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-15px) scale(1.02); }
-    }
+        .dark-mode .neumorphic.pressed {
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
 
-    /* Asosiy sahifa */
-    #main-content {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 1s ease;
-    }
+        /* Asosiy katta tugmalar dark mode da */
+        .dark-mode .big-btn {
+            box-shadow: 10px 10px 20px var(--dark-shadow), -10px -10px 20px var(--light-shadow);
+        }
 
-    #main-content.visible {
-      opacity: 1;
-      visibility: visible;
-    }
+        .dark-mode .big-btn:hover {
+            box-shadow: 15px 15px 30px var(--dark-shadow), -15px -15px 30px var(--light-shadow);
+        }
 
-    /* Navbar (desktop) */
-    .navbar {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding: 25px 10px;
-      flex-wrap: wrap;
-    }
+        .dark-mode .big-btn:active {
+            box-shadow:
+                inset 8px 8px 16px var(--dark-shadow),
+                inset -8px -8px 16px var(--light-shadow);
+        }
 
-    .nav-btn {
-      padding: 12px 20px;
-      background: #4cc9f0;
-      color: white;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transform-style: preserve-3d;
-      position: relative;
-      overflow: hidden;
-    }
+        .dark-mode .big-btn span {
+            color: #ccc;
+            /* Matn soyasi uchun biroz ochiq rang */
+        }
 
-    .nav-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: 0.5s;
-    }
 
-    .nav-btn:hover::before {
-      left: 100%;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .nav-btn:hover {
-      transform: translateY(-6px) rotateX(5deg) scale(1.05);
-      background: #4361ee;
-      box-shadow: 0 8px 16px rgba(67, 97, 238, 0.5);
-    }
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--base-color);
+            color: var(--primary-color);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            /* Rejimlar uchun */
+        }
 
-    /* Mobil menyu tugmasi */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      width: 50px;
-      height: 50px;
-      background: #4361ee;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: transform 0.3s ease;
-    }
+        /* Neumorphism asosiy funksiyasi */
+        .neumorphic {
+            border-radius: 20px;
+            background: var(--base-color);
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+            transition: all var(--transition-speed) ease-in-out;
+        }
 
-    .menu-toggle:hover {
-      transform: rotate(90deg);
-    }
+        /* Neumorphism elementlari ichkariga bosilganda (3D Pressed Effect) */
+        .neumorphic.pressed {
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
 
-    /* Mobil menyu */
-    .mobile-menu {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      width: 80%;
-      max-width: 320px;
-      height: 100vh;
-      background: linear-gradient(135deg, #2b2d42, #1d1d2c);
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      z-index: 999;
-      transition: right 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-      padding: 20px;
-      box-shadow: -5px 0 15px rgba(0,0,0,0.3);
-    }
+        /* Kirish sahifasi */
+        #intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), #293241);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            animation: fadeIn 1s forwards;
+            text-align: center;
+        }
 
-    .mobile-menu.active {
-      right: 0;
-    }
+        .intro-logo {
+            font-size: clamp(2.8rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            animation: float 4s ease-in-out infinite, scaleIn 1s ease-out;
+        }
 
-    .mobile-btn {
-      padding: 16px 20px;
-      background: #4cc9f0;
-      color: white;
-      border-radius: 16px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1.2rem;
-      width: 100%;
-      text-align: center;
-      transition: all 0.3s ease;
-      border: none;
-      outline: none;
-    }
+        .intro-sub {
+            font-size: clamp(1.1rem, 3vw, 1.8rem);
+            margin-top: 15px;
+            font-weight: 500;
+        }
 
-    .mobile-btn:hover {
-      transform: translateX(10px);
-      background: #4361ee;
-    }
+        /* Animatsiyalar (o'zgartirishsiz qoldi) */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
 
-    /* Asosiy katta tugmalar */
-    .main-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      padding: 50px 20px 80px;
-    }
+            to {
+                opacity: 1;
+            }
+        }
 
-    .big-btn {
-      width: 220px;
-      height: 90px;
-      font-size: 1.3rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #4361ee, #3a0ca3);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.5);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative;
-      overflow: hidden;
-    }
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.6);
+                opacity: 0;
+            }
 
-    .big-btn::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -60%;
-      width: 20px;
-      height: 200%;
-      background: rgba(255,255,255,0.3);
-      transform: rotate(25deg);
-      transition: all 0.6s;
-    }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
-    .big-btn:hover::after {
-      left: 120%;
-    }
+        @keyframes float {
 
-    .big-btn:hover {
-      transform: scale(1.08) rotate(2deg);
-      box-shadow: 0 12px 25px rgba(58, 12, 163, 0.7);
-    }
+            0%,
+            100% {
+                transform: translateY(0);
+            }
 
-    /* Footer */
-    .footer {
-      text-align: center;
-      padding: 20px;
-      background: #1d1d2c;
-      color: #adb5bd;
-      font-size: 1rem;
-      position: relative;
-      z-index: 10;
-    }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
 
-    /* Mobil uchun */
-    @media (max-width: 768px) {
-      .navbar { display: none; }
-      .menu-toggle { display: flex; }
-      .intro-logo { font-size: 2.8rem; }
-      .big-btn { width: 180px; height: 80px; font-size: 1.1rem; }
-      .main-buttons { padding: 120px 15px 70px; }
-    }
+        /* Asosiy sahifa */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease 0.5s;
+        }
 
-    @media (max-width: 480px) {
-      .intro-logo { font-size: 2.2rem; }
-      .big-btn { width: 150px; height: 70px; font-size: 1rem; }
-      .main-buttons { padding: 130px 10px 70px; }
-    }
-  </style>
+        #main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Navbar (desktop) */
+        .navbar {
+            display: none;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+            position: sticky;
+            top: 20px;
+            z-index: 900;
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto 0;
+        }
+
+        .nav-btn {
+            padding: 10px 18px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-wrap: nowrap;
+            /* Matn o'ramasligi uchun */
+
+            /* Neumorphism uslubi */
+            border-radius: 15px;
+            background: var(--base-color);
+            box-shadow: 3px 3px 6px var(--dark-shadow), -3px -3px 6px var(--light-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--accent-color);
+            /* Yumshoq botib kirish effekti */
+            box-shadow: inset 2px 2px 5px var(--dark-shadow), inset -2px -2px 5px var(--light-shadow);
+            transform: scale(0.98);
+        }
+
+        /* Mobil menyu tugmasi */
+        .menu-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 55px;
+            height: 55px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 1000;
+            color: var(--primary-color);
+
+            /* Neumorphism uslubi */
+            border-radius: 50%;
+            background: var(--base-color);
+            box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            /* Bosilgandek ko'rinish */
+            box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
+            color: var(--accent-color);
+            transform: rotate(90deg);
+        }
+
+        /* Mobil menyu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            display: flex;
+            /* Displayni doim flex qildim */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            /* Kichikroq gap */
+            z-index: 999;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            padding: 20px;
+            background: var(--base-color);
+            box-shadow: -10px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-btn {
+            padding: 12px 18px;
+            /* Kichikroq padding */
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            /* Kichikroq font */
+            width: 100%;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+
+            /* Neumorphism uslubi */
+            border-radius: 18px;
+            background: var(--base-color);
+            box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-btn:hover {
+            /* Bosilgandek ko'rinish */
+            box-shadow: inset 3px 3px 7px var(--dark-shadow), inset -3px -3px 7px var(--light-shadow);
+            color: var(--accent-color);
+        }
+
+        /* Asosiy katta tugmalar (3D Pop-Out Effect) */
+        .main-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 35px;
+            padding: 100px 20px;
+        }
+
+        .big-btn {
+            width: 250px;
+            height: 120px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.4, 1.2);
+            position: relative;
+
+            /* Neumorphism asosiy stili */
+            border-radius: 25px;
+            background: var(--base-color);
+            box-shadow: 10px 10px 20px var(--dark-shadow), -10px -10px 20px var(--light-shadow);
+        }
+
+        .big-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            color: var(--accent-color);
+            box-shadow: 15px 15px 30px var(--dark-shadow), -15px -15px 30px var(--light-shadow);
+        }
+
+        .big-btn:active {
+            /* 3D botib kirish effekti */
+            transform: translateY(0);
+            color: var(--primary-color);
+            box-shadow:
+                inset 8px 8px 16px var(--dark-shadow),
+                inset -8px -8px 16px var(--light-shadow);
+        }
+
+        .big-btn span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-top: 5px;
+            color: #666;
+            /* Matn soyasi uchun biroz to'q rang */
+            transition: color 0.3s;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary-color);
+            color: #ecf0f3;
+            font-size: 0.95rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- SOZLAMALAR MODALI STILI --- */
+        .settings-modal {
+            display: none;
+            /* JS orqali ochiladi */
+            position: fixed;
+            z-index: 10001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            padding-top: 50px;
+        }
+
+        .settings-content {
+            background-color: var(--base-color);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 600px;
+            animation: slideIn 0.5s ease-out;
+
+            /* Neumorphism uslubi */
+            box-shadow: 15px 15px 30px var(--dark-shadow), -15px -15px 30px var(--light-shadow);
+        }
+
+        .dark-mode .settings-content {
+            box-shadow: 15px 15px 30px var(--dark-shadow), -15px -15px 30px var(--light-shadow);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .settings-content h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .settings-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 15px;
+            /* Yengil ichki Neumorphism */
+            box-shadow: inset 2px 2px 5px var(--dark-shadow), inset -2px -2px 5px var(--light-shadow);
+        }
+
+        .settings-group h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .setting-btn {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+
+            /* Neumorphism uslubi */
+            border-radius: 12px;
+            background: var(--base-color);
+            box-shadow: 3px 3px 6px var(--dark-shadow), -3px -3px 6px var(--light-shadow);
+            transition: all 0.2s ease;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .setting-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .setting-btn.active {
+            /* Tanlangan tugma - bosilgandek ko'rinish */
+            box-shadow: inset 3px 3px 7px var(--dark-shadow), inset -3px -3px 7px var(--light-shadow);
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .close-btn {
+            color: var(--primary-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Media Queries */
+        @media (min-width: 769px) {
+            .navbar {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .main-buttons {
+                padding: 150px 20px 80px;
+            }
+
+            .settings-content {
+                margin: 10% auto;
+            }
+
+            /* Desktopda yuqoriroq */
+        }
+
+        @media (max-width: 768px) {
+            .big-btn {
+                width: 45%;
+                height: 100px;
+                font-size: 1.3rem;
+            }
+
+            .main-buttons {
+                padding: 120px 15px 70px;
+                gap: 20px;
+            }
+
+            .nav-btn {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+
+            .settings-content {
+                margin: 20% auto;
+            }
+
+            /* Mobil qurilmalarda yuqoriroq */
+        }
+
+        @media (max-width: 480px) {
+            .big-btn {
+                width: 90%;
+                height: 90px;
+                font-size: 1.2rem;
+            }
+
+            .main-buttons {
+                padding: 100px 10px 60px;
+                gap: 15px;
+            }
+
+            .options-container {
+                justify-content: center;
+            }
+
+            /* Kichik ekranlarda markazga tekislash */
+        }
+    </style>
 </head>
-<body>
 
-  <!-- Kirish sahifasi -->
-  <div id="intro">
-    <div class="intro-logo">YORDAMCHI MAKTAB</div>
-    <div class="intro-sub">Bilim — kelajak kaliti 🌟</div>
-  </div>
+<body id="body" class="theme-default">
 
-  <!-- Asosiy tarkib -->
-  <div id="main-content">
-    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
-
-    <div class="mobile-menu" id="mobileMenu">
-      <button class="mobile-btn" onclick="goToSection('darsliklar')">Darsliklar</button>
-      <button class="mobile-btn" onclick="goToSection('testlar')">Testlar</button>
-      <button class="mobile-btn" onclick="goToSection('video')">Video Darslar</button>
-      <button class="mobile-btn" onclick="goToSection('maslahat')">Maslahatlar</button>
-      <button class="mobile-btn" onclick="goToSection('oqituvchilar')">O'qituvchilar</button>
-      <button class="mobile-btn" onclick="goToSection('biz')">Biz Haqimizda</button>
-      <button class="mobile-btn" onclick="goToSection('aloqa')">Aloqa</button>
+    <div id="intro">
+        <div class="intro-logo">YORDAMCHI MAKTAB</div>
+        <div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
     </div>
 
-    <nav class="navbar">
-      <div class="nav-btn" onclick="goToSection('darsliklar')">Darsliklar</div>
-      <div class="nav-btn" onclick="goToSection('testlar')">Testlar</div>
-      <div class="nav-btn" onclick="goToSection('video')">Video Darslar</div>
-      <div class="nav-btn" onclick="goToSection('maslahat')">Maslahatlar</div>
-      <div class="nav-btn" onclick="goToSection('oqituvchilar')">O'qituvchilar</div>
-      <div class="nav-btn" onclick="goToSection('biz')">Biz Haqimizda</div>
-      <div class="nav-btn" onclick="goToSection('aloqa')">Aloqa</div>
-    </nav>
+    <div id="main-content">
+        <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
 
-    <main class="main-buttons">
-      <button class="big-btn" onclick="goToSection('darsliklar')">📚 Darsliklar</button>
-      <button class="big-btn" onclick="goToSection('testlar')">📝 Testlar</button>
-      <button class="big-btn" onclick="goToSection('video')">🎥 Video Darslar</button>
-      <button class="big-btn" onclick="goToSection('maslahat')">💡 Maslahatlar</button>
-      <button class="big-btn" onclick="goToSection('oqituvchilar')">👩‍🏫 O'qituvchilar</button>
-      <button class="big-btn" onclick="goToSection('biz')">ℹ️ Biz Haqimizda</button>
-      <button class="big-btn" onclick="goToSection('aloqa')">📞 Aloqa</button>
-    </main>
+        <div class="mobile-menu" id="mobileMenu">
+            <button class="mobile-btn neumorphic" onclick="goToSection('darsliklar')"><span data-key="lessons">📚 Darsliklar</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('testlar')"><span data-key="tests">📝 Testlar</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('video')"><span data-key="videos">🎥 Video Darslar</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('maslahat')"><span data-key="advice">💡 Maslahatlar</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('oqituvchilar')"><span data-key="teachers">👩‍🏫 O'qituvchilar</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('biz')"><span data-key="aboutUs">ℹ️ Biz Haqimizda</span></button>
+            <button class="mobile-btn neumorphic" onclick="goToSection('contact')"><span data-key="contact">📞 Aloqa</span></button>
+            <button class="mobile-btn neumorphic" onclick="openSettingsModal()"><span data-key="settings">⚙️ Sozlamalar</span></button>
+        </div>
 
-    <footer class="footer">
-      🔒 Sayt himoyalangan | © 2025 Yordamchi Maktab
-    </footer>
-  </div>
+        <nav class="navbar neumorphic">
+            <div class="nav-btn" onclick="goToSection('darsliklar')"><span data-key="lessons">📚 Darsliklar</span></div>
+            <div class="nav-btn" onclick="goToSection('testlar')"><span data-key="tests">📝 Testlar</span></div>
+            <div class="nav-btn" onclick="goToSection('video')"><span data-key="videos">🎥 Video Darslar</span></div>
+            <div class="nav-btn" onclick="goToSection('advice')"><span data-key="advice">💡 Maslahatlar</span></div>
+            <div class="nav-btn" onclick="goToSection('teachers')"><span data-key="teachers">👩‍🏫 O'qituvchilar</span>
+            </div>
+            <div class="nav-btn" onclick="goToSection('aboutUs')"><span data-key="aboutUs">ℹ️ Biz Haqimizda</span></div>
+            <div class="nav-btn" onclick="goToSection('contact')"><span data-key="contact">📞 Aloqa</span></div>
+            <div class="nav-btn" onclick="openSettingsModal()"><span data-key="settings">⚙️ Sozlamalar</span></div>
+        </nav>
 
-  <script>
-    // Kirish sahifasini 3 soniyadan keyin yopish
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const intro = document.getElementById('intro');
-        intro.style.opacity = '0';
-        intro.style.pointerEvents = 'none';
-        setTimeout(() => {
-          intro.style.display = 'none';
-          document.getElementById('main-content').classList.add('visible');
-        }, 1000);
-      }, 3000);
-    });
+        <main class="main-buttons">
+            <button class="big-btn" onclick="goToSection('darsliklar')">
+                <span data-key="lessons">📚 Darsliklar</span> 
+                <span data-key="lessons_sub">Barcha fanlar bo'yicha</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('testlar')">
+                <span data-key="tests">📝 Testlar</span> 
+                <span data-key="tests_sub">Bilimingizni sinovdan o'tkazing</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('video')">
+                <span data-key="videos">🎥 Video Darslar</span> 
+                <span data-key="videos_sub">Vizual tushuntirishlar</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('advice')">
+                <span data-key="advice">💡 Maslahatlar</span> 
+                <span data-key="advice_sub">O'qish sirlari</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('oqituvchilar')">
+                <span data-key="teachers">👩‍🏫 O'qituvchilar</span> 
+                <span data-key="teachers_sub">Mentorlar bilan tanishing</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('biz')">
+                <span data-key="aboutUs">ℹ️ Biz Haqimizda</span> 
+                <span data-key="aboutUs_sub">Loyihaning maqsadi</span>
+            </button>
+            <button class="big-btn" onclick="goToSection('aloqa')">
+                <span data-key="contact">📞 Aloqa</span> 
+                <span data-key="contact_sub">Murojaat uchun</span>
+            </button>
+        </main>
 
-    // Mobil menyu ochish/yopish
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('active');
-    }
+        <footer class="footer">
+            <span data-key="footer_protected">🔒 Sayt himoyalangan</span> |
+            © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
+        </footer>
+    </div>
 
-    // Bo'limga o'tish (demo uchun alert + scroll)
-    function goToSection(sectionName) {
-      const menu = document.getElementById('mobileMenu');
-      if (menu.classList.contains('active')) {
-        menu.classList.remove('active');
-      }
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-content">
+            <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
+            <h2 id="settingsModalTitle">⚙️ Sozlamalar</h2>
 
-      // Haqiqiy loyihada bu yerda sahifa o'zgaradi yoki kontent yuklanadi
-      alert(`✅ "${sectionName}" bo'limiga muvaffaqiyatli o'tildi!`);
-    }
+            <div class="settings-group">
+                <h3 id="languageTitle">🌐 Tilni Tanlang:</h3>
+                <div class="options-container" id="language-options">
+                    <button class="setting-btn" data-lang="uz" onclick="setLanguage('uz')">O'zbekcha</button>
+                    <button class="setting-btn" data-lang="ru" onclick="setLanguage('ru')">Русский</button>
+                    <button class="setting-btn" data-lang="en" onclick="setLanguage('en')">English</button>
+                    <button class="setting-btn" data-lang="ko" onclick="setLanguage('ko')">한국어</button>
+                    <button class="setting-btn" data-lang="zh" onclick="setLanguage('zh')">中文</button>
+                </div>
+            </div>
 
-    // Tashqari bosishda menyu yopilishi
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('mobileMenu');
-      const toggle = document.querySelector('.menu-toggle');
-      if (menu.classList.contains('active') && 
-          !menu.contains(e.target) && 
-          e.target !== toggle) {
-        menu.classList.remove('active');
-      }
-    });
-  </script>
+            <div class="settings-group">
+                <h3 id="modeTitle">🌙 Kun / Tun Rejimi:</h3>
+                <div class="options-container" id="mode-options">
+                    <button class="setting-btn" data-mode="light" onclick="setMode('light')"><span data-key="lightMode">☀️ Yorug'</span></button>
+                    <button class="setting-btn" data-mode="dark" onclick="setMode('dark')"><span data-key="darkMode">🌑 To'q</span></button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 id="themeTitle">🎨 Sayt Mavzusi:</h3>
+                <div class="options-container" id="theme-options">
+                    <button class="setting-btn" data-theme="default" onclick="setTheme('default')"><span data-key="themeDefault">Asosiy</span></button>
+                    <button class="setting-btn" data-theme="ocean" onclick="setTheme('ocean')"><span data-key="themeOcean">Okean</span></button>
+                    <button class="setting-btn" data-theme="green" onclick="setTheme('green')"><span data-key="themeGreen">Yashil</span></button>
+                    <button class="setting-btn" data-theme="violet" onclick="setTheme('violet')"><span data-key="themeViolet">Binafsha</span></button>
+                    <button class="setting-btn" data-theme="dark-red" onclick="setTheme('dark-red')"><span data-key="themeDarkRed">Qizil</span></button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 id="extraTitle">⚙️ Animatsiyalarni Cheklash:</h3>
+                <div class="options-container">
+                    <button class="setting-btn" data-anim="on" onclick="setExtra('animation', 'on')"><span data-key="animationOn">Yoqish</span></button>
+                    <button class="setting-btn" data-anim="off" onclick="setExtra('animation', 'off')"><span data-key="animationOff">O'chirish</span></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        // Sayt kontenti tarjimalari
+        const content = {
+            uz: {
+                introSubText: "Bilim Makoni. Yangi Imkoniyatlar. 💡",
+                lessons: "📚 Darsliklar",
+                lessons_sub: "Barcha fanlar bo'yicha",
+                tests: "📝 Testlar",
+                tests_sub: "Bilimingizni sinovdan o'tkazing",
+                videos: "🎥 Video Darslar",
+                videos_sub: "Vizual tushuntirishlar",
+                advice: "💡 Maslahatlar",
+                advice_sub: "O'qish sirlari",
+                teachers: "👩‍🏫 O'qituvchilar",
+                teachers_sub: "Mentorlar bilan tanishing",
+                aboutUs: "ℹ️ Biz Haqimizda",
+                aboutUs_sub: "Loyihaning maqsadi",
+                contact: "📞 Aloqa",
+                contact_sub: "Murojaat uchun",
+                footer_protected: "🔒 Sayt himoyalangan",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Sozlamalar",
+                settingsModalTitle: "⚙️ Sozlamalar",
+                languageTitle: "🌐 Tilni Tanlang:",
+                modeTitle: "🌙 Kun / Tun Rejimi:",
+                lightMode: "☀️ Yorug'",
+                darkMode: "🌑 To'q",
+                themeTitle: "🎨 Sayt Mavzusi:",
+                themeDefault: "Asosiy",
+                themeOcean: "Okean",
+                themeGreen: "Yashil",
+                themeViolet: "Binafsha",
+                themeDarkRed: "Qizil",
+                extraTitle: "⚙️ Animatsiyalarni Cheklash:",
+                animationOn: "Yoqish",
+                animationOff: "O'chirish",
+                alertSuccess: (section) => `✅ "${section}" bo'limiga muvaffaqiyatli o'tildi!`,
+            },
+            ru: {
+                introSubText: "Пространство Знаний. Новые Возможности. 💡",
+                lessons: "📚 Учебники",
+                lessons_sub: "По всем предметам",
+                tests: "📝 Тесты",
+                tests_sub: "Проверьте свои знания",
+                videos: "🎥 Видео Уроки",
+                videos_sub: "Визуальные объяснения",
+                advice: "💡 Советы",
+                advice_sub: "Секреты обучения",
+                teachers: "👩‍🏫 Учителя",
+                teachers_sub: "Познакомьтесь с менторами",
+                aboutUs: "ℹ️ О Нас",
+                aboutUs_sub: "Цель проекта",
+                contact: "📞 Контакты",
+                contact_sub: "Для обращений",
+                footer_protected: "🔒 Сайт защищен",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Настройки",
+                settingsModalTitle: "⚙️ Настройки",
+                languageTitle: "🌐 Выберите Язык:",
+                modeTitle: "🌙 Режим День / Ночь:",
+                lightMode: "☀️ Светлый",
+                darkMode: "🌑 Темный",
+                themeTitle: "🎨 Тема Сайта:",
+                themeDefault: "Основная",
+                themeOcean: "Океан",
+                themeGreen: "Зеленая",
+                themeViolet: "Фиолетовая",
+                themeDarkRed: "Красная",
+                extraTitle: "⚙️ Ограничение Анимаций:",
+                animationOn: "Включить",
+                animationOff: "Выключить",
+                alertSuccess: (section) => `✅ Вы успешно перешли в раздел "${section}"!`,
+            },
+            en: {
+                introSubText: "Space of Knowledge. New Opportunities. 💡",
+                lessons: "📚 Textbooks",
+                lessons_sub: "For all subjects",
+                tests: "📝 Tests",
+                tests_sub: "Test your knowledge",
+                videos: "🎥 Video Lessons",
+                videos_sub: "Visual explanations",
+                advice: "💡 Advice",
+                advice_sub: "Secrets of learning",
+                teachers: "👩‍🏫 Teachers",
+                teachers_sub: "Meet the mentors",
+                aboutUs: "ℹ️ About Us",
+                aboutUs_sub: "Project goal",
+                contact: "📞 Contact",
+                contact_sub: "For inquiries",
+                footer_protected: "🔒 Site protected",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Settings",
+                settingsModalTitle: "⚙️ Settings",
+                languageTitle: "🌐 Select Language:",
+                modeTitle: "🌙 Day / Night Mode:",
+                lightMode: "☀️ Light",
+                darkMode: "🌑 Dark",
+                themeTitle: "🎨 Site Theme:",
+                themeDefault: "Default",
+                themeOcean: "Ocean",
+                themeGreen: "Green",
+                themeViolet: "Violet",
+                themeDarkRed: "Red",
+                extraTitle: "⚙️ Limit Animations:",
+                animationOn: "Enable",
+                animationOff: "Disable",
+                alertSuccess: (section) => `✅ Successfully navigated to "${section}" section!`,
+            },
+            ko: {
+                introSubText: "지식의 공간. 새로운 기회. 💡",
+                lessons: "📚 교과서",
+                lessons_sub: "모든 과목",
+                tests: "📝 시험",
+                tests_sub: "지식 테스트",
+                videos: "🎥 비디오 수업",
+                videos_sub: "시각적 설명",
+                advice: "💡 조언",
+                advice_sub: "학습 비법",
+                teachers: "👩‍🏫 선생님",
+                teachers_sub: "멘토 만나기",
+                aboutUs: "ℹ️ 우리 소개",
+                aboutUs_sub: "프로젝트 목표",
+                contact: "📞 연락",
+                contact_sub: "문의하기",
+                footer_protected: "🔒 사이트 보호됨",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ 설정",
+                settingsModalTitle: "⚙️ 설정",
+                languageTitle: "🌐 언어 선택:",
+                modeTitle: "🌙 낮 / 밤 모드:",
+                lightMode: "☀️ 라이트",
+                darkMode: "🌑 다크",
+                themeTitle: "🎨 사이트 테마:",
+                themeDefault: "기본",
+                themeOcean: "바다",
+                themeGreen: "녹색",
+                themeViolet: "보라색",
+                themeDarkRed: "빨간색",
+                extraTitle: "⚙️ 애니메이션 제한:",
+                animationOn: "켜기",
+                animationOff: "끄기",
+                alertSuccess: (section) => `✅ "${section}" 섹션으로 성공적으로 이동했습니다!`,
+            },
+            zh: {
+                introSubText: "知识空间。新机遇。💡",
+                lessons: "📚 教材",
+                lessons_sub: "所有科目",
+                tests: "📝 测验",
+                tests_sub: "测试你的知识",
+                videos: "🎥 视频课程",
+                videos_sub: "视觉讲解",
+                advice: "💡 建议",
+                advice_sub: "学习秘诀",
+                teachers: "👩‍🏫 老师",
+                teachers_sub: "认识导师",
+                aboutUs: "ℹ️ 关于我们",
+                aboutUs_sub: "项目目标",
+                contact: "📞 联系",
+                contact_sub: "查询用途",
+                footer_protected: "🔒 网站受保护",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ 设置",
+                settingsModalTitle: "⚙️ 设置",
+                languageTitle: "🌐 选择语言:",
+                modeTitle: "🌙 日间 / 夜间模式:",
+                lightMode: "☀️ 明亮",
+                darkMode: "🌑 黑暗",
+                themeTitle: "🎨 网站主题:",
+                themeDefault: "默认",
+                themeOcean: "海洋",
+                themeGreen: "绿色",
+                themeViolet: "紫色",
+                themeDarkRed: "红色",
+                extraTitle: "⚙️ 限制动画:",
+                animationOn: "开启",
+                animationOff: "关闭",
+                alertSuccess: (section) => `✅ 成功切换到“${section}”部分！`,
+            }
+        };
+
+        let currentLang = localStorage.getItem('siteLang') || 'uz';
+        let currentTheme = localStorage.getItem('siteTheme') || 'default';
+        let currentMode = localStorage.getItem('siteMode') || 'light';
+        let currentAnimation = localStorage.getItem('siteAnimation') || 'on';
+
+        // --- I. Tildan foydalanish funksiyasi ---
+        function updateContent(lang) {
+            const elements = document.querySelectorAll('[data-key]');
+            if (!content[lang]) return;
+
+            // Boshqa barcha matnlar
+            elements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (content[lang][key]) {
+                    el.textContent = content[lang][key];
+                }
+            });
+
+            // Intro Sub Text
+            document.getElementById('introSubText').textContent = content[lang].introSubText;
+
+            // Modal sarlavhalari
+            document.getElementById('settingsModalTitle').textContent = content[lang].settingsModalTitle;
+            document.getElementById('languageTitle').textContent = content[lang].languageTitle;
+            document.getElementById('modeTitle').textContent = content[lang].modeTitle;
+            document.getElementById('themeTitle').textContent = content[lang].themeTitle;
+            document.getElementById('extraTitle').textContent = content[lang].extraTitle;
+            
+            // HTML lang atributini yangilash
+            document.documentElement.lang = lang;
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('siteLang', lang);
+            updateContent(lang);
+            setActiveButton('language-options', lang);
+            // Mobil menyu yopilishi
+            const menu = document.getElementById('mobileMenu');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            }
+        }
+
+        // --- II. Kun/Tun rejimi funksiyasi ---
+        function setMode(mode) {
+            currentMode = mode;
+            const body = document.getElementById('body');
+            body.classList.remove('dark-mode', 'light-mode');
+            localStorage.setItem('siteMode', mode);
+            if (mode === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.add('light-mode'); // light-mode asosan default bo'ladi, lekin class qo'shish aniqlik beradi
+            }
+            setActiveButton('mode-options', mode);
+        }
+
+        // --- III. Mavzu (Theme) funksiyasi ---
+        function setTheme(theme) {
+            currentTheme = theme;
+            const body = document.getElementById('body');
+            // Mavzu classlarini olib tashlash
+            body.className = body.className.split(' ').filter(c => !c.startsWith('theme-')).join(' ');
+            
+            localStorage.setItem('siteTheme', theme);
+            
+            if (theme !== 'default') {
+                body.classList.add(`theme-${theme}`);
+            }
+            
+            // Dark mode ni saqlab qolish
+            if (currentMode === 'dark') {
+                body.classList.add('dark-mode');
+            }
+
+            setActiveButton('theme-options', theme);
+        }
+
+        // --- IV. Maxsus Sozlama (Animatsiya) ---
+        function setExtra(key, value) {
+             if (key === 'animation') {
+                currentAnimation = value;
+                localStorage.setItem('siteAnimation', value);
+                const body = document.getElementById('body');
+                if (value === 'off') {
+                    body.style.transition = 'none'; // Barcha CSS transitionlarni o'chirish (Misol uchun)
+                } else {
+                    body.style.transition = 'background-color var(--transition-speed), color var(--transition-speed)';
+                }
+                setActiveButton('options-container [data-anim]', value, 'data-anim');
+             }
+        }
+
+
+        // --- Yordamchi Funksiyalar ---
+
+        // Tugmalarni aktiv holatga keltirish
+        function setActiveButton(containerId, value, dataAttr = 'data-lang') {
+            let container;
+            if (containerId.includes(' ')) { // CSS Selector bo'lsa
+                container = document.querySelectorAll(containerId);
+                container.forEach(btn => {
+                    if (btn.getAttribute(dataAttr) === value) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            } else { // ID bo'lsa
+                container = document.getElementById(containerId);
+                const buttons = container ? container.querySelectorAll('.setting-btn') : [];
+                buttons.forEach(btn => {
+                    if (btn.getAttribute(dataAttr) === value) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // Sozlamalarni yuklash
+        function loadSettings() {
+            setLanguage(currentLang);
+            setTheme(currentTheme);
+            setMode(currentMode);
+            setExtra('animation', currentAnimation);
+
+            // Modal ichidagi tugmalarning aktiv holatini o'rnatish
+            setActiveButton('language-options', currentLang);
+            setActiveButton('mode-options', currentMode, 'data-mode');
+            setActiveButton('theme-options', currentTheme, 'data-theme');
+            setActiveButton('.options-container [data-anim]', currentAnimation, 'data-anim');
+        }
+
+        // Sozlamalar modalini ochish
+        function openSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.style.display = 'block';
+            toggleMobileMenu(false); // Mobil menyuni yopish
+        }
+
+        // Sozlamalar modalini yopish
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Tashqari bosishda modal yopilishi
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+
+        // Kirish sahifasini 3 soniyadan keyin yopish
+        window.addEventListener('load', () => {
+            loadSettings(); // Sozlamalarni yuklash
+
+            setTimeout(() => {
+                const intro = document.getElementById('intro');
+                intro.style.opacity = '0';
+                intro.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    document.getElementById('main-content').classList.add('visible');
+                }, 1000);
+            }, 3000);
+        });
+
+        // Mobil menyu ochish/yopish
+        function toggleMobileMenu(force) {
+            const menu = document.getElementById('mobileMenu');
+            if (typeof force === 'boolean') {
+                 if (!force) menu.classList.remove('active');
+                 else menu.classList.add('active');
+            } else {
+                menu.classList.toggle('active');
+            }
+        }
+
+        // Bo'limga o'tish (demo uchun alert)
+        function goToSection(sectionName) {
+            toggleMobileMenu(false); // Mobil menyuni yopish
+
+            let sectionKey;
+            switch(sectionName) {
+                case 'darsliklar': sectionKey = 'lessons'; break;
+                case 'testlar': sectionKey = 'tests'; break;
+                case 'video': sectionKey = 'videos'; break;
+                case 'maslahat': sectionKey = 'advice'; break;
+                case 'oqituvchilar': sectionKey = 'teachers'; break;
+                case 'biz': sectionKey = 'aboutUs'; break;
+                case 'aloqa': sectionKey = 'contact'; break;
+                default: sectionKey = sectionName;
+            }
+
+            const alertText = content[currentLang].alertSuccess(content[currentLang][sectionKey] || sectionName);
+            alert(alertText);
+        }
+
+        // Tashqari bosishda menyu yopilishi
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('mobileMenu');
+            const toggle = document.querySelector('.menu-toggle');
+            if (menu.classList.contains('active') && 
+                !menu.contains(e.target) && 
+                e.target !== toggle) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
 </body>
+
 </html>
