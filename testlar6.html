@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematika Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --math-color: #ff9800; /* To'q sariq rangni Matematika uchun ishlatamiz */
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--math-color); 
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--math-color); /* Sinf tugmasi uchun to'q sariq */
+            color: var(--text-dark); 
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .class-selection button:hover {
+            background-color: #e68900;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+            color: var(--text-light);
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #fff3e0; /* To'q sariq tusdagi och rang */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--math-color); /* To'q sariq chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #ffe0b2; /* To'q sariq hover */
+            border-color: var(--math-color);
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #ffcc80; /* Natija foni To'q sariq tusda */
+            border: 1px solid #ffb74d;
+            color: #e65100;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali (oldingi uslub) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Matematika Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-sinf</button>
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Matematika fani, 5-11 sinflar) ---
+    // Eslatma: Savollar sodda hisoblashlar va nazariy bilimlarga asoslangan.
+
+    const mathTestDatabase = {
+        // 5-sinf: Natural sonlar, arifmetik amallar, oddiy kasrlar.
+        5: [
+            { id: 501, q: "Eng kichik natural sonni toping.", options: ["0", "1", "2", "-1"], answer: "1" },
+            { id: 502, q: "450 + 120 ni hisoblang.", options: ["570", "560", "670", "470"], answer: "570" },
+            { id: 503, q: "Uch xonali eng katta sonni toping.", options: ["990", "1000", "999", "100"], answer: "999" },
+            { id: 504, q: "3/4 (to'rtdan uch) kasrining suratini toping.", options: ["4", "3", "7", "1"], answer: "3" },
+            { id: 505, q: "Kvadratning perimetri (P) qaysi formula bilan topiladi? (a - tomoni)", options: ["a * a", "4 * a", "a + a", "2 * a"], answer: "4 * a" },
+            { id: 506, q: "1 soat necha minut?", options: ["30", "60", "100", "120"], answer: "60" },
+            { id: 507, q: "Agar a=5 bo'lsa, 2a + 3 ning qiymatini toping.", options: ["10", "13", "15", "18"], answer: "13" },
+            { id: 508, q: "36 ni 4 ga bo'lganda bo'linma nechaga teng?", options: ["8", "9", "10", "12"], answer: "9" },
+            { id: 509, q: "To'g'ri to'rtburchakning yuzasi (S) qaysi formula bilan topiladi? (a, b - tomonlari)", options: ["4 * a", "a + b", "a * b", "2(a+b)"], answer: "a * b" },
+            { id: 510, q: "0.5 ning oddiy kasr ko'rinishi?", options: ["1/5", "1/2", "5/100", "5/1"], answer: "1/2" },
+            { id: 511, q: "Natural sonlar to'plami qanday belgilanadi?", options: ["Z", "Q", "N", "R"], answer: "N" },
+            { id: 512, q: "10 * 0 + 5 ni hisoblang.", options: ["0", "10", "5", "50"], answer: "5" },
+            { id: 513, q: "Teng yonli uchburchakning nechta tomoni teng?", options: ["1", "2", "3", "0"], answer: "2" },
+            { id: 514, q: "1 metr necha santimetr?", options: ["10", "100", "1000", "1"], answer: "100" },
+            { id: 515, q: "30 va 5 sonlarining ko'paytmasini toping.", options: ["35", "25", "150", "6"], answer: "150" },
+            { id: 516, q: "50 ning yarmini toping.", options: ["5", "10", "25", "100"], answer: "25" },
+            { id: 517, q: "Kvadratning hamma burchaklari necha gradus?", options: ["90", "180", "270", "360"], answer: "90" },
+            { id: 518, q: "1/2 + 1/2 ni hisoblang.", options: ["1/4", "2/2", "1", "0"], answer: "1" },
+            { id: 519, q: "Natural sonlarga teskari sonlar nima deyiladi?", options: ["Manfiy sonlar", "Butun sonlar", "Musbat sonlar", "Nol"], answer: "Manfiy sonlar" },
+            { id: 520, q: "50 ga yaqin o'nliklar sonini toping.", options: ["40", "50", "60", "55"], answer: "50" },
+            { id: 521, q: "25 - (5 * 2) ni hisoblang.", options: ["15", "30", "40", "23"], answer: "15" },
+            { id: 522, q: "Eng katta ikki xonali juft sonni toping.", options: ["98", "100", "99", "97"], answer: "98" },
+            { id: 523, q: "Uchburchakning ichki burchaklari yig'indisi necha gradus?", options: ["90", "180", "270", "360"], answer: "180" },
+            { id: 524, q: "0 ning istalgan songa ko'paytmasi nechaga teng?", options: ["1", "O'sha songa", "0", "Aniq emas"], answer: "0" },
+            { id: 525, q: "5/10 kasrini qisqartiring.", options: ["1/5", "1/2", "2/5", "1/10"], answer: "1/2" },
+            { id: 526, q: "Aylananing markazidan o'tuvchi vatar nima deb ataladi?", options: ["Radius", "Horda", "Diametr", "Yoy"], answer: "Diametr" },
+            { id: 527, q: "1 kg necha gramm?", options: ["100", "1000", "10000", "1"], answer: "1000" },
+            { id: 528, q: "123 sonidagi o'nliklar xonasidagi raqam?", options: ["1", "2", "3", "0"], answer: "2" },
+            { id: 529, q: "Oddiy kasrning maxraji nima uchun xizmat qiladi?", options: ["Butun qismni ifodalash", "Bo'linmalar sonini ko'rsatish", "Suratni aniqlash", "Qoldiqni topish"], answer: "Bo'linmalar sonini ko'rsatish" },
+            { id: 530, q: "50 dan 20 ni ayiring.", options: ["70", "30", "20", "5"], answer: "30" }
+        ],
+        
+        // 6-sinf: Ratsional sonlar, proporsiya, butun sonlar.
+        6: [
+            { id: 601, q: "Ratsional sonlar to'plami qanday belgilanadi?", options: ["N", "Z", "Q", "R"], answer: "Q" },
+            { id: 602, q: "-5 + 8 ni hisoblang.", options: ["13", "-13", "3", "-3"], answer: "3" },
+            { id: 603, q: "Proporsiyaning asosiy xossasi nima?", options: ["Qo'shish", "O'rta hadlar ko'paytmasi chetki hadlar ko'paytmasiga teng", "Bo'lish", "Ayirish"], answer: "O'rta hadlar ko'paytmasi chetki hadlar ko'paytmasiga teng" },
+            { id: 604, q: "40 ning 20% ni toping.", options: ["8", "10", "20", "4"], answer: "8" },
+            { id: 605, q: "Tenglamani yeching: 2x = 10", options: ["x=2", "x=5", "x=8", "x=12"], answer: "x=5" },
+            { id: 606, q: "Butun sonlar to'plamida nechta son mavjud?", options: ["Chekli", "100", "Cheksiz ko'p", "50"], answer: "Cheksiz ko'p" },
+            { id: 607, q: "Ikki manfiy sonning ko'paytmasi qanday son bo'ladi?", options: ["Nol", "Manfiy", "Musbat", "Kasr"], answer: "Musbat" },
+            { id: 608, q: "0.25 ning foiz ko'rinishi?", options: ["2.5%", "25%", "0.25%", "250%"], answer: "25%" },
+            { id: 609, q: "Ikki to'g'ri chiziqning kesishishi natijasida hosil bo'lgan burchaklar nima deyiladi?", options: ["To'g'ri burchak", "Vertikal burchaklar", "O'tmas burchak", "Yoy"], answer: "Vertikal burchaklar" },
+            { id: 610, q: "Eng katta umumiy bo'luvchi (EUB) nima?", options: ["Bo'linma", "Eng katta umumiy son", "Bo'linuvchi", "Qoldiq"], answer: "Eng katta umumiy son" },
+            { id: 611, q: "|-15| ning qiymatini toping.", options: ["-15", "15", "0", "1.5"], answer: "15" },
+            { id: 612, q: "Aylananing uzunligi (C) qaysi formula bilan topiladi? (r - radius)", options: ["πr²", "2πr", "r²", "r/2"], answer: "2πr" },
+            { id: 613, q: "1/4 + 1/2 ni hisoblang.", options: ["2/6", "3/4", "1/8", "1"], answer: "3/4" },
+            { id: 614, q: "To'g'ri burchak necha gradus?", options: ["60", "90", "120", "180"], answer: "90" },
+            { id: 615, q: "Sonning modulining ta'rifi?", options: ["Sonning darajasi", "Sonning nolga bo'lishi", "Sonning musbat qiymati", "Sonning ildizi"], answer: "Sonning musbat qiymati" },
+            { id: 616, q: "2.5 * 4 ni hisoblang.", options: ["8", "10", "12", "6"], answer: "10" },
+            { id: 617, q: "Aylananing radiusi nima?", options: ["To'liq uzunlik", "Markazdan aylanagacha bo'lgan masofa", "Kesuvchi", "Vatar"], answer: "Markazdan aylanagacha bo'lgan masofa" },
+            { id: 618, q: "Butun sonlar to'plami qaysi sonlarni o'z ichiga oladi?", options: ["Faqat musbat", "Faqat manfiy", "Natural sonlar, ularga qarama-qarshi sonlar va 0", "Kasrlar"], answer: "Natural sonlar, ularga qarama-qarshi sonlar va 0" },
+            { id: 619, q: "250 sonining 10% ini toping.", options: ["2.5", "25", "50", "10"], answer: "25" },
+            { id: 620, q: "x - 5 = 12 tenglamani yeching.", options: ["x=7", "x=17", "x=10", "x=5"], answer: "x=17" },
+            { id: 621, q: "Sonlar o'qida manfiy sonlar qayerda joylashgan?", options: ["O'ngda", "Noldan chapda", "O'rtada", "Yuqorida"], answer: "Noldan chapda" },
+            { id: 622, q: "Ikki kasrni bo'lish qoidasi nima?", options: ["Ular qo'shiladi", "Birinchi kasrni ikkinchisiga teskari kasrga ko'paytirish", "Ular ko'paytiriladi", "Ular ayiriladi"], answer: "Birinchi kasrni ikkinchisiga teskari kasrga ko'paytirish" },
+            { id: 623, q: "Eng kichik umumiy karrali (EKUK) nima?", options: ["Bo'linuvchi", "Eng kichik umumiy son", "Ko'paytma", "Bo'luvchi"], answer: "Eng kichik umumiy son" },
+            { id: 624, q: "Qanday burchak 90° dan katta, lekin 180° dan kichik?", options: ["O'tkir burchak", "To'g'ri burchak", "O'tmas burchak", "Yoyilgan burchak"], answer: "O'tmas burchak" },
+            { id: 625, q: "Har qanday sonning nolga darajasi nechaga teng? (0^0 emas)", options: ["0", "1", "O'sha songa", "Aniq emas"], answer: "1" },
+            { id: 626, q: "2 * (5 + 3) ni hisoblang.", options: ["13", "16", "11", "10"], answer: "16" },
+            { id: 627, q: "Proportsiya so'zining ma'nosi?", options: ["Yig'indi", "Tenglik", "Nisbatlarning tengligi", "Farq"], answer: "Nisbatlarning tengligi" },
+            { id: 628, q: "5 ni -1 ga bo'lganda nechchi chiqadi?", options: ["5", "-5", "1", "-1"], answer: "-5" },
+            { id: 629, q: "Doiraning yuzasi (S) qaysi formula bilan topiladi? (r - radius)", options: ["2πr", "πr²", "r²", "4r"], answer: "πr²" },
+            { id: 630, q: "0 dan katta bo'lgan sonlar nima deyiladi?", options: ["Butun sonlar", "Manfiy sonlar", "Musbat sonlar", "Nol"], answer: "Musbat sonlar" }
+        ],
+        
+        // 7-sinf: Funksiya, algebraik ifodalar, birhad va ko'phad.
+        7: [
+            { id: 701, q: "Argumentning har bir qiymatiga funksiyaning birgina qiymati mos kelishiga nima deyiladi?", options: ["Tenglama", "Ifoda", "Funksiya", "Ko'phad"], answer: "Funksiya" },
+            { id: 702, q: "x² - 4 ni ko'paytuvchilarga ajrating.", options: ["(x-2)²", "(x-2)(x+2)", "x(x-4)", "x²-4"], answer: "(x-2)(x+2)" },
+            { id: 703, q: "(a + b)² formulasini toping.", options: ["a² + b²", "a² - 2ab + b²", "a² + 2ab + b²", "a³ + b³"], answer: "a² + 2ab + b²" },
+            { id: 704, q: "Birhadning koeffitsiyentini toping: -3x²y", options: ["x²y", "2", "-3", "-3x"], answer: "-3" },
+            { id: 705, q: "Qanday funksiya grafigi to'g'ri chiziqdan iborat?", options: ["Kvadrat funksiya", "Teskari proporsional", "Chiziqli funksiya (y=kx+b)", "Darajali funksiya"], answer: "Chiziqli funksiya (y=kx+b)" },
+            { id: 706, q: "Algebraik ifoda nima?", options: ["Faqat sonlar", "Sonlar, harflar va amallar belgilari bilan tuzilgan ifoda", "Faqat harflar", "Funksiya grafigi"], answer: "Sonlar, harflar va amallar belgilari bilan tuzilgan ifoda" },
+            { id: 707, q: "x³ * x² ni soddalashtiring.", options: ["x⁶", "x⁵", "2x⁵", "x"], answer: "x⁵" },
+            { id: 708, q: "Ko'phadning darajasi nima?", options: ["Eng kichik birhadning darajasi", "Eng katta birhadning darajasi", "Barcha hadlarning yig'indisi", "Koeffitsiyent"], answer: "Eng katta birhadning darajasi" },
+            { id: 709, q: "y = 5 funksiya grafigi qaysi o'qqa parallel bo'ladi?", options: ["y o'qi", "x o'qi", "Diagonal", "Kesishgan"], answer: "x o'qi" },
+            { id: 710, q: "Ikki had yig'indisining kubi formulasini toping.", options: ["(a+b)²", "a³+b³", "(a+b)³", "a³-b³"], answer: "(a+b)³" },
+            { id: 711, q: "5x + 3 = 18 tenglamani yeching.", options: ["x=2", "x=3", "x=5", "x=1"], answer: "x=3" },
+            { id: 702, q: "Uchburchaklar tengligining birinchi alomati nima?", options: ["Uchta tomoni bo'yicha", "Ikki tomoni va ular orasidagi burchak", "Uch burchagi bo'yicha", "Gipotenuza"], answer: "Ikki tomoni va ular orasidagi burchak" },
+            { id: 713, q: "(2x)³ ni soddalashtiring.", options: ["2x³", "6x", "8x³", "4x²"], answer: "8x³" },
+            { id: 714, q: "Uchburchakning medianasi nima?", options: ["Uchburchakning yuzasi", "Uchburchakning burchak bissektrisasi", "Uchburchakning uchi va qarama-qarshi tomon o'rtasini bog'lovchi kesma", "Uchburchakning balandligi"], answer: "Uchburchakning uchi va qarama-qarshi tomon o'rtasini bog'lovchi kesma" },
+            { id: 715, q: "Ko'phadni birhadga bo'lishda nima qo'llaniladi?", options: ["Faqat qo'shish", "Har bir hadni bo'lish", "Faqa ayirish", "Ko'paytirish"], answer: "Har bir hadni bo'lish" },
+            { id: 716, q: "Koordinata tekisligida vertikal o'q nima deb ataladi?", options: ["Absissa o'qi (x)", "Ordinata o'qi (y)", "Kesishish nuqtasi", "Daraja"], answer: "Ordinata o'qi (y)" },
+            { id: 717, q: "5(x - 2) ni oching.", options: ["5x + 2", "5x - 10", "x - 10", "5x - 2"], answer: "5x - 10" },
+            { id: 718, q: "Teng yonli uchburchakning asosidagi burchaklari qanday bo'ladi?", options: ["To'g'ri", "Teng", "Har xil", "O'tmas"], answer: "Teng" },
+            { id: 719, q: "Darajani darajaga ko'tarish qoidasi: (a^n)^m", options: ["a^(n+m)", "a^(n*m)", "a^n", "a^m"], answer: "a^(n*m)" },
+            { id: 720, q: "a³ - b³ ni ko'paytuvchilarga ajrating.", options: ["(a-b)(a²+ab+b²)", "(a-b)(a²+b²)", "(a+b)(a²-ab+b²)", "a³-b³"], answer: "(a-b)(a²+ab+b²)" },
+            { id: 721, q: "y = -2x chiziqli funksiya qaysi choraklardan o'tadi?", options: ["I va III", "II va IV", "I va II", "III va IV"], answer: "II va IV" },
+            { id: 722, q: "To'g'ri chiziqni bir tomondan cheklangan qismi?", options: ["Kesma", "Nur", "Burchak", "To'g'ri chiziq"], answer: "Nur" },
+            { id: 723, q: "2x + 3y qanday ifoda?", options: ["Birhad", "Ko'phad", "Tenglama", "Son"], answer: "Ko'phad" },
+            { id: 724, q: "Qo'shni burchaklar yig'indisi necha gradus?", options: ["90", "180", "270", "360"], answer: "180" },
+            { id: 725, q: "Chiziqli tenglamaning ildizi nima?", options: ["O'zgaruvchining qiymati", "Nomalum", "Tenglik belgisi", "Tenglamaning to'g'ri bo'lishini ta'minlovchi o'zgaruvchi qiymati"], answer: "Tenglamaning to'g'ri bo'lishini ta'minlovchi o'zgaruvchi qiymati" },
+            { id: 726, q: "Parallel to'g'ri chiziqlar nima?", options: ["Kesishadi", "Perpendikulyar", "Kesishmaydi", "Bitta nuqtada uchrashadi"], answer: "Kesishmaydi" },
+            { id: 727, q: "y = kx + b funksiyasida 'k' nimani anglatadi?", options: ["Erkin had", "Funksiya nomi", "Burchak koeffitsiyenti", "X o'qi"], answer: "Burchak koeffitsiyenti" },
+            { id: 728, q: "3x + 5 - x ni soddalashtiring.", options: ["3x + 5", "4x + 5", "2x + 5", "5x"], answer: "2x + 5" },
+            { id: 729, q: "Uchburchakning balandligi nima?", options: ["Mediana", "Uchburchakning asosi", "Uchidan qarama-qarshi tomonga tushirilgan perpendikulyar", "Bissektrisa"], answer: "Uchidan qarama-qarshi tomonga tushirilgan perpendikulyar" },
+            { id: 730, q: "Ko'phadni nolga tenglashtirish nima deyiladi?", options: ["Funksiya", "Tenglama", "Tengsizlik", "Ifoda"], answer: "Tenglama" }
+        ],
+
+        // 8-sinf: Kvadrat ildiz, kvadrat tenglama, ratsional kasrlar.
+        8: [
+            { id: 801, q: "Irratsional sonlarga misol?", options: ["1/2", "0.5", "√2", "-3"], answer: "√2" },
+            { id: 802, q: "Kvadrat tenglamaning umumiy ko'rinishi?", options: ["ax+b=0", "ax²+bx+c=0", "a/x+b=0", "a+b=c"], answer: "ax²+bx+c=0" },
+            { id: 803, q: "√49 ni hisoblang.", options: ["6", "7", "8", "-7"], answer: "7" },
+            { id: 804, q: "Kvadrat tenglama nechta ildizga ega bo'lishi mumkin?", options: ["0 yoki 1", "2 yoki 3", "0, 1, yoki 2", "Cheksiz"], answer: "0, 1, yoki 2" },
+            { id: 805, q: "Diskriminant (D) formulasi nima?", options: ["b² - 4ac", "b² + 4ac", "b - 4ac", "2a"], answer: "b² - 4ac" },
+            { id: 806, q: "Pifagor teoremasi qaysi uchburchakka qo'llaniladi?", options: ["Teng tomonli", "To'g'ri burchakli", "O'tkir burchakli", "O'tmas burchakli"], answer: "To'g'ri burchakli" },
+            { id: 807, q: "Teoremaga ko'ra, a² + b² = c² da 'c' nima?", options: ["Katet", "Balandlik", "Gipotenuza", "Mediana"], answer: "Gipotenuza" },
+            { id: 808, q: "D < 0 bo'lsa, kvadrat tenglama nechta haqiqiy ildizga ega?", options: ["2 ta", "1 ta", "0 ta", "3 ta"], answer: "0 ta" },
+            { id: 809, q: "Viyet teoremasiga ko'ra, ildizlar yig'indisi?", options: ["c/a", "-b/a", "b/a", "a/c"], answer: "-b/a" },
+            { id: 810, q: "y = x² funksiya grafigi nima deb ataladi?", options: ["To'g'ri chiziq", "Parabola", "Giperbola", "Ellips"], answer: "Parabola" },
+            { id: 811, q: "Qaysi sonlar to'plami haqiqiy sonlar (R) to'plamiga kiradi?", options: ["Faqat ratsional", "Faqat iratsional", "Ratsional va iratsional sonlar", "Faqat butun"], answer: "Ratsional va iratsional sonlar" },
+            { id: 812, q: "Ratsional kasr nima?", options: ["Surati va maxraji funksiya bo'lgan kasr", "Surati va maxraji ko'phad bo'lgan kasr", "Faqat raqamli kasr", "Ildizli kasr"], answer: "Surati va maxraji ko'phad bo'lgan kasr" },
+            { id: 813, q: "(√x)² ni soddalashtiring. (x ≥ 0)", options: ["√x", "x²", "x", "1"], answer: "x" },
+            { id: 814, q: "Parallelogrammning xossasi nima?", options: ["Barcha tomonlari teng", "Qarama-qarshi tomonlari parallel va teng", "Barcha burchaklari teng", "Faqat bir juft tomoni parallel"], answer: "Qarama-qarshi tomonlari parallel va teng" },
+            { id: 815, q: "x² - 9 = 0 tenglamaning ildizlarini toping.", options: ["x=3", "x=±3", "x=9", "x=±9"], answer: "x=±3" },
+            { id: 816, q: "Kvadrat tenglamani yechishning umumiy formulasi (x₁,₂)?", options: ["(-b ± √D) / a", "(-b ± √D) / 2a", "(-b + D) / 2a", "b - 4ac"], answer: "(-b ± √D) / 2a" },
+            { id: 817, q: "To'rtburchakning ichki burchaklari yig'indisi necha gradus?", options: ["180", "270", "360", "90"], answer: "360" },
+            { id: 818, q: "Qaysi tenglama chiziqli emas?", options: ["2x+5=0", "x=10", "x²-4=0", "3x-y=1"], answer: "x²-4=0" },
+            { id: 819, q: "Ratsional kasrni qisqartirish nima?", options: ["Maxrajini nolga aylantirish", "Surat va maxrajdagi umumiy ko'paytuvchini bo'lish", "Suratni nolga tenglash", "Kasrni qo'shish"], answer: "Surat va maxrajdagi umumiy ko'paytuvchini bo'lish" },
+            { id: 820, q: "y = a/x funksiya grafigi nima deb ataladi?", options: ["Parabola", "Giperbola", "To'g'ri chiziq", "Kubik parabola"], answer: "Giperbola" },
+            { id: 821, q: "To'g'ri burchakli uchburchakning eng katta burchagi necha gradus?", options: ["60", "90", "120", "180"], answer: "90" },
+            { id: 822, q: "Ildiz ostida manfiy son bo'lsa (haqiqiy sonlar to'plamida)?", options: ["Ildizlanadi", "Musbat chiqadi", "Mantiqiy", "Ma'noga ega emas"], answer: "Ma'noga ega emas" },
+            { id: 823, q: "Kvadrat tenglamada b=0 bo'lsa, u qanday tenglama deyiladi?", options: ["Chiziqli", "Keltirilgan", "To'la emas (chala)", "Tengsizlik"], answer: "To'la emas (chala)" },
+            { id: 824, q: "Geometriyada 'rom' nima?", options: ["Burchak", "To'rtburchak, barcha tomonlari teng", "Uchburchak", "Ko'phad"], answer: "To'rtburchak, barcha tomonlari teng" },
+            { id: 825, q: "Viyet teoremasiga ko'ra, ildizlar ko'paytmasi?", options: ["b/a", "c/a", "-b/a", "-c/a"], answer: "c/a" },
+            { id: 826, q: "Kvadrat tenglamada a=1 bo'lsa, u qanday tenglama deyiladi?", options: ["Chala", "Keltirilgan", "Oddiy", "Murakkab"], answer: "Keltirilgan" },
+            { id: 827, q: "y = √x funksiyasining aniqlanish sohasi?", options: ["x < 0", "x > 0", "x ≥ 0", "Barcha haqiqiy sonlar"], answer: "x ≥ 0" },
+            { id: 828, q: "Tengsizlikda ishora qachon teskariga o'zgaradi?", options: ["Qo'shganda", "Manfiy songa ko'paytirish yoki bo'lishda", "Musbat songa bo'lishda", "Ayirganda"], answer: "Manfiy songa ko'paytirish yoki bo'lishda" },
+            { id: 829, q: "Rombning diagonallari qanday kesishadi?", options: ["Parallel", "Kesishmaydi", "To'g'ri burchak ostida (perpendikulyar)", "Burchak ostida"], answer: "To'g'ri burchak ostida (perpendikulyar)" },
+            { id: 830, q: "(a + b)² ni kvadrat ildiz ostiga olsak nima chiqadi?", options: ["a+b", "±(a+b)", "a²+b²", "a+b+2ab"], answer: "±(a+b)" }
+        ],
+        
+        // 9-sinf: Tengsizliklar sistemasi, arifmetik va geometrik progressiya, vektorlar.
+        9: [
+            { id: 901, q: "Arifmetik progressiyaning n-hadini topish formulasi?", options: ["$a_n = a_1 + (n-1)d$", "$a_n = a_1 \cdot q^{n-1}$", "$S_n = (a_1 + a_n)/2$", "$d=a_2/a_1$"], answer: "$a_n = a_1 + (n-1)d$" },
+            { id: 902, q: "Tengsizliklar sistemasini yechish nima?", options: ["Faqat bir tengsizlikni yechish", "Barcha tengsizliklarni qanoatlantiruvchi yechimlar to'plamini topish", "Tengsizliklarni tenglamaga aylantirish", "Eng katta qiymatni topish"], answer: "Barcha tengsizliklarni qanoatlantiruvchi yechimlar to'plamini topish" },
+            { id: 903, q: "Geometrik progressiyada ketma-ket hadlarning nisbati nima deyiladi?", options: ["Ayirma (d)", "Maxraj (q)", "Yig'indi", "Boshlanish hadi"], answer: "Maxraj (q)" },
+            { id: 904, q: "Vektorning moduli nima?", options: ["Vektor yo'nalishi", "Vektorning uzunligi", "Vektor yig'indisi", "Vektor ko'paytmasi"], answer: "Vektorning uzunligi" },
+            { id: 905, q: "Tengsizliklar sistemasining yechimi qanday bo'lishi mumkin?", options: ["Bo'sh to'plam", "Yagona son", "Interval yoki bo'sh to'plam", "Faqat manfiy sonlar"], answer: "Interval yoki bo'sh to'plam" },
+            { id: 906, q: "Arifmetik progressiyada $a_1=2$ va $d=3$ bo'lsa, $a_2$ ni toping.", options: ["2", "5", "6", "3"], answer: "5" },
+            { id: 907, q: "Geometrik progressiyada $b_1=2$ va $q=2$ bo'lsa, $b_3$ ni toping.", options: ["4", "6", "8", "10"], answer: "8" },
+            { id: 908, q: "Tengsizliklar sistemasidagi $x^2 < 4$ tengsizligining yechimi?", options: ["$x < 2$", "$x > -2$", "$-2 < x < 2$", "$x = 2$"], answer: "$-2 < x < 2$" },
+            { id: 909, q: "Ikki vektorning skalyar ko'paytmasi qanday qiymat beradi?", options: ["Vektor", "Son", "Funksiya", "To'plam"], answer: "Son" },
+            { id: 9010, q: "Arifmetik progressiyaning dastlabki n-hadining yig'indisini topish formulasi?", options: ["$a_n = a_1 + (n-1)d$", "$S_n = n/2 (2a_1 + (n-1)d)$", "$S_n = (a_1 + a_n)/2$", "$S_n = a_1 + a_n$"], answer: "$S_n = n/2 (2a_1 + (n-1)d)$" },
+            { id: 911, q: "To'g'ri burchakli uchburchakning tomonlari nisbati sin(α) qaysi tomonga teng?", options: ["Yopishgan katet / Gipotenuza", "Qarama-qarshi katet / Gipotenuza", "Qarama-qarshi katet / Yopishgan katet", "Gipotenuza / Katet"], answer: "Qarama-qarshi katet / Gipotenuza" },
+            { id: 912, q: "Ikki parallel vektorning skalyar ko'paytmasi nima?", options: ["0", "Ularning modullari ko'paytmasiga teng", "Manfiy", "1"], answer: "Ularning modullari ko'paytmasiga teng" },
+            { id: 913, q: "Geometrik progressiyaning cheksiz kamayuvchi bo'lish sharti?", options: ["$|q| > 1$", "$|q| = 1$", "$|q| < 1$", "$q = 0$"], answer: "$|q| < 1$" },
+            { id: 914, q: "Tengsizliklar sistemasini yechishda qanday usullar ishlatiladi?", options: ["Faqat chizish", "Intervallar usuli, grafik usul", "Faqat qo'shish", "Faqat ayirish"], answer: "Intervallar usuli, grafik usul" },
+            { id: 915, q: "Geometriyada 'trapetsiya' nima?", options: ["Barcha tomonlari teng", "Faqat bir juft qarama-qarshi tomoni parallel", "Diagonal kesishmaydi", "Barcha burchaklari teng"], answer: "Faqat bir juft qarama-qarshi tomoni parallel" },
+            { id: 916, q: "Vektorlarning kollinear (parallel) bo'lish sharti?", options: ["Ko'paytmasi 0", "Koordinatalari proporsional", "Moduli teng", "Bir xil yo'nalish"], answer: "Koordinatalari proporsional" },
+            { id: 917, q: "Arifmetik progressiyada $a_n$ va $a_{n-1}$ orasidagi ayirma?", options: ["Maxraj (q)", "Ayirma (d)", "Yig'indi", "Boshlanish hadi"], answer: "Ayirma (d)" },
+            { id: 918, q: "Tengsizlikda $x$ o'zgaruvchining eng kichik butun qiymati ($x > 5$)?", options: ["5", "6", "4", "5.1"], answer: "6" },
+            { id: 919, q: "Geometriyada 'sinus' so'zining ma'nosi?", options: ["Yopishgan katet", "Qarama-qarshi katetning gipotenuzaga nisbati", "Burchak", "Kesishish"], answer: "Qarama-qarshi katetning gipotenuzaga nisbati" },
+            { id: 920, q: "Agar $a, b, c$ geometrik progressiya bo'lsa, $b$ ning formulasi?", options: ["$(a+c)/2$", "$\sqrt{ac}$", "$a+c$", "$a*c$"], answer: "$\sqrt{ac}$" },
+            { id: 921, q: "Ikki perpendikulyar vektorning skalyar ko'paytmasi nima?", options: ["1", "0", "Ularning modullari ko'paytmasi", "-1"], answer: "0" },
+            { id: 922, q: "Parallelogramm yuzasi qanday topiladi?", options: ["Tomoni * 4", "Tomoni * balandligi", "Tomonlar yig'indisi", "Diagonal"], answer: "Tomoni * balandligi" },
+            { id: 923, q: "Tengsizlikda $x$ ning eng katta butun qiymati ($x < 8.5$)?", options: ["8.5", "9", "8", "7"], answer: "8" },
+            { id: 924, q: "Geometrik progressiyada $b_n$ hadining formulasi?", options: ["$b_1 + (n-1)q$", "$b_1 \cdot q^{n-1}$", "$b_n = b_1 / q$", "$b_n = b_1 \cdot n$"], answer: "$b_1 \cdot q^{n-1}$" },
+            { id: 925, q: "Vektor nima?", options: ["Faqat son", "Faqat yo'nalish", "Soni va yo'nalishi bor bo'lgan kesma", "Noma'lum"], answer: "Soni va yo'nalishi bor bo'lgan kesma" },
+            { id: 926, q: "Arifmetik progressiyada $a_1=1, a_3=7$ bo'lsa, $d$ ni toping.", options: ["2", "3", "4", "5"], answer: "3" },
+            { id: 927, q: "Ikki to'g'ri chiziq kesishgan burchakning kosinusi qaysi formula bilan topiladi?", options: ["$\vec{a} \cdot \vec{b} / (|\vec{a}| + |\vec{b}|)$", "$\vec{a} \cdot \vec{b} / (|\vec{a}| \cdot |\vec{b}|)$", "Sin(a)", "Tangens"], answer: "$\vec{a} \cdot \vec{b} / (|\vec{a}| \cdot |\vec{b}|)$" },
+            { id: 928, q: "Tengsizlikning yechimlar to'plami qanday belgilanishi mumkin?", options: ["Nuqta", "Parabola", "Interval", "Doira"], answer: "Interval" },
+            { id: 929, q: "Geometriyada 'kos.inus' so'zining ma'nosi?", options: ["Gipotenuzaga nisbati", "Yopishgan katetning gipotenuzaga nisbati", "Qarama-qarshi katet", "Balandlik"], answer: "Yopishgan katetning gipotenuzaga nisbati" },
+            { id: 930, q: "Arifmetik progressiyada $S_n$ ni qaysi hadlar orqali topish mumkin?", options: ["Faqat $a_1$", "$a_1$ va $a_n$ orqali", "Faqat $d$", "$a_n$ va $d$"], answer: "$a_1$ va $a_n$ orqali" }
+        ],
+        
+        // 10-sinf: Trigonometriya, logarifm, hosila.
+        10: [
+            { id: 1001, q: "sin(90°) ning qiymatini toping.", options: ["0", "1", "-1", "Aniq emas"], answer: "1" },
+            { id: 1002, q: "log₂(8) ni hisoblang.", options: ["2", "3", "4", "8"], answer: "3" },
+            { id: 1003, q: "f(x) = x³ ning hosilasini (f'(x)) toping.", options: ["3x", "x²", "3x²", "x⁴/4"], answer: "3x²" },
+            { id: 1004, q: "sin²x + cos²x nima deb ataladi?", options: ["Kos.inuslar teoremasi", "Logarifmik ayniyat", "Asosiy trigonometrik ayniyat", "Tengsizlik"], answer: "Asosiy trigonometrik ayniyat" },
+            { id: 1005, q: "log(a*b) nima?", options: ["log(a) * log(b)", "log(a) + log(b)", "log(a) / log(b)", "log(a) - log(b)"], answer: "log(a) + log(b)" },
+            { id: 1006, q: "Hosila nima uchun ishlatiladi?", options: ["Tenglama yechish", "Funksiya grafigini chizish", "Funksiyaning o'sish/kamayish intervali va ekstremumlarini topish", "Ko'paytirish"], answer: "Funksiyaning o'sish/kamayish intervali va ekstremumlarini topish" },
+            { id: 1007, q: "cos(180°) ning qiymatini toping.", options: ["0", "1", "-1", "0.5"], answer: "-1" },
+            { id: 1008, q: "log(a/b) nima?", options: ["log(a) - log(b)", "log(a) + log(b)", "log(a)/log(b)", "log(a*b)"], answer: "log(a) - log(b)" },
+            { id: 1009, q: "f(x) = 5x + 2 ning hosilasini (f'(x)) toping.", options: ["5", "2", "5x", "x"], answer: "5" },
+            { id: 1010, q: "sin(2x) formulasini toping.", options: ["sin x cos x", "2 sin x cos x", "cos²x - sin²x", "2 sin x"], answer: "2 sin x cos x" },
+            { id: 1011, q: "y = $a^x$ funksiya nima deb ataladi?", options: ["Chiziqli", "Kvadratik", "Logarifmik", "Ko'rsatkichli (Darajali)"], answer: "Ko'rsatkichli (Darajali)" },
+            { id: 1012, q: "logₐ($a^n$) nima?", options: ["a", "n", "1", "0"], answer: "n" },
+            { id: 1013, q: "f(x) = $\sqrt{x}$ ning hosilasini toping.", options: ["$1/\sqrt{x}$", "$1/(2\sqrt{x})$", "$2\sqrt{x}$", "x"], answer: "$1/(2\sqrt{x})$" },
+            { id: 1014, q: "tg(x) ning qiymati sin(x) va cos(x) orqali nima?", options: ["cos(x)/sin(x)", "sin(x)cos(x)", "sin(x)/cos(x)", "1/sin(x)"], answer: "sin(x)/cos(x)" },
+            { id: 1015, q: "logarifm asosiy ayniyatini toping.", options: ["$a^{\log_a b} = b$", "$log_a (a) = 0$", "$log_a (1) = a$", "$a^b = log_a b$"], answer: "$a^{\log_a b} = b$" },
+            { id: 1016, q: "Trigonometriyada 'rad.ian' nima?", options: ["Gradus", "Burchak o'lchov birligi", "To'g'ri chiziq", "Son"], answer: "Burchak o'lchov birligi" },
+            { id: 1017, q: "f(x) = $e^x$ ning hosilasi?", options: ["x $e^{x-1}$", "$e^x$", "0", "$x^e$"], answer: "$e^x$" },
+            { id: 1018, q: "cos(x) ning hosilasi?", options: ["sin(x)", "-sin(x)", "tg(x)", "cos(x)"], answer: "-sin(x)" },
+            { id: 1019, q: "Logarifmning asosi qanday bo'lishi kerak?", options: ["Manfiy", "Nol", "Musbat va 1 ga teng emas", "1"], answer: "Musbat va 1 ga teng emas" },
+            { id: 1020, q: "Darajani logarifmlash qoidasi: log($a^n$)", options: ["log(a)/n", "n log(a)", "log(a)+n", "log(a)-n"], answer: "n log(a)" },
+            { id: 1021, q: "Geometriyada 'piramida' nima?", options: ["Doira", "Uchburchak", "Asosi ko'pburchak va uchlari bitta nuqtada uchrashgan jism", "Kub"], answer: "Asosi ko'pburchak va uchlari bitta nuqtada uchrashgan jism" },
+            { id: 1022, q: "y = $\ln x$ funksiyasining hosilasi?", options: ["1/x", "x", "$e^x$", "$x^e$"], answer: "1/x" },
+            { id: 1023, q: "cos(2x) formulasi?", options: ["2 sin x cos x", "cos²x - sin²x", "2 cos²x + 1", "sin²x + 1"], answer: "cos²x - sin²x" },
+            { id: 1024, q: "Logarifmik funksiyaning aniqlanish sohasi?", options: ["$x < 0$", "$x = 0$", "$x > 0$", "Barcha haqiqiy sonlar"], answer: "$x > 0$" },
+            { id: 1025, q: "To'g'ri burchakli uchburchakning yuzi (S) qanday topiladi?", options: ["$a \cdot b$", "$a \cdot h$", "$(a \cdot b) / 2$", "$a^2$"], answer: "$(a \cdot b) / 2$" },
+            { id: 1026, q: "sin(x) ning hosilasi?", options: ["cos(x)", "-cos(x)", "tg(x)", "sin(x)"], answer: "cos(x)" },
+            { id: 1027, q: "logaritmlash qaysi amalga teskari?", options: ["Qo'shish", "Bo'lish", "Ayirish", "Darajaga ko'tarish"], answer: "Darajaga ko'tarish" },
+            { id: 1028, q: "Parallelogramm yuzasi qanday topiladi? (Tomonlar a, b va burchak α)", options: ["a+b", "$a \cdot b / 2$", "$a \cdot b \sin \alpha$", "$2(a+b)$"], answer: "$a \cdot b \sin \alpha$" },
+            { id: 1029, q: "y = c (o'zgarmas son) ning hosilasi?", options: ["c", "x", "1", "0"], answer: "0" },
+            { id: 1030, q: "tg(x) ning hosilasi?", options: ["$\sin x$", "$1/\cos^2 x$", "$\cos x$", "$1/\sin^2 x$"], answer: "$1/\cos^2 x$" }
+        ],
+        
+        // 11-sinf: Integral, ehtimollik nazariyasi, stereometriya.
+        11: [
+            { id: 1101, q: "Aniqmas integralning geometrik ma'nosi nima?", options: ["Funksiya grafigi", "Funksiyaning qiymati", "Boshlang'ich funksiyalar to'plami", "Burchak"], answer: "Boshlang'ich funksiyalar to'plami" },
+            { id: 1102, q: "Ehtimollik nazariyasida 'ehtimollik'ning eng katta qiymati?", options: ["0", "0.5", "1", "Cheksizlik"], answer: "1" },
+            { id: 1103, q: "Qaysi formula Boshlang'ich funksiyaga taalluqli? (F - boshlang'ich funksiya)", options: ["$F'(x) = f(x)$", "$F(x) = f'(x)$", "$F(x) = 0$", "$F(x) = 1$"], answer: "$F'(x) = f(x)$" },
+            { id: 1104, q: "To'g'ri prizmaning hajmi (V) qanday topiladi? (S-asos yuzasi, H-balandlik)", options: ["S*H/3", "S*H", "2(S+H)", "S+H"], answer: "S*H" },
+            { id: 1105, q: "Silindrning to'la sirti (S_t) nima?", options: ["Asos yuzasi", "Yon sirt yuzasi", "Yon sirt yuzasi + 2 * Asos yuzasi", "Faqat balandlik"], answer: "Yon sirt yuzasi + 2 * Asos yuzasi" },
+            { id: 1106, q: "Ehtimollik nazariyasida $P(A)$ qanday hisoblanadi?", options: ["$P(A) = M - N$", "$P(A) = M / N$", "$P(A) = N / M$", "$P(A) = M \cdot N$"], answer: "$P(A) = M / N$" },
+            { id: 1107, q: "Funksiyaning aniq integrali geometrik jihatdan nimani anglatadi?", options: ["Hajm", "Yuza", "Egri chiziqli trapetsiyaning yuzasi", "Perimetr"], answer: "Egri chiziqli trapetsiyaning yuzasi" },
+            { id: 1108, q: "∫ x dx ni hisoblang.", options: ["$x^2 + C$", "$x^2/2 + C$", "$x + C$", "0"], answer: "$x^2/2 + C$" },
+            { id: 1109, q: "Kombinatorikada 'permutatsiya' nima?", options: ["Tartibsiz tanlash", "Elementlarning tartiblangan to'plami", "Qo'shish", "Bo'lish"], answer: "Elementlarning tartiblangan to'plami" },
+            { id: 1110, q: "To'g'ri konusning hajmi (V) qanday topiladi? (r-radius, H-balandlik)", options: ["$\pi r^2 H$", "$\pi r^2 H / 3$", "2$\pi r H$", "$\pi r H$"], answer: "$\pi r^2 H / 3$" },
+            { id: 1111, q: "∫ $e^x$ dx ni hisoblang.", options: ["$e^x$", "$x e^x + C$", "$e^x + C$", "$e^{x+1} / (x+1) + C$"], answer: "$e^x + C$" },
+            { id: 1112, q: "Geometriyada 'sfera' nima?", options: ["Tekislik", "Doira", "Sharning sirti", "Uchburchak"], answer: "Sharning sirti" },
+            { id: 1113, q: "Ehtimollikda 'bog'liq voqealar' nima?", options: ["Bir-biriga ta'sir qilmaydi", "Birining sodir bo'lishi ikkinchisining ehtimolligiga ta'sir qiladi", "Har doim birga sodir bo'ladi", "Cheksiz"], answer: "Birining sodir bo'lishi ikkinchisining ehtimolligiga ta'sir qiladi" },
+            { id: 1114, "q": "$∫ \cos x dx$ ni hisoblang.", "options": ["$\sin x + C$", "$-\sin x + C$", "$x \sin x + C$", "$\cos x + C$"], "answer": "$\sin x + C$" },
+            { id: 1115, q: "Sharning yuzi (S) qanday topiladi? (r-radius)", options: ["$4 \pi r^2$", "$\pi r^2$", "$2 \pi r$", "$4/3 \pi r^3$"], answer: "$4 \pi r^2$" },
+            { id: 1116, q: "Kombinatorikada 'kombinatsiya' nima?", options: ["Tartibli tanlash", "Tartibsiz tanlash (o'rin almashtirish ahamiyatsiz)", "Bo'lish", "Qo'shish"], answer: "Tartibsiz tanlash (o'rin almashtirish ahamiyatsiz)" },
+            { id: 1117, q: "∫ $1/x$ dx ni hisoblang.", options: ["$\ln x + C$", "$x^2/2 + C$", "1", "$-\ln x + C$"], answer: "$\ln x + C$" },
+            { id: 1118, q: "Prizmaning yon sirti qanday topiladi?", options: ["Asos yuzasi * Balandlik", "Asos perimetri * Balandlik", "2 * Asos yuzasi", "Hajm / Balandlik"], answer: "Asos perimetri * Balandlik" },
+            { id: 1119, q: "Ehtimollikda 'imkoniyatli voqealar' (N) soni nima?", options: ["Sodir bo'lishi kerak", "Sodir bo'lishi mumkin bo'lgan barcha voqealar soni", "Faqat ijobiy voqealar", "Yagona voqea"], answer: "Sodir bo'lishi mumkin bo'lgan barcha voqealar soni" },
+            { id: 1120, q: "Silindrning hajmi (V) qanday topiladi? (r-radius, H-balandlik)", options: ["$\pi r H$", "$\pi r^2 H$", "$2 \pi r H$", "$H / \pi r^2$"], answer: "$\pi r^2 H$" },
+            { id: 1121, q: "∫ $x^n$ dx ni hisoblang. (n ≠ -1)", options: ["$x^n + C$", "$x^{n+1} / (n+1) + C$", "$x^{n-1} + C$", "$x^n / n$"], answer: "$x^{n+1} / (n+1) + C$" },
+            { id: 1122, q: "Tekislikda o'zaro perpendikulyar bo'lgan ikki tekislik qanday kesishadi?", options: ["Parallel", "To'g'ri burchak ostida (chiziq bo'ylab)", "Kesishmaydi", "Bitta nuqtada"], answer: "To'g'ri burchak ostida (chiziq bo'ylab)" },
+            { id: 1123, q: "Ehtimollikda 'birgalikda bo'lmagan voqealar' nima?", options: ["Birga sodir bo'ladi", "Birining sodir bo'lishi ikkinchisini inkor etadi", "Faqat ijobiy", "Musbat ehtimollik"], answer: "Birining sodir bo'lishi ikkinchisini inkor etadi" },
+            { id: 1124, q: "Sharning hajmi (V) qanday topiladi? (r-radius)", options: ["$4 \pi r^2$", "$4/3 \pi r^3$", "$r^3$", "$3/4 \pi r^3$"], answer: "$4/3 \pi r^3$" },
+            { id: 1125, q: "∫ $0 dx$ ni hisoblang.", options: ["$0$", "$x$", "$C$", "$x + C$"], answer: "$C$" },
+            { id: 1126, q: "Pir.amida asosining yuzasi S va balandligi H bo'lsa, hajmi (V) nima?", options: ["$S \cdot H$", "$S \cdot H / 3$", "$S^2 \cdot H$", "$S + H$"], answer: "$S \cdot H / 3$" },
+            { id: 1127, q: "Kombinatorikada $C^k_n$ formulasi nima?", options: ["Permutatsiya", "O'rinlashtirish", "Kombinatsiya (Tartibsiz tanlash)", "Ko'paytirish"], answer: "Kombinatsiya (Tartibsiz tanlash)" },
+            { id: 1128, q: "Aniq integralni hisoblashda qaysi formula qo'llaniladi?", options: ["Pifagor", "Nyuton-Leybnits formulasi", "Viyet", "Koshi"], answer: "Nyuton-Leybnits formulasi" },
+            { id: 1129, q: "Integralning boshlang'ich funksiyasi nima?", options: ["Funksiyaning hosilasi", "Integrallash natijasi bo'lgan funksiya", "Doimiy son", "Argument"], answer: "Integrallash natijasi bo'lgan funksiya" },
+            { id: 1130, q: "Parallelepipedning hajmi (V) qanday topiladi? (a, b, c - o'lchamlari)", options: ["$2(ab+bc+ac)$", "$a + b + c$", "$a \cdot b \cdot c$", "$a^2 + b^2$"], answer: "$a \cdot b \cdot c$" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Matematika bazasidan foydalanish
+        const allQuestions = mathTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Matematika testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            // Savol matni, agar savolda LaTeX formulasi bo'lsa (masalan $a_n$), uni HTML belgisi sifatida qabul qiladi
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                // Input qiymati to'g'ri bo'lishi uchun, HTML ichidagi matnni to'g'ri olish kerak.
+                input.value = option.replace(/<\/?(sub|sup|i|b|small|br|div|span)>/g, '').trim().replace(/\s\s+/g, ' '); 
+                
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // Javobni solishtirishdan oldin, ichidagi HTML belgilarni olib tashlash va bo'shliqlarni tozalash kerak
+            const cleanAnswer = qItem.answer.replace(/<\/?(sub|sup|i|b|small|br|div|span)>/g, '').trim().replace(/\s\s+/g, ' ');
+
+            // To'g'ri javobni topish
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => {
+                const labelText = label.textContent.replace(/<\/?(sub|sup|i|b|small|br|div|span)>/g, '').trim().replace(/\s\s+/g, ' ');
+                return labelText === cleanAnswer;
+            });
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                if (selectedOption.value === cleanAnswer) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Matematika Testlariga Xush Kelibsiz!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
