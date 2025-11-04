@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarix Testlari Markazi</title>
+    
+    <style>
+        /* --- ASOSIY RANGLAR VARIABLLARI --- */
+        :root {
+            /* Standart (QORA) Mavzu */
+            --bg-color: #000000;
+            --text-color: #FFFFFF;
+            --accent-color: #00AFFF; /* Yorqin ko'k */
+            --secondary-bg: #111111;
+            --border-color: #333333;
+            --correct-color: #00CC66;
+            --wrong-color: #FF3333;
+        }
+
+        /* YENGIL (OQ) Mavzu */
+        .light-theme {
+            --bg-color: #F8F8F8;
+            --text-color: #111111;
+            --accent-color: #CC0000; /* Qizil aksent */
+            --secondary-bg: #FFFFFF;
+            --border-color: #CCCCCC;
+            --correct-color: #009900;
+            --wrong-color: #DD0000;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s, color 0.5s;
+            overflow-x: hidden;
+        }
+
+        /* --- KIRISH ANIMATSIYASI --- */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: relative;
+            border: 3px solid;
+            border-color: var(--accent-color) var(--accent-color) transparent transparent;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- ASOSIY KONTENT VA MOBIL MOSLASHUV --- */
+        .container {
+            width: 95%; 
+            max-width: 900px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            opacity: 0; 
+            transition: opacity 1s ease-in;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+        
+        .class-selection {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 10px; 
+            margin-top: 20px;
+        }
+
+        .class-selection button {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            padding: 12px 20px;
+            flex: 1 1 100px; 
+            max-width: 150px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .class-selection button:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color); 
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 175, 255, 0.4);
+        }
+        
+        /* --- Test Maydoni Stili --- */
+        .question-box {
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .question-box p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .answer-option {
+            display: block;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .answer-option:hover {
+            background-color: var(--border-color);
+        }
+        
+        .selected {
+            border: 2px solid var(--accent-color);
+            background-color: #001f33; /* Tanlangan fon */
+        }
+        
+        #submit-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-top: 20px;
+        }
+        
+        #submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* --- Natijalar Stili --- */
+        #results-container {
+            background-color: var(--secondary-bg);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+        }
+        
+        .result-text {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .result-score {
+            font-size: 2.5em;
+            color: var(--correct-color);
+        }
+
+        /* --- SOZLAMALAR PANELI --- */
+        #settings-section {
+            position: fixed; 
+            top: 15px;
+            right: 15px;
+            z-index: 50;
+        }
+
+        #settings-btn {
+            background-color: var(--secondary-bg);
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            padding: 8px 15px;
+            border-radius: 50px; 
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .settings-panel {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            width: 220px;
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            text-align: left;
+        }
+
+        .settings-panel h3 {
+            margin: 5px 0;
+            color: var(--accent-color);
+            font-size: 1em;
+        }
+        
+        .settings-panel button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background-color: var(--border-color);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9em;
+        }
+
+        .settings-panel button:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <span class="loader"></span>
+    </div>
+
+    <div id="settings-section">
+        <button id="settings-btn" data-key="settings">⚙️</button>
+        <div class="settings-panel" id="settings-panel">
+            <h3 data-key="themeTitle">Mavzular</h3>
+            <button id="theme-dark" data-key="themeDark">⚫ Qora Mavzu</button>
+            <button id="theme-light" data-key="themeLight">⚪ Oq Mavzu</button>
+            
+            <hr style="border-color: var(--border-color); margin: 10px 0;">
+
+            <h3 data-key="languageTitle">Tillar</h3>
+            <button data-lang="uz">🇺🇿 O'zbek</button>
+            <button data-lang="ru">🇷🇺 Русский</button>
+            <button data-lang="zh">🇨🇳 中文</button>
+            <button data-lang="en">🇬🇧 English</button>
+            <button data-lang="ko">🇰🇷 한국어</button>
+        </div>
+    </div>
+
+    <main class="container" id="main-content">
+        <h1 id="welcome-title" data-key="welcomeTitle">Tarix Testlariga Xush Kelibsiz!</h1>
+        <p id="instruction-text" data-key="instruction">Testlarni boshlash uchun sinfingizni tanlang:</p>
+
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-sinf</button>
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+
+        <div id="test-area" style="display:none; margin-top: 30px;">
+            <h2 id="current-class-title"></h2>
+            <div id="question-container"></div>
+            <button id="submit-btn" onclick="submitAnswers()" style="display:none;" data-key="submit">Javobni Tekshirish</button>
+            <div id="results-container" style="display:none; text-align: center; margin-top: 30px;"></div>
+        </div>
+    </main>
+
+    <script>
+        // --- 1. Test Savollari BAZASI (7-sinf uchun 30 ta savol) ---
+        const testDatabase = {
+            7: [
+                { id: 1, q: "Amir Temur qaysi yilda tug'ilgan?", options: ["1336", "1370", "1405", "1447"], answer: "1336" },
+                { id: 2, q: "Temuriylar davlatining poytaxti qayer edi?", options: ["Samarqand", "Buxoro", "Toshkent", "Xiva"], answer: "Samarqand" },
+                { id: 3, q: "Miloddan avvalgi 6-asrda Kichik Osiyoda yashagan otashparastlik dinining asoschisi kim?", options: ["Zardusht", "Mani", "Buddha", "Konfutsiy"], answer: "Zardusht" },
+                { id: 4, q: "Arab xalifaligi qachon tashkil topgan?", options: ["632", "750", "800", "900"], answer: "632" },
+                { id: 5, q: "Qaysi xalifalik davrida 'Ming bir kecha' ertaklari shakllangan?", options: ["Ummaviylar", "Abbosiylar", "Fotimiylar", "Ayyubiylar"], answer: "Abbosiylar" },
+                { id: 6, q: "Movaraunnahrda Islom dinini tarqatishga qaratilgan harakatlar qaysi asrda boshlandi?", options: ["7-asr", "8-asr", "9-asr", "10-asr"], answer: "8-asr" },
+                { id: 7, q: "Somoniylar davlatining asoschisi kim?", options: ["Ismoil Somoniy", "Nasr ibn Ahmad", "Yusuf Xos Hojib", "Alisher Navoiy"], answer: "Ismoil Somoniy" },
+                { id: 8, q: "Buyuk ipak yo'li qaysi qit'alarni bog'lagan?", options: ["Yevropa va Afrika", "Osiyo va Afrika", "Yevropa va Osiyo", "Amerika va Osiyo"], answer: "Yevropa va Osiyo" },
+                { id: 9, q: "G'aznaviylar davlatining eng mashhur hukmdori kim?", options: ["Mahmud G'aznaviy", "Sulton Sanjar", "Qutayba ibn Muslim", "Temur Malik"], answer: "Mahmud G'aznaviy" },
+                { id: 10, q: "Saljuqiylar tomonidan qaysi jangda Vizantiya imperiyasi mag'lubiyatga uchratilgan (1071-yil)?", options: ["Manzikert", "Kadesh", "Ayn Jalut", "Waterloo"], answer: "Manzikert" },
+                { id: 11, q: "Xorazmshohlar davlatining so'nggi hukmdori kim?", options: ["Muhammad Xorazmshoh", "Jaloliddin Manguberdi", "Tekish", "Otsiz"], answer: "Jaloliddin Manguberdi" },
+                { id: 12, q: "Chingizxon Movaraunnahrga qachon bostirib kirgan?", options: ["1206", "1219", "1227", "1258"], answer: "1219" },
+                { id: 13, q: "Oltin O'rda davlatiga kim asos solgan?", options: ["Botu Xon", "Chingizxon", "Temur", "Subutoy"], answer: "Botu Xon" },
+                { id: 14, q: "Temurning 'Tuzuklar' asari qaysi janrda yozilgan?", options: ["She'riyat", "Avtobiografiya", "Tarixiy doston", "Hukmdorlik qoidalari"], answer: "Avtobiografiya" },
+                { id: 15, q: "Ulug'bek rasadxonasi qayerda joylashgan?", options: ["Buxoro", "Xiva", "Samarqand", "Termiz"], answer: "Samarqand" },
+                { id: 16, q: "Hindistonda Boburiylar imperiyasiga kim asos solgan?", options: ["Amir Temur", "Bobur", "Akbar", "Jahongir"], answer: "Bobur" },
+                { id: 17, q: "Navoiy va Jomiy qaysi davrda ijod qilgan?", options: ["Qoraxoniylar", "Saljuqiylar", "Temuriylar", "Shayboniylar"], answer: "Temuriylar" },
+                { id: 18, q: "Mo'g'ullar bosqinidan keyin Qadimgi Turkistonning yirik shaharlari qanday ta'sir ko'rdi?", options: ["Rivojlandi", "Vayron bo'ldi", "Mustaqillik oldi", "Tarixda yo'qoldi"], answer: "Vayron bo'ldi" },
+                { id: 19, q: "Buyuk Turkistonda qachon kitob bosish ishlari boshlangan?", options: ["17-asr", "18-asr", "19-asr", "20-asr"], answer: "19-asr" },
+                { id: 20, q: "Ahmad Yassaviy qaysi tasavvuf oqimining asoschisi?", options: ["Naqshbandiya", "Yassaviya", "Qodiriya", "Kubraviya"], answer: "Yassaviya" },
+                { id: 21, q: "O'rta asr Islom olamining eng mashhur tabibi kim?", options: ["Al-Xorazmiy", "Al-Farg'oniy", "Abu Ali ibn Sino", "Beruniy"], answer: "Abu Ali ibn Sino" },
+                { id: 22, q: "Qoraxoniylar davlatining poytaxtlaridan biri?", options: ["Qarshi", "O'zgan", "Urganch", "Shohruhiya"], answer: "O'zgan" },
+                { id: 23, q: "Qaysi shaxs 'Devonu lug'otit turk' asarini yozgan?", options: ["Ahmad Yassaviy", "Yusuf Xos Hojib", "Mahmud Qoshg'ariy", "Alisher Navoiy"], answer: "Mahmud Qoshg'ariy" },
+                { id: 24, q: "Turkiyada Usmonlilar imperiyasi qaysi asrda tashkil topgan?", options: ["12-asr", "13-asr", "14-asr", "15-asr"], answer: "14-asr" },
+                { id: 25, q: "Vizantiya imperiyasining poytaxti qayer edi?", options: ["Rim", "Konstantinopol", "Afina", "Aleksandriya"], answer: "Konstantinopol" },
+                { id: 26, q: "Yevropada 'Uyg'onish davri' qaysi asrlarni o'z ichiga oladi?", options: ["11-13 asr", "14-16 asr", "17-18 asr", "19-20 asr"], answer: "14-16 asr" },
+                { id: 27, q: "1055-yilda Bag'dodni egallagan Saljuqiylar yetakchisi kim?", options: ["To'g'rilbek", "Chag'ribek", "Alp Arslon", "Malikshoh"], answer: "To'g'rilbek" },
+                { id: 28, q: "Qaysi jang natijasida Temur Oltin O'rda hukmdori To'xtamishni mag'lub etgan?", options: ["Kondurcha daryosi", "Anqara", "Qulikan", "O'tror"], answer: "Kondurcha daryosi" },
+                { id: 29, q: "XV asrda Samarqandda yashagan, astronomiya va matematikaga katta hissa qo'shgan olim?", options: ["Ali Qushchi", "Qozi Zoda Rumi", "Ulug'bek", "Xorazmiy"], answer: "Ulug'bek" },
+                { id: 30, q: "Qaysi xonlik 1920-yilda tugatilgan?", options: ["Buxoro", "Xiva", "Qo'qon", "Xorazm"], answer: "Xiva" }
+            ],
+           
+           
+                // ... (7-sinf savollari bu yerda qoladi) ...
+            
+            // 5-sinf qismi bu yerga qo'shiladi
+            5: [
+                { id: 101, q: "O'zbekiston hududidagi insonlarning eng qadimgi izlari qaysi davrga oid?", options: ["Mezolit", "Paleolit", "Neolit", "Eneolit"], answer: "Paleolit" },
+                { id: 102, q: "Neolit davrida odamlar qanday hayot tarziga o'tgan?", options: ["Ko'chmanchi chorvachilik", "Ovchilik va terimchilik", "O'troq hayot va dehqonchilik", "Savdo-sotiq"], answer: "O'troq hayot va dehqonchilik" },
+                { id: 103, q: "Amir Temur qaysi suloladan edi?", options: ["Temuriylar", "Boburiylar", "Barloslar", "Qarluqlar"], answer: "Barloslar" },
+                { id: 104, q: "Birinchi yozma manbalar qaysi sivilizatsiyada paydo bo'lgan?", options: ["Yunoniston", "Misr", "Mesopotamiya (Shumer)", "Hindiston"], answer: "Mesopotamiya (Shumer)" },
+                { id: 105, q: "Qadimgi dunyoning yetti mo'jizasidan biri 'Osma bog'lar' qaysi shaharda joylashgan edi?", options: ["Afina", "Bobil", "Rim", "Misr"], answer: "Bobil" },
+                { id: 106, q: "Avesto qaysi dinning muqaddas kitobi?", options: ["Buddizm", "Islom", "Zardushtiylik", "Xristianlik"], answer: "Zardushtiylik" },
+                { id: 107, q: "Buyuk Ipak yo'li qachon paydo bo'lgan?", options: ["Milodiy 1-asr", "Miloddan avvalgi 2-asr", "Milodiy 7-asr", "Miloddan avvalgi 5-asr"], answer: "Miloddan avvalgi 2-asr" },
+                { id: 108, q: "Qadimgi Xorazmning poytaxtlaridan biri?", options: ["Samarqand", "Buxoro", "Kat", "Urganch"], answer: "Kat" },
+                { id: 109, q: "Eramizdan avvalgi 539-yilda Bobilni bosib olgan hukmdor kim?", options: ["Aleksandr Makedonskiy", "Kir II (Buyuk)", "Doro I", "Sarg'on I"], answer: "Kir II (Buyuk)" },
+                { id: 110, q: "Sopollitepa madaniyati qaysi hududda tarqalgan?", options: ["Xorazm", "Farg'ona", "Surxondaryo", "Toshkent"], answer: "Surxondaryo" },
+                { id: 111, q: "Qadimgi Misrda Fir'avnlar qanday nom bilan ulug'langan?", options: ["Podsho", "Hokim", "Xudo", "Vazir"], answer: "Xudo" },
+                { id: 112, q: "Skiflar qanday xalq bo'lgan?", options: ["O'troq dehqonlar", "Ko'chmanchi chorvadorlar", "Dengizchilar", "Savdogarlar"], answer: "Ko'chmanchi chorvadorlar" },
+                { id: 113, q: "Qadimgi Xitoyda 'Osmon O'g'li' deb kim atalgan?", options: ["Olimlar", "Generallar", "Imperator", "Dehqonlar"], answer: "Imperator" },
+                { id: 114, q: "Massagetlarning mashhur malikasi kim?", options: ["Tamaris", "Zaynab", "Humoy", "To'maris"], answer: "To'maris" },
+                { id: 115, q: "Afrosiyob shahri qaysi shaharning qadimgi nomi?", options: ["Buxoro", "Toshkent", "Samarqand", "Xiva"], answer: "Samarqand" },
+                { id: 116, q: "Axmoniylar davlati qachon barpo etilgan?", options: ["Miloddan avvalgi 7-asr", "Miloddan avvalgi 6-asr", "Milodiy 1-asr", "Miloddan avvalgi 3-asr"], answer: "Miloddan avvalgi 6-asr" },
+                { id: 117, q: "Turk xoqonligining asoschisi kim?", options: ["Bumin xoqon", "Mug'on xoqon", "Istemi xoqon", "Bilga xoqon"], answer: "Bumin xoqon" },
+                { id: 118, q: "O'zbekistondagi eng qadimgi odam turar joylaridan biri qayerda topilgan?", options: ["Hisor", "Selengur", "Teshiktosh", "Qo'chqor"], answer: "Teshiktosh" },
+                { id: 119, q: "Qaysi davr 'Temir davri' deb ataladi?", options: ["Eneolit", "Bronza davri", "Qadimgi tosh davri", "Temirning keng qo'llanilishi boshlangan davr"], answer: "Temirning keng qo'llanilishi boshlangan davr" },
+                { id: 120, q: "Qadimgi Yunonistondagi mashhur sport musobaqalari qanday nomlangan?", options: ["Gladiatorlar jangi", "Olimpiya o'yinlari", "Spartakiada", "Pifiy o'yinlari"], answer: "Olimpiya o'yinlari" },
+                { id: 121, q: "Zaruriy ehtiyojdan ortiqcha mahsulot qanday nomlanadi?", options: ["Zarurat", "Ortiqcha mehnat", "Ortiqcha mahsulot", "Tovar"], answer: "Ortiqcha mahsulot" },
+                { id: 122, q: "Qadimgi Hindistonda yozuv qanday nomlangan?", options: ["Iyeroglif", "Piktografiya", "Devanagari", "Kuniform"], answer: "Devanagari" },
+                { id: 123, q: "Suriya va Iroq yerlarida qaysi ikki daryo o'rtasida qadimiy sivilizatsiya joylashgan?", options: ["Nil va Kongo", "Gang va Yamuna", "Tigr va Yevfrat", "Amudaryo va Sirdaryo"], answer: "Tigr va Yevfrat" },
+                { id: 124, q: "Qadimgi dunyoda eng yirik harbiy imperiya qaysi biri edi?", options: ["Xitoy", "Rim imperiyasi", "Boburiy", "Fors"], answer: "Rim imperiyasi" },
+                { id: 125, q: "Yer yuzida dehqonchilik qachon paydo bo'lgan?", options: ["1 million yil avval", "100 ming yil avval", "10 ming yil avval", "1 ming yil avval"], answer: "10 ming yil avval" },
+                { id: 126, q: "Xitoyning Buyuk devorini qurishdan asosiy maqsad nima bo'lgan?", options: ["Savdo", "Ko'chmanchilardan himoya", "Hunarmandchilik", "Transport"], answer: "Ko'chmanchilardan himoya" },
+                { id: 127, q: "Qadimgi Buxoro shahrining qadimiy arkasi qanday nomlanadi?", options: ["Afrasiyob", "Minorai Kalon", "Ark", "Cho'ponota"], answer: "Ark" },
+                { id: 128, q: "Qaysi xalq dastlabki alifboni (finikiy yozuvi) yaratgan?", options: ["Misrliklar", "Finikiyaliklar", "Yunonlar", "Arablar"], answer: "Finikiyaliklar" },
+                { id: 129, q: "Dunyodagi eng qadimgi kodeks - 'Hammurapi qonunlari' qaysi davlatga tegishli?", options: ["Misr", "Lidiya", "Bobur", "Bobil"], answer: "Bobil" },
+                { id: 130, q: "Ibtidoiy jamoa tuzumi qaysi davr bilan yakunlangan?", options: ["Bronza", "Neolit", "Quldorlikning paydo bo'lishi", "O'rta asrlar"], answer: "Quldorlikning paydo bo'lishi" }
+            ],
+            // ... (qolgan sinflar) ...
+        
+            // BU YERDAN BOSHLANADI - 6-sinf uchun yangi ma'lumotlar
+            6: [
+                { id: 201, q: "Skiflar asosan qaysi hududlarda yashagan?", options: ["Sibir", "Shimoliy Qora dengiz bo'yi", "Markaziy Yevropa", "Arabiston yarimoroli"], answer: "Shimoliy Qora dengiz bo'yi" },
+                { id: 202, q: "Qadimgi Xorazmning dastlabki yodgorliklaridan biri?", options: ["Qo'yqirilgan qal'a", "Tuproqqal'a", "Jonbos qal'a", "Ayoz qal'a"], answer: "Ayoz qal'a" },
+                { id: 203, q: "Aleksandr Makedonskiy O'rta Osiyoga qachon yurish qilgan?", options: ["Miloddan avvalgi 336-yil", "Miloddan avvalgi 329-yil", "Milodiy 323-yil", "Miloddan avvalgi 301-yil"], answer: "Miloddan avvalgi 329-yil" },
+                { id: 204, q: "Qadimgi Baqtriyaning poytaxti qayer edi?", options: ["Marv", "Niso", "Baqtra (Balx)", "Kesh"], answer: "Baqtra (Balx)" },
+                { id: 205, q: "Kushonlar imperiyasi qaysi hududlarni o'z ichiga olgan?", options: ["faqat O'rta Osiyo", "Eron va Hindiston", "O'rta Osiyo, Afg'oniston, Hindiston", "faqat Xitoy"], answer: "O'rta Osiyo, Afg'oniston, Hindiston" },
+                { id: 206, q: "Qadimgi Rim imperiyasi qachon g'arbiy va sharqiy qismlarga bo'lingan?", options: ["395-yil", "476-yil", "330-yil", "1453-yil"], answer: "395-yil" },
+                { id: 207, q: "Sirlarni saqlash tizimi (maxfiy yozuv) qadimgi Misrda qanday nomlangan?", options: ["Kuniform", "Iyeroglif", "Demotik", "Devanagari"], answer: "Iyeroglif" },
+                { id: 208, q: "Eftalitlar davlatining poytaxti qayer edi?", options: ["Termiz", "Peshovar", "Buxoro", "Baqtra"], answer: "Baqtra" },
+                { id: 209, q: "Turk xoqonligi qachon tashkil topgan?", options: ["552-yil", "630-yil", "751-yil", "840-yil"], answer: "552-yil" },
+                { id: 210, q: "Turk xoqonligi qaysi xalqni yengib, mustaqillikka erishgan?", options: ["Xitoy", "Eftalitlar", "Arablar", "Xorazmliklar"], answer: "Eftalitlar" },
+                { id: 211, q: "Arablar O'rta Osiyoga qaysi asrda kirib kelishgan?", options: ["7-asr", "8-asr", "9-asr", "6-asr"], answer: "7-asr" },
+                { id: 212, q: "Qutayba ibn Muslim qaysi xalifalikning lashkarboshisi edi?", options: ["Fotimiylar", "Ummaviylar", "Abbosiylar", "Saljuqiylar"], answer: "Ummaviylar" },
+                { id: 213, q: "Arablar tomonidan O'rta Osiyoda eng uzoq muddat qarshilik ko'rsatgan shahar?", options: ["Samarqand", "Buxoro", "Termiz", "Shosh (Toshkent)"], answer: "Buxoro" },
+                { id: 214, q: "Taroz jangi (751-yil) kimlar o'rtasida bo'lib o'tgan?", options: ["Arablar va turklar", "Xitoy va turklar", "Arablar va xitoylar", "Turklar va eftalitlar"], answer: "Arablar va xitoylar" },
+                { id: 215, q: "Ilk o'rta asrlarda Movaraunnahrda qaysi turkiy qabila keng tarqalgan?", options: ["Usmonlilar", "Qarluqlar", "Qipchoqlar", "O'g'uzlar"], answer: "Qarluqlar" },
+                { id: 216, q: "Somoniylar davlati qaysi asrda gullab-yashnagan?", options: ["8-asr", "9-10 asrlar", "11-asr", "12-asr"], answer: "9-10 asrlar" },
+                { id: 217, q: "Samoniylar davrida yashagan mashhur olim, tibbiyot otasi sifatida tanilgan shaxs?", options: ["Al-Xorazmiy", "Al-Farg'oniy", "Abu Ali ibn Sino", "Beruniy"], answer: "Abu Ali ibn Sino" },
+                { id: 218, q: "Qoraxoniylar davlatiga kim asos solgan?", options: ["Satuk Bug'roxon", "Arslonxon", "Ibrohim Tamg'achxon", "Qutayba"], answer: "Satuk Bug'roxon" },
+                { id: 219, q: "Qoraxoniylar qaysi dinni qabul qilganidan so'ng kuchaygan?", options: ["Zardushtiylik", "Xristianlik", "Islom", "Buddizm"], answer: "Islom" },
+                { id: 220, q: "'Qutadg'u Bilig' asarining muallifi kim?", options: ["Alisher Navoiy", "Yusuf Xos Hojib", "Mahmud Qoshg'ariy", "Ahmad Yassaviy"], answer: "Yusuf Xos Hojib" },
+                { id: 221, q: "G'aznaviylar davlatiga asos solgan shaxs?", options: ["Sulton Sanjar", "Mahmud G'aznaviy", "Alp Tegin", "Subutoy"], answer: "Alp Tegin" },
+                { id: 222, q: "Saljuqiylar O'rta Osiyoga qachon kirib kelgan?", options: ["10-asr oxiri", "11-asr boshlari", "12-asr o'rtalari", "13-asr"], answer: "11-asr boshlari" },
+                { id: 223, q: "Saljuqiylarning eng yirik sultonlaridan biri?", options: ["Chag'ribek", "To'g'rilbek", "Alp Arslon", "Sulton Sanjar"], answer: "Sulton Sanjar" },
+                { id: 224, q: "Mo'g'ullar O'rta Osiyoga yurish qilishdan oldin, Xorazmshohlar davlatining poytaxti qayer edi?", options: ["Gurgunch (Urganch)", "Samarqand", "Buxoro", "Marv"], answer: "Gurgunch (Urganch)" },
+                { id: 225, q: "Chingizxon vafotidan so'ng uning imperiyasi nechta ulusga bo'lingan?", options: ["Ikki", "Uch", "To'rt", "Besh"], answer: "To'rt" },
+                { id: 226, q: "Chig'atoy ulusining asosiy hududi qayer edi?", options: ["Sharqiy Yevropa", "Eron va Iroq", "Movaraunnahr va Sharqiy Turkiston", "Sibir"], answer: "Movaraunnahr va Sharqiy Turkiston" },
+                { id: 227, q: "Movaraunnahrda mo'g'ullar hukmronligiga qarshi ko'tarilgan eng yirik xalq qo'zg'oloni?", options: ["Sartaroshlar qo'zg'oloni", "Malik Sadr isyoni", "Sarbadodorlar qo'zg'oloni", "Temur Malik isyoni"], answer: "Sarbadodorlar qo'zg'oloni" },
+                { id: 228, q: "Sarbadodorlarga kim rahbarlik qilgan?", options: ["Chingizxon", "Amir Husayn", "Temur", "Saraxs Malik"], answer: "Saraxs Malik" },
+                { id: 229, q: "Amir Temur qaysi yilda hokimiyat tepasiga kelgan?", options: ["1336-yil", "1370-yil", "1380-yil", "1405-yil"], answer: "1370-yil" },
+                { id: 230, q: "Amir Temur qo'shinining markaziy qismi qanday nomlangan?", options: ["G'ulom", "Qo'l", "Mang'lay", "Juvong'ar"], answer: "Qo'l" }
+            ],
+            // BU YERDA TUGAYDI
+            // ... (qolgan sinflar) ...
+        8: [
+                { id: 301, q: "Amir Temur Qaysi yili G'arbiy va Janubiy Eronni bosib olgan?", options: ["1380", "1386", "1393", "1402"], answer: "1393" },
+                { id: 302, q: "Temurning Anqara jangida (1402) yenggan raqibi kim?", options: ["To'xtamishxon", "Boyazid I (Yildirim)", "Saraxs Malik", "O'ljaytu Sulton"], answer: "Boyazid I (Yildirim)" },
+                { id: 303, q: "Temuriylar davlatining asosiy poytaxti Samarqandga kim ko'chirdi?", options: ["Amir Temur", "Ulug'bek", "Shohruh", "Xalil Sulton"], answer: "Amir Temur" },
+                { id: 304, q: "Ulug'bek Samarqandda qachon rasadxona qurishni boshlagan?", options: ["1417", "1420", "1424", "1449"], answer: "1424" },
+                { id: 305, q: "Ali Qushchi qaysi temuriy hukmdorning ilmiy ishlarida yaqin yordamchi bo'lgan?", options: ["Shohruh", "Bobur", "Ulug'bek", "Husayn Boyqaro"], answer: "Ulug'bek" },
+                { id: 306, q: "Alisher Navoiy va Husayn Boyqaro qaysi shaharda ijod qilgan?", options: ["Samarqand", "Buxoro", "G'azna", "Hirot"], answer: "Hirot" },
+                { id: 307, q: "Shayboniylar davlatiga kim asos solgan?", options: ["Muhammad Shayboniyxon", "Abullaysxon", "Ubaydullaxon", "Ko'chkinchixon"], answer: "Muhammad Shayboniyxon" },
+                { id: 308, q: "Shayboniylar Temuriylarni qachon butunlay mag'lub etgan?", options: ["1500", "1507", "1510", "1512"], answer: "1507" },
+                { id: 309, q: "Boburiylar davlatiga Hindistonda kim asos solgan?", options: ["Humoyun", "Akbar", "Zahiriddin Muhammad Bobur", "Jahongir"], answer: "Zahiriddin Muhammad Bobur" },
+                { id: 310, q: "Bobur 'Boburnoma' asarini qaysi tilda yozgan?", options: ["Fors", "Arab", "Chig'atoy turkiy", "O'zbek"], answer: "Chig'atoy turkiy" },
+                { id: 311, q: "XVI asr o'rtalarida Shayboniylar davlatining poytaxti qayerga ko'chirilgan?", options: ["Samarqanddan Buxoroga", "Toshkentdan Hirotga", "Buxorodan Xivaga", "Marvdan Samarqandga"], answer: "Samarqanddan Buxoroga" },
+                { id: 312, q: "Ashtarxoniylar sulolasi qachon Shayboniylarning o'rnini egallagan?", options: ["XVI asr oxirida", "XVII asr boshida", "XVII asr o'rtasida", "XVIII asr boshida"], answer: "XVII asr boshida" },
+                { id: 313, q: "Xiva xonligiga rasman kim asos solgan (XVI asr)?", options: ["Arab Muhammadxon", "Eltuzar", "Muhammad Rahimxon", "Abulg'ozi Bahodirxon"], answer: "Arab Muhammadxon" },
+                { id: 314, q: "Qo'qon xonligi qachon tashkil topgan?", options: ["XVIII asr boshida", "XVIII asr o'rtasida", "XIX asr boshida", "XVII asr oxirida"], answer: "XVIII asr boshida" },
+                { id: 315, q: "XVIII asrda Buxoroda hokimiyatga kelgan sulola?", options: ["Shayboniylar", "Temuriylar", "Mang'itlar", "Qo'ng'irotlar"], answer: "Mang'itlar" },
+                { id: 316, q: "Buxoro, Xiva va Qo'qon xonliklarida asosiy e'tibor qaysi sohaga qaratilgan?", options: ["Ilm-fan", "Harbiy soha", "Madaniyat", "Dehqonchilik"], answer: "Dehqonchilik" },
+                { id: 317, q: "Xonliklar davrida eronlik asirlarning avlodlari qanday nomlangan?", options: ["Mang'it", "Qul", "Eroniy", "Tehroniy"], answer: "Qul" },
+                { id: 318, q: "Qaysi xonlik eng so'nggi tashkil topgan?", options: ["Buxoro amirligi", "Xiva xonligi", "Qo'qon xonligi", "G'azna xonligi"], answer: "Qo'qon xonligi" },
+                { id: 319, q: "Rossiya imperiyasi O'rta Osiyoni bosib olishni qachon boshlagan?", options: ["XVIII asr oxiri", "XIX asr boshlari", "XIX asr o'rtalari", "XX asr boshlari"], answer: "XIX asr o'rtalari" },
+                { id: 320, q: "Rossiya Toshkentni qaysi yili bosib olgan?", options: ["1860", "1865", "1868", "1873"], answer: "1865" },
+                { id: 321, q: "Buxoro amirligi Rossiyaning vassaliga qachon aylangan?", options: ["1865-yil", "1868-yil", "1873-yil", "1885-yil"], answer: "1868-yil" },
+                { id: 322, q: "Qaysi xonlik mustaqilligini eng uzoq saqlab qolgan?", options: ["Qo'qon", "Buxoro", "Xiva", "Urganch"], answer: "Buxoro" },
+                { id: 323, q: "Qo'qon xonligining so'nggi xoni kim?", options: ["Xudoyorxon", "Nasrullaxon", "Muhammad Alixon", "Po'latxon"], answer: "Xudoyorxon" },
+                { id: 324, q: "XIX asr oxirida O'rta Osiyoda vujudga kelgan milliy harakat nomi?", options: ["Qizil isyon", "Jadidchilik", "Millatchilik", "Yosh buxoroliklar"], answer: "Jadidchilik" },
+                { id: 325, q: "Jadidchilik harakatining asosiy maqsadi nima edi?", options: ["Mustaqillik", "Qadimiy maktablarni saqlash", "Yangi usuldagi ma'rifat va islohot", "Rus mustamlakachiligi"], answer: "Yangi usuldagi ma'rifat va islohot" },
+                { id: 326, q: "Mahmudxo'ja Behbudiy, Fitrat kabi ma'rifatparvarlar qaysi harakatga mansub?", options: ["Qadimchilik", "Jadidchilik", "Kommunizm", "Temuriylar"], answer: "Jadidchilik" },
+                { id: 327, q: "1916-yilgi O'rta Osiyodagi yirik qo'zg'olon sababi nima edi?", options: ["Maorif islohotlari", "Hukumatga qarshi norozilik", "Birinchi jahon urushiga mardikor yig'ish", "Yer egaligi muammosi"], answer: "Birinchi jahon urushiga mardikor yig'ish" },
+                { id: 328, q: "Qo'qon Muxtoriyati qaysi yili tashkil etilgan?", options: ["1917-yil noyabr", "1918-yil mart", "1916-yil sentabr", "1917-yil fevral"], answer: "1917-yil noyabr" },
+                { id: 329, q: "Qo'qon Muxtoriyatini kim tugatgan?", options: ["Buxoro amiri", "Mahalliy isyonchilar", "Qizil Armiya (Sovetlar)", "Angliya qo'shinlari"], answer: "Qizil Armiya (Sovetlar)" },
+                { id: 330, q: "Turkistonda sovet hokimiyati qaysi yili o'rnatila boshlandi?", options: ["1916", "1917", "1918", "1920"], answer: "1917" }
+            ],
+
+
+            9: [
+                { id: 401, q: "Birinchi jahon urushi qaysi yillarda bo'lib o'tgan?", options: ["1910-1914", "1914-1918", "1918-1922", "1939-1945"], answer: "1914-1918" },
+                { id: 402, q: "Sovet Ittifoqi qaysi yilda rasman tashkil etilgan?", options: ["1917", "1922", "1924", "1936"], answer: "1922" },
+                { id: 403, q: "O'rta Osiyoda sovetlarga qarshi harakat qanday nomlangan?", options: ["Jadidchilik", "Milliy ozodlik harakati", "Bosmachilik", "Qizil isyon"], answer: "Bosmachilik" },
+                { id: 404, q: "O'zbekiston SSR qaysi yilda tashkil etilgan?", options: ["1920", "1924", "1929", "1938"], answer: "1924" },
+                { id: 405, q: "1930-yillarda O'zbekistonda amalga oshirilgan siyosiy qatag'onlar kimlarga qaratilgan edi?", options: ["Faqat dehqonlarga", "Hokimiyatdagi ruslarga", "Jadidlar va ziyolilarga", "Faqat ruhoniylarga"], answer: "Jadidlar va ziyolilarga" },
+                { id: 406, q: "O'zbekistonda 'Paxta ishi' bilan bog'liq qatag'onlar qaysi davrda avj olgan?", options: ["1950-yillar", "1960-yillar", "1980-yillar", "1991-yil"], answer: "1980-yillar" },
+                { id: 407, q: "Ikkinchi jahon urushi qaysi yili boshlangan?", options: ["1939", "1941", "1945", "1938"], answer: "1939" },
+                { id: 408, q: "O'zbekiston Ikkinchi jahon urushi yillarida frontga nima bilan yordam bergan?", options: ["Faqat harbiy texnika", "Asosan paxta va oziq-ovqat", "Faqat moliyaviy yordam", "Asosiy e'tibor yashirin faoliyatga"], answer: "Asosan paxta va oziq-ovqat" },
+                { id: 409, q: "O'zbekistonga urush yillarida evakuatsiya qilingan asosiy narsa nima edi?", options: ["Sanoat korxonalari va bolalar uylari", "Oltin zaxiralari", "Harbiy bazalar", "Chorva mollari"], answer: "Sanoat korxonalari va bolalar uylari" },
+                { id: 410, q: "Qoraqalpog'iston ASSR qachon O'zbekiston tarkibiga kirgan?", options: ["1924", "1936", "1941", "1953"], answer: "1936" },
+                { id: 411, q: "1966-yil Toshkentda sodir bo'lgan mashhur tabiiy ofat nima?", options: ["Suv toshqini", "Kuchli qurg'oqchilik", "Zilzila", "Bo'ron"], answer: "Zilzila" },
+                { id: 412, q: "Qaysi tarixiy shaxs 1959-1982 yillarda O'zbekiston rahbari bo'lgan?", options: ["Sharof Rashidov", "Usmon Yusupov", "Yadgar Nasriddinova", "Islam Karimov"], answer: "Sharof Rashidov" },
+                { id: 413, q: "'Qayta qurish' siyosati Sovet Ittifoqida qaysi yili boshlangan?", options: ["1975", "1985", "1989", "1991"], answer: "1985" },
+                { id: 414, q: "Orol dengizi muammosi qaysi asrning o'rtalaridan jiddiylasha boshlagan?", options: ["XVIII asr", "XIX asr", "XX asr", "XXI asr"], answer: "XX asr" },
+                { id: 415, q: "O'zbekistonning davlat tili to'g'risidagi qonuni qachon qabul qilingan?", options: ["1989-yil oktabr", "1990-yil yanvar", "1991-yil avgust", "1992-yil dekabr"], answer: "1989-yil oktabr" },
+                { id: 416, q: "O'zbekiston Respublikasi Mustaqilligi qachon e'lon qilindi?", options: ["1991-yil 1-sentabr", "1991-yil 31-avgust", "1992-yil 8-dekabr", "1991-yil 21-oktabr"], answer: "1991-yil 31-avgust" },
+                { id: 417, q: "O'zbekistonning birinchi Prezidenti kim?", options: ["Shavkat Mirziyoyev", "Abdulaziz Kamilov", "Islam Karimov", "Yuliy Yuldashev"], answer: "Islam Karimov" },
+                { id: 418, q: "O'zbekiston Respublikasi Konstitutsiyasi qachon qabul qilingan?", options: ["1991-yil 1-sentabr", "1992-yil 8-dekabr", "1993-yil 15-may", "1995-yil 1-yanvar"], answer: "1992-yil 8-dekabr" },
+                { id: 419, q: "O'zbekiston BMTga (Birlashgan Millatlar Tashkiloti) qachon a'zo bo'lgan?", options: ["1991", "1992", "1993", "1995"], answer: "1992" },
+                { id: 420, q: "O'zbekistonning milliy valyutasi (so'm) qachon muomalaga kiritilgan?", options: ["1991-yil", "1993-yil", "1994-yil", "1995-yil"], answer: "1994-yil" },
+                { id: 421, q: "O'zbekistonning Oliy Majlisi necha palatadan iborat?", options: ["Bir", "Ikki", "Uch", "To'rt"], answer: "Ikki" },
+                { id: 422, q: "Mustaqillik yillarida qabul qilingan 'Ta'lim to'g'risida'gi qonunining yangi tahriri qachon qabul qilindi?", options: ["1992", "1997", "2017", "2020"], answer: "2020" },
+                { id: 423, q: "O'zbekiston Respublikasi Prezidentining amaldagi vakolat muddati necha yil?", options: ["4 yil", "5 yil", "7 yil", "10 yil"], answer: "7 yil" },
+                { id: 424, q: "Qaysi yili O'zbekistonda 'Inson manfaatlari yili' deb e'lon qilingan?", options: ["2016", "2017", "2018", "2019"], answer: "2017" },
+                { id: 425, q: "Tarixiy yodgorliklar va madaniy merosni saqlash bo'yicha mustaqillik yillarida qaysi shaharga alohida e'tibor berilgan?", options: ["Toshkent", "Andijon", "Samarqand va Buxoro", "Qarshi"], answer: "Samarqand va Buxoro" },
+                { id: 426, q: "O'zbekiston qaysi xalqaro tashkilotning asosiy a'zolaridan biri?", options: ["NATO", "YeI (Yevropa Ittifoqi)", "ShHT (Shanxay Hamkorlik Tashkiloti)", "OPEK"], answer: "ShHT (Shanxay Hamkorlik Tashkiloti)" },
+                { id: 427, q: "O'zbekistonning gerbidagi asosiy timsol nima?", options: ["Amir Temur haykali", "Humo qushi", "Moviy gumbaz", "Paxta va bug'doy"], answer: "Humo qushi" },
+                { id: 428, q: "O'zbekiston Respublikasi Prezidentining ikkinchi muddati qachondan boshlangan?", options: ["2016-yil", "2021-yil", "2023-yil", "2024-yil"], answer: "2021-yil" },
+                { id: 429, q: "Qaysi mustaqillik yillarida 'Erkin bozor iqtisodiyoti' tamoyiliga o'tish boshlangan?", options: ["1990-yillar boshida", "2000-yillarda", "2010-yillarda", "2020-yillarda"], answer: "1990-yillar boshida" },
+                { id: 430, q: "O'zbekistonning amaldagi Konstitutsiyasiga eng so'nggi yirik o'zgartirishlar qachon kiritildi?", options: ["2017-yil", "2019-yil", "2021-yil", "2023-yil"], answer: "2023-yil" }
+            ],
+
+
+
+            10: [
+                { id: 501, q: "Uyg'onish davri (Renessans) qaysi asrlarni o'z ichiga olgan?", options: ["XII-XIV", "XIV-XVI", "XVII-XVIII", "XIX-XX"], answer: "XIV-XVI" },
+                { id: 502, q: "Reformatsiya harakati qaysi davlatda boshlangan?", options: ["Italiya", "Fransiya", "Germaniya", "Angliya"], answer: "Germaniya" },
+                { id: 503, q: "Martin Lyuter o'zining '95 tezis'ini qachon e'lon qilgan?", options: ["1492", "1517", "1555", "1648"], answer: "1517" },
+                { id: 504, q: "Buyuk geografik kashfiyotlar davrida Amerikani kim kashf etgan?", options: ["Vasko da Gama", "Magellan", "Kristofor Kolumb", "Jeyms Kuk"], answer: "Kristofor Kolumb" },
+                { id: 505, q: "Angliyada qirol Genrix VIII qaysi cherkovga asos solgan?", options: ["Katolik", "Pravoslav", "Anglikan", "Protestant"], answer: "Anglikan" },
+                { id: 506, q: "Angliyada burjua inqilobi qachon bo'lib o'tgan?", options: ["1640-1660", "1789-1799", "1848-1849", "1917"], answer: "1640-1660" },
+                { id: 507, q: "AQShning Mustaqillik Deklaratsiyasi qachon qabul qilingan?", options: ["1776-yil 4-iyul", "1783-yil 3-sentabr", "1787-yil 17-sentabr", "1861-yil"], answer: "1776-yil 4-iyul" },
+                { id: 508, q: "Buyuk fransuz inqilobi qaysi yili boshlangan?", options: ["1776", "1789", "1815", "1848"], answer: "1789" },
+                { id: 509, q: "Napoleon Bonapart qaysi davlat imperatori bo'lgan?", options: ["Angliya", "Italiya", "Avstriya", "Fransiya"], answer: "Fransiya" },
+                { id: 510, q: "XIX asrda sanoat inqilobi qaysi davlatda boshlangan?", options: ["Fransiya", "Germaniya", "Angliya", "AQSh"], answer: "Angliya" },
+                { id: 511, q: "Qulchilik AQShda qaysi voqeadan keyin bekor qilingan?", options: ["Mustaqillik urushi", "1812-yil urushi", "Fuqarolar urushi", "Ikkinchi jahon urushi"], answer: "Fuqarolar urushi" },
+                { id: 512, q: "Yaponiyadagi Meydzi inqilobi qachon bo'lib o'tgan?", options: ["1853", "1868", "1894", "1905"], answer: "1868" },
+                { id: 513, q: "Italiya qaysi yili yagona davlatga birlashgan (risorgimento)?", options: ["1848", "1861", "1871", "1900"], answer: "1861" },
+                { id: 514, q: "Germaniya imperiyasi qachon tashkil topgan?", options: ["1861", "1866", "1871", "1890"], answer: "1871" },
+                { id: 515, q: "Birinchi jahon urushining asosiy sabablaridan biri nima edi?", options: ["Fransuz inqilobi", "Mustamlakalar uchun kurash", "Diniy nizolar", "AQShning aralashuvi"], answer: "Mustamlakalar uchun kurash" },
+                { id: 516, q: "Versal tinchlik shartnomasi qaysi urushga yakun yasagan?", options: ["Qrim urushi", "Birinchi jahon urushi", "Ikkinchi jahon urushi", "Angliya-Bur urushi"], answer: "Birinchi jahon urushi" },
+                { id: 517, q: "Rusiyada 1917-yil fevral inqilobi nimaga olib kelgan?", options: ["Romanovlar sulolasining ag'darilishi", "Kommunistlarning hokimiyatga kelishi", "SSSRning tashkil topishi", "Pravoslav cherkovining bekor qilinishi"], answer: "Romanovlar sulolasining ag'darilishi" },
+                { id: 518, q: "1929-1933 yillardagi Buyuk Depressiya qaysi davlatdan boshlangan?", options: ["Angliya", "Germaniya", "AQSh", "Yaponiya"], answer: "AQSh" },
+                { id: 519, q: "Fashizm harakati qaysi davlatda paydo bo'lgan?", options: ["Germaniya", "Italiya", "Ispaniya", "Fransiya"], answer: "Italiya" },
+                { id: 520, q: "Natsizmning yetakchisi Adolf Gitler qaysi davlatda hokimiyatga kelgan?", options: ["Italiya", "Germaniya", "Avstriya", "Ispaniya"], answer: "Germaniya" },
+                { id: 521, q: "Ikkinchi jahon urushi Yevropada qachon boshlangan?", options: ["1938-yil mart", "1939-yil sentabr", "1941-yil iyun", "1945-yil may"], answer: "1939-yil sentabr" },
+                { id: 522, q: "Ikkinchi jahon urushida Ittifoqchilar tomonida qaysi davlatlar bo'lgan?", options: ["Germaniya, Italiya, Yaponiya", "Buyuk Britaniya, SSSR, AQSh", "Fransiya, Ispaniya, Xitoy", "Italiya, Yaponiya, AQSh"], answer: "Buyuk Britaniya, SSSR, AQSh" },
+                { id: 523, q: "Ikkinchi jahon urushi qachon yakunlangan?", options: ["1944-yil iyun", "1945-yil may", "1945-yil sentabr", "1946-yil yanvar"], answer: "1945-yil sentabr" },
+                { id: 524, q: "BMT (Birlashgan Millatlar Tashkiloti) qaysi yili tashkil etilgan?", options: ["1944", "1945", "1949", "1953"], answer: "1945" },
+                { id: 525, q: "Ikkinchi jahon urushidan keyingi AQSh va SSSR o'rtasidagi ziddiyat qanday nomlangan?", options: ["Yadro urushi", "Global mojaro", "Sovuq urush", "Osmon urushi"], answer: "Sovuq urush" },
+                { id: 526, q: "NATO harbiy bloki qaysi yili tashkil etilgan?", options: ["1945", "1949", "1955", "1962"], answer: "1949" },
+                { id: 527, q: "SSSR qachon rasman parchalangan?", options: ["1989", "1990", "1991", "1992"], answer: "1991" },
+                { id: 528, q: "Yevropa Ittifoqining (EI) dastlabki shakli qaysi shartnoma asosida paydo bo'lgan?", options: ["Rim shartnomasi", "Maastrixt shartnomasi", "Parij shartnomasi", "Shengen bitimi"], answer: "Rim shartnomasi" },
+                { id: 529, q: "G'arbiy va Sharqiy Germaniya qachon yagona davlatga birlashgan?", options: ["1989", "1990", "1991", "1992"], answer: "1990" },
+                { id: 530, q: "XXI asr boshida qaysi global muammo eng dolzarb bo'lib qolmoqda?", options: ["Diniy urushlar", "Yer resurslarining yetishmasligi", "Atrof-muhit muammolari va iqlim o'zgarishi", "Yangi texnologiyalarning taqiqlanishi"], answer: "Atrof-muhit muammolari va iqlim o'zgarishi" }
+            ],
+
+            11: [
+                { id: 601, q: "XX asr boshida dunyodagi eng yirik mustamlakachi davlat qaysi edi?", options: ["AQSh", "Rossiya", "Buyuk Britaniya", "Germaniya"], answer: "Buyuk Britaniya" },
+                { id: 602, q: "Birinchi jahon urushidan so'ng tashkil etilgan xalqaro tashkilot nomi?", options: ["BMT", "Millatlar Ligasi", "NATO", "Varshava shartnomasi"], answer: "Millatlar Ligasi" },
+                { id: 603, q: "Ikkinchi jahon urushiga olib kelgan 'Myunxen kelishuvi' qaysi yili imzolangan?", options: ["1936", "1938", "1939", "1940"], answer: "1938" },
+                { id: 604, q: "Atom quroli birinchi marta qaysi shaharlarga tashlangan?", options: ["Tokio va Seul", "Berlin va London", "Xirosima va Nagasaki", "Rim va Parij"], answer: "Xirosima va Nagasaki" },
+                { id: 605, q: "Sovuq urush davrida dunyo qaysi ikki asosiy tizimga bo'lingan edi?", options: ["Islom va Xristian", "Sharq va G'arb", "Shimol va Janub", "Demokratiya va Monarxiya"], answer: "Sharq va G'arb" },
+                { id: 606, q: "Hindiston qachon Buyuk Britaniyadan mustaqillikka erishgan?", options: ["1945", "1947", "1950", "1960"], answer: "1947" },
+                { id: 607, q: "Xitoy Xalq Respublikasi qaysi yilda tashkil topgan?", options: ["1945", "1949", "1953", "1966"], answer: "1949" },
+                { id: 608, q: "Afro-Osiyo mamlakatlarining mustaqilligi kuchayishiga turtki bo'lgan konferensiya?", options: ["Yalta", "Potsdam", "Bandung", "San-Fransisko"], answer: "Bandung" },
+                { id: 609, q: "Koreya urushi qaysi yillarda bo'lib o'tgan?", options: ["1945-1947", "1950-1953", "1960-1965", "1970-1975"], answer: "1950-1953" },
+                { id: 610, q: "Kuba raketa inqirozi qaysi yili dunyoni yadro urushi xavfiga yaqinlashtirgan?", options: ["1955", "1962", "1968", "1973"], answer: "1962" },
+                { id: 611, q: "Yevropa Ittifoqi (EI) rasman qachon tashkil topgan?", options: ["1957 (EOES)", "1992 (Maastrixt)", "2002 (Yevro)", "2007"], answer: "1992 (Maastrixt)" },
+                { id: 612, q: "O'zbekistonda yuridik islohotlar asosan qaysi davrda amalga oshirilgan?", options: ["1991-1996", "1997-2000", "2001-2005", "2017-yildan keyin"], answer: "2017-yildan keyin" },
+                { id: 613, q: "Islom Karimov O'zbekiston Prezidenti etib qachon saylangan?", options: ["1990", "1991", "1992", "1993"], answer: "1991" },
+                { id: 614, q: "Mustaqil O'zbekistonning Birinchi Konstitutsiyasi necha bob va necha moddadan iborat?", options: ["10 bob, 100 modda", "26 bob, 128 modda", "18 bob, 128 modda", "20 bob, 150 modda"], answer: "26 bob, 128 modda" },
+                { id: 615, q: "O'zbekistonda iqtisodiy islohotlarning 'sekin-asta' yo'li nima sababdan tanlangan?", options: ["Xorijiy investitsiya yetishmovchiligi", "Aholining tayyor emasligi", "Ijtimoiy-siyosiy barqarorlikni saqlash", "Rusiyaning bosimi"], answer: "Ijtimoiy-siyosiy barqarorlikni saqlash" },
+                { id: 616, q: "O'zbekiston qachon Mustaqil Davlatlar Hamdo'stligiga (MDH) qo'shilgan?", options: ["1990-yil", "1991-yil", "1992-yil", "1993-yil"], answer: "1991-yil" },
+                { id: 617, q: "O'zbekistonning neytrallik maqomi qaysi yili rasman e'lon qilingan?", options: ["1992", "1995", "1998", "2001"], answer: "1995" },
+                { id: 618, q: "O'zbekistonning Oliy Majlis Qonunchilik palatasiga saylovlar necha yilda bir marta o'tkaziladi?", options: ["3 yilda", "4 yilda", "5 yilda", "7 yilda"], answer: "5 yilda" },
+                { id: 619, q: "O'zbekistonda 'Harakatlar strategiyasi' qaysi yillarni qamrab olgan?", options: ["2016-2020", "2017-2021", "2018-2022", "2020-2025"], answer: "2017-2021" },
+                { id: 620, q: "Harakatlar strategiyasining davomi sifatida qabul qilingan yangi hujjat nomi?", options: ["Taraqqiyot dasturi", "Yangi O'zbekiston", "Harakat yo'li", "Rivojlanish strategiyasi"], answer: "Rivojlanish strategiyasi" },
+                { id: 621, q: "2023-yilgi yangi tahrirdagi Konstitutsiyaga ko'ra, amaldagi Prezidentlik muddati necha yil qilib belgilangan?", options: ["5 yil", "6 yil", "7 yil", "10 yil"], answer: "7 yil" },
+                { id: 622, q: "O'zbekistonda tadbirkorlikni qo'llab-quvvatlash qaysi islohotlarning asosiy yo'nalishi hisoblanadi?", options: ["Qishloq xo'jaligi", "Soliq va moliya islohotlari", "Ta'lim tizimi", "Madaniyat sohasida"], answer: "Soliq va moliya islohotlari" },
+                { id: 623, q: "Globallashuvning asosiy belgilari nima?", options: ["Madaniy yakkalanish", "Iqtisodiy yopiqlik", "Integratsiya, axborot almashinuvi, xalqaro aloqalar", "An'anaviy qadriyatlarga qaytish"], answer: "Integratsiya, axborot almashinuvi, xalqaro aloqalar" },
+                { id: 624, q: "XXI asr boshidagi eng katta xalqaro terrorchilik tashkiloti nomi?", options: ["Al-Qoida", "Tolibon", "Hamas", "Boko Haram"], answer: "Al-Qoida" },
+                { id: 625, q: "BMTning inson huquqlari umumjahon deklaratsiyasi qachon qabul qilingan?", options: ["1945", "1948", "1950", "1960"], answer: "1948" },
+                { id: 626, q: "Zamonaviy davrda 'Raqamli iqtisodiyot' nima degani?", options: ["Faqat hisob-kitoblar", "Axborot texnologiyalari asosidagi iqtisodiy faoliyat", "Faqat internet-savdo", "Davlat nazoratidagi iqtisodiyot"], answer: "Axborot texnologiyalari asosidagi iqtisodiy faoliyat" },
+                { id: 627, q: "O'zbekistonda 'Munosib mehnat' tamoyili qaysi yilgi islohotlarning bir qismi?", options: ["2016", "2017", "2018", "2020"], answer: "2017" },
+                { id: 628, q: "ShHT (Shanxay Hamkorlik Tashkiloti) qaysi davlatlar tomonidan tashkil etilgan?", options: ["Yevropa davlatlari", "Osiyo-Afrika davlatlari", "O'rta Osiyo, Rossiya, Xitoy", "AQSh va uning ittifoqchilari"], answer: "O'rta Osiyo, Rossiya, Xitoy" },
+                { id: 629, q: "O'zbekiston Respublikasi Davlat gerbidagi Humo qushi nimani anglatadi?", options: ["Kuch va g'alaba", "Erkinlik, saodat va farovonlik", "Islom madaniyati", "Paxta va bug'doy"], answer: "Erkinlik, saodat va farovonlik" },
+                { id: 630, q: "O'zbekistonda fuqarolarning 'O'zini o'zi boshqarish' organlari qanday nomlanadi?", options: ["Kengashlar", "Hokimiyatlar", "Mahalla", "Komitetlar"], answer: "Mahalla" }
+            ]
+           
+            // Qolgan sinflar (5, 6, 8, 9, 10, 11) uchun testlar bo'shligicha qoladi, keyinchalik to'ldiriladi.
+        };
+
+
+
+
+
+
+
+        // --- 2. Lokalizatsiya (Til) Ma'lumotlari ---
+        const translations = {
+            uz: {
+                welcomeTitle: "Tarix Testlariga Xush Kelibsiz!",
+                instruction: "Testlarni boshlash uchun sinfingizni tanlang:",
+                settings: "⚙️",
+                themeTitle: "Mavzular",
+                themeDark: "⚫ Qora Mavzu",
+                themeLight: "⚪ Oq Mavzu",
+                languageTitle: "Tillar",
+                classTitle: (n) => `${n}-sinf Testlari`,
+                submit: "Javobni Tekshirish",
+                resultsTitle: "Natijalar",
+                score: (correct, total) => `Siz ${total} tadan ${correct} tasiga to'g'ri javob berdingiz.`,
+                retry: "Boshiga Qaytish",
+                noTests: (n) => `Hozircha ${n}-sinf uchun testlar mavjud emas. Iltimos, 7-sinfni tanlang.`
+            },
+            // ... boshqa 4 ta til uchun tarjimalar ...
+            ru: {
+                welcomeTitle: "Добро пожаловать в Исторические Тесты!",
+                instruction: "Выберите свой класс, чтобы начать тесты:",
+                settings: "⚙️",
+                themeTitle: "Темы",
+                themeDark: "⚫ Темная Тема",
+                themeLight: "⚪ Светлая Тема",
+                languageTitle: "Языки",
+                classTitle: (n) => `Тесты для ${n}-го класса`,
+                submit: "Проверить Ответ",
+                resultsTitle: "Результаты",
+                score: (correct, total) => `Вы ответили правильно на ${correct} из ${total} вопросов.`,
+                retry: "Начать Сначала",
+                noTests: (n) => `На данный момент нет тестов для ${n}-го класса. Пожалуйста, выберите 7-й класс.`
+            },
+            en: {
+                welcomeTitle: "Welcome to History Quizzes!",
+                instruction: "Select your class to start the quizzes:",
+                settings: "⚙️",
+                themeTitle: "Themes",
+                themeDark: "⚫ Dark Theme",
+                themeLight: "⚪ Light Theme",
+                languageTitle: "Languages",
+                classTitle: (n) => `Grade ${n} Quizzes`,
+                submit: "Check Answer",
+                resultsTitle: "Results",
+                score: (correct, total) => `You answered ${correct} out of ${total} questions correctly.`,
+                retry: "Start Over",
+                noTests: (n) => `Currently, there are no quizzes available for Grade ${n}. Please select Grade 7.`
+            },
+            zh: {
+                welcomeTitle: "欢迎来到历史测验！",
+                instruction: "请选择您的年级开始测验：",
+                settings: "⚙️",
+                themeTitle: "主题",
+                themeDark: "⚫ 深色主题",
+                themeLight: "⚪ 浅色主题",
+                languageTitle: "语言",
+                classTitle: (n) => `${n}年级测验`,
+                submit: "检查答案",
+                resultsTitle: "结果",
+                score: (correct, total) => `您答对了 ${total} 题中的 ${correct} 题。`,
+                retry: "重新开始",
+                noTests: (n) => `目前没有 ${n}年级 的测验。请选择 7年级。`
+            },
+            ko: {
+                welcomeTitle: "역사 시험에 오신 것을 환영합니다!",
+                instruction: "시험을 시작하려면 학년을 선택하세요:",
+                settings: "⚙️",
+                themeTitle: "테마",
+                themeDark: "⚫ 어두운 테마",
+                themeLight: "⚪ 밝은 테마",
+                languageTitle: "언어",
+                classTitle: (n) => `${n}학년 시험`,
+                submit: "답안 확인",
+                resultsTitle: "결과",
+                score: (correct, total) => `총 ${total} 문제 중 ${correct} 문제를 맞혔습니다.`,
+                retry: "다시 시작",
+                noTests: (n) => `현재 ${n}학년 을 위한 시험이 없습니다. 7학년을 선택하십시오.`
+            }
+        };
+
+        // --- 3. Global O'zgaruvchilar ---
+        let currentLang = 'uz'; 
+        let currentClass = null;
+        let questions = []; 
+        let userAnswers = {}; 
+        
+        const $ = (id) => document.getElementById(id); // Elementni tez topish uchun qulay funksiya
+
+        // --- 4. Sozlamalar va Til Funksiyalari (O'zgarmadi) ---
+        
+        function updateLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            if (currentClass) {
+                 $('current-class-title').textContent = translations[currentLang].classTitle(currentClass);
+            }
+            // Natijalar maydonidagi matnni yangilash uchun.
+            if ($('results-container').style.display !== 'none') {
+                submitAnswers(); // Natijalarni qayta ko'rsatish
+            }
+        }
+
+        function setTheme(theme) {
+            const body = document.body;
+            if (theme === 'light') {
+                body.classList.add('light-theme');
+            } else { 
+                body.classList.remove('light-theme');
+            }
+            localStorage.setItem('quizTheme', theme);
+        }
+
+        // Sozlamalar (Til va Mavzu) tinglovchilari
+        $('settings-btn').addEventListener('click', () => {
+            const settingsPanel = $('settings-panel');
+            settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.querySelectorAll('#settings-panel button[data-lang]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                updateLanguage(e.target.getAttribute('data-lang'));
+                $('settings-panel').style.display = 'none';
+            });
+        });
+
+        $('theme-dark').addEventListener('click', () => {
+            setTheme('dark');
+            $('settings-panel').style.display = 'none';
+        });
+
+        $('theme-light').addEventListener('click', () => {
+            setTheme('light');
+            $('settings-panel').style.display = 'none';
+        });
+
+        // --- 5. Test Logikasi Funksiyalari (Tuzatildi) ---
+
+        function startTest(sinf) {
+            currentClass = sinf;
+            questions = testDatabase[sinf];
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            
+            // Kontent elementlarini yashirish/ko'rsatish
+            $('results-container').style.display = 'none'; 
+            $('current-class-title').style.display = 'block'; 
+            $('question-container').style.display = 'block';
+
+            if (!questions || questions.length === 0) {
+                $('current-class-title').textContent = translations[currentLang].noTests(sinf);
+                $('question-container').innerHTML = '';
+                $('submit-btn').style.display = 'none';
+                
+                // Faqat tanlash qismini yashirish
+                $('instruction-text').style.display = 'none';
+                document.querySelector('.class-selection').style.display = 'none';
+                $('test-area').style.display = 'block';
+                return;
+            }
+
+            // Asosiy kontentni yashirish
+            $('instruction-text').style.display = 'none';
+            document.querySelector('.class-selection').style.display = 'none';
+            $('test-area').style.display = 'block';
+
+            $('current-class-title').textContent = translations[currentLang].classTitle(sinf);
+
+            loadAllQuestions();
+        }
+        
+        // Barcha savollarni bir vaqtning o'zida yuklash (yaxshiroq)
+        function loadAllQuestions() {
+            const qContainer = $('question-container');
+            let html = '';
+                
+            questions.forEach((q, index) => {
+                html += `<div class="question-box">
+                    <p>${index + 1}. ${q.q}</p>
+                    <div>`;
+                
+                q.options.forEach(option => {
+                    const isSelected = userAnswers[q.id] === option ? 'selected' : '';
+                    html += `<span class="answer-option ${isSelected}" data-q-id="${q.id}" data-answer="${option}" onclick="selectAnswer(this)">
+                                ${option}
+                            </span>`;
+                });
+                
+                html += `</div></div>`;
+            });
+
+            qContainer.innerHTML = html;
+            // Agar javoblar soni savollar soniga teng bo'lsa, "Tekshirish" tugmasini ko'rsatish
+            if (Object.keys(userAnswers).length === questions.length) {
+                $('submit-btn').style.display = 'block';
+            } else {
+                 $('submit-btn').style.display = 'none';
+            }
+        }
+
+        function selectAnswer(element) {
+            const qId = element.getAttribute('data-q-id');
+            const answer = element.getAttribute('data-answer');
+            
+            // Oldingi tanlangan elementni olib tashlash
+            document.querySelectorAll(`.answer-option[data-q-id="${qId}"]`).forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Yangi tanlangan elementni belgilash
+            element.classList.add('selected');
+            userAnswers[qId] = answer;
+            
+            // Barcha savollarga javob berilganligini tekshirish
+            if (Object.keys(userAnswers).length === questions.length) {
+                $('submit-btn').style.display = 'block';
+            }
+        }
+        
+        function submitAnswers() {
+            let correctCount = 0;
+            
+            questions.forEach(q => {
+                if (userAnswers[q.id] === q.answer) {
+                    correctCount++;
+                }
+            });
+            
+            showResults(correctCount);
+        }
+        
+        // Qayta ishlangan `showResults`
+        function showResults(correctCount) {
+            const total = questions.length;
+            
+            const resultsHtml = `
+                <h2 data-key="resultsTitle">${translations[currentLang].resultsTitle}</h2>
+                <p class="result-text">${translations[currentLang].score(correctCount, total)}</p>
+                <p class="result-score">${correctCount} / ${total}</p>
+                <button onclick="startOver()" class="class-selection button" style="background-color: var(--correct-color); color: var(--bg-color);" data-key="retry">${translations[currentLang].retry}</button>
+            `;
+            
+            $('current-class-title').style.display = 'none';
+            $('question-container').style.display = 'none';
+            $('submit-btn').style.display = 'none';
+            
+            $('results-container').innerHTML = resultsHtml;
+            $('results-container').style.display = 'block';
+        }
+        
+        function startOver() {
+            // Sahifani to'liq qayta yuklash o'rniga, boshlang'ich holatga qaytish
+            window.location.reload(); 
+        }
+
+        // --- 6. Sahifa Yuklanishi ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingScreen = $('loading-screen');
+            const mainContent = $('main-content');
+            
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            setTheme(savedTheme);
+
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.addEventListener('transitionend', () => {
+                    loadingScreen.style.display = 'none';
+                    mainContent.style.opacity = '1'; 
+                }, { once: true });
+            }, 1200);
+            
+            // Tilni yuklash
+            updateLanguage(currentLang);
+        });
+        
+    </script>
+</body>
+</html>
