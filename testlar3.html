@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geografiya Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --geography-color: #28a745; /* Yashil rangni Geografiya uchun ishlatamiz */
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--geography-color); /* Yashil sarlavha */
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--geography-color); /* Sinf tugmasi uchun Yashil */
+            min-width: 80px;
+        }
+        .class-selection button:hover {
+            background-color: #1e7e34;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #f7f9fc;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--geography-color); /* Yashil chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e9fff5; /* Yashil hover */
+            border-color: var(--geography-color);
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #e6fff3; /* Natija foni Yashil tusda */
+            border: 1px solid #b3ffd9;
+            color: #00854d;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Geografiya Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Geografiya fani, 6-11 sinflar) ---
+    const geographyTestDatabase = {
+        // 6-sinf: Geografiyaga kirish, yer sharining tuzilishi, gidrosfera
+        6: [
+            { id: 601, q: "Yer sharining shakli qanday?", options: ["Disk", "Kub", "Geoid (Shar) ", "Piramida"], answer: "Geoid (Shar)" },
+            { id: 602, q: "Geografiya fani nimani o'rganadi?", options: ["Hayvonot dunyosini", "Yer yuzasining tabiiy va ijtimoiy-iqtisodiy jarayonlarini", "Kimyoviy reaksiyalarni", "Astronomik hodisalarni"], answer: "Yer yuzasining tabiiy va ijtimoiy-iqtisodiy jarayonlarini" },
+            { id: 603, q: "Yerning markazida joylashgan qism?", options: ["Mantiya", "Yer po'sti", "Yadro", "Litosfera"], answer: "Yadro" },
+            { id: 604, q: "Yerning suv qatlami nima deb ataladi?", options: ["Litosfera", "Atmosfera", "Biosfera", "Gidrosfera"], answer: "Gidrosfera" },
+            { id: 605, q: "Quyosh atrofida to'liq aylanish vaqti qancha?", options: ["24 soat", "30 kun", "365 kun 6 soat", "100 kun"], answer: "365 kun 6 soat" },
+            { id: 606, q: "Er yuzasining tasvirini qog'ozda kichraytirib ko'rsatish nima deyiladi?", options: ["Globus", "Model", "Xarita", "Rasm"], answer: "Xarita" },
+            { id: 607, q: "Xaritadagi kichraytirish darajasi nima deb ataladi?", options: ["Masofa", "Masshtab", "Balandlik", "Geografik kenglik"], answer: "Masshtab" },
+            { id: 608, q: "Okeanlarning eng chuqur joyi?", options: ["Botqoqlik", "Cho'l", "Mariana chuqurligi", "Everest cho'qqisi"], answer: "Mariana chuqurligi" },
+            { id: 609, q: "Yil davomida bir tekisda shamollar esib turadigan hudud?", options: ["Tinchlik zonasi", "Passat shamollari zonasi", "Musson zonasi", "Siklon zonasi"], answer: "Passat shamollari zonasi" },
+            { id: 610, q: "Vertikal (tik) yo'nalishdagi burchak masofasi nima?", options: ["Uzunlik", "Kenglik", "Balandlik", "Chuqurlik"], answer: "Balandlik" },
+            { id: 611, q: "Eng katta materik qaysi?", options: ["Afrika", "Shimoliy Amerika", "Yevrosiyo", "Avstraliya"], answer: "Yevrosiyo" },
+            { id: 612, q: "Yer yuzasining shakli va tuzilishini o'rganuvchi bo'lim?", options: ["Klimatologiya", "Gidrologiya", "Geologiya", "Geomorfologiya"], answer: "Geomorfologiya" },
+            { id: 613, q: "Yomg'ir, qor, do'l kabi suv tushishlari umumiy nom bilan nima deyiladi?", options: ["Bug'lanish", "Kondensatsiya", "Yog'in", "Transpiratsiya"], answer: "Yog'in" },
+            { id: 614, q: "Ekvatorning uzunligi qancha?", options: ["10 000 km", "20 000 km", "40 000 km", "50 000 km"], answer: "40 000 km" },
+            { id: 615, q: "Vaqt zonalarining asosi bo'lgan meridian?", options: ["Ekvator", "Shimoliy qutb", "Grinvich (Bosh) meridiani", "Tropik chiziq"], answer: "Grinvich (Bosh) meridiani" },
+            { id: 616, q: "Suyuq holatdagi Yer yadrosi qismi?", options: ["Ichki yadro", "Tashqi yadro", "Mantiya", "Po'stloq"], answer: "Tashqi yadro" },
+            { id: 617, q: "Erdagi barcha tirik organizmlar qatlami?", options: ["Litosfera", "Atmosfera", "Biosfera", "Gidrosfera"], answer: "Biosfera" },
+            { id: 618, q: "O'zbekistonga eng yaqin okean qaysi?", options: ["Atlantika", "Tinch", "Hind", "Shimoliy Muz"], answer: "Hind" },
+            { id: 619, q: "Eng katta ko'l (suv yuzasi bo'yicha)?", options: ["Baykal", "Orol dengizi", "Kaspiy dengizi", "Viktoriya"], answer: "Kaspiy dengizi" },
+            { id: 620, q: "Haroratni o'lchash uchun qaysi asbob ishlatiladi?", options: ["Barometr", "Anemometr", "Termometr", "Gigrometr"], answer: "Termometr" },
+            { id: 621, q: "Sayyoramizdagi eng baland tog' cho'qqisi?", options: ["Kilimanjaro", "Everest (Jomolungma)", "Akonkagua", "Elbrus"], answer: "Everest (Jomolungma)" },
+            { id: 622, q: "Sohil chizig'i kuchli egilgan yirik dengiz bo'shlig'i nima deyiladi?", options: ["Orol", "Yarim orol", "Qo'ltiq", "Dengiz"], answer: "Qo'ltiq" },
+            { id: 623, q: "Yer yuzasiga tushgan suvning bir qismi tuproq ostiga singib, nima hosil qiladi?", options: ["Kanal", "Ko'l", "Yer osti suvlari", "Botqoqlik"], answer: "Yer osti suvlari" },
+            { id: 624, q: "Ekvatorning janubida joylashgan geografik kengliklar qanday nomlanadi?", options: ["Shimoliy kenglik", "G'arbiy uzunlik", "Sharqiy uzunlik", "Janubiy kenglik"], answer: "Janubiy kenglik" },
+            { id: 625, q: "Yerning o'z o'qi atrofida aylanishi nimaga olib keladi?", options: ["Fasllar almashinishiga", "Kun va tun almashinishiga", "Oy fazasiga", "Iqlim o'zgarishiga"], answer: "Kun va tun almashinishiga" },
+            { id: 626, q: "Qaysi xarita turida hudud detallari eng kichik masshtabda ko'rsatiladi?", options: ["Maktab rejasi", "Katta masshtabli xarita", "Kichik masshtabli xarita (dunyo xaritasi)", "Topografik xarita"], answer: "Kichik masshtabli xarita (dunyo xaritasi)" },
+            { id: 627, q: "Daryo boshlanadigan joy nima deyiladi?", options: ["Quyi oqim", "Daryo havzasi", "Manba (Boshlanish)", "Deltasi"], answer: "Manba (Boshlanish)" },
+            { id: 628, q: "Atmosferaning Yer yuzasiga yaqin, eng past qatlami?", options: ["Stratosfera", "Troposfera", "Mezosfera", "Termosfera"], answer: "Troposfera" },
+            { id: 629, q: "Orollar guruhiga nima deyiladi?", options: ["Yarimorol", "Materik", "Arxipelag", "Dengiz"], answer: "Arxipelag" },
+            { id: 630, q: "O'simlik va hayvonlarning yashash muhiti asosan qaysi qatlamda joylashgan?", options: ["Yadro", "Mantiya", "Biosfera", "Stratosfera"], answer: "Biosfera" }
+        ],
+        
+        // 7-sinf: Materiklar va okeanlar geografiyasi
+        7: [
+            { id: 701, q: "Materiklar bir-biridan yiroqlashishini tushuntiruvchi nazariya?", options: ["Global isish", "Plitalar tektonikasi", "Seysmik faollik", "Geoid nazariyasi"], answer: "Plitalar tektonikasi" },
+            { id: 702, q: "Eng katta va eng chuqur okean?", options: ["Atlantika", "Hind", "Tinch okeani", "Shimoliy Muz okeani"], answer: "Tinch okeani" },
+            { id: 703, q: "Afrikaning eng yirik cho'li qaysi?", options: ["Kalahari", "Gobi", "Atakama", "Sahroi Kabir"], answer: "Sahroi Kabir" },
+            { id: 704, q: "Dunyoning eng baland tog' tizmasi qaysi materikda joylashgan?", options: ["Shimoliy Amerika (Kordilyera)", "Janubiy Amerika (And)", "Yevrosiyo (Himolay)", "Avstraliya"], answer: "Yevrosiyo (Himolay)" },
+            { id: 705, q: "Tinch okeani sohillaridagi doimiy zilzilalar va vulqonlar zonasi nima deb ataladi?", options: ["Okean o'rtasi tizmasi", "Tinch okeani olov halqasi", "Buyuk Rift vodiysi", "Mantiya zonasi"], answer: "Tinch okeani olov halqasi" },
+            { id: 706, q: "Nil daryosi qaysi okean havzasiga tegishli?", options: ["Tinch", "Atlantika", "Hind", "Shimoliy Muz"], answer: "Atlantika" },
+            { id: 707, q: "Amazonka daryosi qaysi materikda joylashgan?", options: ["Afrika", "Janubiy Amerika", "Shimoliy Amerika", "Avstraliya"], answer: "Janubiy Amerika" },
+            { id: 708, q: "Avstraliyaning eng xarakterli hayvoni?", options: ["Sher", "Fil", "Kenguru", "Panda"], answer: "Kenguru" },
+            { id: 709, q: "Eng sovuq materik?", options: ["Yevrosiyo", "Shimoliy Amerika", "Antarktida", "Afrika"], answer: "Antarktida" },
+            { id: 709, q: "Yevropani Osiyodan ajratib turuvchi tog' tizmasi?", options: ["Alp tog'lari", "Ural tog'lari", "Karpat tog'lari", "Apennin tog'lari"], answer: "Ural tog'lari" },
+            { id: 710, q: "O'rta Osiyo va O'zbekiston joylashgan materik?", options: ["Afrika", "Avstraliya", "Yevrosiyo", "Shimoliy Amerika"], answer: "Yevrosiyo" },
+            { id: 711, q: "Evropa va Shimoliy Amerika oralig'ida joylashgan okean?", options: ["Tinch", "Hind", "Atlantika", "Shimoliy Muz"], answer: "Atlantika" },
+            { id: 712, q: "Shimoliy Amerikadagi Buyuk ko'llar guruhi qayerda joylashgan?", options: ["Cho'lda", "Kanada va AQSH chegarasida", "Meksikada", "Alyaskada"], answer: "Kanada va AQSH chegarasida" },
+            { id: 713, q: "Antarktidada doimiy aholi yashaydimi?", options: ["Ha, juda ko'p", "Ha, asosan mahalliy xalq", "Yo'q, faqat ilmiy stansiyalar xodimlari", "Ha, faqat yozda"], answer: "Yo'q, faqat ilmiy stansiyalar xodimlari" },
+            { id: 714, q: "Yer yuzida eng ko'p tarqalgan chuchuk suv zaxirasi qayerda joylashgan?", options: ["Daryolarda", "Ko'llarda", "Muzliklar va yer osti suvlari", "Botqoqliklarda"], answer: "Muzliklar va yer osti suvlari" },
+            { id: 715, q: "Yil davomida deyarli doimiy yuqori harorat va ko'p yog'in bo'ladigan hudud?", options: ["Tropik cho'l", "Subtropik iqlim", "Ekvatorial iqlim", "Mo''tadil iqlim"], answer: "Ekvatorial iqlim" },
+            { id: 716, q: "Okean tubidagi qadimgi materik qismlari nima deb ataladi?", options: ["Gumbaz", "Shelf (Materik sayozligi)", "Vulqon", "Yoriq"], answer: "Shelf (Materik sayozligi)" },
+            { id: 717, q: "Yevrosiyoning g'arbiy qismida iqlimni yumshatuvchi okean oqimi?", options: ["Bengel oqimi", "Labrodor oqimi", "Golfstrim (Shimoliy Atlantika oqimi)", "Peru oqimi"], answer: "Golfstrim (Shimoliy Atlantika oqimi)" },
+            { id: 718, q: "Avstraliyani kesib o'tuvchi eng mashhur tog' tizmasi?", options: ["Kordilyera", "Ural", "Katta Suvayirg'ich tizmasi", "And"], answer: "Katta Suvayirg'ich tizmasi" },
+            { id: 719, q: "Janubiy Amerikadagi eng uzoq tog' tizmasi?", options: ["Kavkaz", "And", "Himolay", "Alp"], answer: "And" },
+            { id: 720, q: "Dunyoning eng sersuv daryosi?", options: ["Nil", "Missisipi", "Amazonka", "Volga"], answer: "Amazonka" },
+            { id: 721, q: "Shimoliy qutb atrofidagi muz bilan qoplangan hudud?", options: ["Antarktida", "Grenlandiya", "Arktika", "Sibir"], answer: "Arktika" },
+            { id: 722, q: "Materik ichkarisida joylashgan katta ko'l turi?", options: ["Okean", "Dengiz", "Oqmas (berk) ko'l", "Qo'ltiq"], answer: "Oqmas (berk) ko'l" },
+            { id: 723, q: "Afrika, Janubiy Amerika va Avstraliya qadimda qaysi yagona materik tarkibida bo'lgan?", options: ["Lavraziya", "Pangeya", "Gondvana", "Tetis"], answer: "Gondvana" },
+            { id: 724, q: "Tropik iqlim mintaqasida hosil bo'ladigan kuchli shamollar bilan bog'liq bo'ron?", options: ["Siklon", "Antisiklon", "Tayfun (G'arbiy yarim sharda - Hurrikan)", "Musson"], answer: "Tayfun (G'arbiy yarim sharda - Hurrikan)" },
+            { id: 725, q: "Eng ko'p aholi yashaydigan materik?", options: ["Afrika", "Shimoliy Amerika", "Yevrosiyo", "Janubiy Amerika"], answer: "Yevrosiyo" },
+            { id: 726, q: "Okean suvining sho'rlanishini oshiruvchi asosiy omil?", options: ["Ko'p yog'in", "Daryo suvlari", "Kuchli bug'lanish", "Muz erishi"], answer: "Kuchli bug'lanish" },
+            { id: 727, q: "Vulqon otilishi qaysi qatlamdagi jarayon bilan bog'liq?", options: ["Atmosfera", "Mantiya", "Biosfera", "Gidrosfera"], answer: "Mantiya" },
+            { id: 728, q: "Ekvatorial iqlim zonasida keng tarqalgan o'rmon turi?", options: ["Tayga", "Savanalar", "Nam ekvatorial (Tropik) o'rmonlar", "Tundra"], answer: "Nam ekvatorial (Tropik) o'rmonlar" },
+            { id: 729, q: "Yevropadagi dunyoning eng kichik davlati?", options: ["Germaniya", "Rossiya", "Vatikan", "Fransiya"], answer: "Vatikan" }
+        ],
+        
+        // 8-sinf: O'zbekistonning tabiiy geografiyasi
+        8: [
+            { id: 801, q: "O'zbekiston qaysi materikda joylashgan?", options: ["Afrika", "Yevrosiyo", "Shimoliy Amerika", "Avstraliya"], answer: "Yevrosiyo" },
+            { id: 802, q: "O'zbekistonning iqlimi qanday?", options: ["Ekvatorial", "Mo''tadil dengiz", "Keskin kontinental (kontinental)", "Subtropik nam"], answer: "Keskin kontinental (kontinental)" },
+            { id: 803, q: "O'zbekistonning eng baland cho'qqisi?", options: ["Chimyon", "Hazrat Sulton", "Qizilqum cho'qqisi", "Adiblar Xiyoboni"], answer: "Hazrat Sulton" },
+            { id: 804, q: "O'zbekiston hududidagi eng yirik cho'l?", options: ["Qumqo'ng'ir", "Sahroi Kabir", "Gobi", "Qizilqum"], answer: "Qizilqum" },
+            { id: 805, q: "O'zbekistonning eng yirik daryolari qaysilar?", options: ["Sirdaryo va Amudaryo", "Zarafshon va Norin", "Volga va Ural", "Nil va Amazonka"], answer: "Sirdaryo va Amudaryo" },
+            { id: 806, q: "O'zbekiston necha davlat bilan chegaradosh?", options: ["3", "4", "5", "6"], answer: "5" },
+            { id: 807, q: "O'zbekiston hududidagi yagona dengiz (ko'l)?", options: ["Balxash", "Orol dengizi", "Issiqko'l", "Kaspiy dengizi"], answer: "Orol dengizi" },
+            { id: 808, q: "O'zbekistonda tog'lar qaysi hududlarda joylashgan?", options: ["Shimoliy qismida", "G'arbiy qismida", "Janubi-sharqiy qismida", "Faqat markazda"], answer: "Janubi-sharqiy qismida" },
+            { id: 809, q: "Toshkent shahri qaysi daryo bo'yida joylashgan?", options: ["Amudaryo", "Sirdaryo", "Chirchiq", "Zarafshon"], answer: "Chirchiq" },
+            { id: 810, q: "O'zbekistonning eng serhosil tuproq turi?", options: ["Sho'rxok", "Qumli tuproq", "Bo'z tuproq (Tipik/Och)", "Botqoq"], answer: "Bo'z tuproq (Tipik/Och)" },
+            { id: 811, q: "O'zbekistondagi eng ko'p uchraydigan tabiiy boylik?", options: ["Yog'och", "Kofe", "Tabiiy gaz va oltin", "Neft"], answer: "Tabiiy gaz va oltin" },
+            { id: 812, q: "Markaziy Osiyoda Qizilqum cho'li nima bilan mashhur?", options: ["Qor", "Uchish-qo'nish joyi", "Qadimgi dinozavr qoldiqlari", "Suv to'planishi"], answer: "Qadimgi dinozavr qoldiqlari" },
+            { id: 813, q: "O'zbekistonning ma'muriy hududiy bo'linishi qanday?", options: ["Viloyatlar, rayonlar, ovullar", "Viloyatlar, shahar tumanlari", "Viloyatlar, Qoraqalpog'iston Respublikasi, Toshkent shahri", "Faqat viloyatlar"], answer: "Viloyatlar, Qoraqalpog'iston Respublikasi, Toshkent shahri" },
+            { id: 814, q: "Amu va Sirdaryoning suv manbai?", options: ["Arktika okeani", "Yer osti suvlari", "Tog'lardagi muzliklarning erishi", "Ko'llar"], answer: "Tog'lardagi muzliklarning erishi" },
+            { id: 815, q: "O'zbekistonning eng ko'p aholi yashaydigan hududi?", options: ["Qizilqum", "Tog'li hududlar", "Farg'ona vodiysi", "Qoraqalpog'iston"], answer: "Farg'ona vodiysi" },
+            { id: 816, q: "Toshkent va Samarqand shaharlari qaysi tog' tizmalariga yaqin joylashgan?", options: ["Hisor-Oloy tog' tizmasi", "Tyan-Shan tog' tizmasi", "Ural tog'lari", "Alp tog'lari"], answer: "Tyan-Shan tog' tizmasi" },
+            { id: 817, q: "O'zbekistonda eng muhim gidroenergetika manbai?", options: ["Dengiz to'lqinlari", "Shamollar", "Tog' daryolari", "Ko'llar"], answer: "Tog' daryolari" },
+            { id: 818, q: "O'zbekiston hududidagi eng katta tekislik?", options: ["Farg'ona", "Toshkent vohasi", "Turon tekisligi", "Surxondaryo"], answer: "Turon tekisligi" },
+            { id: 819, q: "Orol dengizining qurishi qanday ekologik muammo keltirib chiqardi?", options: ["Suv sathi ko'tarilishi", "Iqlimning yumshashi", "Sho'rlangan qumli bo'ronlar va biologik xilma-xillikning yo'qolishi", "Tog'larning paydo bo'lishi"], answer: "Sho'rlangan qumli bo'ronlar va biologik xilma-xillikning yo'qolishi" },
+            { id: 820, q: "O'zbekiston Respublikasining poytaxti?", options: ["Samarqand", "Buxoro", "Toshkent", "Xiva"], answer: "Toshkent" },
+            { id: 821, q: "O'zbekistondagi eng mashhur qo'riqxonalardan biri?", options: ["Sahroi Kabir", "Zarafshon milliy bog'i", "Chotqol qo'riqxonasi", "Baykal qo'riqxonasi"], answer: "Chotqol qo'riqxonasi" },
+            { id: 822, q: "O'zbekistonning asosiy ekinlari?", options: ["Sholi va kartoshka", "G'alla va paxta", "Kakao va banan", "Choy va kofe"], answer: "G'alla va paxta" },
+            { id: 823, q: "O'zbekistonda yozgi harorat qanday bo'ladi?", options: ["Sovat", "Nam va salqin", "Issiq va quruq", "Doimiy yog'ingarchilik"], answer: "Issiq va quruq" },
+            { id: 824, q: "O'zbekiston qaysi dengizdan eng uzoq masofada joylashgan?", options: ["O'rta yer dengizi", "Qora dengiz", "Tinch okeani", "Baltiq dengizi"], answer: "Tinch okeani" },
+            { id: 825, q: "Qaysi viloyatda tarixiy obidalar (Registon) joylashgan?", options: ["Toshkent", "Samarqand", "Buxoro", "Xorazm"], answer: "Samarqand" },
+            { id: 826, q: "O'zbekistonning tuprog'ida eng ko'p uchraydigan mineral?", options: ["Tsement", "Xloridlar", "Ohak (Karbonat kislotali tuzlar)", "Kvars"], answer: "Ohak (Karbonat kislotali tuzlar)" },
+            { id: 827, q: "O'zbekistonda yiliga eng kam yog'in tushadigan hudud?", options: ["Tog'lar", "Cho'llar (Qizilqum)", "Farg'ona vodiysi", "Toshkent vohasi"], answer: "Cho'llar (Qizilqum)" },
+            { id: 828, q: "O'zbekistonning eng katta siyosiy-iqtisodiy markazi?", options: ["Buxoro", "Samarqand", "Toshkent", "Andijon"], answer: "Toshkent" },
+            { id: 829, q: "O'zbekiston iqlimining qishki xususiyati?", options: ["Issiq va quruq", "Sovuq va nam", "Mo''tadil va quruq (kam yog'in)", "Doimiy qorli"], answer: "Mo''tadil va quruq (kam yog'in)" },
+            { id: 830, q: "O'zbekistondagi tojiklar, qirg'izlar, qozoqlar kabi etnik guruhlar joylashgan hudud?", options: ["Tog'lar va chegara hududlar", "Faqat Buxoroda", "Faqat cho'lda", "Faqat Toshkentda"], answer: "Tog'lar va chegara hududlar" }
+        ],
+        
+        // 9-sinf: Dunyo iqtisodiy va ijtimoiy geografiyasi
+        9: [
+            { id: 901, q: "Dunyoning ijtimoiy-iqtisodiy geografiyasi nimani o'rganadi?", options: ["Faqat tabiiy hodisalarni", "Aholini, xo'jalikni, davlatlarni", "Faqat tog'larni", "Daryolarni"], answer: "Aholini, xo'jalikni, davlatlarni" },
+            { id: 902, q: "Aholi soni bo'yicha dunyodagi eng katta davlat?", options: ["AQSH", "Rossiya", "Hindiston (tez o'syapti)", "Xitoy"], answer: "Xitoy" },
+            { id: 903, q: "Rivojlangan mamlakatlarning iqtisodiyotida qaysi soha ustunlik qiladi?", options: ["Qishloq xo'jaligi", "Xizmat ko'rsatish (Uchinchi) sohasi", "Sanoat (Ikkinchi) sohasi", "Baliqchilik"], answer: "Xizmat ko'rsatish (Uchinchi) sohasi" },
+            { id: 904, q: "Neft va tabiiy gazning eng yirik eksportchilari joylashgan mintaqa?", options: ["Yevropa", "Shimoliy Amerika", "Fors ko'rfazi (Yaqin Sharq)", "Avstraliya"], answer: "Fors ko'rfazi (Yaqin Sharq)" },
+            { id: 905, q: "Dunyoning eng yuqori urbanizatsiya (shahar aholisi) darajasi qayerda?", options: ["Afrika", "Janubiy Amerika va Shimoliy Amerika", "Osiyo", "Avstraliya"], answer: "Janubiy Amerika va Shimoliy Amerika" },
+            { id: 906, q: "G'alla yetishtirish bo'yicha dunyodagi eng yirik davlatlardan biri?", options: ["Misr", "Yaponiya", "AQSH", "Kongo"], answer: "AQSH" },
+            { id: 907, q: "Yaponiyaning iqtisodiy rivojlanishidagi asosiy omil?", options: ["Katta yer resurslari", "Neft resurslari", "Yuqori texnologiyalar va malakali ishchi kuchi", "Tog'lar"], answer: "Yuqori texnologiyalar va malakali ishchi kuchi" },
+            { id: 908, q: "O'rmon resurslariga eng boy materik?", options: ["Afrika", "Yevrosiyo", "Janubiy Amerika (Amazoniya)", "Avstraliya"], answer: "Janubiy Amerika (Amazoniya)" },
+            { id: 909, q: "Ishlab chiqarishning 'klasterlashuvi' nima?", options: ["Ishlab chiqarishni to'xtatish", "Bir joyda sanoat korxonalarining to'planishi", "Faqat bitta turdagi mahsulot ishlab chiqarish", "Qishloq xo'jaligini rivojlantirish"], answer: "Bir joyda sanoat korxonalarining to'planishi" },
+            { id: 910, q: "Dunyo aholisining asosiy qismi qaysi yarim sharda yashaydi?", options: ["Janubiy", "G'arbiy", "Shimoliy", "Sharqiy"], answer: "Shimoliy" },
+            { id: 911, q: "Sanoatning 'birinchi' sohasiga nimalar kiradi?", options: ["Qishloq xo'jaligi va qazib chiqarish sanoati", "Xizmat ko'rsatish", "Yuqori texnologiyalar", "Ta'lim"], answer: "Qishloq xo'jaligi va qazib chiqarish sanoati" },
+            { id: 912, q: "Aholi o'sish sur'atlari eng yuqori bo'lgan mintaqa?", options: ["Yevropa", "Shimoliy Amerika", "Afrika (Sahroi Kabir janubida)", "Avstraliya"], answer: "Afrika (Sahroi Kabir janubida)" },
+            { id: 913, q: "Birlashgan Millatlar Tashkiloti (BMT) ning markaziy idorasi qayerda joylashgan?", options: ["London", "Parij", "Nyu-York", "Jeneva"], answer: "Nyu-York" },
+            { id: 914, q: "Germaniya va Fransiyaning asosiy iqtisodiy bloki?", options: ["NAFTA", "APEC", "Yevropa Ittifoqi (EI)", "Shanxay hamkorlik tashkiloti"], answer: "Yevropa Ittifoqi (EI)" },
+            { id: 915, q: "Dunyo aholisining yarmidan ko'pi qaysi ikkita davlatda yashaydi?", options: ["AQSH va Rossiya", "Xitoy va Hindiston", "Braziliya va Kanada", "Yaponiya va Germaniya"], answer: "Xitoy va Hindiston" },
+            { id: 916, q: "Xizmat ko'rsatish sohasi (turizm, moliya, aloqa) qanday nomlanadi?", options: ["Birlamchi", "Ikkilamchi", "Uchilamchi (Uchinchi)", "To'rtlamchi"], answer: "Uchilamchi (Uchinchi)" },
+            { id: 917, q: "Kanadaning iqtisodiyotdagi asosiy xususiyati?", options: ["Tropik mevalar yetishtirish", "Suv resurslari va o'rmon sanoati", "Faqat xizmat ko'rsatish", "Kofe eksporti"], answer: "Suv resurslari va o'rmon sanoati" },
+            { id: 918, q: "Sanoatning rivojlanishiga eng ko'p ta'sir etuvchi ekologik muammo?", options: ["Yangi vulqonlar", "Buzilish", "Atmosfera ifloslanishi va global isish", "Yangi ko'llar paydo bo'lishi"], answer: "Atmosfera ifloslanishi va global isish" },
+            { id: 919, q: "Dunyo xo'jaligining ixtisoslashuvi nima?", options: ["Har bir mamlakatning faqat bitta mahsulot ishlab chiqarishi", "Davlatlarning ma'lum mahsulot turlarini ishlab chiqarishga yo'naltirilishi", "Barcha davlatlar hamma narsani ishlab chiqarishi", "Faqat neft sotish"], answer: "Davlatlarning ma'lum mahsulot turlarini ishlab chiqarishga yo'naltirilishi" },
+            { id: 920, q: "Aholi joylashuvining notekisligiga sabab nima?", options: ["Faqat siyosiy omil", "Tabiiy sharoitlar va iqtisodiy omillar", "Faqat bir xil iqlim", "Faqat tarixiy omil"], answer: "Tabiiy sharoitlar va iqtisodiy omillar" },
+            { id: 921, q: "AQSHning eng industrial va moliyaviy markazi?", options: ["Los-Anjeles", "Nyu-York", "Chikago", "Mayami"], answer: "Nyu-York" },
+            { id: 922, q: "O'zbekiston joylashgan iqtisodiy mintaqa?", options: ["Sharqiy Yevropa", "Janubi-Sharqiy Osiyo", "Markaziy Osiyo", "Yaqin Sharq"], answer: "Markaziy Osiyo" },
+            { id: 923, q: "Yevropa mamlakatlarining aholisiga xos xususiyat?", options: ["Yuqori tug'ilish", "Yuqori o'lim", "Aholining qarishi", "Yuqori migratsiya"], answer: "Aholining qarishi" },
+            { id: 924, q: "Xalqaro savdoda eng muhim xom ashyo?", options: ["O'yinchoqlar", "Neft", "Qum", "Suv"], answer: "Neft" },
+            { id: 925, q: "Kanada, Avstraliya, Rossiya uchun xos bo'lgan umumiy xususiyat?", options: ["Kichik hudud", "Past urbanizatsiya", "Katta hudud va kam aholi zichligi", "Tropik iqlim"], answer: "Katta hudud va kam aholi zichligi" },
+            { id: 926, q: "Dunyoning sanoat ishlab chiqarishida yetakchi bo'lgan iqtisodiy blok?", options: ["BMT", "NAFTA", "Yevropa Ittifoqi (EI)", "Mustaqil Davlatlar Hamdo'stligi (MDH)"], answer: "Yevropa Ittifoqi (EI)" },
+            { id: 927, q: "Islom diniga e'tiqod qiluvchi aholining asosiy qismi qaysi mintaqada yashaydi?", options: ["G'arbiy Yevropa", "Sharqiy Osiyo", "Shimoliy Afrika va G'arbiy Osiyo", "Janubiy Amerika"], answer: "Shimoliy Afrika va G'arbiy Osiyo" },
+            { id: 928, q: "Eng ko'p aholi zichligi bo'lgan davlatga misol?", options: ["Kanada", "Mongoliya", "Bangladesh", "Rossiya"], answer: "Bangladesh" },
+            { id: 929, q: "Jahon iqtisodiyotining 'to'rtlamchi' sohasiga nimalar kiradi?", options: ["Qishloq xo'jaligi", "Og'ir sanoat", "Ilm-fan va axborot texnologiyalari", "Konchilik"], answer: "Ilm-fan va axborot texnologiyalari" },
+            { id: 930, q: "Osiyo davlatlarida sholi yetishtirishning keng tarqalish sababi?", options: ["Tog'li hududlar", "Dengizga yaqinlik", "Nam iqlim va ko'p ishchi kuchi", "Qumli tuproq"], answer: "Nam iqlim va ko'p ishchi kuchi" }
+        ],
+        
+        // 10-sinf: Mintaqalar geografiyasi (Yevropa, Osiyo, Afrika)
+        10: [
+            { id: 1001, q: "Yevropadagi eng katta davlat?", options: ["Fransiya", "Germaniya", "Rossiya (Yevropa qismi)", "Ispaniya"], answer: "Rossiya (Yevropa qismi)" },
+            { id: 1002, q: "Janubi-Sharqiy Osiyoda joylashgan orol-davlat?", options: ["Hindiston", "Xitoy", "Indoneziya", "Kambodja"], answer: "Indoneziya" },
+            { id: 1003, q: "Afrika davlatlarining iqtisodiyotiga xos xususiyat?", options: ["Yuqori texnologiya", "Faqat xizmat ko'rsatish", "Xom ashyo eksportiga bog'liqlik", "Kuchsiz qishloq xo'jaligi"], answer: "Xom ashyo eksportiga bog'liqlik" },
+            { id: 1004, q: "Yaqin Sharqdagi qaysi davlat neft resurslariga juda boy?", options: ["Misr", "Livan", "Saudiya Arabistoni", "Turkiya"], answer: "Saudiya Arabistoni" },
+            { id: 1005, q: "Yaponiyada sanoat korxonalari asosan qayerda joylashgan?", options: ["Tog'larda", "Markaziy hududlarda", "Sohil bo'yidagi tekisliklarda", "Cho'llarda"], answer: "Sohil bo'yidagi tekisliklarda" },
+            { id: 1006, q: "Lotin Amerikasi mamlakatlarining mustamlakachilikdan keyingi asosiy muammosi?", options: ["Yuqori texnologiya", "Qarzdorlik va siyosiy beqarorlik", "Suv tanqisligi", "Aholining qarishi"], answer: "Qarzdorlik va siyosiy beqarorlik" },
+            { id: 1007, q: "Germaniyaning iqtisodiyoti nimaga asoslangan?", options: ["Turizm", "O'rmonchilik", "Mashinasozlik va kimyo sanoati", "Qishloq xo'jaligi"], answer: "Mashinasozlik va kimyo sanoati" },
+            { id: 1008, q: "Shimoliy Afrika davlatlari uchun eng muhim tabiiy resurs?", options: ["Olmos", "Neft va gaz", "Yog'och", "Kofe"], answer: "Neft va gaz" },
+            { id: 1009, q: "Hindistonda qaysi din keng tarqalgan?", options: ["Buddizm", "Islom", "Xristianlik", "Hinduizm"], answer: "Hinduizm" },
+            { id: 1010, q: "Buyuk Britaniyani materik Yevropadan ajratib turuvchi suv havzasi?", options: ["O'rta yer dengizi", "Ingliz kanali (La-Mansh)", "Baltiq dengizi", "Qora dengiz"], answer: "Ingliz kanali (La-Mansh)" },
+            { id: 1011, q: "Sanoat va aholi zichligi eng yuqori bo'lgan Osiyo mintaqasi?", options: ["Sibir", "Markaziy Osiyo", "Sharqiy va Janubi-Sharqiy Osiyo", "Yaqin Sharq"], answer: "Sharqiy va Janubi-Sharqiy Osiyo" },
+            { id: 1012, q: "Braziliyaning iqtisodiyoti qaysi sohada kuchli?", options: ["Choy ishlab chiqarish", "Neft", "Qishloq xo'jaligi (kofe, shakarqamish) va tog'-kon sanoati", "Mashinasozlik"], answer: "Qishloq xo'jaligi (kofe, shakarqamish) va tog'-kon sanoati" },
+            { id: 1013, q: "Yevropaning 'ko'mir va metallurgiya bazasi' qaysi davlatlar hududida joylashgan?", options: ["Skandinaviya", "Italiya va Ispaniya", "Germaniya, Polsha, Belgiya", "Balkon yarimoroli"], answer: "Germaniya, Polsha, Belgiya" },
+            { id: 1014, q: "AQSHning 'Sanoat belbog'i' qayerda joylashgan?", options: ["G'arbiy sohil", "Janubiy shtatlar", "Shimoli-sharqiy va Buyuk ko'llar hududi", "Quruq cho'llar"], answer: "Shimoli-sharqiy va Buyuk ko'llar hududi" },
+            { id: 1015, q: "Xitoyning tez rivojlanishiga nima sabab bo'lgan?", options: ["Aholining kamayishi", "Arzon ishchi kuchi va xorijiy investitsiyalar", "Faqat qishloq xo'jaligi", "BMT yordami"], answer: "Arzon ishchi kuchi va xorijiy investitsiyalar" },
+            { id: 1016, q: "Kanadaning qaysi shahri yirik moliyaviy va madaniy markaz hisoblanadi?", options: ["Vankuver", "Monreal", "Toronto", "Ottava"], answer: "Toronto" },
+            { id: 1017, q: "Rossiyaning asosiy eksport mahsulotlari?", options: ["Meva va sabzavot", "Neft, gaz va qurol-yarog'", "Avtomobillar", "Tropik mevalar"], answer: "Neft, gaz va qurol-yarog'" },
+            { id: 1018, q: "Avstraliyaning aholisi asosan qayerda to'plangan?", options: ["Cho'l markazida", "Tog'larda", "Janubi-sharqiy sohillar", "Shimoliy qutbga yaqin"], answer: "Janubi-sharqiy sohillar" },
+            { id: 1019, q: "Yevropaning iqlimiga ta'sir etuvchi asosiy dengiz?", options: ["Qora dengiz", "O'rta yer dengizi", "Orol dengizi", "Qizil dengiz"], answer: "O'rta yer dengizi" },
+            { id: 1020, q: "Indoneziya nima yetishtirish bo'yicha dunyoda yetakchi?", options: ["Kraxmal", "G'alla", "Kofe, kauchuk va palmo yog'i", "Yog'och"], answer: "Kofe, kauchuk va palmo yog'i" },
+            { id: 1021, q: "Osiyoda yirik sement va gips ishlab chiqaruvchi mamlakat?", options: ["Yaponiya", "Hindiston", "Xitoy", "Eron"], answer: "Xitoy" },
+            { id: 1022, q: "O'zbekistonga qo'shni bo'lgan yadro quroliga ega davlat?", options: ["Eron", "Qozog'iston", "Afg'oniston", "Pokiston"], answer: "Pokiston" },
+            { id: 1023, q: "Arab davlatlariga xos bo'lgan ekologik muammo?", options: ["Muzliklarning erishi", "Suv resurslarining yetishmasligi", "Doimiy suv toshqinlari", "Tog' o'pirilishi"], answer: "Suv resurslarining yetishmasligi" },
+            { id: 1024, q: "Fransiyaning qaysi sohasida dunyo miqyosidagi yetakchilik mavjud?", options: ["Mashinasozlik", "Atom energetikasi va qishloq xo'jaligi", "Neft qazib olish", "Konchilik"], answer: "Atom energetikasi va qishloq xo'jaligi" },
+            { id: 1025, q: "Lotin Amerikasi qaysi til oilasi ustunlik qiladi?", options: ["Slavyan", "German", "Roman (Ispan, Portugal)", "Xitoy"], answer: "Roman (Ispan, Portugal)" },
+            { id: 1026, q: "Afrika qit'asining ko'pchilik mamlakatlarining aholi o'sish sur'ati qanday?", options: ["Juda past", "O'rta", "Juda yuqori", "Nolga teng"], answer: "Juda yuqori" },
+            { id: 1027, q: "Avstraliyadagi eng mashhur tabiiy ob'ekt?", options: ["Ural tog'lari", "Buyuk Rift vodiysi", "Uluru (Ayers Rok) qoyasi", "And tog'lari"], answer: "Uluru (Ayers Rok) qoyasi" },
+            { id: 1028, q: "Kanada va AQSH iqtisodiyoti uchun xos bo'lgan umumiy xususiyat?", options: ["Juda arzon ishchi kuchi", "Neft eksportiga bog'liqlik", "Yuqori rivojlangan iqtisodiyot va texnologiya", "Faqat bir xil mahsulot ishlab chiqarish"], answer: "Yuqori rivojlangan iqtisodiyot va texnologiya" },
+            { id: 1029, q: "Iqtisodiy rivojlangan Osiyo davlatlariga misol?", options: ["Livan, Eron", "Yaponiya, Janubiy Koreya, Singapur", "Hindiston, Pokiston", "Mongoliya, Nepal"], answer: "Yaponiya, Janubiy Koreya, Singapur" },
+            { id: 1030, q: "Yevropadagi yirik daryolar (masalan, Dunay, Reyn) ning ahamiyati?", options: ["Faqat baliqchilik", "Turizm", "Yirik transport va energetika yo'llari", "Yolg'iz sayohat"], answer: "Yirik transport va energetika yo'llari" }
+        ],
+        
+        // 11-sinf: Global muammolar va O'zbekistonning jahon iqtisodiyotidagi o'rni
+        11: [
+            { id: 1101, q: "Global muammolarga nimalar kiradi?", options: ["Faqat bir davlat muammosi", "Butun insoniyatga ta'sir etuvchi muammolar", "Faqat iqtisodiy muammolar", "Faqat tabiat muammolari"], answer: "Butun insoniyatga ta'sir etuvchi muammolar" },
+            { id: 1102, q: "Global isishning asosiy sababi?", options: ["Ozon teshigi", "Quyosh faolligi", "Issiqxona gazlari (CO₂, CH₄) konsentratsiyasining ortishi", "Vulqon otilishi"], answer: "Issiqxona gazlari (CO₂, CH₄) konsentratsiyasining ortishi" },
+            { id: 1103, q: "Ozon qatlami nimani bajaradi?", options: ["Hajm kamayishi", "Yer yuzasini Quyoshning ultra-binafsha nurlaridan himoya qilish", "Shamollarni keltirib chiqarish", "Suvni tozalash"], answer: "Yer yuzasini Quyoshning ultra-binafsha nurlaridan himoya qilish" },
+            { id: 1104, q: "Dunyoning demografik muammosi nimada?", options: ["Faqat tug'ilishning pastligi", "Aholining tez o'sishi yoki qarishi", "Faqat savodsizlik", "Faqat urbanizatsiya"], answer: "Aholining tez o'sishi yoki qarishi" },
+            { id: 1105, q: "O'zbekistonning jahon iqtisodiyotidagi eng muhim eksport mahsuloti?", options: ["Ko'mir", "Qishloq xo'jaligi mahsulotlari, paxta, oltin va gaz", "Neft", "Kofe"], answer: "Qishloq xo'jaligi mahsulotlari, paxta, oltin va gaz" },
+            { id: 1106, q: "O'zbekistonning iqtisodiy hamkorlikdagi asosiy yo'nalishi?", options: ["Afrika", "Yevropa Ittifoqi va MDH davlatlari, Osiyo", "Lotin Amerikasi", "Faqat Avstraliya"], answer: "Yevropa Ittifoqi va MDH davlatlari, Osiyo" },
+            { id: 1107, q: "Barqaror rivojlanish konsepsiyasi nimani nazarda tutadi?", options: ["Iqtisodiy o'sishning to'xtashi", "Tabiatni e'tiborsiz qoldirib, tez rivojlanish", "Hozirgi ehtiyojlarni qondirgan holda kelajak avlodlarga ham resurs qoldirish", "Faqat tabiiy resurslardan foydalanish"], answer: "Hozirgi ehtiyojlarni qondirgan holda kelajak avlodlarga ham resurs qoldirish" },
+            { id: 1108, q: "O'zbekistonda resurslardan oqilona foydalanishning eng dolzarb muammosi?", options: ["Suv resurslari taqchilligi", "Tog'larning yo'qligi", "Neftning ko'pligi", "Hamma yerning namligi"], answer: "Suv resurslari taqchilligi" },
+            { id: 1109, q: "Ijtimoiy-iqtisodiy rivojlanish ko'rsatkichlariga nimalar kiradi?", options: ["Faqat aholi soni", "YIM (YAIM), umr ko'rish davomiyligi, savodxonlik darajasi", "Faqat hudud kattaligi", "Daryolar uzunligi"], answer: "YIM (YAIM), umr ko'rish davomiyligi, savodxonlik darajasi" },
+            { id: 1110, q: "Dunyo okeani resurslari muammosiga nima sabab bo'lmoqda?", options: ["Suv sathining oshishi", "Iqlimning o'zgarishi", "Ifoslanish va baliq resurslarining kamayishi", "Okean tubining pasayishi"], answer: "Ifoslanish va baliq resurslarining kamayishi" },
+            { id: 1111, q: "Aholi salomatligiga eng ko'p ta'sir etuvchi global muammo?", options: ["Kosmik uchish", "Ichimlik suvi taqchilligi va sifatsizligi", "Turizmning rivojlanishi", "Katta yo'llar qurilishi"], answer: "Ichimlik suvi taqchilligi va sifatsizligi" },
+            { id: 1112, q: "O'zbekistonda qayta tiklanadigan energiya manbalari?", options: ["Ko'mir va gaz", "Yadro energiyasi", "Quyosh va shamol energiyasi", "Neft"], answer: "Quyosh va shamol energiyasi" },
+            { id: 1113, q: "Xalqaro mehnat taqsimoti nima?", options: ["Hamma davlatlar bitta ishni qilishi", "Davlatlar o'rtasida ishlab chiqarish turlarining ixtisoslashuvi", "Faqat savdo-sotiq", "Aholining ko'chib yurishi"], answer: "Davlatlar o'rtasida ishlab chiqarish turlarining ixtisoslashuvi" },
+            { id: 1114, q: "O'zbekistonning dunyo turizmidagi o'rni qanday omilga bog'liq?", options: ["Tog'larning yo'qligi", "Tarixiy obidalar (Ipak yo'li markazlari)", "Faqat cho'llar", "Muzliklar"], answer: "Tarixiy obidalar (Ipak yo'li markazlari)" },
+            { id: 1115, q: "BMT ning 'Ming yillik rivojlanish maqsadlari' nimaga qaratilgan?", options: ["Harbiy kuchni oshirish", "Faqat YIM ni o'stirish", "Qashshoqlikni kamaytirish va atrof-muhitni himoya qilish", "Faqat kosmik tadqiqotlar"], answer: "Qashshoqlikni kamaytirish va atrof-muhitni himoya qilish" },
+            { id: 1116, q: "Yer yuzasida cho'llanish jarayonining asosiy sababi?", options: ["Daryo suvi", "Iqlim o'zgarishi va inson faoliyati (ortiqcha o'tlash, noto'g'ri sug'orish)", "Qor yog'ishi", "Ko'lning paydo bo'lishi"], answer: "Iqlim o'zgarishi va inson faoliyati (ortiqcha o'tlash, noto'g'ri sug'orish)" },
+            { id: 1117, q: "Yashil inqilobning asosiy maqsadi?", options: ["Fauna himoyasi", "Qishloq xo'jaligida hosildorlikni oshirish (yangi ekin turlari orqali)", "Sanoatni rivojlantirish", "Sayohat"], answer: "Qishloq xo'jaligida hosildorlikni oshirish (yangi ekin turlari orqali)" },
+            { id: 1118, q: "O'zbekiston uchun 'Ipak yo'li'ning zamonaviy ahamiyati?", options: ["Transport koridorlari va savdo aloqalarini rivojlantirish", "Faqat tarixiy qadriyat", "Muzliklar eritish", "Faqat turizm"], answer: "Transport koridorlari va savdo aloqalarini rivojlantirish" },
+            { id: 1119, q: "Xalqaro iqtisodiy integratsiya nima?", options: ["Mamlakatlar o'rtasidagi to'siqlarni kamaytirish va hamkorlikni kuchaytirish", "Davlatlarning ajralib chiqishi", "Savdoni to'xtatish", "Faqat boylarning foydasi"], answer: "Mamlakatlar o'rtasidagi to'siqlarni kamaytirish va hamkorlikni kuchaytirish" },
+            { id: 1120, q: "Ekoturizm nimani anglatadi?", options: ["Shaharda sayohat", "Ekologik jihatdan sezgir hududlarga tabiatga zarar yetkazmagan holda sayohat", "Faqat qimmat sayohat", "Mashinada sayohat"], answer: "Ekologik jihatdan sezgir hududlarga tabiatga zarar yetkazmagan holda sayohat" },
+            { id: 1121, q: "Jahonning energetika muammosi qanday resurslarga bog'liq?", options: ["Ko'mir, neft, gaz (qazilma yoqilg'ilar)", "Suv va shamol", "O'simliklar", "Hayvonlar"], answer: "Ko'mir, neft, gaz (qazilma yoqilg'ilar)" },
+            { id: 1122, q: "O'zbekistonda yashil energiya rivojlanishining asosi?", options: ["Qor", "Quyosh nurlanishining ko'pligi", "Shamollarning yo'qligi", "Dengizga yaqinlik"], answer: "Quyosh nurlanishining ko'pligi" },
+            { id: 1123, q: "Dunyo aholisining tez o'sishi qaysi davlatlar uchun xos?", options: ["Rivojlangan davlatlar", "Rivojlanayotgan davlatlar (Afrika, Osiyo)", "Yevropa davlatlari", "Faqat orol davlatlari"], answer: "Rivojlanayotgan davlatlar (Afrika, Osiyo)" },
+            { id: 1124, q: "Insoniyatning eng katta resurs muammosi?", options: ["O'yinchoqlar", "Oziq-ovqat va ichimlik suvi", "Kiyim-kechak", "Qurilish materiallari"], answer: "Oziq-ovqat va ichimlik suvi" },
+            { id: 1125, q: "Transmilliy korporatsiyalar (TMK) ning global iqtisodiyotdagi o'rni?", options: ["Savdoni to'xtatish", "Xalqaro ishlab chiqarish va xizmat ko'rsatishni tashkil etishda katta rol o'ynaydi", "Faqat mahalliy ishlar bilan shug'ullanish", "Aholini ko'chirish"], answer: "Xalqaro ishlab chiqarish va xizmat ko'rsatishni tashkil etishda katta rol o'ynaydi" },
+            { id: 1126, q: "O'zbekistonning geosiyosiy joylashuvi (Lokalizatsiya) ning asosiy xususiyati?", options: ["Okeanga chiqish", "Dengizga chiqish imkoniyati yo'q (Dengizdan uzoqlik)", "Faqat daryolar", "Faqat tog'lar"], answer: "Dengizga chiqish imkoniyati yo'q (Dengizdan uzoqlik)" },
+            { id: 1127, q: "Sanoat va transportning chiqindilari qanday ekologik muammo keltirib chiqaradi?", options: ["Cho'llanish", "Kislotali yomg'irlar", "Yashil inqilob", "Suv sathi kamayishi"], answer: "Kislotali yomg'irlar" },
+            { id: 1128, q: "YIM (YAIM) ning rivojlanishdagi ahamiyati?", options: ["Aholi soni", "Davlatning iqtisodiy qudratini ko'rsatuvchi asosiy ko'rsatkich", "Yer maydoni", "O'rmonlar soni"], answer: "Davlatning iqtisodiy qudratini ko'rsatuvchi asosiy ko'rsatkich" },
+            { id: 1129, q: "O'zbekistonning Orol dengizi muammosiga qarshi kurashdagi roli?", options: ["Muammoni e'tiborsiz qoldirish", "Xalqaro tashkilotlar bilan hamkorlikda suv resurslarini tejash", "Faqat baliq ovlash", "Qo'shni davlatlar bilan chegaralarni yopish"], answer: "Xalqaro tashkilotlar bilan hamkorlikda suv resurslarini tejash" },
+            { id: 1130, q: "Global ekologik muammolarning o'zaro bog'liqligi nimada?", options: ["Har biri alohida", "Bitta muammo boshqasini keltirib chiqarishi", "Faqat iqtisodiy omil", "Faqat geografik omil"], answer: "Bitta muammo boshqasini keltirib chiqarishi" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        const allQuestions = geographyTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Geografiya testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                input.value = option;
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(option));
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => 
+                label.innerText.trim() === qItem.answer
+            );
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                if (selectedOption.value === qItem.answer) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Geografiya Testlariga Xush Kelibsiz!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
