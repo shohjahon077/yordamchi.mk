@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biologiya Test Tizimi (5-11 sinflar)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Biology/Nature inspired Colors (Green and Earth Tones) */
+            --primary-color: #27ae60; /* To'q Yashil */
+            --secondary-color: #2ecc71; /* Och Yashil */
+            --background-light: #f9fdfa; /* Juda och yashil fon */
+            --background-card: #ffffff;
+            --text-dark: #34495e;
+            --text-light: #fff;
+            --border-radius: 12px;
+            --shadow-subtle: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--primary-color); 
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Buttons Styling --- */
+        button, .setting-btn {
+            background-color: var(--primary-color); 
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #219d52;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Class Selection and Settings Panel --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
+        .class-selection button {
+            background-color: var(--secondary-color); /* Och yashil tugmalar */
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .class-selection button:hover {
+            background-color: #27b667;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Question Styling --- */
+        .question-box {
+            background-color: #ecf8f3; /* Juda och yashil fon */
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 18px;
+            border-left: 6px solid var(--primary-color); /* To'q yashil chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 14px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #c8e6c9; /* Och yashil chegara */
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e8f5e9; 
+            border-color: var(--secondary-color);
+        }
+        .options input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color); /* Radio tugmasining rangini belgilash */
+        }
+
+        /* --- Results and Submit --- */
+        #results {
+            margin-top: 30px;
+            padding: 30px;
+            background-color: #d4edda; /* Yaxshi yashil natija foni */
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            border-radius: var(--border-radius);
+            font-size: 1.3em;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        #results button {
+            background-color: #155724; 
+            margin-top: 15px;
+        }
+
+        /* --- Result Colors --- */
+        .correct-answer {
+            background-color: #69f0ae !important; /* Bright Green for correct */
+            border-color: #00e676 !important;
+            color: #1b5e20;
+        }
+        .wrong-answer {
+            background-color: #ffcdd2 !important; /* Light Red for wrong */
+            border-color: #e57373 !important;
+            color: #c62828;
+        }
+
+        /* --- Settings Modal (reused from previous design) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">🧬 Biologiya Test Tizimi (5-11 sinflar)</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-sinf</button>
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Iltimos, testni boshlash uchun sinfni tanlang.</h3>
+        <p>"Sozlamalar" tugmasini bosib, savollar sonini o'zgartirishingiz mumkin.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Testni yakunlash</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Min 5, Maks 30 savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Questions DATABASE (Biology, 5-11 grades) ---
+
+    const biologyTestDatabase = {
+        // 5-sinf: Botanika asoslari, o'simlik qismlari
+        5: [
+            { id: 501, q: "O'simliklar havoga qaysi gazni chiqaradi?", options: ["Karbonat angidrid", "Azot", "Kislorod", "Vodorod"], answer: "Kislorod" },
+            { id: 502, q: "O'simlikning ildizi qanday vazifani bajaradi?", options: ["Fotosintez", "Nafas olish", "Suv va mineral moddalarni so'rish", "Ko'payish"], answer: "Suv va mineral moddalarni so'rish" },
+            { id: 503, q: "Qaysi o'simlik qismi fotosintez jarayonining asosiy joyi hisoblanadi?", options: ["Ildiz", "Poya", "Barg", "Gul"], answer: "Barg" },
+            { id: 504, q: "Yashil rangni beruvchi pigment nima deb ataladi?", options: ["Karbofill", "Klorofil", "Gemosianin", "Xromofor"], answer: "Klorofil" },
+            { id: 505, q: "O'simlik urug'ining rivojlanishi qaysi organdan boshlanadi?", options: ["Ildiz", "Kurtak", "Mezondon", "Murtak"], answer: "Murtak" },
+            { id: 506, q: "Hujayraning markaziy qismi nima deb ataladi?", options: ["Vakuola", "Sitoplazma", "Yadro", "Membrana"], answer: "Yadro" },
+            { id: 507, q: "O'simliklarning ko'payish organini toping.", options: ["Ildiz", "Barg", "Poya", "Gul"], answer: "Gul" },
+            { id: 508, q: "Qaysi o'simlik bir yillik o'simlik hisoblanadi?", options: ["Archa", "Qayrag'och", "Bug'doy", "Tol"], answer: "Bug'doy" },
+            { id: 509, q: "O'simliklar ozuqa moddalarni qaysi yo'l bilan hosil qiladi?", options: ["Ovqat yeyish", "Na fas olish", "Fotosintez", "Yurish"], answer: "Fotosintez" },
+            { id: 510, q: "Qaysi tuzilma o'simlik hujayrasiga mustahkamlik beradi?", options: ["Hujayra membranasi", "Hujayra devori", "Yadro", "Mitosxondriya"], answer: "Hujayra devori" },
+            { id: 511, q: "Qaysi sinfga bir urug'pallalilar kiradi?", options: ["Lola", "O'rik", "Qayrag'och", "Barchasi"], answer: "Lola" },
+            { id: 512, q: "O'simliklarning qaysi qismi suvni bug'lantiradi?", options: ["Ildiz", "Poya", "Barg (og'izchalar orqali)", "Gul"], answer: "Barg (og'izchalar orqali)" },
+            { id: 513, q: "Fotosintez uchun zarur bo'lgan asosiy energiya manbai nima?", options: ["Yomg'ir", "Shamol", "Quyosh nuri", "Tuproq"], answer: "Quyosh nuri" },
+            { id: 514, q: "Qaysi hujayra organi oqsillarni sintez qiladi?", options: ["Yadro", "Lizosoma", "Ribosoma", "Vakuola"], answer: "Ribosoma" },
+            { id: 515, q: "Gullarning chiroyli ranglari qanday vazifani bajaradi?", options: ["Himoya", "Ozuqa", "Hasharotlarni jalb qilish", "Nafas olish"], answer: "Hasharotlarni jalb qilish" },
+            { id: 516, q: "Qaysi modda o'simlikning zaxira moddasi hisoblanadi?", options: ["Yog'lar", "Oqsillar", "Kra xmal (Kraxmal)", "Vitaminlar"], answer: "Kra xmal (Kraxmal)" },
+            { id: 517, q: "Ildiz uchida joylashgan va uni himoya qiluvchi qism nima?", options: ["Ildiz xaltachasi", "Ildiz tuklari", "Kurtak", "Qobiq"], answer: "Ildiz xaltachasi" },
+            { id: 518, q: "Oddiy bargga misol toping.", options: ["Akasiya", "Gilos", "O'rik", "Barglari murakkab"], answer: "O'rik" },
+            { id: 519, q: "O'simliklarning asosan tungi vaqtda sodir bo'ladigan jarayoni nima?", options: ["Fotosintez", "Nafas olish", "Gullash", "O'sish"], answer: "Nafas olish" },
+            { id: 520, q: "Qaysi qism orqali o'simliklar tuproqdan suvni so'radi?", options: ["Ildiz xaltachasi", "Ildiz tuklari", "Asosiy ildiz", "Poya"], answer: "Ildiz tuklari" },
+            { id: 521, q: "O'simlikning vegetativ organlarini toping.", options: ["Gul, meva", "Ildiz, poya, barg", "Urug', meva", "Faqat gul"], answer: "Ildiz, poya, barg" },
+            { id: 522, q: "Dukkaklilar oilasiga kiruvchi o'simlikni toping.", options: ["Kartoshka", "Loviya", "Pomidor", "Karam"], answer: "Loviya" },
+            { id: 523, q: "O'simlik poyasining asosiy vazifasi.", options: ["Suvni so'rish", "Fotosintez", "Moddalarni tashish va tutish", "Ko'payish"], answer: "Moddalarni tashish va tutish" },
+            { id: 524, q: "Qaysi o'simliklar suvsiz yashay olmaydi?", options: ["Kaktuslar", "Qamishlar", "Suv o'tlari", "Lishayniklar"], answer: "Suv o'tlari" },
+            { id: 525, q: "O'simliklar dunyosini o'rganuvchi fan.", options: ["Zoologiya", "Anatomiya", "Botanika", "Genetika"], answer: "Botanika" },
+            { id: 526, q: "Hujayrada ozuqa moddalarni saqlovchi bo'shliq nima deyiladi?", options: ["Yadro", "Sitoplazma", "Vakuola", "Ribosoma"], answer: "Vakuola" },
+            { id: 527, q: "Hayvon va o'simlik hujayrasining farqi nimada?", options: ["Yadro yo'qligi", "Hujayra devori borligi", "Sitoplazma yo'qligi", "Faqat mitoxondriya borligi"], answer: "Hujayra devori borligi" },
+            { id: 528, q: "Mevaning asosiy vazifasi.", options: ["Fotosintez", "Urug'ni himoya qilish va tarqatish", "Suvni so'rish", "Na fas olish"], answer: "Urug'ni himoya qilish va tarqatish" },
+            { id: 529, q: "O'simlikda lateral (yon) kurtak qanday rivojlanadi?", options: ["Ildizdan", "Yaproq qo'ltig'idan", "Poyaning uchidan", "Mezondan"], answer: "Yaproq qo'ltig'idan" },
+            { id: 530, q: "Yer osti poyaga misol toping.", options: ["Sabzi", "Piyoz (boshpoya)", "Ildiz", "Barg"], answer: "Piyoz (boshpoya)" }
+        ],
+        
+        // 6-sinf: Zoologiya, umurtqasizlar (bir hujayralilar, hasharotlar, chuvalchanglar)
+        6: [
+            { id: 601, q: "Qaysi sinfga bir hujayrali hayvonlar kiradi?", options: ["Infuzoriya", "Bo'g'imoyoqlilar", "Baliqlar", "Sudralib yuruvchilar"], answer: "Infuzoriya" },
+            { id: 602, q: "Hasharotlarning asosiy xususiyati.", options: ["Skelet yo'qligi", "Tanasining ikki qismdan iboratligi", "Uch juft oyog'i borligi", "O'pka bilan nafas olishi"], answer: "Uch juft oyog'i borligi" },
+            { id: 603, q: "Qaysi umurtqasiz hayvonlarda tashqi skelet mavjud?", options: ["Chuvalchanglar", "Molyuskalar", "Bo'g'imoyoqlilar", "Gubkalar"], answer: "Bo'g'imoyoqlilar" },
+            { id: 604, q: "Chuchuk suv gidrasi qaysi turdagi ko'payish bilan ko'payadi?", options: ["Jinsiy", "Bo'linish", "Kurtaklanish", "Sporalar orqali"], answer: "Kurtaklanish" },
+            { id: 605, q: "Odam paraziti bo'lgan chuvalchangni toping.", options: ["Yomg'ir chuvalchangi", "Lenta chuvalchang", "Nematod", "Gidra"], answer: "Lenta chuvalchang" },
+            { id: 606, q: "O'rgimchaklarning nafas olish organi nima?", options: ["Jabralar", "O'pka va traxeyalar", "Teri", "Og'iz"], answer: "O'pka va traxeyalar" },
+            { id: 607, q: "Qaysi sinfga toshbaqa kiradi?", options: ["Sudralib yuruvchilar", "Amfibiyalar", "Sutemizuvchilar", "Baliqlar"], answer: "Sudralib yuruvchilar" },
+            { id: 608, q: "Hayvon hujayrasida qaysi organoid yo'q?", options: ["Mitoxondriya", "Ribosoma", "Hujayra devori", "Yadro"], answer: "Hujayra devori" },
+            { id: 609, q: "Eng sodda tuzilishga ega hayvonni toping.", options: ["Chayon", "Am yo ba", "Gidra", "Baliq"], answer: "Am yo ba" },
+            { id: 610, q: "Qaysi sinfga barcha qushlar kiradi?", options: ["Sutemizuvchilar", "Qushlar", "Amfibiyalar", "Sudralib yuruvchilar"], answer: "Qushlar" },
+            { id: 611, q: "Baliqlarning suvda nafas olish organi.", options: ["O'pka", "Teri", "Jabralar", "Traxeyalar"], answer: "Jabralar" },
+            { id: 612, q: "Amfibiyalarning (ikki xil hayot kechiruvchilar) xususiyati.", options: ["Faqat quruqlikda yashash", "So vuq qonli", "Faqat suvda yashash", "Tukli teri"], answer: "So vuq qonli" },
+            { id: 613, q: "Qaysi umurtqali hayvonda yurak ikki kamerali?", options: ["Qushlar", "Sutemizuvchilar", "Baliqlar", "Sudralib yuruvchilar"], answer: "Baliqlar" },
+            { id: 614, q: "Hasharotlarning rivojlanishidagi metamorfoz turlari.", options: ["To'liq va to'liqsiz", "Faqat to'liq", "Faqat to'liqsiz", "Bo'linish"], answer: "To'liq va to'liqsiz" },
+            { id: 608, q: "Yer yuzida eng ko'p tarqalgan hayvonlar sinfi.", options: ["Baliqlar", "Qushlar", "Hasharotlar", "Sutemizuvchilar"], answer: "Hasharotlar" },
+            { id: 616, q: "Qaysi molyuska turiga chig'anoq umuman yo'q?", options: ["Ustritsa", "Sna yom", "Sakkizoyoq", "Be rlik"], answer: "Sakkizoyoq" },
+            { id: 617, q: "Yomg'ir chuvalchangining qanday ahamiyati bor?", options: ["Zararkunanda", "Tuproqni yumshatish", "Parazit", "Ozuqa emas"], answer: "Tuproqni yumshatish" },
+            { id: 618, q: "Umurtqali hayvonlar sinfi emas.", options: ["Sudralib yuruvchilar", "Amfibiyalar", "Bo'g'imoyoqlilar", "Baliqlar"], answer: "Bo'g'imoyoqlilar" },
+            { id: 619, q: "Qaysi hayvon to'rt kamerali yurakka ega?", options: ["Baliq", "Qurbaqa", "Timsoh", "I lo n"], answer: "Timsoh" },
+            { id: 620, q: "Qu shlarning uchishga moslashganligi nimada?", options: ["Qalin tuk", "Katta mushaklar", "Bo'sh suyaklar", "Faqat qanotlar"], answer: "Bo'sh suyaklar" },
+            { id: 621, q: "Eng baland haroratga chidaydigan hayvonlar guruhi.", options: ["Baliqlar", "Qu shlar", "Sutemizuvchilar", "Sudralib yuruvchilar"], answer: "Sudralib yuruvchilar" },
+            { id: 622, q: "O'rgimchaklarning necha juft oyog'i bor?", options: ["Uch", "To'rt", "Besh", "Olti"], answer: "To'rt" },
+            { id: 623, q: "Sutemizuvchilar sinfining asosiy belgisi.", options: ["So vuq qonli", "Tuk qoplami va bolalarni sut bilan boqish", "Yuragi ikki kamerali", "Teri orqali nafas olish"], answer: "Tuk qoplami va bolalarni sut bilan boqish" },
+            { id: 624, q: "Suvdagi bir hujayralilarni o'rganuvchi fan bo'limi.", options: ["Protozoologiya", "Bakteriologiya", "Virologiya", "Mikologiya"], answer: "Protozoologiya" },
+            { id: 625, q: "Qaysi organizm yorug'lik orqali harakatlanadi?", options: ["Lenta chuvalchang", "Yashil evglena", "Am yo ba", "O'rgimchak"], answer: "Yashil evglena" },
+            { id: 626, q: "Hasharotlarning qaysi turi jamoat bo'lib yashaydi?", options: ["Kupala k", "Qo'ng'iz", "A ri", "Chigirtka"], answer: "A ri" },
+            { id: 627, q: "Hayvonlarning yashash muhiti.", options: ["Quruqlik", "Suv", "Havo", "Barchasi"], answer: "Barchasi" },
+            { id: 628, q: "Umurtqali hayvonlarni o'rganuvchi fan.", options: ["Entomologiya", "I xtiologiya", "Vertebrologiya", "Herpetologiya"], answer: "Vertebrologiya" },
+            { id: 629, q: "Qaysi sinfda sut bezlari rivojlangan?", options: ["Qu shlar", "Sudralib yuruvchilar", "Sutemizuvchilar", "Amfibiyalar"], answer: "Sutemizuvchilar" },
+            { id: 630, q: "Qushlarning qaysi organi ovqatni maydalashga xizmat qiladi?", options: ["Og'iz", "Qizilo'ngach", "Mushakli qorin", "Jigar"], answer: "Mushakli qorin" }
+        ],
+        
+        // 7-sinf: Anatomiya (Odam organizmi, to'qimalar, organlar sistemasi)
+        7: [
+            { id: 701, q: "Odam tanasining eng katta to'qimasi.", options: ["Nerv to'qimasi", "Epiteliy to'qimasi", "Biriktiruvchi to'qima", "Mushak to'qimasi"], answer: "Biriktiruvchi to'qima" },
+            { id: 702, q: "Qaysi organ qonni filtrlaydi va uni tozlaydi?", options: ["O'pka", "Yurak", "Jigar", "Oshqozon"], answer: "Jigar" },
+            { id: 703, q: "Qonning qaysi hujayralari kislorod tashish uchun javobgar?", options: ["Leykotsitlar", "Trombotsitlar", "Eritrotsitlar", "Plazma"], answer: "Eritrotsitlar" },
+            { id: 704, q: "Nerv sistemasining asosiy elementi nima?", options: ["Akson", "Neyron", "Dendrit", "Miya"], answer: "Neyron" },
+            { id: 705, q: "Odam skeletida nechta suyak bor?", options: ["206", "180", "300", "320"], answer: "206" },
+            { id: 706, q: "Ovqat hazm qilish jarayoni qaysi organda boshlanadi?", options: ["Oshqozon", "Ingichka ichak", "Og'iz bo'shlig'i", "Qizilo'ngach"], answer: "Og'iz bo'shlig'i" },
+            { id: 707, q: "Yurakning necha kamerasi bor?", options: ["Ikki", "Uch", "To'rt", "Besh"], answer: "To'rt" },
+            { id: 708, q: "Qaysi gormon qondagi shakar miqdorini tartibga soladi?", options: ["Adrenalin", "Tiroksin", "Insulin", "Testosteron"], answer: "Insulin" },
+            { id: 709, q: "Odam tanasining eng katta mushagi.", options: ["Biceps", "Qorin", "Yelka", "Katta dumba mushagi"], answer: "Katta dumba mushagi" },
+            { id: 710, q: "Ko'zning yorug'likni sezuvchi qismi nima?", options: ["Shox parda", "Gavhar", "To'r parda", "Qovoq"], answer: "To'r parda" },
+            { id: 711, q: "Immun tizimining asosiy vazifasi.", options: ["Ozuqa moddalarni tashish", "Tana haroratini tartibga solish", "Kasalliklardan himoya qilish", "Nafas olish"], answer: "Kasalliklardan himoya qilish" },
+            { id: 712, q: "Organizmning ichki muhitiga nimalar kiradi?", options: ["Qon, limfa, to'qima suyuqligi", "O'pka, yurak, buyrak", "Nerv sistemasi", "Teri"], answer: "Qon, limfa, to'qima suyuqligi" },
+            { id: 713, q: "Qaysi organ nafas olish sistemasiga tegishli emas?", options: ["Burun bo'shlig'i", "Traxeya", "Bronx", "Buyrak"], answer: "Buyrak" },
+            { id: 714, q: "Qaysi mushak to'qimasi inson ixtiyoriga bo'ysunmaydi?", options: ["Skelet mushaklari", "Silliq mushaklar", "Yurak mushagi", "Silliq mushaklar va yurak mushagi"], answer: "Silliq mushaklar va yurak mushagi" },
+            { id: 715, q: "Odam miyasining eng katta qismi.", options: ["Miyacha", "Uzunchoq miya", "Katta yarimsharlar", "O'rta miya"], answer: "Katta yarimsharlar" },
+            { id: 716, q: "Trombotsitlarning asosiy vazifasi.", options: ["Qon ivishi", "Kislorod tashish", "Himoya", "Gormon ishlab chiqarish"], answer: "Qon ivishi" },
+            { id: 717, q: "Skeletning qaysi qismi ichki organlarni himoya qiladi?", options: ["Qo'l suyaklari", "Umurtqa pog'onasi", "Qovurg'a va ko'krak qafasi", "Bosh suyak"], answer: "Qovurg'a va ko'krak qafasi" },
+            { id: 718, q: "Qaysi vitamin etishmasligi 'rat' (rahit) kasalligiga olib keladi?", options: ["A", "B", "C", "D"], answer: "D" },
+            { id: 719, q: "Ichakda yog'larni parchalashda qaysi organ ishtirok etadi?", options: ["Oshqozon osti bezi (Lipaza)", "Jigar (O't)", "Buyrak", "Taloq"], answer: "Jigar (O't)" },
+            { id: 720, q: "Odam terisining asosiy vazifasi.", options: ["Faqat himoya", "Faqat termoregulyatsiya", "Himoya, termoregulyatsiya, nafas olish", "Faqat nafas olish"], answer: "Himoya, termoregulyatsiya, nafas olish" },
+            { id: 721, q: "Nafas olishda kislorod qaysi organda qonga o'tadi?", options: ["Bronxlar", "Traxeya", "O'pka pufakchalari", "Burun bo'shlig'i"], answer: "O'pka pufakchalari" },
+            { id: 722, q: "Endokrin tizimining asosiy vazifasi.", options: ["Qon aylanishi", "Gormonlar orqali boshqaruv", "Nafas olish", "Ovqat hazm qilish"], answer: "Gormonlar orqali boshqaruv" },
+            { id: 723, q: "Odamning yirik chaynash tishlari nima deyiladi?", options: ["Kesuvchi", "Qoziq", "Jag'", "Oziq tishlar"], answer: "Oziq tishlar" },
+            { id: 724, q: "Mushaklar va suyaklarni bir-biriga bog'lovchi to'qima.", options: ["Paylar", "Xaftaga", "Boylam", "Suyak to'qimasi"], answer: "Boylam" },
+            { id: 725, q: "Odam tanasidagi eng kuchli suyak.", options: ["Oyoq panjasi", "Umurtqa", "Son suyagi", "Qovurg'a"], answer: "Son suyagi" },
+            { id: 726, q: "Qaysi organ qon bosimini tartibga soladi?", options: ["Oshqozon", "O'pka", "Buyrak", "Taloq"], answer: "Buyrak" },
+            { id: 727, q: "Teri osti yog' qavatining vazifasi.", options: ["Faqat ozuqa", "Sovuqdan himoya", "Faqat himoya", "Harakat"], answer: "Sovuqdan himoya" },
+            { id: 728, q: "Odamda jinsiy ko'payish organlari tizimini o'rganuvchi fan.", options: ["Embriologiya", "Ginekologiya", "Andrologiya", "Reproduktivologiya"], answer: "Reproduktivologiya" },
+            { id: 729, q: "Refleks yoyining markaziy qismi nima?", options: ["Sezuvchi neyron", "Effektor", "Miya va orqa miya", "Nerv tugunlari"], answer: "Miya va orqa miya" },
+            { id: 730, q: "Qaysi qonda kislorod ko'proq?", options: ["Arterial qon", "Vena qoni", "Kapillyar qon", "Limfa"], answer: "Arterial qon" }
+        ],
+
+        // 8-sinf: Umumiy Biologiya (Hujayra, Metabolizm, Genetika)
+        8: [
+            { id: 801, q: "DNK joylashgan hujayra organi.", options: ["Mitoxondriya", "Sitoplazma", "Yadro", "Ribosoma"], answer: "Yadro" },
+            { id: 802, q: "Oqsillarni sintez qilish jarayoni nima deyiladi?", options: ["Transkripsiya", "Replikatsiya", "Translatsiya", "Metabolizm"], answer: "Translatsiya" },
+            { id: 803, q: "Hujayraning 'energiya stansiyasi' nima?", options: ["Ribosoma", "Mitoxondriya", "Vakuola", "Lizosoma"], answer: "Mitoxondriya" },
+            { id: 804, q: "Tirik organizmning eng kichik birligi.", options: ["Molekula", "Organ", "Hujayra", "To'qima"], answer: "Hujayra" },
+            { id: 805, q: "Hujayraning bo'linish jarayoni.", options: ["Me yoz", "Mitoz", "Klonlash", "Genez"], answer: "Mitoz" },
+            { id: 806, q: "I rsiylikning asosiy tashuvchisi nima?", options: ["Oqsil", "Gen", "Ferment", "Lipid"], answer: "Gen" },
+            { id: 807, q: "Mendelning birinchi qonuni qanday nomlanadi?", options: ["Ajralish qonuni", "Genlarning bog'lanishi", "Dominantlik va bir xillik qonuni", "Erkin kombinatsiya"], answer: "Dominantlik va bir xillik qonuni" },
+            { id: 808, q: "Organizmdagi barcha kimyoviy jarayonlar yig'indisi.", options: ["Kataliz", "Anabolizm", "Katabolizm", "Metabolizm"], answer: "Metabolizm" },
+            { id: 809, q: "O'simlik hujayrasida fotosintez qaysi organoidda sodir bo'ladi?", options: ["Mitoxondriya", "Xloroplast", "Yadro", "Vakuola"], answer: "Xloroplast" },
+            { id: 810, q: "Genetikaning asosiy predmeti.", options: ["Hujayra tuzilishi", "I rsiylik va o'zgaruvchanlik", "Organizmlar tasnifi", "Hayvonlar anatomiyasi"], answer: "I rsiylik va o'zgaruvchanlik" },
+            { id: 811, q: "Yadroviy qobiqqa ega bo'lgan hujayra turi.", options: ["Prokariot", "Eukariot", "Virus", "Faqat o'simlik"], answer: "Eukariot" },
+            { id: 812, q: "Fermentlarning kimyoviy tabiati nima?", options: ["Uglevodlar", "Lipidlar", "Oqsillar", "Nuklein kislotalar"], answer: "Oqsillar" },
+            { id: 813, q: "Genetik materialning o'zgarishi nima deyiladi?", options: ["Rekombinatsiya", "Mutatsiya", "Translatsiya", "Adaptatsiya"], answer: "Mutatsiya" },
+            { id: 814, q: "Hujayra devorining asosiy komponenti (o'simliklarda).", options: ["Xitin", "Glikogen", "Selluloza", "Yog'"], answer: "Selluloza" },
+            { id: 815, q: "Jinsiy hujayralar hosil bo'lishi qaysi bo'linish orqali sodir bo'ladi?", options: ["Mitoz", "Me yoz", "Ammitoz", "Klonlash"], answer: "Me yoz" },
+            { id: 816, q: "Organizmning tashqi ko'rinishi (belgilari) nima deyiladi?", options: ["Genotip", "Fenotip", "Gibrid", "Alle l"], answer: "Fenotip" },
+            { id: 817, q: "Qaysi jarayon energiyaning ajralib chiqishiga olib keladi (hujayra darajasida)?", options: ["Fotosintez", "Nafas olish", "Oqsil sintezi", "Yadro bo'linishi"], answer: "Nafas olish" },
+            { id: 818, q: "RNK turlari.", options: ["mRNK, tRNK, rRNK", "DNK, RNK", "Oqsil, lipid", "Hamma to'g'ri"], answer: "mRNK, tRNK, rRNK" },
+            { id: 819, q: "Organizmlarni sun'iy tanlash usuli.", options: ["Mutagenez", "Se le ktsiya", "Evolyutsiya", "Ekologiya"], answer: "Se le ktsiya" },
+            { id: 820, q: "Odamda nechta xromosoma jufti bor?", options: ["22", "23", "46", "48"], answer: "23" },
+            { id: 821, q: "Dominant allel nima?", options: ["Har doim ko'rinadigan belgi", "Yashirin qoladigan belgi", "I rsiylanmaydigan belgi", "Faqat jinsiy hujayralarda"], answer: "Har doim ko'rinadigan belgi" },
+            { id: 822, q: "Qaysi organoidda hazm qilish fermentlari mavjud?", options: ["Ribosoma", "Lizosoma", "Golsi majmuasi", "Vakuola"], answer: "Lizosoma" },
+            { id: 823, q: "Hujayra nazariyasining asosiy g'oyasi.", options: ["O'simliklar havoda ozuqa hosil qiladi", "Barcha organizmlar hujayralardan tuzilgan", "Hayvonlar harakatlanadi", "Genetika asosiy rol o'ynaydi"], answer: "Barcha organizmlar hujayralardan tuzilgan" },
+            { id: 824, q: "O'zgaruvchanlik turlari.", options: ["Modifikatsion va genetik", "Faqat modifikatsion", "Faqat genetik", "Mendel va Morgan"], answer: "Modifikatsion va genetik" },
+            { id: 825, q: "Genlarning xromosomada joylashish nazariyasi.", options: ["Xromosoma nazariyasi", "Mitoz nazariyasi", "Evolyutsiya nazariyasi", "Se le ktsiya nazariyasi"], answer: "Xromosoma nazariyasi" },
+            { id: 826, q: "Tiriklarni o'likdan ajratib turadigan asosiy xususiyat.", options: ["Nafas olish, o'sish, ko'payish", "Faqat ko'payish", "Faqat harakat", "Faqat o'sish"], answer: "Nafas olish, o'sish, ko'payish" },
+            { id: 827, q: "Prokariot organizmlarga misol.", options: ["O'simliklar", "Hayvonlar", "Bakteriyalar", "Zamburug'lar"], answer: "Bakteriyalar" },
+            { id: 828, q: "Qaysi jarayon DNK ning o'z nusxasini yaratishidir?", options: ["Transkripsiya", "Replikatsiya", "Translatsiya", "Mutatsiya"], answer: "Replikatsiya" },
+            { id: 829, q: "Geterozigota organizm genotipi.", options: ["AA", "Aa", "aa", "AAbb"], answer: "Aa" },
+            { id: 830, q: "Biologiyaning tiriklikning yerdagi rivojlanishini o'rganuvchi bo'limi.", options: ["Genetika", "Anatomiya", "Evolyutsiya", "Fiziologiya"], answer: "Evolyutsiya" }
+        ],
+
+        // 9-sinf: Evolyutsiya, Ekologiya, Biogeotsenoz
+        9: [
+            { id: 901, q: "Evolyutsiya nazariyasining asoschisi.", options: ["G. Mendel", "Ch. Darvin", "L. Paster", "K. Linney"], answer: "Ch. Darvin" },
+            { id: 902, q: "Evolyutsiyaning asosiy harakatlantiruvchi kuchi.", options: ["Mutatsiya", "Tabiiy tanlanish", "Klonlash", "Gibridlanish"], answer: "Tabiiy tanlanish" },
+            { id: 903, q: "Organizmlar va atrof-muhit o'rtasidagi o'zaro ta'sirni o'rganuvchi fan.", options: ["Anatomiya", "Genetika", "Ekologiya", "Fiziologiya"], answer: "Ekologiya" },
+            { id: 904, q: "Hayot uchun kurash turlari.", options: ["Turlararo, tur ichida, noqulay sharoitlar bilan", "Faqat tur ichida", "Faqat turlararo", "Tabiiy tanlanish"], answer: "Turlararo, tur ichida, noqulay sharoitlar bilan" },
+            { id: 905, q: "Hayvonlarda tashqi muhitga moslashish qanday nomlanadi?", options: ["Genotip", "Mutatsiya", "Adaptatsiya", "Sele ktsiya"], answer: "Adaptatsiya" },
+            { id: 906, q: "Evolyutsiyaning elemental omillari.", options: ["Tabiiy tanlanish, irsiy o'zgaruvchanlik, genetik dreyf", "Faqat tabiiy tanlanish", "Faqat irsiyat", "Mutatsiya va modifikatsiya"], answer: "Tabiiy tanlanish, irsiy o'zgaruvchanlik, genetik dreyf" },
+            { id: 907, q: "Biogeotsenozning asosiy tarkibiy qismlari.", options: ["Tirik va o'lik moddalar", "Faqat o'simliklar", "Faqat hayvonlar", "Odam va atrof-muhit"], answer: "Tirik va o'lik moddalar" },
+            { id: 908, q: "Yashash sharoitlari tez o'zgarishi natijasida yuzaga keladigan tanlanish turi.", options: ["Harakatlantiruvchi", "Stabilizatsiyalaydigan", "Ajratuvchi", "Sun'iy"], answer: "Harakatlantiruvchi" },
+            { id: 909, q: "Oziq zanjirida birinchi bo'g'in (ishlab chiqaruvchilar).", options: ["Konsumentlar", "Redutsentlar", "Produtsentlar (Yashil o'simliklar)", "Odam"], answer: "Produtsentlar (Yashil o'simliklar)" },
+            { id: 910, q: "Evolyutsion jarayonda turli turlarning o'xshashlikni hosil qilishi (bir xil sharoitda).", options: ["Divergentsiya", "K onve rgensiya", "Atavizm", "Aromorfoz"], answer: "K onve rgensiya" },
+            { id: 911, q: "Zararli organizmga taqlid qilish.", options: ["Mimikriya", "Aro morf oz", "Degeneratsiya", "Adaptatsiya"], answer: "Mimikriya" },
+            { id: 912, q: "Oziq zanjirida ikkinchi tartibli iste'molchilar (konsumentlar II).", options: ["O'txo'rlar", "Yirtqichlar", "Redutsentlar", "Produtsentlar"], answer: "Yirtqichlar" },
+            { id: 913, q: "Biosferaning qaysi qismi hayot mavjud bo'lgan soha hisoblanadi?", options: ["Atmosfera", "Gidrosfera", "Biosfera", "Litosfera"], answer: "Biosfera" },
+            { id: 914, q: "Katta evolyutsion o'zgarishlar (organizm tuzilishini keskin murakkablashtirish).", options: ["Ide oadaptatsiya", "Degeneratsiya", "Aromorfoz", "Divergentsiya"], answer: "Aromorfoz" },
+            { id: 915, q: "Biologik xilma-xillik turlari.", options: ["Genetik, tur, ekosistema", "Faqat genetik", "Faqat tur", "Faqat ekosistema"], answer: "Genetik, tur, ekosistema" },
+            { id: 916, q: "O'zbekistonning 'Qizil kitob'ining asosiy vazifasi.", options: ["Faqat o'simliklarni saqlash", "Yo'qolib ketish xavfidagi turlarni ro'yxatga olish", "Faqat hayvonlarni saqlash", "Evolyutsiyani o'rganish"], answer: "Yo'qolib ketish xavfidagi turlarni ro'yxatga olish" },
+            { id: 917, q: "Organizmning yashash muhiti va uni tashkil etuvchi barcha omillar.", options: ["Biogeotsenoz", "Populyatsiya", "Ekosistema", "Biosfera"], answer: "Ekosistema" },
+            { id: 918, q: "Bir turga mansub organizmlar guruhining yashash joyi.", options: ["Ekosistema", "Biogeotsenoz", "Populyatsiya", "Tur"], answer: "Populyatsiya" },
+            { id: 919, q: "Odam faoliyati natijasida evolyutsion o'zgarishlar.", options: ["Tabiiy tanlanish", "Sun'iy tanlanish", "Mutatsiya", "Adaptatsiya"], answer: "Sun'iy tanlanish" },
+            { id: 920, q: "Yashil o'simliklar o'z-o'zidan ozuqa hosil qilish usuli.", options: ["Geterotrof", "Avtotrof", "Parazit", "Simbiotik"], answer: "Avtotrof" },
+            { id: 921, q: "Biogeotsenozda organik moddalarni noorganik moddalarga parchalovchilar.", options: ["Produtsentlar", "Konsumentlar", "Redutsentlar", "O'txo'rlar"], answer: "Redutsentlar" },
+            { id: 922, q: "I xcham evolyutsiya (tur ichida o'zgarishlar).", options: ["Makroevolyutsiya", "Mikroevolyutsiya", "Aromorfoz", "Degeneratsiya"], answer: "Mikroevolyutsiya" },
+            { id: 923, q: "Quyosh energiyasini kimyoviy energiyaga aylantirish jarayoni.", options: ["Nafas olish", "Ovqat hazm qilish", "Fotosintez", "Ko'payish"], answer: "Fotosintez" },
+            { id: 924, q: "Turli xil turlarning bir-biri bilan yaqin foydali yashash usuli.", options: ["Parazitizm", "Predatorlik", "Simbioz", "Konkure ntsiya"], answer: "Simbioz" },
+            { id: 925, q: "Organizmlarga i jobiy ta'sir ko'rsatuvchi ekologik omil.", options: ["Cheklovchi omil", "Optimal omil", "Maksimal omil", "Minimal omil"], answer: "Optimal omil" },
+            { id: 926, q: "Tiriklikning eng yuqori tashkiliy darajasi.", options: ["Hujayra", "Organ", "Ekosistema", "Biosfera"], answer: "Biosfera" },
+            { id: 927, q: "Yashash uchun turli turlar o'rtasidagi raqobat.", options: ["Sim bioz", "Turlararo kurash", "Tur ichi kurash", "M u tu a liz m"], answer: "Turlararo kurash" },
+            { id: 928, q: "Turli belgilarga ega bo'lgan individlarning yuzaga kelishi.", options: ["Fenotip", "I rsiylik", "O'zgaruvchanlik", "Genotip"], answer: "O'zgaruvchanlik" },
+            { id: 929, q: "Organizmlar tarqalishini o'rganuvchi fan.", options: ["Ekologiya", "Biogeografiya", "Genetika", "Anatomiya"], answer: "Biogeografiya" },
+            { id: 930, q: "Tirik organizmlar massasining o'lchami.", options: ["Atmosfera", "Biomassa", "Gidrosfera", "Litosfera"], answer: "Biomassa" }
+        ],
+
+        // 10-sinf: Biotexnologiya, Biologik muammolar, Se le ktsiya
+        10: [
+            { id: 1001, q: "Gen injeneriyasining maqsadi.", options: ["Yangi o'simlik navlarini yaratish", "Hujayra bo'linishini o'rganish", "Organizmlarning DNKsiga o'zgartirish kiritish", "Populyatsiyani o'rganish"], answer: "Organizmlarning DNKsiga o'zgartirish kiritish" },
+            { id: 1002, q: "Genetik modifikatsiyalangan organizm (GMO) nima?", options: ["Mutatsiyaga uchragan organizm", "Sun'iy sharoitda o'stirilgan organizm", "Boshqa tur genini olgan organizm", "Faqat virus"], answer: "Boshqa tur genini olgan organizm" },
+            { id: 1003, q: "Klonlash jarayoni nimani anglatadi?", options: ["I rsiylanmaslik", "Jinsiy ko'payish", "Genetik jihatdan bir xil nusxalar yaratish", "Tabiiy tanlanish"], answer: "Genetik jihatdan bir xil nusxalar yaratish" },
+            { id: 1004, q: "Se le ktsiyaning asosiy vazifasi.", options: ["Evolyutsiyani o'rganish", "Atrof-muhitni muhofaza qilish", "Yangi navlar va zotlarni yaratish", "Organizm anatomiyasini o'rganish"], answer: "Yangi navlar va zotlarni yaratish" },
+            { id: 1005, q: "Inson genomi loyihasi nimani o'rgangan?", options: ["Faqat hayvonlar genomi", "Odam DNKsidagi genlarning butun ketma-ketligi", "O'simlik genomi", "Viruslar genomi"], answer: "Odam DNKsidagi genlarning butun ketma-ketligi" },
+            { id: 1006, q: "Biologiyaning qishloq xo'jaligida qo'llanilishi.", options: ["Biotexnologiya", "Genetika", "Se le ktsiya", "Barchasi"], answer: "Barchasi" },
+            { id: 1007, q: "O'simliklar se le ktsiyasida qo'llaniladigan asosiy usul.", options: ["Geologik o'rganish", "Gibridlanish va tanlash", "Astral tahlil", "Faqat mutatsiya"], answer: "Gibridlanish va tanlash" },
+            { id: 1008, q: "Qaysi texnologiya yordamida insulin sintez qilinadi?", options: ["Kimyoviy sintez", "Gen injeneriyasi", "Fizik usullar", "Faqat tabiatda"], answer: "Gen injeneriyasi" },
+            { id: 1009, q: "O'zbekistonning biologik resurslarini saqlashdagi muammo.", options: ["Klonlash", "Gibridlanish", "Eroziya va cho'llanish", "Kosmik biologiya"], answer: "Eroziya va cho'llanish" },
+            { id: 1010, q: "Qaysi usul eng sodda organizmlarda genetik o'zgarishlar yaratadi?", options: ["Polikultura", "Polip lo idiya", "Mutagenez", "Se le ktsiya"], answer: "Mutagenez" },
+            { id: 1011, q: "Hayvonlar se le ktsiyasining asosiy usuli.", options: ["Gibridlanish va o'chirish", "Sun'iy urug'lantirish va tanlash", "Mutatsiya", "Faqat jinsiy tanlash"], answer: "Sun'iy urug'lantirish va tanlash" },
+            { id: 1012, q: "Odamning tabiatga i jobiy ta'siri.", options: ["O'rmonlarni kesish", "Atmosferaning ifloslanishi", "Qo'riqxonalar tashkil etish", "I ndustrial chiqindilar"], answer: "Qo'riqxonalar tashkil etish" },
+            { id: 1013, q: "Se le ktsiyada yirik xromosoma to'plami yaratish.", options: ["Geterozis", "Mutagenez", "Polip lo idiya", "Gibridlanish"], answer: "Polip lo idiya" },
+            { id: 1014, q: "Qaysi texnologiya yordamida o'simliklar viruslardan tozalanadi?", options: ["To'qima kulturasidan o'stirish", "Faqat kimyoviy ishlov berish", "Gen injeneriyasi", "Klonlash"], answer: "To'qima kulturasidan o'stirish" },
+            { id: 1015, q: "Geterozis (gibrid kuchi) nima?", options: ["Jinsiy ko'payish yo'qligi", "Gibridlarning ota-onalardan ustunligi", "Mutatsiyaning kamligi", "Yomon nasl"], answer: "Gibridlarning ota-onalardan ustunligi" },
+            { id: 1016, q: "Tibbiy genetikaning asosiy vazifasi.", options: ["O'simlik navlarini yaratish", "Hayvonlarni klonlash", "I rсий kasalliklarni aniqlash va oldini olish", "Tuproq unumdorligini oshirish"], answer: "I rсий kasalliklarni aniqlash va oldini olish" },
+            { id: 1017, q: "Atrof-muhitning ifloslanishiga olib keluvchi omil.", options: ["Qo'riqxonalar", "Pestitsidlar", "Eroziya", "Biologik xilma-xillik"], answer: "Pestitsidlar" },
+            { id: 1018, q: "Biologik xavfsizlik (Biosafety) nima?", options: ["Faqat gen injeneriyasi", "Biologik xilma-xillikni saqlash", "Tirik organizmlarning inson va atrof-muhitga xavfsizligini ta'minlash", "Ekologiya"], answer: "Tirik organizmlarning inson va atrof-muhitga xavfsizligini ta'minlash" },
+            { id: 1019, q: "Qaysi sohada se le ktsiya ish olib bormaydi?", options: ["O'simlikshunoslik", "Chorvachilik", "Mikrobiologiya", "Fizika"], answer: "Fizika" },
+            { id: 1020, q: "Qayta tiklanadigan energiya manbai.", options: ["Neft", "Gaz", "Quyosh", "Ko'mir"], answer: "Quyosh" },
+            { id: 1021, q: "Genetik pasayish (inbriding)ning natijasi.", options: ["Geterozis", "Kasallikning ortishi", "I jobiy belgilar", "Polip lo idiya"], answer: "Kasallikning ortishi" },
+            { id: 1022, q: "O'simliklar va hayvonlarni sun'iy o'stirish orqali se le ktsiya qilish usuli.", options: ["Kultivatsiya", "Gibridlanish", "Klonlash", "Mutagenez"], answer: "Kultivatsiya" },
+            { id: 1023, q: "Biologik nazorat (zararkunandalarga qarshi biologik kurash).", options: ["Kimyoviy ishlov berish", "Tabiiy dushmanlardan foydalanish", "Fa qat qo'l bilan terish", "Mutagenez"], answer: "Tabiiy dushmanlardan foydalanish" },
+            { id: 1024, q: "Odamning atrof-muhitga salbiy ta'siri.", options: ["Erozion yerlar", "Qo'riqxonalar", "Qizil kitob", "Yangi navlar"], answer: "Erozion yerlar" },
+            { id: 1025, q: "Xromosoma sonining ko'payishi (navlarni yaratishda).", options: ["Geterozis", "Polip lo idiya", "Gibridlanish", "Mutagenez"], answer: "Polip lo idiya" },
+            { id: 1026, q: "Qaysi xromosoma jinsni aniqlaydi (odamda)?", options: ["Autosoma", "Jinsiy xromosomalar (X, Y)", "Faqat X", "Faqat Y"], answer: "Jinsiy xromosomalar (X, Y)" },
+            { id: 1027, q: "Odam genetikasida eng muhim usul.", options: ["Gibridlanish", "Klonlash", "Genealogik (shajara) usuli", "Mutagenez"], answer: "Genealogik (shajara) usuli" },
+            { id: 1028, q: "Qaysi kasallik genetik emas?", options: ["Gemo fil iya", "Saraton", "Daun sindromi", "Gripp"], answer: "Gripp" },
+            { id: 1029, q: "Biologik xilma-xillikning pasayishiga olib keluvchi sabab.", options: ["Yashash joylarining buzilishi", "Atrof-muhitning tozalanishi", "Qo'riqxonalar", "Yangi navlar"], answer: "Yashash joylarining buzilishi" },
+            { id: 1030, q: "O'simlik se le ktsiyasining asoschilaridan biri.", options: ["Ch. Darvin", "N. I. Vavilov", "G. Mendel", "L. Paster"], answer: "N. I. Vavilov" }
+        ],
+
+        // 11-sinf: Fanlar integratsiyasi, Hozirgi zamon biologiyasi, Biologik muammolarni hal qilish
+        11: [
+            { id: 1101, q: "Biologiyaning tibbiyot bilan integratsiyasi.", options: ["Biotexnologiya, genetika", "Faqat genetika", "Faqat ekologiya", "Fizika"], answer: "Biotexnologiya, genetika" },
+            { id: 1102, q: "Biologiyaning eng yangi, kelajakdagi yo'nalishi.", options: ["Nanobiologiya", "Botanika", "Zoologiya", "Anatomiya"], answer: "Nanobiologiya" },
+            { id: 1103, q: "Odamda barcha genlarning yig'indisi nima deyiladi?", options: ["Fenotip", "Genotip", "Genom", "Kariotip"], answer: "Genom" },
+            { id: 1104, q: "Qaysi texnologiya 'restriksion fermentlar'ni qo'llaydi?", options: ["Klonlash", "Gen injeneriyasi", "Se le ktsiya", "Mitoz"], answer: "Gen injeneriyasi" },
+            { id: 1105, q: "Qaysi xususiyat tiriklikning molekulyar darajasida namoyon bo'ladi?", options: ["Metabolizm", "Ko'payish", "Harakat", "O'sish"], answer: "Metabolizm" },
+            { id: 1106, q: "Odam organizmida o'z-o'zini tiklash jarayoni.", options: ["Adaptatsiya", "Regeneratsiya", "Mutatsiya", "Transkripsiya"], answer: "Regeneratsiya" },
+            { id: 1107, q: "Bakteriyalarning atrof-muhitni tozalashda ishlatilishi.", options: ["Gen injeneriyasi", "Bioremediatsiya", "Klonlash", "Se le ktsiya"], answer: "Bioremediatsiya" },
+            { id: 1108, q: "Viruslar qanday tuzilishga ega?", options: ["Hujayraviy", "Hujayrasiz", "Faqat DNK", "Faqat RNK"], answer: "Hujayrasiz" },
+            { id: 1109, q: "Tibbiyotda genoterapiyaning maqsadi.", options: ["Fa qat tashqi ko'rinishni o'zgartirish", "Yangi tur yaratish", "Kasalliklarni davolash uchun genlarni almashtirish", "O'simliklarni o'stirish"], answer: "Kasalliklarni davolash uchun genlarni almashtirish" },
+            { id: 1110, q: "Qaysi biologik obyekt faqat tirik hujayra ichida ko'payadi?", options: ["Bakteriya", "Zamburug'", "Virus", "Bir hujayrali hayvon"], answer: "Virus" },
+            { id: 1111, q: "Odam ekologiyasining eng katta muammosi.", options: ["Suv resurslarining kamayishi", "Kosmik biologiya", "Nanotexnologiya", "Faqat ovqatlanish"], answer: "Suv resurslarining kamayishi" },
+            { id: 1112, q: "Biosferadagi moddalar aylanishining asosiy drayveri.", options: ["Odam", "Geologik kuchlar", "Tirik organizmlar", "O'lik moddalar"], answer: "Tirik organizmlar" },
+            { id: 1113, q: "Qaysi qoida DNK ning ikkita zanjiri orasidagi bog'lanishni belgilaydi?", options: ["Mendel qoidasi", "Charliz qoidasi", "Charga ff qoidasi", "Darvin qoidasi"], answer: "Charga ff qoidasi" },
+            { id: 1114, q: "Biologiyaning i nformatsion texnologiyalar bilan kesishmasi.", options: ["Bioinformatika", "Klonlash", "Se le ktsiya", "Metabolizm"], answer: "Bioinformatika" },
+            { id: 1115, q: "Ozon qatlamining buzilishi qanday biologik oqibatlarga olib keladi?", options: ["Yer haroratining pasayishi", "Quyoshning ultrabinafsha nurlarining ortishi", "Suvning ko'payishi", "O'simliklar o'sishining sekinlashishi"], answer: "Quyoshning ultrabinafsha nurlarining ortishi" },
+            { id: 1116, q: "Zamburug'lar qaysi usulda oziqlanadi?", options: ["Fotosintez", "Xemosintez", "Geterotrof", "Avtotrof"], answer: "Geterotrof" },
+            { id: 1117, q: "O'zbekistonda chuchuk suvni tejash uchun qanday usullar qo'llaniladi?", options: ["Tomchilatib sug'orish", "Fa qat ariqlardan", "Faqat daryolardan", "Faqat yomg'ir suvi"], answer: "Tomchilatib sug'orish" },
+            { id: 1118, q: "Biologiyaning 'Sistemalar Biologiyasi' yo'nalishi nimani o'rganadi?", options: ["Faqat genlar", "Butun tirik tizimni o'zaro ta'sirda", "Faqat oqsillar", "Faqat tashqi muhit"], answer: "Butun tirik tizimni o'zaro ta'sirda" },
+            { id: 1119, q: "Qaysi jarayon tufayli qishloq xo'jaligi hosilining pasayishi mumkin?", options: ["Eroziya", "Bioremediatsiya", "Klonlash", "Polip lo idiya"], answer: "Eroziya" },
+            { id: 1120, q: "Katta ekologik falokat misoli.", options: ["Klonlash", "Orol dengizining qurishi", "Nanotexnologiya", "Geterozis"], answer: "Orol dengizining qurishi" },
+            { id: 1121, q: "DNK dan RNK sintezlanishi.", options: ["Replikatsiya", "Translatsiya", "Transkripsiya", "Mutatsiya"], answer: "Transkripsiya" },
+            { id: 1122, q: "Hayotning paydo bo'lishini o'rganuvchi fan.", options: ["Paleontologiya", "Ontogenez", "Abiogenez", "Astrobiologiya"], answer: "Abiogenez" },
+            { id: 1123, q: "Organizmning rivojlanishi (shaxsiy rivojlanish).", options: ["Filogenez", "Ontogenez", "Me yoz", "Mitoz"], answer: "Ontogenez" },
+            { id: 1124, q: "Hozirgi zamon biologiyasining asosiy tayan chi.", options: ["Faqat morfologiya", "Molekulyar biologiya", "Faqat botanika", "Faqat zoologiya"], answer: "Molekulyar biologiya" },
+            { id: 1125, q: "Qaysi texnologiya terini tiklash uchun ishlatiladi?", options: ["Klonlash", "To'qima injeneriyasi", "Genoterapiya", "Se le ktsiya"], answer: "To'qima injeneriyasi" },
+            { id: 1126, q: "Biologiyaning kosmik tadqiqotlar bilan bog'liqligi.", options: ["Nanobiologiya", "Astrobiologiya", "Bioinformatika", "Biotexnologiya"], answer: "Astrobiologiya" },
+            { id: 1127, q: "Bioritm nima?", options: ["Faqat uyqu", "Tirik organizmlarning davriy jarayonlari", "Faqat nafas olish", "Faqat ko'payish"], answer: "Tirik organizmlarning davriy jarayonlari" },
+            { id: 1128, q: "Gen injeneriyasi yordamida yaratilgan organizm.", options: ["Mutant", "Klon", "Transgen organizm", "Gibrid"], answer: "Transgen organizm" },
+            { id: 1129, q: "Odamning biologik tabiati qanday nomlanadi?", options: ["I rsiylik", "Fenotip", "Gomo sapiens", "Genotip"], answer: "Gomo sapiens" },
+            { id: 1130, q: "Biologik xilma-xillikni saqlashning eng muhim usuli.", options: ["Sun'iy tanlash", "Qo'riqxonalar va milliy bog'lar", "Faqat laboratoriya", "Faqat urug' banklari"], answer: "Qo'riqxonalar va milliy bog'lar" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Settings Functions (Sozlamalar) ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha kiriting.");
+        }
+    }
+
+    // --- 3. Test Start and Rendering Functions (Testni boshlash va ko'rsatish) ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Use the Biology database
+        const allQuestions = biologyTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun savollar mavjud emas. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `🧬 Biologiya Testi - ${sinf}-sinf (${limit} savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                // Clean the option text for accurate value comparison
+                const cleanOption = option.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em|\(|\)|\s\s+|>|<)/g, '').trim().toLowerCase(); 
+                input.value = cleanOption;
+                
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // Clean the answer from any extra formatting for comparison
+            const cleanAnswer = qItem.answer.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em|\(|\)|\s\s+|>|<)/g, '').trim().toLowerCase();
+
+            // Find the correct answer label and highlight it
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => {
+                const labelText = label.textContent.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em|\(|\)|\s\s+|>|<)/g, '').trim().toLowerCase();
+                return labelText === cleanAnswer;
+            });
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                // selectedOption.value is already cleaned and lowercased
+                if (selectedOption.value === cleanAnswer) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>Test yakunlandi!</h2>
+            <p>Siz **${score}** tadan to'g'ri javob berdingiz (${totalQuestions} savoldan).</p>
+            <p>Natija: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Yangi test boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `🧬 Biologiya Test Tizimi (5-11 sinflar)`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
