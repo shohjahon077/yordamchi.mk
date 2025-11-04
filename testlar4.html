@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fizika Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --physics-color: #ffc107; /* Sariq/Oltin rangni Fizika uchun ishlatamiz */
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: #d89600; /* Fizika uchun ozgina to'qroq sariq */
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--physics-color); /* Sinf tugmasi uchun Sariq */
+            color: var(--text-dark); /* Sariq fonda qora matn yaxshi ko'rinadi */
+            min-width: 80px;
+        }
+        .class-selection button:hover {
+            background-color: #ffae00;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+            color: var(--text-light);
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #f7f9fc;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--physics-color); /* Sariq chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #fffbe6; /* Sariq hover */
+            border-color: var(--physics-color);
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #fff3cd; /* Natija foni Sariq tusda */
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali (oldingi uslub) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Fizika Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Fizika fani, 7-11 sinflar) ---
+    const physicsTestDatabase = {
+        // 7-sinf: Boshlang'ich mexanika, modda tuzilishi, bosim
+        7: [
+            { id: 701, q: "Jismning vaqt o'tishi bilan fazodagi o'rnini o'zgartirishi nima deb ataladi?", options: ["Tezlik", "Harorat", "Mexanik harakat", "Inertsiya"], answer: "Mexanik harakat" },
+            { id: 702, q: "Kuchning Xalqaro birliklar tizimidagi (SI) o'lchov birligi?", options: ["Kilogramm", "Metr/sekund", "Joul", "Nyuton"], answer: "Nyuton" },
+            { id: 703, q: "Jismning massasi qanday birlikda o'lchanadi?", options: ["Litr", "Metr", "Kilogramm", "Nyuton"], answer: "Kilogramm" },
+            { id: 704, q: "Jismga berilgan tezlikni saqlab qolish xususiyati nima deyiladi?", options: ["Og'irlik", "Jadalish", "Inertsiya", "Bosim"], answer: "Inertsiya" },
+            { id: 705, q: "Qattiq, suyuq va gazsimon jismlarda modda qanday zarrachalardan tashkil topgan?", options: ["O'simliklar", "Molekulalar va atomlar", "Energiyadan", "Qumdan"], answer: "Molekulalar va atomlar" },
+            { id: 706, q: "Har qanday jismga Yer tomonidan ta'sir etuvchi tortish kuchi?", options: ["Ishqalanish kuchi", "Elastiklik kuchi", "Og'irlik kuchi", "Bosim kuchi"], answer: "Og'irlik kuchi" },
+            { id: 707, q: "Bosimning SI dagi o'lchov birligi?", options: ["Nyuton", "Paskal", "Volt", "Amper"], answer: "Paskal" },
+            { id: 708, q: "Gidravlik mashinalar ishlashining asosi bo'lgan qonun?", options: ["Nyutonning birinchi qonuni", "Paskal qonuni", "Arximed qonuni", "Om qonuni"], answer: "Paskal qonuni" },
+            { id: 709, q: "Moddaning bir turdan boshqa turga o'tmasdan, faqat fizik xususiyatlarini o'rganuvchi fan?", options: ["Kimyo", "Biologiya", "Fizika", "Astronomiya"], answer: "Fizika" },
+            { id: 710, q: "Jismning tezligini vaqt birligidagi o'zgarishi?", options: ["Yo'l", "Jadalish (Tezlanish)", "Hajm", "Massa"], answer: "Jadalish (Tezlanish)" },
+            { id: 711, q: "Suyuqlikka botirilgan jismni yuqoriga itaruvchi kuch?", options: ["Og'irlik kuchi", "Arximed kuchi (ko'taruvchi kuch)", "Ishqalanish kuchi", "Nyuton kuchi"], answer: "Arximed kuchi (ko'taruvchi kuch)" },
+            { id: 712, q: "Issiqlik haroratini o'lchash uchun qanday asbob ishlatiladi?", options: ["Barometr", "Termometr", "Ampermetr", "Voltmetr"], answer: "Termometr" },
+            { id: 713, q: "Ishning (A) SI dagi birligi?", options: ["Nyuton", "Kelmometr", "Joul", "Vatt"], answer: "Joul" },
+            { id: 714, q: "Quvvatning (P) SI dagi birligi?", options: ["Joul", "Nyuton", "Paskal", "Vatt"], answer: "Vatt" },
+            { id: 715, q: "Jismning yerdan yuqoriroqda joylashgani uchun ega bo'lgan energiyasi?", options: ["Kinematik energiya", "Potensial energiya", "Ichki energiya", "Yadro energiyasi"], answer: "Potensial energiya" },
+            { id: 716, q: "Har qanday suyuqlik va gazda ta'sir etuvchi ishqalanish kuchi turi?", options: ["Silliqlanish ishqalanishi", "Dumash ishqalanishi", "Suyuqlik/Gaz qarshiligi", "Tortishish kuchi"], answer: "Suyuqlik/Gaz qarshiligi" },
+            { id: 717, q: "Biror narsa ustida bajarilgan ishning vaqt birligidagi miqdori?", options: ["Kuch", "Quvvat", "Energiya", "Bosim"], answer: "Quvvat" },
+            { id: 718, q: "Jismning harakati tufayli ega bo'lgan energiyasi?", options: ["Potensial energiya", "Yadro energiyasi", "Kinematik energiya", "Issiqlik energiyasi"], answer: "Kinematik energiya" },
+            { id: 719, q: "Molekulalarning tartibsiz, uzluksiz harakati nima deb ataladi?", options: ["Inertsiya", "Diffuziya", "Braun harakati", "Titrash"], answer: "Braun harakati" },
+            { id: 720, q: "Gaz bosimining asosiy sababi nima?", options: ["Molekulalar massasi", "Molekulalarning idish devoriga urilishi", "Molekulalar zichligi", "Idish hajmi"], answer: "Molekulalarning idish devoriga urilishi" },
+            { id: 721, q: "Jismning harakatiga qarshilik ko'rsatuvchi kuch?", options: ["Tortish kuchi", "Ishqalanish kuchi", "Elastiklik kuchi", "Bosim kuchi"], answer: "Ishqalanish kuchi" },
+            { id: 722, q: "Har qanday mexanizmning foydali ishini umumiy ishga nisbati?", options: ["Koefficient", "Quvvat", "Foydali ish koeffitsiyenti (FIK)", "Birlik"], answer: "Foydali ish koeffitsiyenti (FIK)" },
+            { id: 723, q: "Jismning zichligi qanday topiladi?", options: ["Massa / Hajm", "Hajm / Massa", "Massa * Hajm", "Kuch * Yo'l"], answer: "Massa / Hajm" },
+            { id: 724, q: "Suyuqlikning erkin sirtida ta'sir etuvchi qo'shimcha kuch nima deyiladi?", options: ["Bosim", "Sirt tarangligi kuchi", "Og'irlik", "Ko'tarish kuchi"], answer: "Sirt tarangligi kuchi" },
+            { id: 725, q: "Molekulalar orasidagi tortishish kuchi faqat qaysi holatda namoyon bo'ladi?", options: ["Katta masofada", "Kichik masofada", "Faqat gazda", "Faqat qattiq jismda"], answer: "Kichik masofada" },
+            { id: 726, q: "Jismning havodagi holatini o'zgartirish uchun nima zarur?", options: ["Bosim", "Kuch ta'siri", "Harorat", "Hajm"], answer: "Kuch ta'siri" },
+            { id: 727, q: "Boshlang'ich tezlik 0 ga teng bo'lsa, jismning bosib o'tgan yo'li qanday formula bilan topiladi?", options: ["$S = v \cdot t$", "$S = a \cdot t^2 / 2$", "$S = m \cdot g \cdot h$", "$S = F \cdot t$"], answer: "$S = a \cdot t^2 / 2$" },
+            { id: 728, q: "Atmosfera bosimi qanday asbob bilan o'lchanadi?", options: ["Termometr", "Barometr", "Gidrometr", "Sekundomer"], answer: "Barometr" },
+            { id: 729, q: "Jismning deformatsiyasi vaqtida vujudga keladigan kuch?", options: ["Og'irlik", "Ishqalanish", "Elastiklik kuchi", "Markazdan qochma kuchi"], answer: "Elastiklik kuchi" },
+            { id: 730, q: "Moddaning suyuq holatdan qattiq holatga o'tishi?", options: ["Qaynash", "Erish", "Qotish (Muzlash)", "Bug'lanish"], answer: "Qotish (Muzlash)" }
+        ],
+        
+        // 8-sinf: Issiqlik hodisalari, Elektr hodisalari
+        8: [
+            { id: 801, q: "Jism ichki energiyasining o'lchov birligi?", options: ["Nyuton", "Vatt", "Joul", "Paskal"], answer: "Joul" },
+            { id: 802, q: "Jismning elektr zaryadini o'lchov birligi?", options: ["Amper", "Volt", "Kulon", "Om"], answer: "Kulon" },
+            { id: 803, q: "Zaryadlangan zarrachalarning tartibli harakati nima deyiladi?", options: ["Magnit oqimi", "Issiqlik oqimi", "Elektr toki", "Yorug'lik"], answer: "Elektr toki" },
+            { id: 804, q: "Elektr qarshiligining (R) birligi?", options: ["Amper", "Volt", "Kulon", "Om"], answer: "Om" },
+            { id: 805, q: "Elektr tokining kuchlanishini (U) o'lchov birligi?", options: ["Amper", "Volt", "Om", "Joul"], answer: "Volt" },
+            { id: 806, q: "Issiqlik miqdorining (Q) birligi?", options: ["Volt", "Kulon", "Joul", "Amper"], answer: "Joul" },
+            { id: 807, q: "Qattiq jismlarda issiqlikning uzatilishi qanday amalga oshiriladi?", options: ["Konveksiya", "Radiatsiya", "Issiqlik o'tkazuvchanlik", "Bug'lanish"], answer: "Issiqlik o'tkazuvchanlik" },
+            { id: 808, q: "Suyuqlik va gazlarda issiqlikning uzatilishi (oqimlar orqali)?", options: ["Konveksiya", "Issiqlik o'tkazuvchanlik", "Radiatsiya", "Erish"], answer: "Konveksiya" },
+            { id: 809, q: "Om qonunining zanjirning bir qismi uchun formulasi?", options: ["$I = U \cdot R$", "$U = I \cdot R$", "$R = U \cdot I$", "$P = U \cdot I$"], answer: "$U = I \cdot R$" },
+            { id: 810, q: "Qanday moddalar elektr tokini yaxshi o'tkazadi?", options: ["Dielektriklar", "Yarimo'tkazgichlar", "Metalllar (O'tkazgichlar)", "Izolyatorlar"], answer: "Metalllar (O'tkazgichlar)" },
+            { id: 811, q: "Gazsimon moddaning suyuq holatga o'tishi?", options: ["Qaynash", "Sublimatsiya", "Kondensatsiya", "Erish"], answer: "Kondensatsiya" },
+            { id: 812, q: "Elektr energiyasini boshqa turdagi energiyaga aylantirish qonuni?", options: ["Om qonuni", "Joul-Lens qonuni (Issiqlik effekti)", "Paskal qonuni", "Arximed qonuni"], answer: "Joul-Lens qonuni (Issiqlik effekti)" },
+            { id: 813, q: "Parallel ulashda kuchlanish (U) qanday bo'ladi?", options: ["Har xil", "Nolga teng", "Barcha qismlarda bir xil", "Faqat qarshilikka bog'liq"], answer: "Barcha qismlarda bir xil" },
+            { id: 814, q: "Ketma-ket ulashda tok kuchi (I) qanday bo'ladi?", options: ["Barcha qismlarda bir xil", "Har xil", "Nolga teng", "Faqat kuchlanishga bog'liq"], answer: "Barcha qismlarda bir xil" },
+            { id: 815, q: "Harorat o'zgarishi tufayli jismning hajmining o'zgarishi?", options: ["Kimyoviy reaksiya", "Issiqlik kengayishi", "Elektr toki", "Magnitlanish"], answer: "Issiqlik kengayishi" },
+            { id: 816, q: "Zaryadlangan zarrachalarni o'ziga tortuvchi elektr maydoni qanday kuch bilan ta'sir etadi?", options: ["Tortish kuchi", "Kulon kuchi", "Og'irlik kuchi", "Markazdan qochma kuchi"], answer: "Kulon kuchi" },
+            { id: 817, q: "Suvning bug'lanish temperaturasi (normal sharoitda)?", options: ["0 °C", "50 °C", "100 °C", "20 °C"], answer: "100 °C" },
+            { id: 818, q: "Elektr tokining magnit maydonini hosil qilishi nimada qo'llaniladi?", options: ["Termometr", "Barometr", "Elektromagnitlar (Motorlar)", "Sekundomer"], answer: "Elektromagnitlar (Motorlar)" },
+            { id: 819, q: "Yarimo'tkazgichlarning elektr o'tkazuvchanligi harorat oshishi bilan qanday o'zgaradi?", options: ["Kamayadi", "O'zgarmaydi", "Ortadi", "Nolga teng"], answer: "Ortadi" },
+            { id: 820, q: "Moddaning qattiq holatdan gaz holatiga o'tishi (suyuqni chetlab o'tib)?", options: ["Erish", "Qotish", "Kondensatsiya", "Sublimatsiya"], answer: "Sublimatsiya" },
+            { id: 821, q: "Elektr zanjirini o'lchash uchun ishlatiladigan birlashgan asbob?", options: ["Voltmetr", "Ampermetr", "Ommetr", "Multimetr (Ammavoltomer)"], answer: "Multimetr (Ammavoltomer)" },
+            { id: 822, q: "Elektr tokining ishi nimaga teng?", options: ["$A = I \cdot t$", "$A = U / I$", "$A = U \cdot I \cdot t$", "$A = R / I$"], answer: "$A = U \cdot I \cdot t$" },
+            { id: 823, q: "Qanday moddalar o'zidan issiqlikni yaxshi o'tkazadi?", options: ["Metalllar", "Gazlar", "Plastmassa", "Yog'och"], answer: "Metalllar" },
+            { id: 824, q: "Elektr zaryadini saqlash uchun ishlatiladigan qurilma?", options: ["Rezistor", "Ampermetr", "Kondensator", "Batareya"], answer: "Kondensator" },
+            { id: 825, q: "Elektrodinamikada elektronning zaryadi qanday?", options: ["Nol", "Manfiy", "Musbat", "O'zgaruvchan"], answer: "Manfiy" },
+            { id: 826, q: "Joul-Lens qonuni nimani tushuntiradi?", options: ["Tok kuchi", "O'tkazgichning qizishi", "Bosim o'zgarishi", "Yorug'lik tezligi"], answer: "O'tkazgichning qizishi" },
+            { id: 827, q: "Issiqlik mashinalarida ishlaydigan modda nima deyiladi?", options: ["Katalizator", "Yoqilg'i", "Ishchi jism (Gaz)", "Sovutgich"], answer: "Ishchi jism (Gaz)" },
+            { id: 828, q: "Elektr kuchlanishini o'lchaydigan asbob?", options: ["Ampermetr", "Voltmetr", "Ommetr", "Termometr"], answer: "Voltmetr" },
+            { id: 829, q: "Elektr tokining yo'nalishi qanday zaryadning harakati deb qabul qilingan?", options: ["Musbat", "Manfiy", "Neytral", "Elektron"], answer: "Musbat" },
+            { id: 830, q: "Atom tuzilishining asosiy modeli?", options: ["Qum model", "Reys model", "Planetar model (Rezerford)", "Tinchlik model"], answer: "Planetar model (Rezerford)" }
+        ],
+        
+        // 9-sinf: Tebranish va to'lqinlar, Optika, Kvant nazariyasi asoslari
+        9: [
+            { id: 901, q: "Mexanik tebranishlarning to'liq bir sikli uchun sarflangan vaqt?", options: ["Amplituda", "Davr", "Chastota", "To'lqin uzunligi"], answer: "Davr" },
+            { id: 902, q: "Ovoz tezligi eng yuqori bo'lgan muhit?", options: ["Vakuum", "Gaz (Havo)", "Suyuqlik (Suv)", "Qattiq jism (Chelik)"], answer: "Qattiq jism (Chelik)" },
+            { id: 903, q: "Yorug'likning bir muhitdan boshqasiga o'tishda yo'nalishini o'zgartirishi?", options: ["Sinishi", "Qaytishi", "Tarqalishi", "Diffraktsiya"], answer: "Sinishi" },
+            { id: 904, q: "Yorug'lik to'lqinining to'g'ri chiziq bo'ylab tarqalishi?", options: ["Diffraktsiya", "Dispersion", "To'g'ri tarqalish qonuni", "Interferentsiya"], answer: "To'g'ri tarqalish qonuni" },
+            { id: 905, q: "Yorug'likning to'lqin uzunligiga bog'liq holda tarqalish tezligining o'zgarishi?", options: ["Interferentsiya", "Diffraktsiya", "Dispersion", "Polarizatsiya"], answer: "Dispersion" },
+            { id: 906, q: "Yerning magnit maydoni nima sababli vujudga kelgan?", options: ["Quyosh ta'siri", "Yer yadrosidagi harakatlanuvchi erigan temir oqimi", "Oyning ta'siri", "Atmosfera gazlari"], answer: "Yer yadrosidagi harakatlanuvchi erigan temir oqimi" },
+            { id: 907, q: "Elektromagnit to'lqinlarning vakuumdagi tezligi (c)?", options: ["340 m/s", "3000 km/s", "300 000 km/s (Yorug'lik tezligi)", "10 m/s"], answer: "300 000 km/s (Yorug'lik tezligi)" },
+            { id: 908, q: "Zaryadlangan zarrachalarning tezligi o'zgarganda nima hosil bo'ladi?", options: ["Massa", "Faqat elektr maydoni", "Elektromagnit to'lqin", "Faqat magnit maydoni"], answer: "Elektromagnit to'lqin" },
+            { id: 909, q: "Ovoz to'lqinlarining chastotasi nima bilan o'lchanadi?", options: ["Volt", "Amper", "Gerts", "Metr"], answer: "Gerts" },
+            { id: 910, q: "Qanday linza nurlarni bir nuqtaga to'playdi?", options: ["Tarqatuvchi linza", "Yig'uvchi linza", "Tekis linza", "Silindrik linza"], answer: "Yig'uvchi linza" },
+            { id: 911, q: "Reaktiv harakatning asosi bo'lgan qonun?", options: ["Nyutonning I qonuni", "Nyutonning III qonuni (Ta'sir va aks ta'sir)", "Arximed qonuni", "Om qonuni"], answer: "Nyutonning III qonuni (Ta'sir va aks ta'sir)" },
+            { id: 912, q: "Mexanik to'lqinlar qaysi muhitda tarqala olmaydi?", options: ["Suvda", "Chelikda", "Havo", "Vakuumda"], answer: "Vakuumda" },
+            { id: 913, q: "Elektron qaysi zaryadga ega?", options: ["Neytral", "Musbat", "Manfiy", "Nol"], answer: "Manfiy" },
+            { id: 914, q: "Elektromagnit induksiya hodisasi nimani anglatadi?", options: ["Tokning yo'qligi", "Magnit maydon o'zgarishi tufayli elektr toki hosil bo'lishi", "Zaryadlarning harakatsizligi", "Yorug'likning tarqalishi"], answer: "Magnit maydon o'zgarishi tufayli elektr toki hosil bo'lishi" },
+            { id: 915, q: "Yorug'likning ikki xil muhit chegarasidan orqaga qaytishi?", options: ["Sinish", "Qaytish", "Diffraktsiya", "Polarizatsiya"], answer: "Qaytish" },
+            { id: 916, q: "Moddaning eng kichik, bo'linmas zarrachasi sifatida qabul qilingan energiya porsiyasi?", options: ["Molekula", "Atom", "Foton (Kvant)", "Proton"], answer: "Foton (Kvant)" },
+            { id: 917, q: "Yorug'likning ikki nur oqimining superpozitsiyasi natijasida yorug'likning kuchayishi yoki susayishi?", options: ["Diffraktsiya", "Interferentsiya", "Polarizatsiya", "Sinish"], answer: "Interferentsiya" },
+            { id: 918, q: "Atom yadrosi qanday zarrachalardan tashkil topgan?", options: ["Elektronlar va neytronlar", "Protonlar va neytronlar", "Faqat elektronlar", "Fotonlar"], answer: "Protonlar va neytronlar" },
+            { id: 919, q: "Mexanik rezonans nima?", options: ["Tebranishning to'xtashi", "Tashqi kuch chastotasi tebranishning xususiy chastotasiga tenglashganda amplituda keskin oshishi", "Tezlikning o'zgarishi", "Bosimning pasayishi"], answer: "Tashqi kuch chastotasi tebranishning xususiy chastotasiga tenglashganda amplituda keskin oshishi" },
+            { id: 920, q: "Amper kuchi nimaga ta'sir etadi?", options: ["Har qanday jismga", "Magnit maydonda joylashgan tokli o'tkazgichga", "Zaryadga", "Yorug'likka"], answer: "Magnit maydonda joylashgan tokli o'tkazgichga" },
+            { id: 921, q: "Jismning ko'rinish holati (ko'zda) qaysi turdagi linza orqali hosil bo'ladi?", options: ["Faqat tarqatuvchi", "Faqat yig'uvchi", "Ikkala turdagi linza orqali", "Hajm"], answer: "Ikkala turdagi linza orqali" },
+            { id: 922, q: "Zarralar tezligi oshishi bilan ularning massasi qanday o'zgaradi?", options: ["Kamayadi", "O'zgarmaydi", "Ortadi (Nisbiylik nazariyasiga ko'ra)", "Nolga teng bo'ladi"], answer: "Ortadi (Nisbiylik nazariyasiga ko'ra)" },
+            { id: 923, q: "Yadro reaksiyalari kimyoviy reaksiyalardan nimasi bilan farq qiladi?", options: ["Issiqlik", "Atom yadrosining o'zgarishi", "Tezlik", "Bosim"], answer: "Atom yadrosining o'zgarishi" },
+            { id: 924, q: "Yorug'lik nurlarining noaniq chegaralar (teshiklar) orqali yoyilishi?", options: ["Qaytish", "Sinish", "Diffraktsiya", "Polarizatsiya"], answer: "Diffraktsiya" },
+            { id: 925, q: "Kvant nazariyasining asoschisi?", options: ["Nyuton", "Eynshteyn", "Maks Plank", "Rezerford"], answer: "Maks Plank" },
+            { id: 926, q: "Tokning o'zgarishi natijasida konturda tok hosil bo'lishi?", options: ["Kulon kuchi", "O'zinduksiya hodisasi", "Amper kuchi", "Qaytish"], answer: "O'zinduksiya hodisasi" },
+            { id: 927, q: "Yig'uvchi linza fokus masofasining birligi?", options: ["Fokus", "Dioptriya", "Metr", "Vatt"], answer: "Dioptriya" },
+            { id: 928, q: "Yorug'likning eng past tezligi qaysi muhitda bo'ladi?", options: ["Vakuum", "Gaz", "Suyuqlik", "Qattiq optik shisha"], answer: "Qattiq optik shisha" },
+            { id: 929, q: "Radioaktiv parchalanishda alfa-zarra nima?", options: ["Elektron", "Geliy yadrosi", "Neytron", "Proton"], answer: "Geliy yadrosi" },
+            { id: 930, q: "Garmonik tebranishning energiyasi nimaga proportsional?", options: ["Davr", "Chastota", "Amplitudaning kvadratiga", "To'lqin uzunligi"], answer: "Amplitudaning kvadratiga" }
+        ],
+        
+        // 10-sinf: Maxsus nisbiylik nazariyasi, Termodinamika, Kvant mexanikasi
+        10: [
+            { id: 1001, q: "Maxsus nisbiylik nazariyasining ikkinchi postulati nimani tasdiqlaydi?", options: ["Massaning saqlanishini", "Yorug'lik tezligining barcha inertsial sanoq sistemalarida bir xil ekanligini", "Bosimning o'zgarmasligini", "Molekulalarning harakatini"], answer: "Yorug'lik tezligining barcha inertsial sanoq sistemalarida bir xil ekanligini" },
+            { id: 1002, q: "Eynshteynning energiya va massa o'rtasidagi bog'lanish formulasi?", options: ["$F = m \cdot a$", "$E = m \cdot c^2$", "$P = U \cdot I$", "$A = F \cdot S$"], answer: "$E = m \cdot c^2$" },
+            { id: 1003, q: "Termodinamikaning birinchi qonuni nimani ifodalaydi?", options: ["Harorat tengligini", "Energiya saqlanish qonunini", "Entropiyaning kamayishini", "Bosimning o'zgarishini"], answer: "Energiya saqlanish qonunini" },
+            { id: 1004, q: "Ideal gaz holat tenglamasi qaysi formula bilan ifodalanadi?", options: ["$F = m \cdot a$", "$P \cdot V = \nu \cdot R \cdot T$", "$E = h \cdot \nu$", "$U = I \cdot R$"], answer: "$P \cdot V = \nu \cdot R \cdot T$" },
+            { id: 1005, q: "Termodinamikaning ikkinchi qonuni nimani ifodalaydi?", options: ["Energiya o'zgarmasligini", "Issiqlikning sovuqroq jismlardan issiqroq jismga o'z-o'zidan o'tmasligini (Entropiya ortishi)", "Vaqtning o'zgarmasligini", "Haroratning nolga tengligini"], answer: "Issiqlikning sovuqroq jismlardan issiqroq jismga o'z-o'zidan o'tmasligini (Entropiya ortishi)" },
+            { id: 1006, q: "Ichki energiya qaysi omillarga bog'liq?", options: ["Jism tezligiga", "Jism balandligiga", "Moddaning harorati va agregat holatiga", "Jismning rangi"], answer: "Moddaning harorati va agregat holatiga" },
+            { id: 1007, q: "Zarrachalarning to'lqin xususiyatini ifodalovchi gipoteza?", options: ["Xyugens printsipi", "Fermining printsipi", "De Broyl gipotezasi", "Geyzenberg noaniqlik printsipi"], answer: "De Broyl gipotezasi" },
+            { id: 1008, q: "Fotoeffekt hodisasining mohiyati?", options: ["Magnit maydon hosil bo'lishi", "Yorug'lik ta'sirida moddadan elektronlarning ajralib chiqishi", "Suyuqlikning bug'lanishi", "Bosimning ortishi"], answer: "Yorug'lik ta'sirida moddadan elektronlarning ajralib chiqishi" },
+            { id: 1009, q: "Fotoeffekt qonunlarini kim tushuntirib berdi?", options: ["Nyuton", "Rene Dekart", "Albert Eynshteyn", "Maksvell"], answer: "Albert Eynshteyn" },
+            { id: 1010, q: "Qanday harorat absolyut nol deb qabul qilingan?", options: ["0 °C", "273 K", "0 K (yoki -273.15 °C)", "100 K"], answer: "0 K (yoki -273.15 °C)" },
+            { id: 1011, q: "Gaz tomonidan tashqi kuchlarga qarshi bajarilgan ish qanday topiladi?", options: ["$A = Q / T$", "$A = P \cdot \Delta V$", "$A = F / S$", "$A = E \cdot t$"], answer: "$A = P \cdot \Delta V$" },
+            { id: 1012, q: "Jismning impulsining (P) birligi?", options: ["Nyuton", "Kilogramm/sekund", "Kg·m/s", "Joul"], answer: "Kg·m/s" },
+            { id: 1013, q: "Impulsning saqlanish qonuni qachon o'rinli?", options: ["Har doim", "Jismga faqat ichki kuchlar ta'sir etganda (yopiq sistema)", "Faqat issiqlik o'tkazilganda", "Faqat bir tomonga harakatlanganda"], answer: "Jismga faqat ichki kuchlar ta'sir etganda (yopiq sistema)" },
+            { id: 1014, q: "Atomning turg'un holatdan yuqori energiyali holatga o'tishi?", options: ["Absorbtsiya (Yutish)", "Emissiya (Chiqarish)", "Ionizatsiya", "Rezonans"], answer: "Absorbtsiya (Yutish)" },
+            { id: 1015, q: "Yadro reaktorlarida zanjir reaksiyasini sekinlashtirish uchun nima ishlatiladi?", options: ["Tezlatgich", "Moderator (Neytron sekinlatgich)", "Yoqilg'i", "Sovutgich"], answer: "Moderator (Neytron sekinlatgich)" },
+            { id: 1016, q: "Lazer nurining asosiy xususiyati?", options: ["Tarqaluvchanlik", "Barcha yo'nalishda tarqalish", "Kogerentlik (monoxromatik va fazaviy bog'liq)", "Past quvvat"], answer: "Kogerentlik (monoxromatik va fazaviy bog'liq)" },
+            { id: 1017, q: "Moddaning xossalari nima bilan aniqlanadi?", options: ["Faqat tashqi kuchlar", "Atom va molekulalarining harakati va o'zaro ta'siri", "Hajm", "Bosim"], answer: "Atom va molekulalarining harakati va o'zaro ta'siri" },
+            { id: 1018, q: "Maxsus nisbiylik nazariyasiga ko'ra, harakatlanuvchi soat qanday o'zgaradi?", options: ["Tezlashadi", "Sekinlashadi (vaqt dilatatsiyasi)", "O'zgarmaydi", "To'xtaydi"], answer: "Sekinlashadi (vaqt dilatatsiyasi)" },
+            { id: 1019, q: "Absolyut qora jismning asosiy xususiyati?", options: ["Hamma yorug'likni qaytaradi", "Hamma yorug'likni yutadi va yutganini chiqaradi", "Hech qanday nurni chiqarmaydi", "Faqat bir rangni yutadi"], answer: "Hamma yorug'likni yutadi va yutganini chiqaradi" },
+            { id: 1020, q: "Yadroviy kuchlar qanday xususiyatga ega?", options: ["Uzoq masofada kuchli", "Faqat elektr zaryadiga bog'liq", "Qisqa masofada juda kuchli tortishish kuchi", "Juda zaif"], answer: "Qisqa masofada juda kuchli tortishish kuchi" },
+            { id: 1021, q: "Boshlang'ich tezlik nolga teng bo'lganda, erkin tushayotgan jism tezligi qanday o'zgaradi?", options: ["O'zgarmaydi", "Doimiy jadalish bilan oshadi", "Kamayadi", "Nolga teng"], answer: "Doimiy jadalish bilan oshadi" },
+            { id: 1022, q: "Zarraning to'lqin xossasi qanday kattalikka teskari proportsional?", options: ["Tezlikka", "Impulsga", "Energiyaga", "Davrga"], answer: "Impulsga" },
+            { id: 1023, q: "Termodinamik sistema nima?", options: ["Faqat gaz", "Ichki energiya, ish va issiqlik bilan almashuvchi modda to'plami", "Faqat harakatlanuvchi jism", "Faqat suyuqlik"], answer: "Ichki energiya, ish va issiqlik bilan almashuvchi modda to'plami" },
+            { id: 1024, q: "Quyoshning asosiy energiya manbai?", options: ["Kimyoviy reaksiya", "Yadro bo'linish reaksiyasi", "Termoyadro (Sintez) reaksiyasi", "Bosim"], answer: "Termoyadro (Sintez) reaksiyasi" },
+            { id: 1025, q: "Issiqlik mashinasining foydali ish koeffitsiyenti (FIK) nimaga bog'liq?", options: ["Qizdirgich va sovutgich haroratlariga", "Mashina massasiga", "Qalinligiga", "Yoqilg'i narxiga"], answer: "Qizdirgich va sovutgich haroratlariga" },
+            { id: 1026, q: "Molekulalarning o'rtacha kvadratik tezligini aniqlovchi formula nima?", options: ["Kulon qonuni", "Maksvell taqsimoti", "Nyutonning II qonuni", "Om qonuni"], answer: "Maksvell taqsimoti" },
+            { id: 1027, q: "Ideal gaz molekulalarining o'zaro ta'siri qanday deb qabul qilinadi?", options: ["Kuchli tortishish", "Uzoq masofali itarish", "Ular orasida o'zaro ta'sir yo'q", "Faqat elektromagnit"], answer: "Ular orasida o'zaro ta'sir yo'q" },
+            { id: 1028, q: "Magnit oqimining birligi?", options: ["Tesla", "Veber", "Farad", "Gerts"], answer: "Veber" },
+            { id: 1029, q: "Impulsning saqlanish qonuni qaysi tizimlar uchun universaldir?", options: ["Faqat gazlar", "Istisnolar bilan barcha tizimlar", "Faqat inertsial tizimlar", "Barcha fizik tizimlar uchun universaldir"], answer: "Barcha fizik tizimlar uchun universaldir" },
+            { id: 1030, q: "Atom energiyasini o'zlashtirishning asosiy usuli?", options: ["Kimyoviy reaksiya", "Yadro bo'linish reaksiyasini boshqarish", "Quyosh energiyasidan foydalanish", "Shamoldan foydalanish"], answer: "Yadro bo'linish reaksiyasini boshqarish" }
+        ],
+        
+        // 11-sinf: Yarimo'tkazgichlar, Kvant va yadro fizikasi, Astrofizika asoslari
+        11: [
+            { id: 1101, q: "Yarimo'tkazgichlarning elektr o'tkazuvchanligi nimaga bog'liq?", options: ["Faqat zichlikka", "Haroratga, yoritilishga va qo'shimchalar turiga", "Faqat hajmga", "Faqat rangga"], answer: "Haroratga, yoritilishga va qo'shimchalar turiga" },
+            { id: 1102, q: "Yarimo'tkazgich diodning asosiy xususiyati?", options: ["Tokni faqat bir tomonga o'tkazish", "Tokni yaxshi o'tkazmaslik", "Faqat issiqlik chiqarish", "Magnitlanish"], answer: "Tokni faqat bir tomonga o'tkazish" },
+            { id: 1103, q: "Tranzistorning asosiy vazifasi?", options: ["Tokni faqat bir tomonga o'tkazish", "Quvvat sarflash", "Elektr signallarini kuchaytirish va o'zgartirish", "Faqat issiqlik o'tkazish"], answer: "Elektr signallarini kuchaytirish va o'zgartirish" },
+            { id: 1104, q: "Protonning zaryadi qanday?", options: ["Nol", "Musbat", "Manfiy", "O'zgaruvchan"], answer: "Musbat" },
+            { id: 1105, q: "Neytronning zaryadi qanday?", options: ["Musbat", "Manfiy", "Nol", "O'zgaruvchan"], answer: "Nol" },
+            { id: 1106, q: "Yadro parchalanishi natijasida hosil bo'ladigan asosiy zarrachalar?", options: ["Elektronlar, protonlar", "Alfa, beta, gamma nurlanishlar", "Fotonlar va neytronlar", "Faqat neytronlar"], answer: "Alfa, beta, gamma nurlanishlar" },
+            { id: 1107, q: "Yadro fizikasi nimani o'rganadi?", options: ["Faqat atomlar", "Atom yadrosining tuzilishi, xossalari va o'zgarishini", "Jismning harakatini", "Yorug'lik hodisalarini"], answer: "Atom yadrosining tuzilishi, xossalari va o'zgarishini" },
+            { id: 1108, q: "Yulduzlarning energiya manbai?", options: ["Quyosh shamoli", "Termoyadro sintez reaksiyalari", "Kimyoviy yonish", "Yadro bo'linish reaksiyalari"], answer: "Termoyadro sintez reaksiyalari" },
+            { id: 1109, q: "Eng uzoqdagi ob'ektlarni o'rganish uchun ishlatiladigan optik asbob?", options: ["Mikroskop", "Teleskop", "Periskop", "Spektrometr"], answer: "Teleskop" },
+            { id: 1110, q: "Galaktikamizning nomi?", options: ["Andromeda", "Somon yo'li", "Uchburchak", "Qora tuynuk"], answer: "Somon yo'li" },
+            { id: 1111, q: "Koinotning kengayishi haqidagi nazariya?", options: ["Koinotning o'zgarmasligi", "Yaratilish nazariyasi", "Katta portlash (Big Bang) nazariyasi", "Yerning tekisligi"], answer: "Katta portlash (Big Bang) nazariyasi" },
+            { id: 1112, q: "Diod va tranzistorlar ishlab chiqarilgan material?", options: ["Metalllar", "Dielektriklar", "Yarimo'tkazgichlar (Germaniy, Kremniy)", "Qotishmalar"], answer: "Yarimo'tkazgichlar (Germaniy, Kremniy)" },
+            { id: 1113, q: "N-tur yarimo'tkazgichda tok tashuvchilar qaysi zarrachalar?", options: ["Kovaklar", "Protonlar", "Elektronlar", "Neytronlar"], answer: "Elektronlar" },
+            { id: 1114, q: "P-tur yarimo'tkazgichda tok tashuvchilar qaysi zarrachalar?", options: ["Elektronlar", "Kovaklar (Musbat zaryadli zarracha)", "Neytronlar", "Atomlar"], answer: "Kovaklar (Musbat zaryadli zarracha)" },
+            { id: 1115, q: "Vaqtni aniqlashda ishlatiladigan atom fizikasi hodisasi?", options: ["Yorug'lik tarqalishi", "Atom rezonansi (Atom soatlari)", "Magnitlanish", "Bug'lanish"], answer: "Atom rezonansi (Atom soatlari)" },
+            { id: 1116, q: "Zarrachalarni yuqori energiyaga tezlatish uchun ishlatiladigan qurilma?", options: ["Teleskop", "Spektrometr", "Tezlatgich (Kollayder)", "Termostat"], answer: "Tezlatgich (Kollayder)" },
+            { id: 1117, q: "Yorug'likning diskret (uzlukli) xususiyatini isbotlovchi hodisa?", options: ["Interferentsiya", "Diffraktsiya", "Fotoeffekt", "Sinish"], answer: "Fotoeffekt" },
+            { id: 1118, q: "Koinotdagi eng katta, yorug'likni ham o'ziga tortib oladigan ob'ekt?", options: ["Yulduz", "Sayyora", "Qora tuynuk", "Tumanlik"], answer: "Qora tuynuk" },
+            { id: 1119, q: "Rentgen nurlari elektromagnit to'lqinlar spektrida qayerda joylashgan?", options: ["Radio to'lqinlar oldida", "Infraqizil nurlar oldida", "Ultrabinafsha nurlari va gamma nurlari orasida", "Mikroto'lqinlar"], answer: "Ultrabi.nafsha nurlari va gamma nurlari orasida" },
+            { id: 1120, q: "Yarimo'tkazgich texnologiyalari uchun asos bo'lgan qurilma?", options: ["Lazer", "Tranzistor", "Kondensator", "Batareya"], answer: "Tranzistor" },
+            { id: 1121, q: "Yarimo'tkazgichlarda qo'shimchalar kiritish jarayoni?", options: ["Kristallash", "Diffuziya", "Legirlash (Qo'shimcha kiritish)", "Polimerlash"], answer: "Legirlash (Qo'shimcha kiritish)" },
+            { id: 1122, q: "Yadro bo'linishida zanjir reaksiyasining muhim sharti?", options: ["Yuqori harorat", "Kritik massaning mavjudligi", "Bosimning yuqoriligi", "Katta hajm"], answer: "Kritik massaning mavjudligi" },
+            { id: 1123, q: "O'ta o'tkazuvchanlik hodisasi nima?", options: ["Normal qarshilik", "Juda past haroratda elektr qarshilikning nolga teng bo'lishi", "Juda yuqori qarshilik", "Faqat magnit xossalari"], answer: "Juda past haroratda elektr qarshilikning nolga teng bo'lishi" },
+            { id: 1124, q: "Yorug'lik nurlarining bir-biriga qo'shilishi qanday qonun asosida yuz beradi?", options: ["Superpozitsiya printsipi", "Kulon qonuni", "Om qonuni", "Arximed qonuni"], answer: "Superpozitsiya printsipi" },
+            { id: 1125, q: "Koinotdagi eng ko'p tarqalgan element?", options: ["Uglerod", "Kislorod", "Geliydiy", "Vodorod"], answer: "Vodorod" },
+            { id: 1126, q: "Termoyadro reaksiyasi qanday haroratda amalga oshadi?", options: ["Xona haroratida", "Absolyut nolga yaqin", "Juda yuqori (millionlab daraja)", "0 °C"], answer: "Juda yuqori (millionlab daraja)" },
+            { id: 1127, q: "Atom energetikasining afzalliklaridan biri?", options: ["Arzon yoqilg'i", "Katta miqdordagi energiya ishlab chiqarish", "Hech qanday chiqindi yo'qligi", "Oson boshqarilishi"], answer: "Katta miqdordagi energiya ishlab chiqarish" },
+            { id: 1128, q: "O'zbekistonda yadro fizikasini o'rganish markazi qayerda joylashgan?", options: ["Buxoro", "Samarqand", "Toshkent (Yadro fizikasi instituti)", "Xiva"], answer: "Toshkent (Yadro fizikasi instituti)" },
+            { id: 1129, q: "Koinotning tuzilishini, harakatini va rivojlanishini o'rganuvchi fan?", options: ["Astrofizika", "Kosmologiya", "Geologiya", "Kimyo"], answer: "Kosmologiya" },
+            { id: 1130, q: "Atom zaryadining birligi?", options: ["Kulon", "Volt", "Amper", "Joul"], answer: "Kulon" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Fizika bazasidan foydalanish
+        const allQuestions = physicsTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Fizika testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                input.value = option;
+                
+                // Matematik formulalar uchun HTML/CSS formatlash qo'shish
+                let formattedOption = option;
+                // Formulalarni to'g'ri ko'rinishga keltirish (misol: S = a * t^2 / 2)
+                formattedOption = formattedOption.replace(/\^(\d+)/g, '<sup>$1</sup>');
+                formattedOption = formattedOption.replace(/\(yoki (.+)\)/g, '<small style="color:#6c757d;">($1)</small>');
+
+                label.appendChild(input);
+                label.innerHTML += formattedOption; // HTML kodi qo'shiladi
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // Javoblarni taqqoslashda faqat matn qismini olish (HTML taglarisiz)
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => 
+                label.textContent.trim().replace(/\s\s+/g, ' ') === qItem.answer.replace(/\s\s+/g, ' ')
+            );
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                // Javobni faqat matn bilan taqqoslash
+                if (selectedOption.value.trim().replace(/\s\s+/g, ' ') === qItem.answer.trim().replace(/\s\s+/g, ' ')) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Fizika Testlariga Xush Kelibsiz!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
