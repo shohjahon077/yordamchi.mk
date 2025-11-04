@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ona Tili (O'zbek tili) Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --tili-color: #4CAF50; /* Ona tili uchun yashil rangni ishlatamiz */
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--tili-color); 
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--tili-color); /* Sinf tugmasi uchun yashil */
+            color: var(--text-light); 
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .class-selection button:hover {
+            background-color: #388e3c;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+            color: var(--text-light);
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #e8f5e9; /* Yashil tusdagi och rang */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--tili-color); /* Yashil chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #c8e6c9; /* Yashil hover */
+            border-color: var(--tili-color);
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #a5d6a7; /* Natija foni Yashil tusda */
+            border: 1px solid #81c784;
+            color: #1b5e20;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali (oldingi uslub) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Ona tili (O'zbek tili) Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-sinf</button>
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Ona tili (O'zbek tili) fani, 5-11 sinflar) ---
+
+    const tiliTestDatabase = {
+        // 5-sinf: Nutq tovushlari, unli va undoshlar, so'zning lug'aviy ma'nosi.
+        5: [
+            { id: 501, q: "O'zbek tilida nechta unli tovush bor?", options: ["4", "5", "6", "10"], answer: "6" },
+            { id: 502, q: "Talaffuz qilinadigan va eshitiladigan eng kichik nutq birligi nima?", options: ["Harf", "So'z", "Tovush", "Bo'g'in"], answer: "Tovush" },
+            { id: 503, q: "Ovoz va shovqin ishtirokida hosil bo'ladigan tovushlar qanday nomlanadi?", options: ["Unlilar", "Undoshlar", "Bo'g'inlar", "Harflar"], answer: "Undoshlar" },
+            { id: 504, q: "So'zning ma'nosini ifodalovchi qismi nima?", options: ["Qo'shimcha", "Bo'g'in", "O'zak", "Tovush"], answer: "O'zak" },
+            { id: 505, q: "Quyidagi so'zlardan qaysi biri ikki bo'g'inli?", options: ["Maktab", "Kitob", "Daraxt", "Yur"], answer: "Kitob" },
+            { id: 506, q: "So'zning lug'aviy ma'nosiga zid ma'noni ifodalovchi so'zlar qanday nomlanadi?", options: ["Sinonim", "Omonim", "Antonim", "Paronim"], answer: "Antonim" },
+            { id: 507, q: "O'zbek alifbosida nechta harf bor?", options: ["29", "30", "35", "26"], answer: "29" },
+            { id: 508, q: "Unli tovushlar qanday hosil bo'ladi?", options: ["Shovqin bilan", "Ovoz ishtirokida, havo oqimi og'izdan to'siqsiz chiqadi", "Lablar yordamida", "Til ishtirokida"], answer: "Ovoz ishtirokida, havo oqimi og'izdan to'siqsiz chiqadi" },
+            { id: 509, q: "Quyidagi so'zlardan qaysi biri yozilishi va talaffuzi farq qiladi?", options: ["Qalam", "Kitob", "Qo'rq", "Olma"], answer: "Qo'rq" },
+            { id: 510, q: "Ikkita yoki undan ortiq so'zning ma'no jihatdan yaqin bo'lishi nima deyiladi?", options: ["Antonimiya", "Sinonimiya", "Omonimiya", "Frazeologiya"], answer: "Sinonimiya" },
+            { id: 511, q: "Qaysi so'zga 'lar' qo'shimchasi qo'shiladi?", options: ["Men", "Sen", "Biz", "Kitob"], answer: "Kitob" },
+            { id: 512, q: "Undoshlarning qaysi biri jarangsiz undosh?", options: ["B", "D", "P", "G"], answer: "P" },
+            { id: 513, q: "'G' va 'G'' harflari qaysi tovushlarni ifodalaydi?", options: ["Lab undoshi", "Tish undoshi", "Til undoshi", "Bo'g'iz undoshi"], answer: "Til undoshi" },
+            { id: 514, q: "Bo'g'in hosil qiluvchi tovush?", options: ["Undosh", "Harf", "Unli", "Belgi"], answer: "Unli" },
+            { id: 515, q: "Qaysi so'z 'd' undoshi bilan tugaydi?", options: ["Maktab", "Qog'oz", "Daraxt", "Olov"], answer: "Qog'oz" },
+            { id: 516, q: "Ma'nosi bir xil, lekin yozilishi har xil bo'lgan so'zlar?", options: ["Omonimlar", "Antonimlar", "Sinonimlar", "Paronimlar"], answer: "Sinonimlar" },
+            { id: 517, q: "So'zning yangi ma'no hosil qiluvchi qo'shimchasi nima?", options: ["Shakl yasovchi", "O'rin", "So'z yasovchi", "Ega"], answer: "So'z yasovchi" },
+            { id: 518, q: "O'zbek tilida urg'u asosan so'zning qayeriga tushadi?", options: ["Birinchi bo'g'inga", "O'rtadagi bo'g'inga", "Oxirgi bo'g'inga", "Tushmaydi"], answer: "Oxirgi bo'g'inga" },
+            { id: 519, q: "'Suv' va 'quruqlik' so'zlari qaysi guruhga kiradi?", options: ["Sinonim", "Omonim", "Antonim", "Bir ma'noli"], answer: "Antonim" },
+            { id: 520, q: "Qaysi so'z 'yoz' omonimiga ega?", options: ["Qish", "Yoz (fe'l)", "Kuz", "Bahor"], answer: "Yoz (fe'l)" },
+            { id: 521, q: "Harflar yig'indisidan iborat bo'lib, muayyan ma'noni ifodalovchi birlik?", options: ["Gap", "Bo'g'in", "So'z", "Tovush"], answer: "So'z" },
+            { id: 522, q: "Jarangli undoshni toping.", options: ["K", "T", "Z", "S"], answer: "Z" },
+            { id: 523, q: "Bo'g'in ko'chiradigan so'z qaysi qatorda berilgan?", options: ["O'zbekiston", "Kitob", "O'quvchi", "O'quv"], answer: "O'quvchi" },
+            { id: 524, q: "So'zning shaklini o'zgartiruvchi qo'shimchalar?", options: ["Leksik", "So'z yasovchi", "Grammatik", "Asos"], answer: "Grammatik" },
+            { id: 525, q: "Yozilishda qatnashib, talaffuzda farqlanmaydigan belgilar?", options: ["Tovushlar", "Harflar", "Tinish belgilari", "Unlilar"], answer: "Harflar" },
+            { id: 526, q: "'Ko'z' so'zining omonimini toping.", options: ["Qosh", "Chashma", "Yuz", "Burun"], answer: "Chashma" },
+            { id: 527, q: "Ovozning ishtirokisiz, faqat shovqindan hosil bo'ladigan undoshlar?", options: ["Jarangli", "Jarangli-jarangsiz", "Jarangli", "Jarangsiz"], answer: "Jarangsiz" },
+            { id: 528, q: "Qaysi so'zda 'a' unlisi to'liq talaffuz etiladi?", options: ["Qalamdon", "Qarindosh", "Samarqand", "Daraxt"], answer: "Samarqand" },
+            { id: 529, q: "So'z birikmasining markaziy qismi nima?", options: ["To'ldiruvchi", "Ega", "Bosh so'z", "Kesim"], answer: "Bosh so'z" },
+            { id: 530, q: "Yangi so'z hosil qilish usullari?", options: ["Qo'shish, ayirish", "Affiksatsiya, qo'shish, juftlash", "Faqat qo'shish", "Faqat affiksatsiya"], answer: "Affiksatsiya, qo'shish, juftlash" }
+        ],
+        
+        // 6-sinf: Leksikologiya, so'z ma'nolari, frazeologizmlar.
+        6: [
+            { id: 601, q: "Tilning lug'at boyligi va undagi so'zlar ma'nosini o'rganuvchi bo'lim nima?", options: ["Fonetika", "Morfologiya", "Leksikologiya", "Sintaksis"], answer: "Leksikologiya" },
+            { id: 602, q: "Bir xil yoziladigan, lekin ma'nosi butunlay boshqa bo'lgan so'zlar?", options: ["Sinonimlar", "Omonimlar", "Antonimlar", "Paronimlar"], answer: "Omonimlar" },
+            { id: 603, q: "Ko'chma ma'noda qo'llanilgan so'zni toping.", options: ["Oltin uzuk", "Oltin qo'l", "Oltin rang", "Oltin suvi"], answer: "Oltin qo'l" },
+            { id: 604, q: "Tili borib bormaydi (gapirishga qiynaladi) – bu qanday birlik?", options: ["So'z", "Atama", "Frazeologizm", "Bo'g'in"], answer: "Frazeologizm" },
+            { id: 605, q: "Qaysi so'z eskirgan so'zga kiradi?", options: ["Kitob", "Kompyuter", "Dorixona", "Yasak"], answer: "Yasak" },
+            { id: 606, q: "Ma'nosi bir-biriga yaqin, ammo atash ma'nosida farq qiladigan so'zlar?", options: ["Antonimlar", "Omonimlar", "Sinonimlar", "Eskirgan"], answer: "Sinonimlar" },
+            { id: 607, q: "Frazeologizmning asosiy xususiyati nima?", options: ["Bo'laklarga ajratish mumkin", "Doimiy ma'noga ega, bir butun holda ishlatiladi", "Faqa yozma nutqda ishlatiladi", "Faqat fe'llardan iborat"], answer: "Doimiy ma'noga ega, bir butun holda ishlatiladi" },
+            { id: 608, q: "'Baland' so'zining antonimi?", options: ["Olis", "Past", "Uzoq", "Keng"], answer: "Past" },
+            { id: 609, q: "Fan, texnika, san'at sohalariga xos so'zlar?", options: ["Omonim", "Termin (Atama)", "Sinonim", "Frazeologizm"], answer: "Termin (Atama)" },
+            { id: 610, q: "'Qalam' so'zi necha ma'noli?", options: ["Bir ma'noli", "Ko'p ma'noli", "Omonim", "Antonim"], answer: "Bir ma'noli" },
+            { id: 611, q: "O'zbek tilidagi barcha so'zlar yig'indisi?", options: ["Morfologiya", "Lug'at tarkibi (Leksika)", "Sintaksis", "Fonetika"], answer: "Lug'at tarkibi (Leksika)" },
+            { id: 612, q: "'Boshoq' so'zining ko'p ma'noliligini hosil qiluvchi so'z?", options: ["Bug'doyning boshoq", "Tikan", "Suv", "G'alla"], answer: "Bug'doyning boshoq" },
+            { id: 613, q: "Hozirgi kunda kam ishlatiladigan, lekin tushuniladigan so'zlar?", options: ["Neologizm", "Tarixiy so'z", "Eskirgan so'z", "Shevaga xos"], answer: "Eskirgan so'z" },
+            { id: 614, q: "Tilga yangi kirib kelgan so'zlar?", options: ["Arxaizm", "Tarixiy so'z", "Neologizm", "Vazifadosh"], answer: "Neologizm" },
+            { id: 615, q: "'Og'zi-burni qon (qiynalgan)' frazeologizmi qaysi so'zga sinonim?", options: ["Xursand", "Kambag'al", "Azob chekkan", "Boy"], answer: "Azob chekkan" },
+            { id: 616, q: "So'zning faqat bir ma'noni ifodalashi?", options: ["Ko'p ma'nolilik", "Bir ma'nolilik", "Frazeologiya", "Leksika"], answer: "Bir ma'nolilik" },
+            { id: 617, q: "Shevaga xos so'zlar?", options: ["Qo'l", "Kasal", "Choy", "Eshik"], answer: "Kasal" },
+            { id: 618, q: "Qaysi qatorda toponim (joy nomi) berilgan?", options: ["Tosh", "Toshkent", "Toshqin", "Toshli"], answer: "Toshkent" },
+            { id: 619, q: "Ko'chma ma'noning hosil bo'lish sababi?", options: ["So'zning yozilishi", "O'xshatish, qiyoslash, metafora", "Qo'shimchalar", "Antonimlar"], answer: "O'xshatish, qiyoslash, metafora" },
+            { id: 620, q: "Qaysi so'z omonim emas?", options: ["Yoz", "Ot", "Qiz", "Ko'l"], answer: "Ko'l" },
+            { id: 621, q: "So'zning lug'aviy ma'nosi qaysi so'z turkumlarida bo'ladi?", options: ["Faqat ot", "Barcha mustaqil so'z turkumlarida", "Faqat yordamchi so'zlar", "Faqat fe'l"], answer: "Barcha mustaqil so'z turkumlarida" },
+            { id: 622, q: "Ko'p ma'noli so'zning lug'atda berilishi?", options: ["Faqat asosiy ma'no", "Barcha ma'nolari raqamlab beriladi", "Faqat ko'chma ma'no", "Berilmaydi"], answer: "Barcha ma'nolari raqamlab beriladi" },
+            { id: 623, q: "Qaysi so'zda antonim mavjud emas?", options: ["Yaxshi", "Katta", "Juda", "Balchiq"], answer: "Juda" },
+            { id: 624, q: "Kasb-hunarga doir so'zlar?", options: ["Umumiste'mol", "Termin", "Professionalizm", "Eskirgan"], answer: "Professionalizm" },
+            { id: 625, q: "Tilni me'yoriy holatga keltiruvchi so'zlar?", options: ["Shevaga xos", "Adabiy tilga xos", "Arxaizm", "Neologizm"], answer: "Adabiy tilga xos" },
+            { id: 626, q: "Biror narsaning ma'nosini atash uchun ishlatiladigan birlik?", options: ["Gap", "So'z", "Nutq", "Bo'g'in"], answer: "So'z" },
+            { id: 627, q: "'G'ildirakdan chiqarilgan g'ildirak (ortiqcha harakat)' frazeologizmi qaysi so'zga sinonim?", options: ["To'g'ri", "Katta", "Bekor", "Oz"], answer: "Bekor" },
+            { id: 628, q: "Ma'nosi bir xil, ammo tovush tarkibi har xil bo'lgan so'zlar?", options: ["Omonim", "Antonim", "Sinonim", "Paronim"], answer: "Sinonim" },
+            { id: 629, q: "Omonimlarni aniqlashdagi qiyinchilik?", options: ["Yozilishining farqi", "Talaffuzining o'xshashligi", "Ma'nolarining umumiyligi", "Ma'nolarining aloqasizligi"], answer: "Ma'nolarining aloqasizligi" },
+            { id: 630, q: "'Yangi' so'zining sinonimi?", options: ["Eski", "Qadimiy", "Navqiron", "Uzoq"], answer: "Navqiron" }
+        ],
+        
+        // 7-sinf: Morfologiya, ot, sifat, son, olmosh.
+        7: [
+            { id: 701, q: "So'z turkumlarini o'rganuvchi tilshunoslik bo'limi nima?", options: ["Fonetika", "Leksikologiya", "Morfologiya", "Sintaksis"], answer: "Morfologiya" },
+            { id: 702, q: "Narsa, predmetning nomini bildiruvchi so'z turkumi?", options: ["Sifat", "Ot", "Fe'l", "Ravish"], answer: "Ot" },
+            { id: 703, q: "Predmetning belgisini bildiruvchi so'z turkumi?", options: ["Ot", "Sifat", "Son", "Olmosh"], answer: "Sifat" },
+            { id: 704, q: "Qaysi so'z turkumida shaxs-son qo'shimchalari bo'ladi?", options: ["Ot", "Sifat", "Olmosh", "Fe'l"], answer: "Fe'l" },
+            { id: 705, q: "Otning egalik qo'shimchalari qanday ma'no ifodalaydi?", options: ["Har xil", "Sifat", "Kishilik", "Tegishlilik (Egalik)"], answer: "Tegishlilik (Egalik)" },
+            { id: 706, q: "Qaysi ot turkumida ko'plik shakli mavjud emas?", options: ["Shaxs otlar", "Umumiy otlar", "Atoqli otlar (nomlar)", "Narsaning nomlari"], answer: "Atoqli otlar (nomlar)" },
+            { id: 707, q: "Sifatning darajalari qaysi qatorda to'g'ri berilgan?", options: ["Oddiy, oshirma, kamaytirma", "Katta, kichik", "Oddiy, qiyosiy, orttirma", "Asos, qo'shma"], answer: "Oddiy, qiyosiy, orttirma" },
+            { id: 708, q: "Predmetning sonini, tartibini bildiruvchi so'z turkumi?", options: ["Sifat", "Son", "Olmosh", "Ravish"], answer: "Son" },
+            { id: 709, q: "Ot o'rnida qo'llanilib, predmetni ishora qiluvchi so'z turkumi?", options: ["Sifat", "Son", "Olmosh", "Fe'l"], answer: "Olmosh" },
+            { id: 710, q: "Tartib son qaysi qo'shimcha bilan yasaladi?", options: ["-lar", "-li", "-inchi", "-ga"], answer: "-inchi" },
+            { id: 711, q: "Qaysi ot turkumi 'kim?', 'nima?' so'roqlariga javob beradi?", options: ["Faqat kim?", "Faqat nima?", "Kim? va nima?", "Qanday?"], answer: "Kim? va nima?" },
+            { id: 712, q: "Qiyosiy darajadagi sifatni toping.", options: ["Katta", "Kattaroq", "Eng katta", "Juda katta"], answer: "Kattaroq" },
+            { id: 713, q: "Olmoshning turlari qaysi qatorda berilgan?", options: ["Shaxs, egalik, ko'rsatish, so'roq", "Oddiy, murakkab", "Ot, sifat, fe'l", "Birinchilik, ikkinchilik"], answer: "Shaxs, egalik, ko'rsatish, so'roq" },
+            { id: 714, q: "Sonning aniq miqdorini bildiruvchi turi?", options: ["Tartib son", "Dona son", "Chama son", "Sanoq son"], answer: "Sanoq son" },
+            { id: 715, q: "Otlarga xos grammatik kategoriyalar?", options: ["Shaxs, zamon", "Kelishik, egalik, ko'plik", "Daraja, nisbat", "Holat, makon"], answer: "Kelishik, egalik, ko'plik" },
+            { id: 716, q: "Qaysi olmosh gapda ot o'rnida keladi?", options: ["Bunday", "Har kim", "O'z", "Hamma"], answer: "O'z" },
+            { id: 717, q: "Sifatdan sifat yasovchi qo'shimcha qaysi?", options: ["-chi", "-la", "-siz", "-lik"], answer: "-siz" },
+            { id: 718, q: "Qaysi so'z turkumi fe'lning ma'nosini kuchaytiradi?", options: ["Ot", "Sifat", "Ravish", "Son"], answer: "Ravish" },
+            { id: 719, q: "Chama son qanday yasaladi?", options: ["Qo'shimcha bilan", "Sonlarning qo'shilishi bilan", "So'z birikmasi bilan", "O'rni bilan"], answer: "Sonlarning qo'shilishi bilan" },
+            { id: 720, q: "O'zi kiritilgan so'zni inkor ma'nosida ishlatuvchi olmosh?", options: ["Hamma", "Hech kim", "Ba'zi", "O'sha"], answer: "Hech kim" },
+            { id: 721, q: "Otlarda kelishik qo'shimchalari nechta?", options: ["4", "5", "6", "7"], answer: "6" },
+            { id: 722, q: "Ortirma darajadagi sifatni toping.", options: ["Yaxshi", "Yaxshiroq", "Eng yaxshi", "Kichik"], answer: "Eng yaxshi" },
+            { id: 723, q: "'Bular' olmoshi qaysi turga kiradi?", options: ["Shaxs", "Egalik", "Ko'rsatish", "Gummon"], answer: "Ko'rsatish" },
+            { id: 724, q: "Qaysi so'z turkumi 'qancha?', 'nechta?' so'roqlariga javob beradi?", options: ["Ot", "Sifat", "Son", "Fe'l"], answer: "Son" },
+            { id: 725, q: "Ko'plik qo'shimchasi otga qanday ma'no beradi?", options: ["Egalik", "Atoqlilik", "Predmetning ko'pligi", "Belgi"], answer: "Predmetning ko'pligi" },
+            { id: 726, q: "Ot o'rnida kelgan olmoshlar qanday sintaktik vazifa bajaradi?", options: ["Faqat aniqlovchi", "Faqat kesim", "Ega, to'ldiruvchi", "Faqat hol"], answer: "Ega, to'ldiruvchi" },
+            { id: 727, q: "Asli sifat bo'lgan, ammo otga o'tgan so'z?", options: ["Go'zal", "Oq", "Qora", "Yaxshilik"], answer: "Yaxshilik" },
+            { id: 728, q: "Tarkibida son bor bo'lgan frazeologizm?", options: ["Quloq solmoq", "Bosh qotirmoq", "Etti o'lchab bir kes", "To'rtinchi kishi"], answer: "Etti o'lchab bir kes" },
+            { id: 729, q: "Sifatdan ot yasovchi qo'shimcha qaysi?", options: ["-chi", "-ma", "-lik", "-don"], answer: "-lik" },
+            { id: 730, q: "Predmetning nechanchiligini bildiruvchi son turi?", options: ["Sanoq", "Dona", "Taqsim", "Tartib"], answer: "Tartib" }
+        ],
+
+        // 8-sinf: Fe'l, uning shakllari va nisbatlari, ravish.
+        8: [
+            { id: 801, q: "Predmetning harakati, holatini bildiruvchi so'z turkumi?", options: ["Ot", "Sifat", "Fe'l", "Ravish"], answer: "Fe'l" },
+            { id: 802, q: "Fe'lning zamonlari qaysi qatorda to'g'ri berilgan?", options: ["O'tgan, hozirgi, kelasi", "Boshlanish, o'rta, tugallangan", "Asos, o'zak, qo'shimcha", "I, II, III"], answer: "O'tgan, hozirgi, kelasi" },
+            { id: 803, q: "Fe'lning shakli bo'lmagan so'z turkumi?", options: ["Sifatdosh", "Harf", "Ravishdosh", "Har bir shakl"], answer: "Harf" },
+            { id: 804, q: "Fe'lning bajaruvchisi noma'lum bo'lgan nisbat turi?", options: ["Majhul", "O'zlik", "Ortirma", "Birgalik"], answer: "Majhul" },
+            { id: 805, q: "Fe'lga xos grammatik kategoriyalar?", options: ["Egalik, ko'plik", "Kelishik, shaxs", "Zamon, mayl, nisbat", "Daraja, tur"], answer: "Zamon, mayl, nisbat" },
+            { id: 806, q: "Fe'lning harakat natijasini bildiruvchi nisbat turi?", options: ["O'zlik", "Majhul", "Birgalik", "G'ayri-majburiyat"], answer: "O'zlik" },
+            { id: 807, q: "Har xil harakatni birgalikda bajarish ma'nosini bildiruvchi nisbat?", options: ["Majhul", "O'zlik", "Ortirma", "Birgalik"], answer: "Birgalik" },
+            { id: 808, q: "Predmetning belgisini harakatga nisbatan bildiruvchi fe'l shakli?", options: ["Sifatdosh", "Harf", "Ravishdosh", "Fe'l"], answer: "Sifatdosh" },
+            { id: 809, q: "Har bir harakatning o'tishini, holatini bildiruvchi fe'l shakli?", options: ["Sifatdosh", "Fe'l", "Ravishdosh", "Ot"], answer: "Ravishdosh" },
+            { id: 810, q: "Fe'lning qaysi mayli buyruq, iltimos ma'nosini bildiradi?", options: ["Xabar", "Shart", "Buyruq-istak", "Majburiyat"], answer: "Buyruq-istak" },
+            { id: 811, q: "Harakatning bajarilish tarzi, o'rni, payti kabi holatlarini bildiruvchi so'z turkumi?", options: ["Sifat", "Fe'l", "Ravish", "Olmosh"], answer: "Ravish" },
+            { id: 812, q: "Ravishning ma'no turlari qaysi qatorda berilgan?", options: ["O'rin, egalik", "Tarkib, hisob", "Harakat tarzi, payt, o'rin, sabab", "Asos, qo'shma"], answer: "Harakat tarzi, payt, o'rin, sabab" },
+            { id: 813, q: "Qaysi qo'shimcha bilan majhul nisbat yasaladi?", options: ["-la", "-dir", "-il / -l", "-ish"], answer: "-il / -l" },
+            { id: 814, q: "Fe'lning 'sifat' funksiyasini bajaruvchi shakli?", options: ["Ravishdosh", "Sifatdosh", "Fe'l", "Ot"], answer: "Sifatdosh" },
+            { id: 815, q: "Qaysi so'z ravish hisoblanadi?", options: ["Chiroyli", "Yugurdi", "Tez", "Kitob"], answer: "Tez" },
+            { id: 816, q: "Fe'lning aniq va to'g'ridan-to'g'ri bajarilganligini bildiruvchi nisbat?", options: ["Majhul", "O'zlik", "Birgalik", "Aniq"], answer: "Aniq" },
+            { id: 817, q: "Harakatning bajarilish sababini bildiruvchi ravish turi?", options: ["Harakat tarzi", "Payt", "O'rin", "Sabab-maqsad"], answer: "Sabab-maqsad" },
+            { id: 818, q: "Ravishdan ravish yasovchi qo'shimcha?", options: ["-chi", "-ma", "-cha", "-lik"], answer: "-cha" },
+            { id: 819, q: "Fe'lning 'ravish' funksiyasini bajaruvchi shakli?", options: ["Sifatdosh", "Fe'l", "Ravishdosh", "Ot"], answer: "Ravishdosh" },
+            { id: 820, q: "Fe'lning shart mayli qaysi qo'shimcha bilan yasaladi?", options: ["-di", "-sa", "-ay", "-ar"], answer: "-sa" },
+            { id: 821, q: "Ravishning darajalanuvchi turlari?", options: ["Faqat payt", "Faqat o'rin", "Harakat tarzi ravishlari", "Barcha turlari"], answer: "Harakat tarzi ravishlari" },
+            { id: 822, q: "Fe'lning o'tgan zamon shakli?", options: ["Keladi", "Yozmoqda", "Kelgan edi", "Bor"], answer: "Kelgan edi" },
+            { id: 823, q: "Qaysi so'z fe'lning orttirma nisbatiga misol bo'ladi?", options: ["Yozildi", "Yozishdi", "Yozdir", "Yozdi"], answer: "Yozdir" },
+            { id: 824, q: "Sifatdosh qaysi so'roqqa javob beradi?", options: ["Qayerga?", "Kimga?", "Qanday? Qaysi?", "Qachon?"], answer: "Qanday? Qaysi?" },
+            { id: 825, q: "Fe'lning tugallanmagan shakli?", options: ["Fe'l", "Fe'lning harakat nomi", "Fe'lning oddiy shakli", "Fe'lning murakkab shakli"], answer: "Fe'lning harakat nomi" },
+            { id: 826, q: "Har-akat nomi (fe'lning ot shakli) qaysi qo'shimcha bilan yasaladi?", options: ["-gan", "-ar", "-moq", "-may"], answer: "-moq" },
+            { id: 827, q: "Ravishdan fe'l yasovchi qo'shimcha?", options: ["-lik", "-lan", "-siz", "-chi"], answer: "-lan" },
+            { id: 828, q: "Ravishdosh gapda asosan qaysi bo'lak vazifasini bajaradi?", options: ["Ega", "Kesim", "Hol", "To'ldiruvchi"], answer: "Hol" },
+            { id: 829, q: "Fe'lning aniq zamoni?", options: ["O'tgan, kelasi", "Hozirgi", "O'tgan, hozirgi, kelasi", "Shart"], answer: "O'tgan, hozirgi, kelasi" },
+            { id: 830, q: "Fe'lga xos bo'lmagan so'z turkumi?", options: ["Sifatdosh", "Ravishdosh", "Ko'makchi", "Fe'l"], answer: "Ko'makchi" }
+        ],
+        
+        // 9-sinf: Yordamchi so'z turkumlari, modal so'zlar, undovlar.
+        9: [
+            { id: 901, q: "Mustaqil so'z turkumiga kirmaydigan so'zlar?", options: ["Fe'l", "Sifat", "Yordamchi so'zlar", "Ot"], answer: "Yordamchi so'zlar" },
+            { id: 902, q: "So'z va so'z birikmalarini o'zaro bog'lab, turli munosabatlarni ifodalovchi so'z turkumi?", options: ["Bog'lovchi", "Undov", "Ko'makchi", "Modal"], answer: "Ko'makchi" },
+            { id: 903, q: "Gap bo'laklarini yoki sodda gaplarni o'zaro bog'lovchi yordamchi so'z turkumi?", options: ["Ko'makchi", "Bog'lovchi", "Modal so'z", "Undov"], answer: "Bog'lovchi" },
+            { id: 904, q: "Gapning ma'nosiga qo'shimcha, sub'ektiv (gumon, tasdiq, inkor) ma'nolar beruvchi so'zlar?", options: ["Undovlar", "Ko'makchilar", "Modal so'zlar", "Bog'lovchilar"], answer: "Modal so'zlar" },
+            { id: 905, q: "Kishining his-hayajonini, tuyg'ularini ifodalovchi so'zlar?", options: ["Modal so'z", "Ko'makchi", "Undov", "Bog'lovchi"], answer: "Undov" },
+            { id: 906, q: "Ko'makchining asosiy vazifasi?", options: ["Fe'lga bog'lanish", "So'zlar orasidagi grammatik munosabatni ifodalash", "Faqat otga bog'lanish", "Gapni ajratish"], answer: "So'zlar orasidagi grammatik munosabatni ifodalash" },
+            { id: 907, q: "'Lekin', 'ammo' qaysi bog'lovchi turiga kiradi?", options: ["Teng bog'lovchi (Zidlovchi)", "Ergashtiruvchi", "Ajratuvchi", "Qo'shimcha"], answer: "Teng bog'lovchi (Zidlovchi)" },
+            { id: 908, q: "Qaysi so'z modal so'z hisoblanadi?", options: ["Chunonchi", "Shubhasiz", "Go'yo", "Vaholanki"], answer: "Shubhasiz" },
+            { id: 909, q: "'Voy', 'eh', 'oh' kabi so'zlar qaysi turkumga kiradi?", options: ["Ko'makchi", "Bog'lovchi", "Modal so'z", "Undov"], answer: "Undov" },
+            { id: 910, q: "Ko'makchilar qaysi so'z turkumlariga bog'lanadi?", options: ["Faqat fe'l", "Ot, olmosh, ravish va ba'zan sifatga", "Faqat otga", "Faqat sifatga"], answer: "Ot, olmosh, ravish va ba'zan sifatga" },
+            { id: 911, q: "Qaysi bog'lovchi ergashtiruvchi bog'lovchi?", options: ["Va", "Yoki", "Chunki", "Lekin"], answer: "Chunki" },
+            { id: 912, q: "Modal so'zlar gapda qanday sintaktik vazifa bajaradi?", options: ["Kesim", "Ega", "Alohida gap bo'lagi (Modal), ko'pincha kirish so'z", "To'ldiruvchi"], answer: "Alohida gap bo'lagi (Modal), ko'pincha kirish so'z" },
+            { id: 913, q: "Undovlar gapda qanday sintaktik vazifa bajaradi?", options: ["Ega", "Kesim", "Gap bo'lagi bo'lmaydi, faqat tuyg'u ifodalaydi", "Hol"], answer: "Gap bo'lagi bo'lmaydi, faqat tuyg'u ifodalaydi" },
+            { id: 914, q: "'...ga qarab' ko'makchisi qanday ma'no ifodalaydi?", options: ["Payt", "Maqsad", "Yo'nalish", "Chog'ishtirish"], answer: "Yo'nalish" },
+            { id: 915, q: "Teng bog'lovchilar asosan nimani bog'laydi?", options: ["Ergashtiruvchi gapni", "Ot va sifatni", "Teng huquqli gap bo'laklarini yoki sodda gaplarni", "Fe'l va ravishni"], answer: "Teng huquqli gap bo'laklarini yoki sodda gaplarni" },
+            { id: 916, q: "Tasdiq ma'nosini bildiruvchi modal so'z?", options: ["Balki", "Albatta", "Aftidan", "Axir"], answer: "Albatta" },
+            { id: 917, q: "Taqlid so'zlar qaysi so'z turkumiga eng yaqin turadi?", options: ["Fe'l", "Ot", "Ravish (Harakat tarzi)", "Sifat"], answer: "Ravish (Harakat tarzi)" },
+            { id: 918, q: "Ko'makchilar qaysi so'z turkumi bilan sinonim bo'lishi mumkin?", options: ["Fe'l", "Son", "Kelishik qo'shimchalari", "Olmosh"], answer: "Kelishik qo'shimchalari" },
+            { id: 919, q: "Qaysi bog'lovchi 'g'araz bog'lovchisi' deb ham ataladi?", options: ["Va", "Chunki", "Lekin", "Yoki"], answer: "Lekin" },
+            { id: 920, q: "Gummon ma'nosini bildiruvchi modal so'z?", options: ["Darhaqiqat", "Aftidan", "Zero", "Go'yo"], answer: "Aftidan" },
+            { id: 912, q: "Taqlid so'zlarning turlari qaysi qatorda berilgan?", options: ["Ot, fe'l", "Tovushga taqlid, holatga taqlid", "Asos, qo'shma", "Oddiy, murakkab"], answer: "Tovushga taqlid, holatga taqlid" },
+            { id: 922, q: "'Uchun' ko'makchisi qanday ma'no ifodalaydi?", options: ["Yo'nalish", "O'rin", "Sabab/Maqsad", "Payt"], answer: "Sabab/Maqsad" },
+            { id: 923, q: "Undovlar yozuvda qanday belgi bilan ajratiladi?", options: ["Vergul", "Tirikchalar", "Tirikcha (Undov belgisi)", "Nuqta"], answer: "Tirikcha (Undov belgisi)" },
+            { id: 924, q: "Bog'lovchilar qaysi kelishiklar bilan sinonim bo'lishi mumkin?", options: ["Bosh, qaratqich", "Chiish, o'rin", "To'ldiruvchi, birikuvchi", "Hech qanday"], answer: "To'ldiruvchi, birikuvchi" },
+            { id: 925, q: "Qaysi modal so'z kirish so'z sifatida ko'p ishlatiladi?", options: ["Faqat", "Hattoki", "Albatta", "Axir"], answer: "Albatta" },
+            { id: 926, q: "'Bilasizki', 'ma'lumki' kabi so'zlar qaysi turkumga kiradi?", options: ["Fe'l", "Ko'makchi", "Modal so'z", "Bog'lovchi"], answer: "Modal so'z" },
+            { id: 927, q: "'O'qituvchiga bog'liq' birikmasidagi 'ga bog'liq' so'zi nima?", options: ["Bog'lovchi", "Fe'l", "Ko'makchi", "Ot"], answer: "Ko'makchi" },
+            { id: 928, q: "Inkor ma'nosini bildiruvchi modal so'z?", options: ["Darhaqiqat", "Yo'q", "Zero", "Go'yo"], answer: "Yo'q" },
+            { id: 929, q: "Qaysi taqlid so'z tovushga taqlidni bildiradi?", options: ["Qars-qurs", "Lop-lop", "Shov-shov", "Ildam"], answer: "Qars-qurs" },
+            { id: 930, q: "Bog'lovchilar qaysi nutq bo'lagi hisoblanadi?", options: ["Mustaqil", "Yordamchi", "Alohida", "Noma'lum"], answer: "Yordamchi" }
+        ],
+        
+        // 10-sinf: Sintaksis, so'z birikmasi, gapning bosh bo'laklari.
+        10: [
+            { id: 1001, q: "So'z birikmasi va gapni o'rganuvchi tilshunoslik bo'limi?", options: ["Morfologiya", "Fonetika", "Sintaksis", "Leksikologiya"], answer: "Sintaksis" },
+            { id: 1002, q: "So'z birikmasi necha xil bog'lanish asosida yasaladi?", options: ["2", "3 (moslashuv, boshqaruv, bitishuv)", "4", "5"], answer: "3 (moslashuv, boshqaruv, bitishuv)" },
+            { id: 1003, q: "Gapning bosh bo'laklari?", options: ["To'ldiruvchi, hol", "Aniqlovchi, ega", "Ega, kesim", "Ega, aniqlovchi"], answer: "Ega, kesim" },
+            { id: 1004, q: "Ega asosan qaysi so'z turkumi bilan ifodalanadi?", options: ["Fe'l", "Sifat", "Ot, olmosh", "Ravish"], answer: "Ot, olmosh" },
+            { id: 1005, q: "Gapning asosi bo'lib, fikrning tugallanganligini ifodalovchi bo'lagi?", options: ["Ega", "Kesim", "To'ldiruvchi", "Hol"], answer: "Kesim" },
+            { id: 1006, q: "So'z birikmasining markaziy (bosh) qismi qaysi bo'ladi?", options: ["Ikkinchi so'z", "Aniqlovchi", "Asosiy ma'noni beruvchi so'z", "Birinchi so'z"], answer: "Asosiy ma'noni beruvchi so'z" },
+            { id: 1007, q: "'Kitob o'qidim' so'z birikmasidagi bog'lanish turi?", options: ["Moslashuv", "Boshqaruv", "Bitishuv", "Teng"], answer: "Boshqaruv" },
+            { id: 1008, q: "Kesim qaysi so'z turkumlari bilan ifodalanadi?", options: ["Faqat fe'l", "Fe'l, ot, sifat", "Faqat ot", "Faqat sifat"], answer: "Fe'l, ot, sifat" },
+            { id: 1009, q: "To'ldiruvchi asosan qanday so'roqlarga javob beradi?", options: ["Qachon? Qayerda?", "Qanday? Qaysi?", "Kimga? Nimaga? Kimni? Nimani?", "Nima qildi?"], answer: "Kimga? Nimaga? Kimni? Nimani?" },
+            { id: 1010, q: "So'z birikmasida hokim va tobe so'zlar orasidagi munosabat?", options: ["Tenglik", "Erkinlik", "Hokimiyat (bog'lanish)", "Ajralmaslik"], answer: "Hokimiyat (bog'lanish)" },
+            { id: 1011, q: "Gapning ikkinchi darajali bo'laklari qaysilar?", options: ["Ega, kesim", "Hol, aniqlovchi, to'ldiruvchi", "Faqat aniqlovchi", "Faqat hol"], answer: "Hol, aniqlovchi, to'ldiruvchi" },
+            { id: 1012, q: "'Qizil olma' so'z birikmasidagi bog'lanish turi?", options: ["Moslashuv", "Boshqaruv", "Bitishuv", "Ergashtiruvchi"], answer: "Bitishuv" },
+            { id: 1013, q: "Gap nima?", options: ["Bir so'z", "Ma'no ifodalamaydi", "Tugallangan fikrni ifodalovchi sintaktik birlik", "Qo'shimcha"], answer: "Tugallangan fikrni ifodalovchi sintaktik birlik" },
+            { id: 1014, q: "Gapning tuzilishiga ko'ra turlari?", options: ["Darajali, oddiy", "Faqat oddiy", "Oddiy, murakkab", "Katta, kichik"], answer: "Oddiy, murakkab" },
+            { id: 1015, q: "Aniqlovchi asosan qaysi so'z turkumi bilan ifodalanadi?", options: ["Fe'l", "Ot, sifat, olmosh", "Faqat fe'l", "Faqat ot"], answer: "Ot, sifat, olmosh" },
+            { id: 1016, q: "'Mening kitobim' so'z birikmasidagi bog'lanish turi?", options: ["Boshqaruv", "Bitishuv", "Moslashuv", "Teng"], answer: "Moslashuv" },
+            { id: 1017, q: "Gap bo'laklarining bir-biri bilan munosabatini o'rganish?", options: ["Leksikologiya", "Fonetika", "Sintaksis", "Morfologiya"], answer: "Sintaksis" },
+            { id: 1018, q: "To'ldiruvchi qaysi so'z turkumlari bilan ifodalanadi?", options: ["Faqat fe'l", "Ot, olmosh, fe'lning harakat nomi", "Faqat sifat", "Faqat ot"], answer: "Ot, olmosh, fe'lning harakat nomi" },
+            { id: 1019, q: "Gapning predikativ (shaxs, zamon, mayl) munosabatlari qaysi bo'lak orqali ifodalanadi?", options: ["Ega", "Kesim", "Hol", "To'ldiruvchi"], answer: "Kesim" },
+            { id: 1020, q: "So'z birikmasining asosiy xususiyati nima?", options: ["To'la gap bo'lishi", "Ikki mustaqil so'zning grammatik bog'lanishi", "Bitta so'zdan iborat", "Yordamchi so'zlar"], answer: "Ikki mustaqil so'zning grammatik bog'lanishi" },
+            { id: 1021, q: "Hol asosan qanday so'roqlarga javob beradi?", options: ["Kim? Nima?", "Qanday? Qaysi?", "Qachon? Qayerda? Qanday qilib?", "Kimni? Nimani?"], answer: "Qachon? Qayerda? Qanday qilib?" },
+            { id: 1022, q: "Qaysi gap bo'lagi boshqa bo'laklarga tobelanmaydi?", options: ["Hol", "Ega", "Kesim", "To'ldiruvchi"], answer: "Ega" },
+            { id: 1023, q: "Sodda gap qanday tuzilishga ega?", options: ["Bir nechta ega va kesim", "Faqat bir bosh bo'lak", "Bir bosh bo'lak va uning atrofidagi ikkinchi darajali bo'laklar", "Faqat ikkinchi darajali bo'laklar"], answer: "Bir bosh bo'lak va uning atrofidagi ikkinchi darajali bo'laklar" },
+            { id: 1024, q: "Aniqlovchining vazifasi?", options: ["Harakatni belgilash", "Predmetni belgilash", "Ega va kesimni bog'lash", "Holatni belgilash"], answer: "Predmetni belgilash" },
+            { id: 1025, q: "'Juda tez yugurdi' so'z birikmasidagi bog'lanish turi?", options: ["Moslashuv", "Boshqaruv", "Bitishuv", "Teng"], answer: "Bitishuv" },
+            { id: 1026, q: "To'ldiruvchi gapda qanday kelishiklarda bo'ladi?", options: ["Bosh kelishikda", "Faqat qaratqichda", "Qaratqichdan boshqa barcha kelishiklarda", "Faqat tushumda"], answer: "Qaratqichdan boshqa barcha kelishiklarda" },
+            { id: 1027, q: "Holatga ko'ra gap turlari?", options: ["Darak, so'roq, undov, buyruq", "Oddiy, murakkab", "Qisqa, uzun", "Ijobiy, salbiy"], answer: "Darak, so'roq, undov, buyruq" },
+            { id: 1028, q: "Gapning bir xil so'roqqa javob beradigan bo'laklari?", options: ["Alohida bo'laklar", "Uyushgan bo'laklar", "Bir butun", "Ikkinchi darajali"], answer: "Uyushgan bo'laklar" },
+            { id: 1029, q: "Kesimning fe'l bilan ifodalanishi qanday kesim deyiladi?", options: ["Nominal", "Fe'l-kesim", "Murakkab", "Sodda"], answer: "Fe'l-kesim" },
+            { id: 1030, q: "'Unga o'xshash' so'z birikmasidagi bog'lanish turi?", options: ["Moslashuv", "Bitishuv", "Boshqaruv", "Teng"], answer: "Boshqaruv" }
+        ],
+        
+        // 11-sinf: Murakkab gap, tinish belgilari, uslubiyat.
+        11: [
+            { id: 1101, q: "Ikki yoki undan ortiq sodda gapning ma'no va grammatik jihatdan bog'lanishidan hosil bo'lgan gap?", options: ["Sodda gap", "Murakkab gap", "So'z birikmasi", "Fikr"], answer: "Murakkab gap" },
+            { id: 1102, q: "Murakkab gaplar qaysi turlarga bo'linadi?", options: ["Teng va ergashtiruvchi bog'lovchisiz", "Bog'langan, ergashgan, bog'lovchisiz", "Bosh va ergashtiruvchi", "Ijobiy va salbiy"], answer: "Bog'langan, ergashgan, bog'lovchisiz" },
+            { id: 1103, q: "Gap bo'laklarini, kirish so'zlarni, undovlarni ajratish uchun ishlatiladigan belgi?", options: ["Nuqta", "Tirikcha", "Vergul", "Ikki nuqta"], answer: "Vergul" },
+            { id: 1104, q: "Ergash gap bosh gapga qaysi yo'l bilan bog'lanadi?", options: ["Faqat vergul", "Bog'lovchilar, ko'makchilar, fe'lning maxsus shakllari", "Faqat fe'l", "Faqat tinish belgilari"], answer: "Bog'lovchilar, ko'makchilar, fe'lning maxsus shakllari" },
+            { id: 1105, q: "Bir xil gap bo'laklari qanday tinish belgisi bilan ajratiladi?", options: ["Nuqta", "Vergul", "Tirikcha", "Nuqtali vergul"], answer: "Vergul" },
+            { id: 1106, q: "Badiiy adabiyot, publitsistika, ilmiy, rasmiy kabi turlar nima deb ataladi?", options: ["Til", "So'z", "Uslub (Stil)", "Grammatika"], answer: "Uslub (Stil)" },
+            { id: 1107, q: "Bosh gap va ergash gap munosabatida qaysi gap mustaqil ma'noga ega bo'ladi?", options: ["Ergash gap", "Yordamchi gap", "Bosh gap", "Hech qaysi"], answer: "Bosh gap" },
+            { id: 1108, q: "Bog'lovchisiz murakkab gap qaysi yo'l bilan bog'lanadi?", options: ["Faqat vergul", "Tinish belgilari, intonatsiya", "Faqat bog'lovchi", "Ko'makchi"], answer: "Tinish belgilari, intonatsiya" },
+            { id: 1109, q: "Uslubiyatning asosiy vazifasi nima?", options: ["Imloni o'rganish", "Gap bo'laklarini ajratish", "Til birliklarining nutq sharoitida qo'llanishini o'rganish", "So'z ma'nosini topish"], answer: "Til birliklarining nutq sharoitida qo'llanishini o'rganish" },
+            { id: 1110, q: "Iqtiboslar gapda qanday belgi bilan ajratiladi?", options: ["Tirikcha", "Qo'shtirnoq", "Vergul", "Ikki nuqta"], answer: "Qo'shtirnoq" },
+            { id: 1111, q: "Teng bog'lovchi bilan bog'langan murakkab gap turi?", options: ["Ergashgan murakkab gap", "Bog'langan murakkab gap", "Bog'lovchisiz murakkab gap", "Oddiy gap"], answer: "Bog'langan murakkab gap" },
+            { id: 1112, q: "Nutqning asosiy uslublari qaysilar?", options: ["Yozma, og'zaki", "Kitobiy, og'zaki nutq uslublari", "Sodda, murakkab", "Badiiy, ilmiy"], answer: "Kitobiy, og'zaki nutq uslublari" },
+            { id: 1113, q: "To'g'ridan-to'g'ri nutq qanday tinish belgilari bilan ajratiladi?", options: ["Vergul", "Qo'shtirnoq va tire", "Faqat tire", "Nuqta"], answer: "Qo'shtirnoq va tire" },
+            { id: 1114, q: "Ergash gapning turlari qaysi qatorda berilgan?", options: ["Ega, kesim, to'ldiruvchi, hol, aniqlovchi", "Fe'l, ot, sifat", "Birinchi, ikkinchi", "Yozma, og'zaki"], answer: "Ega, kesim, to'ldiruvchi, hol, aniqlovchi" },
+            { id: 1115, q: "Hulosa, natija ma'nosini ifodalovchi bog'lovchisiz murakkab gapdagi tinish belgisi?", options: ["Nuqta", "Vergul", "Tire", "Nuqtali vergul"], answer: "Tire" },
+            { id: 1116, q: "Qaysi uslub 'emotsional (hissiy)' bo'yoqqa boy bo'ladi?", options: ["Ilmiy", "Rasmiy-ish", "Badiiy", "Publitsistik"], answer: "Badiiy" },
+            { id: 1117, q: "Gapning bir xil bo'laklari oldidan kelgan umumlashtiruvchi so'zdan keyin qanday belgi qo'yiladi?", options: ["Vergul", "Nuqta", "Ikki nuqta", "Tire"], answer: "Ikki nuqta" },
+            { id: 1118, q: "Bog'langan murakkab gapdagi sodda gaplar orasidagi munosabat?", options: ["Teng (parallel)", "Ergashtiruvchi", "Boshqaruv", "Tobe"], answer: "Teng (parallel)" },
+            { id: 1119, q: "Qaysi uslubda lug'aviy birliklar aniq, ilmiy va neytral bo'ladi?", options: ["Badiiy", "Rasmiy-ish", "Ilmiy", "Publitsistik"], answer: "Ilmiy" },
+            { id: 1120, q: "Ergash gap bosh gapdan oldin kelganda vergul qayerga qo'yiladi?", options: ["Ergash gapdan keyin", "Bosh gapdan keyin", "Qo'yilmaydi", "O'rtada"], answer: "Ergash gapdan keyin" },
+            { id: 1121, q: "Morfologiya va Sintaksisni o'rganuvchi bo'lim nima?", options: ["Leksikologiya", "Grammatika", "Fonetika", "Uslubiyat"], answer: "Grammatika" },
+            { id: 1122, q: "Publitsistik uslubning asosiy maqsadi?", options: ["Ma'lumot berish", "O'rgatish", "Ta'sir o'tkazish, targ'ibot qilish", "Hujjatlashtirish"], answer: "Ta'sir o'tkazish, targ'ibot qilish" },
+            { id: 1123, q: "Bog'lovchisiz murakkab gapda payt munosabati bo'lsa, qanday belgi qo'yiladi?", options: ["Vergul", "Nuqtali vergul", "Ikki nuqta", "Tire"], answer: "Vergul" },
+            { id: 1124, q: "Yozuvda biror so'zni tushirib qoldirish o'rniga qanday belgi ishlatiladi?", options: ["Qo'shtirnoq", "Tire", "Ko'p nuqta", "Vergul"], answer: "Ko'p nuqta" },
+            { id: 1125, q: "Ergash gap qanday funksiya bajaradi?", options: ["Faqat hol", "Bosh gapning biror bo'lagi vazifasini bajaradi", "Gap bo'lagi bo'lmaydi", "Faqat ega"], answer: "Bosh gapning biror bo'lagi vazifasini bajaradi" },
+            { id: 1126, q: "Rasmiy-ish uslubining asosiy xususiyati?", options: ["Hissiy ifoda", "Standartlashganlik, aniqlik", "Badiiy tasvir", "Sub'ektiv fikr"], answer: "Standartlashganlik, aniqlik" },
+            { id: 1127, q: "Sodda gapda uyushgan bo'laklar orasiga bog'lovchi qo'yilsa, vergul qo'yiladimi?", options: ["Ha", "Ba'zida", "Yo'q (Va, ham, yoxud bog'lovchilari bir marta ishlatilsa)", "Doim"], answer: "Yo'q (Va, ham, yoxud bog'lovchilari bir marta ishlatilsa)" },
+            { id: 1128, q: "Bog'langan murakkab gapdagi sodda gaplar orasiga qaysi belgi qo'yiladi?", options: ["Tire", "Vergul", "Ikki nuqta", "Nuqta"], answer: "Vergul" },
+            { id: 1129, q: "Tilshunoslikda imlo qoidalarini o'rganuvchi bo'lim nima?", options: ["Orfoepiya", "Orfografiya", "Fonetika", "Uslubiyat"], answer: "Orfografiya" },
+            { id: 1130, q: "Uslub (stil) qaysi fanga yaqin turadi?", options: ["Adabiyotshunoslik", "Tarix", "Geografiya", "Matematika"], answer: "Adabiyotshunoslik" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Ona tili bazasidan foydalanish
+        const allQuestions = tiliTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Ona tili testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                // Input qiymati to'g'ri bo'lishi uchun, HTML ichidagi matnni to'g'ri olish kerak.
+                // Qavslarni olib tashlash
+                const cleanOption = option.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim(); 
+                input.value = cleanOption;
+                
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // Javobni solishtirishdan oldin, ichidagi HTML belgilarni, qavslarni olib tashlash va bo'shliqlarni tozalash kerak
+            const cleanAnswer = qItem.answer.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim();
+
+            // To'g'ri javobni topish
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => {
+                const labelText = label.textContent.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim();
+                return labelText === cleanAnswer;
+            });
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                // selectedOption.value allaqachon tozalangan
+                if (selectedOption.value === cleanAnswer) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Ona tili (O'zbek tili) Testlariga Xush Kelibsiz!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
