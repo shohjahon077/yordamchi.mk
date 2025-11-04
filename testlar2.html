@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimyo Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--secondary-color);
+            min-width: 80px;
+        }
+        .class-selection button:hover {
+            background-color: #1e7e34;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #f7f9fc;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-color);
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e9f5ff;
+            border-color: var(--primary-color);
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #submit-btn {
+            margin-top: 30px;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #e6f3ff;
+            border: 1px solid #b3d9ff;
+            color: #004085;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Kimyo Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+        <button onclick="startTest(10)">10-sinf</button>
+        <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Kimyo fani, 7 va 8-sinflar) ---
+    const chemistryTestDatabase = {
+        // 7-sinf: Kimyoning asosiy tushunchalari, atom, molekula (30 ta savol)
+        7: [
+            { id: 1, q: "Kimyo fani nimani o'rganadi?", options: ["Jism harakatini", "Moddalarni va ularning o'zgarishini", "Tirik organizmlarni", "Yulduzlarni"], answer: "Moddalarni va ularning o'zgarishini" },
+            { id: 2, q: "Moddaning kimyoviy jihatdan bo'linmaydigan eng kichik zarrachasi nima?", options: ["Molekula", "Atom", "Proton", "Yadro"], answer: "Atom" },
+            { id: 3, q: "Ikki yoki undan ortiq atomdan tashkil topgan zarracha nima?", options: ["Atom", "Molekula", "Ion", "Elektron"], answer: "Molekula" },
+            { id: 4, q: "Kislorodning kimyoviy belgisi qaysi?", options: ["K", "O", "H", "N"], answer: "O" },
+            { id: 5, q: "Vodorodning kimyoviy formulasi?", options: ["H₂O", "H", "O₂", "H₂"], answer: "H₂" },
+            { id: 6, q: "Suvning kimyoviy formulasi?", options: ["CO₂", "NaCl", "H₂O", "CH₄"], answer: "H₂O" },
+            { id: 7, q: "Kimyoviy reaksiya nima?", options: ["Moddaning holati o'zgarishi", "Yangi moddalar hosil bo'lishi", "Moddaning issiqlik chiqarishi", "Moddaning hajmini o'zgartirishi"], answer: "Yangi moddalar hosil bo'lishi" },
+            { id: 8, q: "Reaksiya natijasida hosil bo'ladigan moddalar nima deyiladi?", options: ["Reagentlar", "Katalizatorlar", "Mahsulotlar", "Arachalar"], answer: "Mahsulotlar" },
+            { id: 9, q: "Kimyoviy elementlar qaysi jadvalda tartiblangan?", options: ["Logarifmik jadval", "Alifbo", "Mendeleyev davriy sistemasi", "Massa jadvali"], answer: "Mendeleyev davriy sistemasi" },
+            { id: 10, q: "Atomning yadrosida qanday zarrachalar mavjud?", options: ["Elektronlar va neytronlar", "Protonlar va neytronlar", "Faqat elektronlar", "Faqat protonlar"], answer: "Protonlar va neytronlar" },
+            { id: 11, q: "Atomning massasi asosan qaysi zarrachalar hisobiga hosil bo'ladi?", options: ["Elektronlar", "Protonlar va neytronlar", "Faqat elektronlar", "Faqat yadroning tashqi qismi"], answer: "Protonlar va neytronlar" },
+            { id: 12, q: "Oddiy moddaga misol?", options: ["Suv", "Tuz", "Kislorod (O₂)", "Shakar"], answer: "Kislorod (O₂)" },
+            { id: 13, q: "Murakkab moddaga misol?", options: ["Temir (Fe)", "Olmos (C)", "Tuz (NaCl)", "Oltin (Au)"], answer: "Tuz (NaCl)" },
+            { id: 14, q: "Moddaning fizikaviy xossasiga misol?", options: ["Yonish", "Erishi", "Zanglash", "Parchalanish"], answer: "Erishi" },
+            { id: 15, q: "Kimyoviy xossaga misol?", options: ["Erish harorati", "Zichlik", "Yonish qobiliyati", "Rangi"], answer: "Yonish qobiliyati" },
+            { id: 16, q: "Massaning saqlanish qonunini kim kashf etgan?", options: ["D.I.Mendeleyev", "M.V.Lomonosov", "J.Dalton", "A.Eynshteyn"], answer: "M.V.Lomonosov" },
+            { id: 17, q: "Tarkibida uglerod bo'lgan moddalar qaysi kimyo bo'limida o'rganiladi?", options: ["Noorganik kimyo", "Analitik kimyo", "Fizik kimyo", "Organik kimyo"], answer: "Organik kimyo" },
+            { id: 18, q: "Eng yengil kimyoviy element?", options: ["Geliy", "Kislorod", "Vodorod", "Azot"], answer: "Vodorod" },
+            { id: 19, q: "Qaysi modda 'Universal erituvchi' deb ataladi?", options: ["Spirt", "Benzin", "Suv", "Aseton"], answer: "Suv" },
+            { id: 20, q: "Havo asosan qaysi ikki gazdan tashkil topgan?", options: ["Vodorod va Geliy", "Kislorod va Uglerod", "Azot va Kislorod", "Neon va Argon"], answer: "Azot va Kislorod" },
+            { id: 21, q: "Elementning atom massasi qanday birliklarda o'lchanadi?", options: ["Gramm", "Kilogramm", "Atom massa birligi (a.m.b)", "Nyuton"], answer: "Atom massa birligi (a.m.b)" },
+            { id: 22, q: "Kimyoviy tenglamalardagi 'katalizator' nima vazifani bajaradi?", options: ["Reaksiyani to'xtatadi", "Reaksiya mahsuloti bo'ladi", "Reaksiyani tezlashtiradi, lekin sarflanmaydi", "Reaksiya haroratini pasaytiradi"], answer: "Reaksiyani tezlashtiradi, lekin sarflanmaydi" },
+            { id: 23, q: "Zarrachalari tartibsiz harakatlanuvchi modda holati?", options: ["Qattiq", "Suyuq", "Gaz", "Plazma"], answer: "Gaz" },
+            { id: 24, q: "Moddaning suyuq holatdan gaz holatga o'tish jarayoni nima?", options: ["Kondensatsiya", "Sublimatsiya", "Erish", "Bug'lanish"], answer: "Bug'lanish" },
+            { id: 25, q: "Ionlar nima?", options: ["Neytral atomlar", "Musbat yoki manfiy zaryadlangan atomlar", "Faqat musbat zaryadlangan molekulalar", "Zaryadsiz protonlar"], answer: "Musbat yoki manfiy zaryadlangan atomlar" },
+            { id: 26, q: "Tuzning kimyoviy nomi (NaCl)", options: ["Natriy oksidi", "Xlor", "Natriy xlorid", "Xlorid kislota"], answer: "Natriy xlorid" },
+            { id: 27, q: "Ko'mirning asosiy tarkibiy qismi bo'lgan element?", options: ["Oltin", "Oltingugurt", "Temir", "Uglerod"], answer: "Uglerod" },
+            { id: 28, q: "Kimyoviy formuladagi indeks (pastdagi kichik raqam) nimani bildiradi?", options: ["Atomning massasini", "Reaksiyadagi miqdorini", "Molekuladagi atomlar sonini", "Atomning zaryadini"], answer: "Molekuladagi atomlar sonini" },
+            { id: 29, q: "Zanglash qanday kimyoviy reaksiya?", options: ["Parchalanish", "O'rin almashish", "Oksidlanish", "Birikish"], answer: "Oksidlanish" },
+            { id: 30, q: "Laboratoriyada qanday kiyimlarda ishlash qat'iyan man etiladi?", options: ["Harbiy kiyimda", "Katta kiyimda", "Ochiq yengli kiyimda", "Ishlab chiqarish kiyimida"], answer: "Ochiq yengli kiyimda" }
+        ],
+        
+        // 8-sinf: Davriy qonun, asosiy sinflar (30 ta savol)
+        8: [
+            { id: 801, q: "D.I.Mendeleyevning Davriy qonuni qaysi yili kashf etilgan?", options: ["1865", "1869", "1871", "1885"], answer: "1869" },
+            { id: 802, q: "Davriy sistemada elementlarning xossalari nimaga bog'liq ravishda davriy takrorlanadi?", options: ["Atom massasiga", "Neytronlar soniga", "Yadro zaryadi (tartib raqami)ga", "Elektronlar soniga"], answer: "Yadro zaryadi (tartib raqami)ga" },
+            { id: 803, q: "Davriy sistemada gorizontal qatorlar nima deb ataladi?", options: ["Guruh", "Davr", "Blok", "Raqam"], answer: "Davr" },
+            { id: 804, q: "Davriy sistemada vertikal ustunlar nima deb ataladi?", options: ["Davr", "Guruh", "Qator", "Sinov"], answer: "Guruh" },
+            { id: 805, q: "Atomning tashqi elektron qavatida 8 ta elektron bo'lgan elementlar qanday nomlanadi?", options: ["Ishqoriy metallar", "Galogenlar", "Inert (Asil) gazlar", "Xalkogenlar"], answer: "Inert (Asil) gazlar" },
+            { id: 806, q: "Kimyoviy bog'lanishning asosiy turlari qaysilar?", options: ["Metall, tuzli, havoli", "Kovalent, ion, metall", "Suv, gaz, qattiq", "Kovalent, gidroksid, oksid"], answer: "Kovalent, ion, metall" },
+            { id: 807, q: "Elektronlar umumiy bo'lishi hisobiga hosil bo'ladigan bog'lanish turi?", options: ["Ion bog'lanish", "Metall bog'lanish", "Kovalent bog'lanish", "Vodorod bog'lanishi"], answer: "Kovalent bog'lanish" },
+            { id: 808, q: "Metall va nometall atomlari orasida elektronlar to'liq ko'chishi natijasida hosil bo'ladigan bog'lanish?", options: ["Kovalent", "Ion", "Metall", "Vodorod"], answer: "Ion" },
+            { id: 809, q: "Asoslar qaysi ionni o'z ichiga oladi?", options: ["H⁺", "OH⁻", "Cl⁻", "SO₄²⁻"], answer: "OH⁻" },
+            { id: 810, q: "Kislotalar qaysi ionni ajratib chiqaradi?", options: ["Na⁺", "OH⁻", "H⁺", "CO₃²⁻"], answer: "H⁺" },
+            { id: 811, q: "Oksidlar nimalardan tashkil topgan?", options: ["Kislota va tuzdan", "Metall va kislotadan", "Element va kisloroddan", "Asos va tuzdan"], answer: "Element va kisloroddan" },
+            { id: 812, q: "Tuzlar qanday moddalar sinfiga kiradi?", options: ["Kislota va asos reaksiyasidan hosil bo'ladi", "Faqat metallardan", "Faqat gazlardan", "Suv va metallarning aralashmasi"], answer: "Kislota va asos reaksiyasidan hosil bo'ladi" },
+            { id: 813, q: "Tuzlardan biriga misol?", options: ["H₂SO₄", "NaOH", "CO₂", "NaCl"], answer: "NaCl" },
+            { id: 814, q: "Ishqoriy metallar Davriy sistemada qaysi guruhda joylashgan?", options: ["I A guruh", "VII A guruh", "VIII A guruh", "II A guruh"], answer: "I A guruh" },
+            { id: 815, q: "Eng kuchli nometall hisoblanuvchi element?", options: ["Kislorod", "Azot", "Ftor", "Xlor"], answer: "Ftor" },
+            { id: 816, q: "Tarkibida uglerod bo'lmagan moddalar qanday kimyo sohasida o'rganiladi?", options: ["Organik kimyo", "Biokimyo", "Noorganik kimyo", "Analitik kimyo"], answer: "Noorganik kimyo" },
+            { id: 817, q: "Atomning elektroneytral bo'lishi nimaga bog'liq?", options: ["Neytronlar soniga", "Protonlar va elektronlar sonining tengligiga", "Faqat elektronlar soniga", "Atom massasiga"], answer: "Protonlar va elektronlar sonining tengligiga" },
+            { id: 818, q: "Metallarning umumiy xossasiga misol?", options: ["Elektrni yomon o'tkazish", "Yaxshi issiqlik o'tkazuvchanlik", "Mo'rtlik", "Gazsimon holat"], answer: "Yaxshi issiqlik o'tkazuvchanlik" },
+            { id: 819, q: "Nometallarning umumiy xossasi?", options: ["Yaltiroqlik", "Plastiklik", "Elektr tokini yomon o'tkazish", "Yuqori qaynash harorati"], answer: "Elektr tokini yomon o'tkazish" },
+            { id: 820, q: "Valentlik nima?", options: ["Elementning massasi", "Atomning qobig'i", "Atomning kimyoviy bog'lanish hosil qilish qobiliyati", "Atomning tezligi"], answer: "Atomning kimyoviy bog'lanish hosil qilish qobiliyati" },
+            { id: 821, q: "Eng ko'p tarqalgan oksid turi?", options: ["Kislotali oksid", "Asosli oksid", "Amfoter oksid", "Suv (H₂O)"], answer: "Suv (H₂O)" },
+            { id: 822, q: "Qanday moddalar lakmus qog'ozini ko'k rangga o'zgartiradi?", options: ["Kislotalar", "Asoslar", "Tuzlar", "Neft mahsulotlari"], answer: "Asoslar" },
+            { id: 823, q: "Qanday moddalar lakmus qog'ozini qizil rangga o'zgartiradi?", options: ["Asoslar", "Tuzlar", "Kislotalar", "Suv"], answer: "Kislotalar" },
+            { id: 824, q: "Neytrallanish reaksiyasi nima?", options: ["Ikkita tuzning reaksiyasi", "Oksid va suvning reaksiyasi", "Kislota va asosning reaksiyasi", "Ikki metallning reaksiyasi"], answer: "Kislota va asosning reaksiyasi" },
+            { id: 825, q: "Vodorodning valentligi deyarli doim qancha?", options: ["0", "I", "II", "III"], answer: "I" },
+            { id: 826, q: "Oksidlanish darajasi nima?", options: ["Atomning hajm o'zgarishi", "Atomning yadro zaryadi", "Kimyoviy bog'lanishda elektronlar siljishi natijasida hosil bo'lgan shartli zaryad", "Atom massasi"], answer: "Kimyoviy bog'lanishda elektronlar siljishi natijasida hosil bo'lgan shartli zaryad" },
+            { id: 827, q: "Period (Davr) raqami atomning nimasi haqida ma'lumot beradi?", options: ["Tashqi elektron qavati soni", "Yadro zaryadi", "Atom massasi", "Neytronlar soni"], answer: "Tashqi elektron qavati soni" },
+            { id: 828, q: "Kislotali yomg'irlar asosan qaysi moddalar sababli hosil bo'ladi?", options: ["CO₂", "Oksidlar (SO₂, NO₂)", "Vodorod", "Azot"], answer: "Oksidlar (SO₂, NO₂)" },
+            { id: 829, q: "Eng og'ir ishqoriy metall?", options: ["Litiy (Li)", "Natriy (Na)", "Kaliy (K)", "Seziy (Cs)"], answer: "Seziy (Cs)" },
+            { id: 830, q: "Ishqorlar deb nimaga aytiladi?", options: ["Suvda erimaydigan asoslar", "Suvda yaxshi eriydigan asoslar", "Suvda erimaydigan kislotalar", "Kuchsiz kislotalar"], answer: "Suvda yaxshi eriydigan asoslar" }
+        ],
+        // Qolgan sinflar uchun
+        9: [
+                { id: 901, q: "Organik kimyo nimani o'rganadi?", options: ["Metallarni", "Tarkibida uglerod bo'lgan moddalarni", "Gazlarni", "Kislotalarni"], answer: "Tarkibida uglerod bo'lgan moddalarni" },
+                { id: 902, q: "Eng oddiy uglevodorod (Metan) ning formulasi qaysi?", options: ["C₂H₆", "CH₄", "C₃H₈", "C₂H₄"], answer: "CH₄" },
+                { id: 903, q: "Sanoatda eng ko'p ishlatiladigan metall?", options: ["Oltin", "Alyuminiy", "Temir", "Kaliy"], answer: "Temir" },
+                { id: 904, q: "Chugun va po'lat ishlab chiqariladigan pech qanday nomlanadi?", options: ["Mufel pech", "Duxovka", "Domna pechi", "Elektroliz pechi"], answer: "Domna pechi" },
+                { id: 905, q: "Kremniyning tabiatdagi eng muhim birikmasi?", options: ["Tuz", "Silikatlar (qum, gil)", "Uglerod", "Suv"], answer: "Silikatlar (qum, gil)" },
+                { id: 906, q: "Sanoatda sulfat kislota (H₂SO₄) olish usuli?", options: ["Kontakt usuli", "Tarkibiy sintez", "Erish usuli", "Neytrallanish"], answer: "Kontakt usuli" },
+                { id: 907, q: "Uglerod atomlari orasidagi bitta oddiy bog'lanish mavjud uglevodorodlar sinfi?", options: ["Alkenlar", "Alkinlar", "Alkanlar (To'yingan)", "Arenlar"], answer: "Alkanlar (To'yingan)" },
+                { id: 908, q: "Uglerodning allotropik shakllariga nimalar kiradi?", options: ["Suv va bug'", "Tuz va shakar", "Olmos, grafit, fulleren", "Kislorod va ozon"], answer: "Olmos, grafit, fulleren" },
+                { id: 909, q: "Etanolning (Spirt) kimyoviy formulasi?", options: ["CH₃OH", "C₂H₅OH", "C₆H₆", "HCOOH"], answer: "C₂H₅OH" },
+                { id: 910, q: "Kislotali oksidlar suvda eriganda nimani hosil qiladi?", options: ["Asos", "Tuz", "Kislota", "Metall"], answer: "Kislota" },
+                { id: 911, q: "Ammiak (NH₃) ni sanoatda olish usuli (kimyoviy sintez)?", options: ["Gaber-Bosh usuli", "Kontakt usuli", "Neytrallanish", "Kuyish"], answer: "Gaber-Bosh usuli" },
+                { id: 912, q: "Kaliy (K) va Natriy (Na) qanday metallar sinfiga kiradi?", options: ["O'tish metallari", "Ishqoriy yer metallari", "Ishqoriy metallar", "Nometallar"], answer: "Ishqoriy metallar" },
+                { id: 913, q: "Alyuminiyning eng muhim xossasi?", options: ["Mo'rtlik", "Yuqori zichlik", "Yengilligi va yuqori issiqlik o'tkazuvchanligi", "Kimyoviy passivlik"], answer: "Yengilligi va yuqori issiqlik o'tkazuvchanligi" },
+                { id: 914, q: "Plastmassalar va tolalar qanday moddalarga misol?", options: ["Kichik molekulalar", "Monomerlar", "Polimerlar", "Ionlar"], answer: "Polimerlar" },
+                { id: 915, q: "Qaysi nometal elektr tokini o'tkazish xususiyatiga ega?", options: ["Olmos", "Kremniy", "Grafit (Uglerodning shakli)", "Oltingugurt"], answer: "Grafit (Uglerodning shakli)" },
+                { id: 916, q: "Fosforli o'g'itlarning asosiy manbai?", options: ["Azot", "Fosforit va apatitlar", "Ohaktosh", "Metall rudalari"], answer: "Fosforit va apatitlar" },
+                { id: 917, q: "Organik kimyoda 'gomologlar' nima?", options: ["Har xil formulali, bir xil xossali moddalar", "Bir xil formulali, har xil xossali moddalar", "Tarkibi CH₂ guruhiga farq qiluvchi moddalar", "Faqat metallar"], answer: "Tarkibi CH₂ guruhiga farq qiluvchi moddalar" },
+                { id: 918, q: "Eng keng tarqalgan azotli o'g'it?", options: ["Kaliy xlorid", "Superfosfat", "Ammiakli selitra (Ammoniy nitrat)", "Ohak"], answer: "Ammiakli selitra (Ammoniy nitrat)" },
+                { id: 919, q: "Uglevodorodlarning yonishi natijasida qaysi mahsulotlar hosil bo'ladi?", options: ["Tuz va spirt", "Uglerod (IV) oksidi va suv", "Metall va vodorod", "Kislota va asos"], answer: "Uglerod (IV) oksidi va suv" },
+                { id: 920, q: "Uglerod atomlari orasida qo'sh bog'lanish mavjud uglevodorodlar sinfi?", options: ["Alkanlar", "Alkenlar", "Alkinlar", "Spirtlar"], answer: "Alkenlar" },
+                { id: 921, q: "Eng muhim kislotali yomg'ir manbai bo'lgan oksid?", options: ["CO", "CO₂", "SO₂ (Oltingugurt oksidi)", "N₂O"], answer: "SO₂ (Oltingugurt oksidi)" },
+                { id: 922, q: "Metallarning korroziyasi (zanglash) nima?", options: ["Metallarning qattiqlashishi", "Metallarning atrof-muhit ta'sirida buzilishi", "Metallarni eritish", "Metallarni bo'yash"], answer: "Metallarning atrof-muhit ta'sirida buzilishi" },
+                { id: 923, q: "Temirni korroziyadan himoya qilish usuli?", options: ["Sovutish", "Bo'yoq bilan qoplash (yoki sinklash)", "Isitish", "Kislota qo'shish"], answer: "Bo'yoq bilan qoplash (yoki sinklash)" },
+                { id: 924, q: "Ohak (CaO) olish uchun xom ashyo?", options: ["Tuz", "Ohaktosh (CaCO₃)", "Qum", "Temir rudasi"], answer: "Ohaktosh (CaCO₃)" },
+                { id: 925, q: "Eng ko'p ishlatiladigan vodorod bog'lanishiga ega modda?", options: ["Metan", "Tuz", "Suv", "Karbonat angidrid"], answer: "Suv" },
+                { id: 926, q: "Kimyoviy ishlab chiqarishning ekologik muammosi?", options: ["Erish haroratining o'zgarishi", "Atrof-muhitning ifloslanishi", "Ishchilar sonining kamayishi", "Xom ashyo narxining oshishi"], answer: "Atrof-muhitning ifloslanishi" },
+                { id: 927, q: "Qaysi nometal yorug'lik ta'sirida tez bug'lanadi (sublimatsiyalanadi)?", options: ["Kremniy", "Oltingugurt", "Yod", "Uglerod"], answer: "Yod" },
+                { id: 928, q: "Sanoatda ammiakni kislorod bilan katalitik oksidlash natijasida qaysi kislota olinadi?", options: ["Sulfat kislota", "Xlorid kislota", "Nitrat kislota (HNO₃)", "Karbonat kislota"], answer: "Nitrat kislota (HNO₃)" },
+                { id: 929, q: "Nometallardan biri bo'lgan fosforning asosiy ishlatilish sohasi?", options: ["Qurilish materiallari", "G'isht ishlab chiqarish", "G'itlar va gugurt", "Samolyot yasash"], answer: "G'itlar va gugurt" },
+                { id: 930, q: "Uglerod (II) oksidi (CO) ning xususiyati?", options: ["Hidli, zaharli gaz", "Rangsiz, hidsiz, zararsiz gaz", "Rangsiz, hidsiz, zaharli gaz", "Yashil, zaharli gaz"], answer: "Rangsiz, hidsiz, zaharli gaz" }
+            ],
+
+            10: [
+                { id: 1001, q: "Organik moddalarda uglerod atomining valentligi odatda nechaga teng?", options: ["I", "II", "III", "IV"], answer: "IV" },
+                { id: 1002, q: "Benzolning (Aromatik uglevodorod) kimyoviy formulasi qaysi?", options: ["C₆H₁₄", "C₆H₆", "C₂H₂", "C₅H₁₀"], answer: "C₆H₆" },
+                { id: 1003, q: "Molekulasida bir yoki bir nechta gidroksil guruhi (-OH) bo'lgan organik moddalar sinfi?", options: ["Kislotalar", "Aldegidlar", "Spirtlar", "Efirler"], answer: "Spirtlar" },
+                { id: 1004, q: "Karbon kislotalarining funksional guruhi qaysi?", options: ["-OH", "-CHO", "-COOH", "-NO₂"], answer: "-COOH" },
+                { id: 1005, q: "Eng oddiy karbon kislota (chumoli kislotasi) ning formulasi?", options: ["CH₃COOH", "HCOOH", "C₆H₅COOH", "C₂H₅COOH"], answer: "HCOOH" },
+                { id: 1006, q: "Kraxmal va Sellyuloza qanday moddalar sinfiga kiradi?", options: ["Lipidlar", "Oqsillar", "Uglevodlar (Polisaxaridlar)", "Aminokislotalar"], answer: "Uglevodlar (Polisaxaridlar)" },
+                { id: 1007, q: "Oqsillarning (Proteinlar) asosiy monomerlari nima?", options: ["Glyukoza", "Yog' kislotalari", "Aminokislotalar", "Spirtlar"], answer: "Aminokislotalar" },
+                { id: 1008, q: "Aldegidlar qaysi funksional guruhga ega?", options: ["-COOH", "-CHO", "-OH", "-NH₂"], answer: "-CHO" },
+                { id: 1009, q: "Yog'lar kimyoviy jihatdan nima?", options: ["Spirtlar", "Karbon kislotalar", "Glitserin va yuqori yog' kislotalarining efirlari", "Aminokislotalar"], answer: "Glitserin va yuqori yog' kislotalarining efirlari" },
+                { id: 1010, q: "Dezinfeksiya (zararsizlantirish) da keng qo'llaniladigan spirt?", options: ["Glitserin", "Metanol", "Etanol", "Fenol"], answer: "Etanol" },
+                { id: 1011, q: "To'yingan uglevodorodlarning umumiy formulasi?", options: ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂", "CₙH₂ₙ₋₆"], answer: "CₙH₂ₙ₊₂" },
+                { id: 1012, q: "Glyukoza qaysi kimyoviy birikma sinfiga kiradi?", options: ["Kislota", "Monosaxarid (Uglevod)", "Oqsil", "Glitserin"], answer: "Monosaxarid (Uglevod)" },
+                { id: 1013, q: "Izomeriya hodisasi nima?", options: ["Har xil atomlar soniga ega bo'lish", "Bir xil formula, har xil tuzilishga ega bo'lish", "Suvda erimaslik", "Qaynash haroratining o'zgarishi"], answer: "Bir xil formula, har xil tuzilishga ega bo'lish" },
+                { id: 1014, q: "Eng oddiy spirt (metanol) ning sanoatdagi asosiy xavfi?", options: ["Yoqimsiz hid", "Portlash", "Zaharliligi", "Kislotaliligi"], answer: "Zaharliligi" },
+                { id: 1015, q: "Oqsillarning fazoviy tuzilishi nima deb ataladi?", options: ["Gomologiya", "Struktura", "Konformatsiya", "Denaturatsiya"], answer: "Denaturatsiya" },
+                { id: 1016, q: "Sabzavot, mevalarni saqlashda ishlatiladigan Aldegid kislotasi?", options: ["Sirka kislotasi", "Benzoy kislotasi", "Limon kislotasi", "Chumoli kislotasi"], answer: "Sirka kislotasi" },
+                { id: 1017, q: "Aromatik uglevodorodlarning eng muhim vakili?", options: ["Metan", "Etan", "Benzol", "Etilen"], answer: "Benzol" },
+                { id: 1018, q: "Alkenlarning umumiy formulasi?", options: ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂", "CₙH₂ₙ₋₆"], answer: "CₙH₂ₙ" },
+                { id: 1019, q: "Sintetik kauchuk (rezina) olish uchun asosiy xom ashyo?", options: ["Tuz", "Neft mahsulotlari", "Qum", "Suv"], answer: "Neft mahsulotlari" },
+                { id: 1020, q: "Fenolning gidroksil guruhi (-OH) qanday guruhga bevosita bog'langan?", options: ["Alkil guruhiga", "Benzol halqasiga", "Kislota guruhiga", "Aldegid guruhiga"], answer: "Benzol halqasiga" },
+                { id: 1021, q: "Aminokislotalar molekulasida qaysi funksional guruhlar mavjud?", options: ["Hamma spirtlar", "-OH va -CHO", "-COOH va -NH₂", "Faqat metallar"], answer: "-COOH va -NH₂" },
+                { id: 1022, q: "Oqsillarni tashkil etuvchi bog'lanish turi?", options: ["Ion bog'lanish", "Metall bog'lanish", "Peptid bog'lanish", "Glikozid bog'lanish"], answer: "Peptid bog'lanish" },
+                { id: 1023, q: "Plastmassalarning ekologik muammosi nimada?", options: ["Oson erishi", "Zaharliligi", "Tabiatda uzoq vaqt parchalanmasligi", "Yonmasligi"], answer: "Tabiatda uzoq vaqt parchalanmasligi" },
+                { id: 1024, q: "DNA va RNA ning asosiy tarkibiy qismlari?", options: ["Oqsillar", "Aminokislotalar", "Glitserin", "Nuklein kislotalar"], answer: "Nuklein kislotalar" },
+                { id: 1025, q: "Qanday moddalar sovun ishlab chiqarishda ishlatiladi?", options: ["Uglevodlar", "Yog'lar va ishqorlar", "Kislotalar va tuzlar", "Spirtlar va efirlar"], answer: "Yog'lar va ishqorlar" },
+                { id: 1026, q: "Sirka kislotasining (etan kislotasi) formulasi?", options: ["HCOOH", "CH₃COOH", "C₂H₅OH", "CH₃CHO"], answer: "CH₃COOH" },
+                { id: 1027, q: "Alkinlarning umumiy formulasi?", options: ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₋₂", "CₙH₂ₙ₋₆"], answer: "CₙH₂ₙ₋₂" },
+                { id: 1028, q: "Reaksiyaga kirishish qobiliyati eng yuqori bo'lgan uglevodorodlar sinfi?", options: ["Alkanlar", "Alkinlar (uch bog' tufayli)", "Arenlar", "Sikloalkanlar"], answer: "Alkinlar (uch bog' tufayli)" },
+                { id: 1029, q: "Fermentlar kimyoviy jihatdan qanday moddalar?", options: ["Uglevodlar", "Kislotalar", "Oqsillar (katalizatorlar)", "Spirtlar"], answer: "Oqsillar (katalizatorlar)" },
+                { id: 1030, q: "Qishloq xo'jaligida chigitdan olinadigan yog' qanday turdagi yog'ga kiradi?", options: ["Qattiq (to'yingan)", "Suyuq (to'yinmagan)", "Mineral", "Hayvon"], answer: "Suyuq (to'yinmagan)" }
+            ],
+
+            11: [
+                { id: 1101, q: "Eritmadagi erigan moddaning miqdori nima deb ataladi?", options: ["Zichlik", "Massa ulushi", "Konsentratsiya", "Eruvchanlik"], answer: "Konsentratsiya" },
+                { id: 1102, q: "Kimyoviy reaksiya tezligiga ta'sir etuvchi asosiy omillar?", options: ["Va'qt va yorug'lik", "Bosim, harorat, konsentratsiya, katalizator", "Fazalar soni", "Moddaning rangi"], answer: "Bosim, harorat, konsentratsiya, katalizator" },
+                { id: 1103, q: "Muvozanat holatida to'g'ri va teskari reaksiyalar tezliklari qanday bo'ladi?", options: ["Nolga teng", "Har xil", "Teng", "Faqat to'g'risi yuqori"], answer: "Teng" },
+                { id: 1104, q: "Le Shatelye prinsipi nimani tushuntiradi?", options: ["Massaning saqlanishini", "Muvozanatning siljishini", "Hajm o'zgarishini", "Tezlik o'zgarishini"], answer: "Muvozanatning siljishini" },
+                { id: 1105, q: "Kislota va asoslar o'rtasidagi protonlar almashinuvi nazariyasi?", options: ["Dalton nazariyasi", "Arrhenius nazariyasi", "Brønsted-Lowry nazariyasi", "Mendeleyev qonuni"], answer: "Brønsted-Lowry nazariyasi" },
+                { id: 1106, q: "pH 7 bo'lgan eritma qanday muhitga ega?", options: ["Kislotali", "Ishqoriy", "Neytral", "Kuchsiz ishqoriy"], answer: "Neytral" },
+                { id: 1107, q: "Elektroliz jarayoni qayerda amalga oshiriladi?", options: ["Suvda", "Metallarda", "Elektrolitlar eritmalarida yoki suyuqlanmalarida", "Gazlarda"], answer: "Elektrolitlar eritmalarida yoki suyuqlanmalarida" },
+                { id: 1108, q: "Katodda qaysi jarayon sodir bo'ladi?", options: ["Oksidlanish", "Korroziya", "Qaytarilish", "Neytrallanish"], answer: "Qaytarilish" },
+                { id: 1109, q: "Anodda qaysi jarayon sodir bo'ladi?", options: ["Qaytarilish", "Oksidlanish", "Elektroliz", "Neytrallanish"], answer: "Oksidlanish" },
+                { id: 1110, q: "Metallarning o'ta faol bo'lish sababi?", options: ["Kichik atom massasi", "Tashqi elektron qavatida kam elektron borligi", "Yuqori zichlik", "Korroziyaga chidamliligi"], answer: "Tashqi elektron qavatida kam elektron borligi" },
+                { id: 1111, q: "Polimerlanish reaksiyasi natijasida nima hosil bo'ladi?", options: ["Monomerlar", "Kichik molekulalar", "Yuqori molekulyar birikmalar", "Yog'lar"], answer: "Yuqori molekulyar birikmalar" },
+                { id: 1112, q: "Biopolimerlarga misol?", options: ["Polietilen", "Fenol", "Oqsillar va nuklein kislotalar", "Tuzlar"], answer: "Oqsillar va nuklein kislotalar" },
+                { id: 1113, q: "DNKning asosiy strukturaviy birligi nima?", options: ["Aminokislota", "Monosaxarid", "Nukleotid", "Glitserin"], answer: "Nukleotid" },
+                { id: 1114, q: "Oqsillarning ikkilamchi strukturasi qanday shaklda bo'lishi mumkin?", options: ["To'g'ri chiziq", "Uch bog'", "Spiral (alfa-spiral) yoki plissa (beta-qavat)", "Kvadrat"], answer: "Spiral (alfa-spiral) yoki plissa (beta-qavat)" },
+                { id: 1115, q: "Fermentlarning biologik roli?", options: ["Energiya manbai", "Tana haroratini boshqarish", "Biologik katalizatorlar", "Neytrallanish"], answer: "Biologik katalizatorlar" },
+                { id: 1116, q: "Hayot uchun muhim bo'lgan eng oddiy uglevod?", options: ["Sellyuloza", "Kraxmal", "Glyukoza", "Fruktoza"], answer: "Glyukoza" },
+                { id: 1117, q: "Uglerod atomlari ishtirok etadigan Yer yuzidagi sikl?", options: ["Suv aylanishi", "Uglerodning tabiatda aylanishi", "Elektron sikli", "Issiqlik almashinuvi"], answer: "Uglerodning tabiatda aylanishi" },
+                { id: 1118, q: "Katalizator nima vazifani bajaradi?", options: ["Reaksiyani to'xtatadi", "Reaksiyaning bosimini o'zgartiradi", "Reaksiya tezligini o'zgartiradi, o'zi esa sarflanmaydi", "Mahsulot miqdorini kamaytiradi"], answer: "Reaksiya tezligini o'zgartiradi, o'zi esa sarflanmaydi" },
+                { id: 1119, q: "Zanglashning oldini olish usullaridan biri?", options: ["Kislota qo'shish", "Katod himoyasi (Elektrokimyoviy himoya)", "Sovutish", "Bosimni oshirish"], answer: "Katod himoyasi (Elektrokimyoviy himoya)" },
+                { id: 1120, q: "Suv molekulasida qanday bog'lanish mavjud?", options: ["Metall bog'lanish", "Ion bog'lanish", "Kovalent qutbli bog'lanish", "Kovalent qutbsiz bog'lanish"], answer: "Kovalent qutbli bog'lanish" },
+                { id: 1121, q: "pH qiymati 7 dan kichik bo'lsa, muhit qanday?", options: ["Ishqoriy", "Neytral", "Kislotali", "Amfoter"], answer: "Kislotali" },
+                { id: 1122, q: "Nima uchun issiqlik oshishi kimyoviy reaksiya tezligini oshiradi?", options: ["Atomlar kichrayadi", "Molekulalar harakati sekinlashadi", "Faol to'qnashuvlar soni ortadi", "Bosim kamayadi"], answer: "Faol to'qnashuvlar soni ortadi" },
+                { id: 1123, q: "Galvanik element (batareya) da sodir bo'ladigan jarayon nima?", options: ["Elektr energiyasini kimyoviyga aylantirish", "Issiqlikni mexanikka aylantirish", "Kimyoviy energiyani elektrga aylantirish", "Neytrallanish"], answer: "Kimyoviy energiyani elektrga aylantirish" },
+                { id: 1124, q: "Haroratni 10°C ga oshirish reaksiyaning tezligini 2-4 marta oshirishi qanday qoida?", options: ["Massaning saqlanish qonuni", "Vant-Goff qoidasi", "Oktaf qoidasi", "Hess qonuni"], answer: "Vant-Goff qoidasi" },
+                { id: 1125, q: "Amfoter oksidga misol?", options: ["Na₂O", "SO₃", "Al₂O₃", "CO₂"], answer: "Al₂O₃" },
+                { id: 1126, q: "Disaxaridga misol?", options: ["Glyukoza", "Kraxmal", "Sellyuloza", "Saxaroza (osh qand)"], answer: "Saxaroza (osh qand)" },
+                { id: 1127, q: "Geterogen kataliz nima?", options: ["Katalizator va reagentlar bir xil fazada", "Katalizator va reagentlar har xil fazada", "Katalizator ishlatilmaslik", "Faqat suyuqliklarda sodir bo'lish"], answer: "Katalizator va reagentlar har xil fazada" },
+                { id: 1128, q: "Atmosferaning ozon qatlami qanday kimyoviy elementdan tashkil topgan?", options: ["Uglerod", "Azot", "Kislorod", "Vodorod"], answer: "Kislorod" },
+                { id: 1129, q: "Yadro reaksiyalari kimyoviy reaksiyalardan nimasi bilan farq qiladi?", options: ["Tezligi bilan", "Issiqlik ajratishi bilan", "Atom yadrolarining o'zgarishi bilan", "Faqat metallarda sodir bo'lishi bilan"], answer: "Atom yadrolarining o'zgarishi bilan" },
+                { id: 1130, q: "Sintetik polimerlarning eng keng tarqalganiga misol?", options: ["Yog'", "Suv", "Polietilen", "Oqsil"], answer: "Polietilen" }
+            ]
+
+
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    // Sozlamalar: Savollar sonini 10 ta qilib boshlaymiz
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        // Hozirgi limitni kiritish maydoniga joylash
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        // Savollarni aralashtirish
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        // Belgilangan sondagi savollarni olish
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        const allQuestions = chemistryTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        // Savollarning maksimal sonini cheklash
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        // Sarlavhani yangilash
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Kimyo testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            // Savol matni
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            // Javob variantlari
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            // Variantlarni aralashtirish
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                input.value = option;
+                
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(option));
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        // Javoblarni bloklash va ranglash uchun
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // To'g'ri javobni belgilash
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => 
+                label.innerText.trim() === qItem.answer
+            );
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                if (selectedOption.value === qItem.answer) {
+                    score++;
+                } else {
+                    // Xato javobni belgilash
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        // Natijani ko'rsatish
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        // Natijalarga o'tkazish
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        // Bosh sahifa holatiga qaytarish
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Kimyo Testlariga Xush Kelibsiz!`;
+        
+        // Sahifani tepasiga qaytarish
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
