@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adabiyot Fanidan Test Sinovi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --literature-color: #9c27b0; /* Binafsha/Binafsharangni Adabiyot uchun ishlatamiz */
+            --background-light: #f4f7f6;
+            --background-card: #ffffff;
+            --text-dark: #333;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--literature-color); 
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Tugmalar uchun umumiy uslub --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* --- Sinf tanlash va Sozlamalar paneli --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .class-selection button {
+            background-color: var(--literature-color); /* Sinf tugmasi uchun binafsha */
+            color: var(--text-light); 
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .class-selection button:hover {
+            background-color: #7b1fa2;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+            color: var(--text-light);
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Test Savollari Uslubi --- */
+        .question-box {
+            background-color: #f7f2fb; /* Binafsha tusdagi och rang */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--literature-color); /* Binafsha chiziq */
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #f3e5f5; /* Binafsha hover */
+            border-color: var(--literature-color);
+        }
+
+        /* --- Natijalar va Tugma --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #e1bee7; /* Natija foni Binafsha tusda */
+            border: 1px solid #ce93d8;
+            color: #4a148c;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* --- Natija Ranglari --- */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        /* --- Sozlamalar Modali (oldingi uslub) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Adabiyot Testlariga Xush Kelibsiz!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-sinf</button>
+            <button onclick="startTest(6)">6-sinf</button>
+            <button onclick="startTest(7)">7-sinf</button>
+            <button onclick="startTest(8)">8-sinf</button>
+            <button onclick="startTest(9)">9-sinf</button>
+            <button onclick="startTest(10)">10-sinf</button>
+            <button onclick="startTest(11)">11-sinf</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Sozlamalar</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Boshlash uchun sinfni tanlang.</h3>
+        <p>Savollar sonini sozlash uchun "Sozlamalar" tugmasini bosing.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Natijani tekshirish</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Sozlamalari</h2>
+        <div class="setting-group">
+            <label for="question-limit">Har bir testdagi savollar soni:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Eng kam 5, eng ko'p 30 ta savol)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Saqlash va Yopish</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Savollari BAZASI (Adabiyot fani, 5-11 sinflar) ---
+    const literatureTestDatabase = {
+        // 5-sinf: Og'zaki ijod, ertaklar, sodda nasr va nazm
+        5: [
+            { id: 501, q: "O'zbek xalq og'zaki ijodining eng qadimgi turi hisoblanadi?", options: ["Qo'shiq", "Ertak", "Doston", "Makom"], answer: "Ertak" },
+            { id: 502, q: "'Zumrad va Qimmat' qanday janrdagi asar?", options: ["Qo'shiq", "Rivoyat", "Ertak", "Doston"], answer: "Ertak" },
+            { id: 503, q: "She'rning har bir satri nima deb ataladi?", options: ["Misra", "Band", "Bo'g'in", "Ritm"], answer: "Misra" },
+            { id: 504, q: "Asar qahramonining tilidan aytiladigan nutq?", options: ["Muallif nutqi", "Dialog", "Monolog", "Pausa"], answer: "Monolog" },
+            { id: 505, q: "Nasrning kichik, hajmi cheklangan turi, yakka voqeani aks ettiruvchi asar?", options: ["Doston", "Roman", "Hikoya", "Drama"], answer: "Hikoya" },
+            { id: 506, q: "Alisher Navoiyning 'Hayrat ul-abror' asari qaysi janrga mansub?", options: ["G'azal", "Doston", "Ruboiy", "Qasida"], answer: "Doston" },
+            { id: 507, q: "Lirik asarlarning asosiy mazmuni nima?", options: ["Voqealar", "Qahramonlar jangi", "His-tuyg'ular, kechinmalar", "Ilmiy faktlar"], answer: "His-tuyg'ular, kechinmalar" },
+            { id: 508, q: "O'zbek tilidagi birinchi roman deb qaysi asar hisoblanadi?", options: ["O'tkan kunlar (Abdulla Qodiriy)", "Kecha va kunduz", "Mening o'g'rigina bolam", "Shum bola"], answer: "O'tkan kunlar (Abdulla Qodiriy)" },
+            { id: 509, q: "She'riyatda misralar oxirining bir xil ovoz bilan tugashi?", options: ["Vazn", "Ritmn", "Qofiya (Radif)", "Taqti'"], answer: "Qofiya (Radif)" },
+            { id: 510, q: "'Shum bola' asari muallifi kim?", options: ["Abdulla Qodiriy", "G'afur G'ulom", "Hamza Hakimzoda Niyoziy", "Sharof Rashidov"], answer: "G'afur G'ulom" },
+            { id: 511, q: "Hajmi katta, ko'p qahramonli va keng ko'lamli voqealarni qamrab oluvchi nasriy asar?", options: ["Ertak", "Hikoya", "Roman", "She'r"], answer: "Roman" },
+            { id: 512, q: "Asarlarda narsalarni jonlantirish, insoniy xislat berish usuli?", options: ["Tashbeh", "Mubolag'a", "Jonlantirish (Tashxis)", "Istiora"], answer: "Jonlantirish (Tashxis)" },
+            { id: 513, q: "Dostonning asosiy qahramoni nima deb ataladi?", options: ["Qo'rqoq", "Botir (Pahlavon)", "Yordamchi", "Qo'shiqchi"], answer: "Botir (Pahlavon)" },
+            { id: 514, q: "O'zbek adabiy tilining asoschisi kim deb e'tirof etiladi?", options: ["Bobur", "Lutfiy", "Alisher Navoiy", "Cho'lpon"], answer: "Alisher Navoiy" },
+            { id: 515, q: "O'tmish voqealariga asoslangan, xalq tomonidan yaratilgan qissa?", options: ["Hazin qo'shiq", "Rivoyat", "Topishmoq", "Latifa"], answer: "Rivoyat" },
+            { id: 516, q: "'Bahor keldi' mavzusidagi she'r lirik adabiyotning qaysi turiga kiradi?", options: ["Vatan mavzusi", "Tabiat mavzusi", "Tarixiy mavzu", "Ijtimoiy mavzu"], answer: "Tabiat mavzusi" },
+            { id: 517, q: "Asarda ikki yoki undan ortiq shaxsning o'zaro suhbati?", options: ["Monolog", "She'r", "Dialog", "Muallif nutqi"], answer: "Dialog" },
+            { id: 518, q: "'Qutadg'u bilig' asari muallifi?", options: ["Ahmad Yassaviy", "Yusuf Xos Hojib", "Alisher Navoiy", "Boborahim Mashrab"], answer: "Yusuf Xos Hojib" },
+            { id: 519, q: "Qisqa, kulgili va ma'noli og'zaki ijod namunasi?", options: ["Ertak", "Doston", "Latifa", "Rivoyat"], answer: "Latifa" },
+            { id: 520, q: "Adabiyotda kuchli bo'rttirib tasvirlash usuli?", options: ["Tashbeh", "Sifatlash", "Mubolag'a (Giperbola)", "Tashxis"], answer: "Mubolag'a (Giperbola)" },
+            { id: 521, q: "O'zbek xalq dostonlarining yirik vakili?", options: ["Farhod va Shirin", "Alpomish", "Tohir va Zuhra", "Layli va Majnun"], answer: "Alpomish" },
+            { id: 522, q: "Asarda bosh qahramonning xatti-harakatlari orqali uning nima ekanligini anglatuvchi holat?", options: ["Xarakter", "Syujet", "Mavzu", "Kompozitsiya"], answer: "Xarakter" },
+            { id: 523, q: "She'riy asar bo'g'inlari soniga ko'ra yoziladigan vazn turi?", options: ["Aruz", "Erkin vazn", "Barmoq vazni", "Ritmn"], answer: "Barmoq vazni" },
+            { id: 524, q: "Ertaklarda yaxshilikning yomonlik ustidan g'alaba qilishi qanday tugallanish?", options: ["Drama", "Baxtli yakun", "Fojia", "Noaniq yakun"], answer: "Baxtli yakun" },
+            { id: 525, q: "'Uch og'a-ini botirlar' ertagi qaysi mavzuda?", options: ["Ijtimoiy", "Qahramonlik (Botirlik)", "Tabiat", "Muhabbat"], answer: "Qahramonlik (Botirlik)" },
+            { id: 526, q: "Adabiyotda voqealarning ketma-ket joylashishi?", options: ["Kompozitsiya", "Mavzu", "Syujet", "G'oya"], answer: "Syujet" },
+            { id: 527, q: "O'zbek bolalar adabiyotining yirik vakili, 'Sehrli qalpoqcha' asari muallifi?", options: ["G'afur G'ulom", "Quddus Muhammadiy", "Abdulla Qahhor", "Zulfiya"], answer: "Quddus Muhammadiy" },
+            { id: 528, q: "She'rda so'zlarni yoki tovushlarni takrorlash usuli?", options: ["Tashxis", "Alliteratsiya", "Metafora", "Qofiya"], answer: "Alliteratsiya" },
+            { id: 529, q: "Eng kichik, odatda to'rt misradan iborat she'riy janr?", options: ["G'azal", "Doston", "Ruboiy", "Qasida"], answer: "Ruboiy" },
+            { id: 530, q: "Xalq og'zaki ijodida aql-zakovatni sinashga xizmat qiluvchi janr?", options: ["Qo'shiq", "Topishmoq", "Doston", "Latifa"], answer: "Topishmoq" }
+        ],
+        
+        // 6-sinf: Adabiy qahramonlar, Bobur, J. London
+        6: [
+            { id: 601, q: "Zahiriddin Muhammad Boburning asari?", options: ["Me'zon ul-avzon", "Boburnoma", "Mantiq ut-tayr", "Mahbub ul-qulub"], answer: "Boburnoma" },
+            { id: 602, q: "'Boburnoma' qaysi tilda yozilgan?", options: ["Arabcha", "Forscha", "Eski o'zbek tili (Chig'atoy turkiy)", "Urdu"], answer: "Eski o'zbek tili (Chig'atoy turkiy)" },
+            { id: 603, q: "Hikoyada tasvirlangan voqealar markazida turuvchi shaxs?", options: ["Muallif", "Qahramon", "Tafsilot", "Mavzu"], answer: "Qahramon" },
+            { id: 604, q: "Amerika adabiyoti vakili, 'Oq so'yloq' asari muallifi?", options: ["O'Genri", "Jek London", "Mark Tven", "Ernest Xeminguey"], answer: "Jek London" },
+            { id: 605, q: "Boburning she'riy merosidagi asosiy janrlar?", options: ["Masnaviy", "G'azal, ruboiy", "Qasida", "Ballada"], answer: "G'azal, ruboiy" },
+            { id: 606, q: "'Jangchi Gulandom' nomli tarixiy asar muallifi?", options: ["Abdulla Qahhor", "Odil Yoqubov", "Mirkarim Osim", "Said Ahmad"], answer: "Mirkarim Osim" },
+            { id: 607, q: "O'zbek adabiyoti tarixida 'Temurnoma' asari bilan mashhur bo'lgan ijodkor?", options: ["Lutfiy", "Gadoiy", "Alisher Navoiy", "Ahmad Yassaviy"], answer: "Alisher Navoiy" },
+            { id: 608, q: "Asardagi ijobiy qahramonning xususiyati?", options: ["Yomon xulq", "Adolat, mardlik, ezgulik", "Xudbinlik", "Benuqsonlik"], answer: "Adolat, mardlik, ezgulik" },
+            { id: 609, q: "Jek Londonning 'Hayotga muhabbat' hikoyasida asosiy g'oya nima?", options: ["Boylikka intilish", "Yolg'izlik", "O'limga taslim bo'lish", "Yashashga bo'lgan kuchli iroda"], answer: "Yashashga bo'lgan kuchli iroda" },
+            { id: 610, q: "Adabiyotda 'Mubolag'a'ning ma'nosi?", options: ["Kichraytirish", "Haddan tashqari oshirib yuborish", "Haqiqatni tasvirlash", "Jonlantirish"], answer: "Haddan tashqari oshirib yuborish" },
+            { id: 611, q: "Boburning otasining ismi?", options: ["Umarshayx Mirzo", "Sulton Husayn Boyqaro", "Temur", "Mirzo Ulug'bek"], answer: "Umarshayx Mirzo" },
+            { id: 612, q: "O'zbekistonda xizmat ko'rsatgan fan arbobi, qator adabiyot darsliklari muallifi?", options: ["Oybek", "Pirimqul Qodirov", "Olimjon Otabekov", "Izzat Sulton"], answer: "Izzat Sulton" },
+            { id: 613, q: "'Yulduzli tunlar' romanining bosh qahramoni kim?", options: ["Navoiy", "Bobur", "Ulug'bek", "Temur"], answer: "Bobur" },
+            { id: 614, q: "Badiiy asarning boshlanish qismi?", options: ["Kulminatsiya", "Epilog", "Ekspozitsiya", "Yechim"], answer: "Ekspozitsiya" },
+            { id: 615, q: "Abdulla Qahhorning mashhur hajviy hikoyasi?", options: ["Dahshat", "O'g'ri", "Qanotsiz chittak", "O'tmishdan ertaklar"], answer: "O'g'ri" },
+            { id: 616, q: "Adabiyotda 'Syujet' nima?", options: ["Asarning maqsadi", "Voqealarning rivojlanish jarayoni", "Qahramon nutqi", "She'rning tuzilishi"], answer: "Voqealarning rivojlanish jarayoni" },
+            { id: 617, q: "She'rda ikki misradan iborat band?", options: ["Misra", "Bayt", "Ruboiy", "G'azal"], answer: "Bayt" },
+            { id: 618, q: "Jek London qaysi adabiy oqim vakili?", options: ["Romantizm", "Simvolizm", "Realizm", "Modernizm"], answer: "Realizm" },
+            { id: 619, q: "Boburning poytaxtlari qaysi shaharlar bo'lgan?", options: ["Xiva va Buxoro", "Samarqand va Toshkent", "Andijon va Kobul, Dehli", "Qarshi va Termiz"], answer: "Andijon va Kobul, Dehli" },
+            { id: 620, q: "Asarning eng keskin nuqtasi?", options: ["Ekspozitsiya", "Zavq", "Kulminatsiya", "Yechim"], answer: "Kulminatsiya" },
+            { id: 621, q: "'Boy bilan xizmatchi' hikoyasi muallifi?", options: ["Hamza", "Abdulla Qahhor", "G'afur G'ulom", "Oybek"], answer: "G'afur G'ulom" },
+            { id: 622, q: "Yozuvchining asarida o'z fikr-mulohazalarini ifodalash usuli?", options: ["Monolog", "Poeziya", "Lirik chekinish", "Dialog"], answer: "Lirik chekinish" },
+            { id: 623, q: "'Alpomish' dostonining asosiy g'oyasi?", options: ["Siyosiy kurash", "Oila, vatanparvarlik va qahramonlik", "Sevgi va ayriliq", "Moddiy boylik"], answer: "Oila, vatanparvarlik va qahramonlik" },
+            { id: 624, q: "O'zbek adabiyotida 'Drama' janrining rivojlanishiga hissa qo'shgan ijodkor?", options: ["Navoiy", "Hamza", "Lutfiy", "Furqat"], answer: "Hamza" },
+            { id: 625, q: "She'r qanday janrga kiradi?", options: ["Nasr", "Drama", "Epik", "Nazm (Poeziya)"], answer: "Nazm (Poeziya)" },
+            { id: 626, q: "Hikoyaning oxirgi, voqealar hal etiladigan qismi?", options: ["Kulminatsiya", "Yechim", "Ekspozitsiya", "Tavsif"], answer: "Yechim" },
+            { id: 627, q: "Jek Londonning asarlarida qanday mavzu yetakchi?", options: ["Siyosat", "Odam va tabiat, hayot uchun kurash", "Tarix", "Diniy"], answer: "Odam va tabiat, hayot uchun kurash" },
+            { id: 628, q: "Boburning 'Mubayyin' asari qaysi sohaga oid?", options: ["Adabiyot", "Fiqh (Islom huquqi)", "Astronomiya", "Tarix"], answer: "Fiqh (Islom huquqi)" },
+            { id: 629, q: "Asarda 'yaxshi' va 'yomon' qahramonlarning qarama-qarshiligi nima deyiladi?", options: ["Syujet", "Konflikt (Ziddiyat)", "Mavzu", "Kompozitsiya"], answer: "Konflikt (Ziddiyat)" },
+            { id: 630, q: "Hajmi kichik, nasriy janr?", options: ["Roman", "Doston", "Novella", "Epos"], answer: "Novella" }
+        ],
+        
+        // 7-sinf: Navoiy, Lutfiy, Aruz vazni
+        7: [
+            { id: 701, q: "Alisher Navoiy yashagan asr?", options: ["XIII", "XIV", "XV", "XVI"], answer: "XV" },
+            { id: 702, q: "Navoiyning eng mashhur asarlaridan biri, besh dostonni birlashtirgan to'plam?", options: ["Devon", "Xamsa", "Lison ut-tayr", "Mahbub ul-qulub"], answer: "Xamsa" },
+            { id: 703, q: "O'zbek adabiyotida 'Devon' nima?", options: ["Roman", "Lug'at", "Shoirning she'rlar to'plami", "Doston"], answer: "Shoirning she'rlar to'plami" },
+            { id: 704, q: "Navoiyning 'Lison ut-tayr' asarining asosiy g'oyasi nima?", options: ["Sevgi", "Adolat", "Falsafiy-tasavvufiy (Qu.shlar tili)", "Tarixiy"], answer: "Falsafiy-tasavvufiy (Qu.shlar tili)" },
+            { id: 705, q: "'Aruz' vaznining asosiy qoidasi nimaga asoslangan?", options: ["Bo'g'inlar soniga", "Tovushlarning cho'ziq va qisqaligiga", "Qofiyaga", "Ritmga"], answer: "Tovushlarning cho'ziq va qisqaligiga" },
+            { id: 706, q: "Lutfiy qaysi shoirni 'mulki suxanning sultoni' deb atagan?", options: ["Bobur", "Jomiy", "Alisher Navoiy", "Furqat"], answer: "Alisher Navoiy" },
+            { id: 707, q: "Navoiyning 'Hayrat ul-abror' dostonining ma'nosi?", options: ["Yaxshilarning hayrati", "Faylasuflar", "Sevgi", "Botirlik"], answer: "Yaxshilarning hayrati" },
+            { id: 708, q: "Hajmi katta she'riy asar?", options: ["Ruboiy", "G'azal", "Doston (Epos)", "Qit'a"], answer: "Doston (Epos)" },
+            { id: 709, q: "Navoiyning asarlarida do'stlik, insonparvarlik kabi mavzular qaysi kitobida aks etgan?", options: ["Xamsa", "Majolis un-nafois", "Mahbub ul-qulub", "Badoe ul-vasat"], answer: "Mahbub ul-qulub" },
+            { id: 710, q: "Adabiyotda so'zning yashirin ma'nosi bilan ifodalanishi?", options: ["Mubolag'a", "Tashbeh", "Metafora (Majoz)", "Tashxis"], answer: "Metafora (Majoz)" },
+            { id: 711, q: "O'zbek adabiyotida 'hajviya' janrining eng mashhur vakili?", options: ["Navoiy", "Furqat", "Abdulla Qahhor", "Cho'lpon"], answer: "Abdulla Qahhor" },
+            { id: 712, q: "G'azalning asosiy xususiyati?", options: ["Uzun qissa", "Sevgi va ishq mavzusi, 5-19 bayt", "Tarixiy voqea", "Faqat bir misradan iborat"], answer: "Sevgi va ishq mavzusi, 5-19 bayt" },
+            { id: 713, q: "Lutfiyning mashhur asari?", options: ["Boburnoma", "Gulu Navro'z", "Devoni Lutfiy", "Vaqioti Bobur"], answer: "Gulu Navro'z" },
+            { id: 714, q: "Dramatik asarning sahnada ijro etilishi uchun yozilgan turi?", options: ["Roman", "She'r", "Pyesa (Drama)", "Hikoya"], answer: "Pyesa (Drama)" },
+            { id: 715, q: "Asarda qahramonning tashqi ko'rinishini tasvirlash?", options: ["Portret", "Landshaft", "Dialog", "Monolog"], answer: "Portret" },
+            { id: 716, q: "Navoiy qaysi podshoh saroyida vazir bo'lgan?", options: ["Temur", "Bobur", "Sulton Husayn Boyqaro", "Mirzo Ulug'bek"], answer: "Sulton Husayn Boyqaro" },
+            { id: 717, q: "Qofiyada so'zning ma'noli qismi takrorlanishi nima deyiladi?", options: ["Qofiya", "Radif", "Tashxis", "Vazn"], answer: "Radif" },
+            { id: 718, q: "'Masnaviy' she'riy janrining xususiyati?", options: ["Faqat bir bayt", "Aruzda yoziladigan, qofiyalanishi a-a, b-b, c-c...", "To'rt misra", "Erkin vazn"], answer: "Aruzda yoziladigan, qofiyalanishi a-a, b-b, c-c..." },
+            { id: 719, q: "Abdulla Qahhor 'Sinchalak' asarida qaysi davrni tasvirlaydi?", options: ["Qadimgi tarix", "XX asr boshlari", "O'rta asr", "Kelajak"], answer: "XX asr boshlari" },
+            { id: 720, q: "O'zbek adabiyoti tarixida 'Tazkira' janri nimani anglatadi?", options: ["Lug'at", "Biografik ma'lumotlar to'plami", "Roman", "Doston"], answer: "Biografik ma'lumotlar to'plami" },
+            { id: 721, q: "Lirik asarlarda narsani boshqa narsaga qiyoslash usuli?", options: ["Jonlantirish", "Tashbeh (O'xshatish)", "Mubolag'a", "Inversiya"], answer: "Tashbeh (O'xshatish)" },
+            { id: 722, q: "Alisher Navoiyning 'Farhod va Shirin' dostonida asosiy g'oya?", options: ["Botirlik", "Falsafa", "Sof ishq va sevgi", "Ijtimoiy muammolar"], answer: "Sof ishq va sevgi" },
+            { id: 723, q: "Adabiyotda voqea joyi va zamonini tasvirlash?", options: ["Mavzu", "Kompozitsiya", "Landshaft (Manzara) va muhit", "G'oya"], answer: "Landshaft (Manzara) va muhit" },
+            { id: 724, q: "O'zbekiston Qahramoni, shoira?", options: ["Zulfiya", "Halima Xudoyberdiyeva", "Erkin Vohidov", "Abdulla Oripov"], answer: "Zulfiya" },
+            { id: 725, q: "Navoiyning qaysi asari turkiy va forsiy tillarning ustunligini ko'rsatadi?", options: ["Mahbub ul-qulub", "Xamsa", "Muhokamat ul-lug'atayn", "Devon"], answer: "Muhokamat ul-lug'atayn" },
+            { id: 726, q: "Barmoq vaznida har bir banddagi misralar soni nima deyiladi?", options: ["Misra", "Band", "Bo'g'in", "Ritm"], answer: "Band" },
+            { id: 727, q: "Lirikada his-tuyg'uni yorituvchi eng asosiy janr?", options: ["Doston", "Roman", "G'azal", "Masnaviy"], answer: "G'azal" },
+            { id: 728, q: "Asarning qisqa, obrazli nomi?", options: ["Mavzu", "G'oya", "Epigraf", "Sarlavha"], answer: "Sarlavha" },
+            { id: 729, q: "Nasr bilan nazm aralash yozilgan asar turi?", options: ["Novella", "Doston", "Manzuma", "Chiston"], answer: "Manzuma" },
+            { id: 730, q: "Adabiyotda 'Sifatlash' nima?", options: ["Harakat", "Narsaning xususiyatini ta'kidlash", "Savol berish", "Joyni tasvirlash"], answer: "Narsaning xususiyatini ta'kidlash" }
+        ],
+        
+        // 8-sinf: Jadid adabiyoti, Cho'lpon, Qodiriy, Shekspir
+        8: [
+            { id: 801, q: "Jadid adabiyotining yirik vakili, 'O'tkan kunlar' romani muallifi?", options: ["Cho'lpon", "Hamza", "Abdulla Qodiriy", "Munavvarqori"], answer: "Abdulla Qodiriy" },
+            { id: 802, q: "'O'tkan kunlar' romanining bosh qahramonlari kimlar?", options: ["Otabek va Gulnora", "Qutidor va Zaynab", "Otabek va Kumush", "Mirtemir va Oyxon"], answer: "Otabek va Kumush" },
+            { id: 803, q: "Jadidchilik harakatining adabiyotdagi asosiy maqsadi?", options: ["Eski urf-odatlarni saqlash", "Adabiyotni zamonaviylashtirish va xalqni ma'rifatga chaqirish", "Faqat sevgi haqida yozish", "Dostonlar yaratish"], answer: "Adabiyotni zamonaviylashtirish va xalqni ma'rifatga chaqirish" },
+            { id: 804, q: "'Kecha va kunduz' romani muallifi kim?", options: ["Abdulla Qodiriy", "Cho'lpon", "Oybek", "G'afur G'ulom"], answer: "Cho'lpon" },
+            { id: 805, q: "Cho'lponning 'Yorqinoy' asari qaysi janrga mansub?", options: ["Roman", "Drama (Pyesa)", "She'r", "Doston"], answer: "Drama (Pyesa)" },
+            { id: 806, q: "Angliya adabiyotining buyuk dramaturgi, 'Romeo va Juletta' fojiasi muallifi?", options: ["Dante", "Gomer", "Uilyam Shekspir", "Gyote"], answer: "Uilyam Shekspir" },
+            { id: 807, q: "Qodiriyning 'Mehrobdan chayon' romanida asosiy konflikt nima?", options: ["Sevgi va qahramonlik", "Adolat va zulm, yangilik va eskilik kurashi", "Tarixiy voqealar", "Tabiat manzaralari"], answer: "Adolat va zulm, yangilik va eskilik kurashi" },
+            { id: 808, q: "Shekspirning mashhur 'Hamlet' tragediyasida bosh qahramonning asosiy savoli?", options: ["Yashash yoki o'lmaslik", "Sevgi nima?", "Nega osmon ko'k?", "Boylik nima?"], answer: "Yashash yoki o'lmaslik" },
+            { id: 809, q: "Abdulla Qodiriy qachon tavallud topgan?", options: ["1889", "1894", "1905", "1910"], answer: "1894" },
+            { id: 810, q: "Cho'lpon qalamiga mansub, sevgi mavzusidagi mashhur she'r?", options: ["Kuy", "Go'zal", "Bahor", "Vatan"], answer: "Go'zal" },
+            { id: 811, q: "Jadid adabiyoti vakillarining qatl etilish davri?", options: ["1920-yillar", "1930-yillar (Qatag'on davri)", "1950-yillar", "1990-yillar"], answer: "1930-yillar (Qatag'on davri)" },
+            { id: 812, q: "Shekspirning 'Kral Lir' asarining janri?", options: ["Komediya", "Tragediya (Fojia)", "Drama", "Epos"], answer: "Tragediya (Fojia)" },
+            { id: 813, q: "'O'tkan kunlar' romani voqealari qaysi shaharlarda bo'lib o'tadi?", options: ["Toshkent va Xiva", "Toshkent va Qo'qon", "Buxoro va Samarqand", "Andijon va Farg'ona"], answer: "Toshkent va Qo'qon" },
+            { id: 814, q: "Drama asaridagi nutq nima deyiladi?", options: ["Bayonot", "Replika", "Tavsif", "G'oya"], answer: "Replika" },
+            { id: 815, q: "Adabiyotda 'Ramz' (Simvol) nima?", options: ["Aniq ma'no", "Yashirin, majoziy ma'no", "Qahramon ismi", "Voqealar rivoji"], answer: "Yashirin, majoziy ma'no" },
+            { id: 816, q: "Cho'lponning asarlari qanday vaznda yozilgan?", options: ["Aruz", "Erkin vazn, barmoq vazni", "Faqat nasr", "Masnaviy"], answer: "Erkin vazn, barmoq vazni" },
+            { id: 817, q: "Qodiriyning 'Dahshat' nomli asari qaysi janrga oid?", options: ["Roman", "Hajviy hikoya", "Pyesa", "Realistik hikoya"], answer: "Realistik hikoya" },
+            { id: 818, q: "Shekspirning 'Sonet' janriga xos xususiyat?", options: ["Uzun doston", "14 misrali she'r", "Dramatik asar", "Hajviya"], answer: "14 misrali she'r" },
+            { id: 819, q: "She'riy asarning bo'limi?", options: ["Fasl", "Band", "Bob", "Paragraf"], answer: "Band" },
+            { id: 820, q: "Qodiriyning 'Mehrobdan chayon' asari qaysi davrni tasvirlaydi?", options: ["XVI asr", "XIX asr oxiri - XX asr boshlari", "O'rta asr", "Mustaqillik davri"], answer: "XIX asr oxiri - XX asr boshlari" },
+            { id: 821, q: "Cho'lponning 'Qor qo'ynida lola' she'ri qaysi mavzuda?", options: ["Sevgi", "Vatan va ozodlikka intilish", "Tarix", "Diniy"], answer: "Vatan va ozodlikka intilish" },
+            { id: 822, q: "Jadidlar adabiyotga qanday yangiliklar olib kirgan?", options: ["Faqat doston", "Roman, novella, drama janrlarini rivojlantirish", "Og'zaki ijodni saqlash", "Ertak yozish"], answer: "Roman, novella, drama janrlarini rivojlantirish" },
+            { id: 823, q: "Uilyam Shekspir yashagan asr?", options: ["XIII", "XV", "XVI-XVII", "XVIII"], answer: "XVI-XVII" },
+            { id: 824, q: "Adabiyotda 'Lirik chekinish' nima?", options: ["Mavzudan uzoqlashish", "Muallifning o'z fikr-tuyg'ularini ifodalashi", "Voqeani tezlashtirish", "Yangi qahramon kiritish"], answer: "Muallifning o'z fikr-tuyg'ularini ifodalashi" },
+            { id: 825, q: "'Tarixi Amir Temur' asarining muallifi?", options: ["Navoiy", "Bobur", "Sharafuddin Ali Yazdiy", "Al-Xorazmiy"], answer: "Sharafuddin Ali Yazdiy" },
+            { id: 826, q: "Cho'lponning haqiqiy ismi?", options: ["Abdulla", "Miryakub", "Abdulhamid Sulaymon o'g'li", "G'ani"], answer: "Abdulhamid Sulaymon o'g'li" },
+            { id: 827, q: "Shekspirning 'Makbet' asarining asosiy xarakteri?", options: ["Qo'rqoqlik", "Xudojo'ylik", "Hokimiyatga chanqoqlik va shafqatsizlik", "Mish-mish"], answer: "Hokimiyatga chanqoqlik va shafqatsizlik" },
+            { id: 828, q: "O'zbek adabiyotida 'Novella' janrining rivojlanishi kimning nomi bilan bog'liq?", options: ["Navoiy", "Qodiriy, Qahhor", "Zulfiya", "Bobur"], answer: "Qodiriy, Qahhor" },
+            { id: 829, q: "Qodiriyning 'Mehrobdan chayon' asarida Anvarning xotini?", options: ["Zaynab", "Kumush", "Ra'no", "Gulnor"], answer: "Ra'no" },
+            { id: 830, q: "Adabiyotda 'Sintetik obraz' nima?", options: ["Faqat bir xislatli qahramon", "Turli xususiyatlar jamlangan qahramon", "Tarixiy shaxs", "Yordamchi qahramon"], answer: "Turli xususiyatlar jamlangan qahramon" }
+        ],
+        
+        // 9-sinf: Oybek, G'afur G'ulom, Zulfiya, Rus va G'arb adabiyoti
+        9: [
+            { id: 901, q: "'Qutlug' qon' romani muallifi?", options: ["Abdulla Qahhor", "Oybek", "G'afur G'ulom", "Mirtemir"], answer: "Oybek" },
+            { id: 902, q: "'Qutlug' qon' romanida asosiy qahramon kim?", options: ["Otabek", "Yormat", "Rustam", "Mirzakarim Qutidor"], answer: "Yormat" },
+            { id: 903, q: "G'afur G'ulomning 'Shum bola' asari qaysi janrga oid?", options: ["Roman", "Avtobiografik qissa", "Drama", "Doston"], answer: "Avtobiografik qissa" },
+            { id: 904, q: "Oybekning 'Navoiy' romani qaysi yozuvchi hayotini tasvirlaydi?", options: ["Bobur", "Lutfiy", "Alisher Navoiy", "Jomiy"], answer: "Alisher Navoiy" },
+            { id: 905, q: "Rus adabiyotining buyuk yozuvchisi, 'Kapitan qizi' asari muallifi?", options: ["L. Tolstoy", "A. Pushkin", "F. Dostoyevskiy", "A. Chexov"], answer: "A. Pushkin" },
+            { id: 906, q: "Zulfiyaning hayoti va ijodini o'z ichiga olgan she'r?", options: ["Qizimga", "Guldasta", "Erkin Vohidovga", "Hayotim yillarim"], answer: "Qizimga" },
+            { id: 907, q: "G'afur G'ulomning mashhur lirikasida qanday mavzu yetakchi?", options: ["Tarix", "Vatan, inson, hayot quvonchlari", "Faqat sevgi", "Siyosat"], answer: "Vatan, inson, hayot quvonchlari" },
+            { id: 908, q: "Lev Tolstoyning 'Urush va tinchlik' asari janri?", options: ["Hikoya", "Roman-epopeya", "Novella", "Pyesa"], answer: "Roman-epopeya" },
+            { id: 909, q: "Oybekning haqiqiy ismi?", options: ["Musa Toshmuhammad o'g'li", "G'afur G'ulom", "Lutfulla", "Abdug'afur"], answer: "Musa Toshmuhammad o'g'li" },
+            { id: 909, q: "Oybekning 'Oltin zanglamas' asaridagi asosiy g'oya?", options: ["Sevgi", "Boylik va insoniy qadriyatlar kurashi", "Urush", "Tabiat"], answer: "Boylik va insoniy qadriyatlar kurashi" },
+            { id: 911, q: "A. S. Pushkin qaysi davr rus adabiyoti asoschisi?", options: ["Klassitsizm", "Romantizm", "Klassik realizm", "Simvolizm"], answer: "Klassik realizm" },
+            { id: 912, q: "Zulfiyaning turmush o'rtog'i, shoir?", options: ["Mirtemir", "Maksud Shayxzoda", "Hamid Olimjon", "Abdulla Oripov"], answer: "Hamid Olimjon" },
+            { id: 913, q: "Adabiyotda 'Psixologizm' nima?", options: ["Voqeani tez rivojlantirish", "Qahramonlarning ichki kechinmalarini chuqur tasvirlash", "Tashqi ko'rinish", "Atrof-muhit tasviri"], answer: "Qahramonlarning ichki kechinmalarini chuqur tasvirlash" },
+            { id: 914, q: "G'afur G'ulomning 'Vaqt' she'rining maqsadi?", options: ["Vaqtni qadrlash", "Vaqtni behuda o'tkazish", "Vaqtning to'xtashi", "Tarixiy davr"], answer: "Vaqtni qadrlash" },
+            { id: 915, q: "G'arb adabiyotining 'realizm' oqimi qaysi asrga xos?", options: ["XIV", "XVII", "XIX", "XXI"], answer: "XIX" },
+            { id: 916, q: "Oybekning 'Shodiyona' asarining janri?", options: ["Roman", "Hajviy hikoya", "Pyesa", "Doston"], answer: "Pyesa" },
+            { id: 917, q: "O'zbek adabiyotida 'Ballada' janrining xususiyati?", options: ["Kulgili", "Dramatik syujetli she'riy hikoya", "Nasriy asar", "Faqat ishqiy"], answer: "Dramatik syujetli she'riy hikoya" },
+            { id: 918, q: "Pushkinning 'Yevgeniy Onegin' asari janri?", options: ["Doston", "Roman", "Manzum roman", "Hikoya"], answer: "Manzum roman" },
+            { id: 919, q: "Zulfiyaning 'O'g'lim, sira bo'lmaydi urush' she'ri qanday g'oyani targ'ib qiladi?", options: ["Botirlik", "Tinchlik va insonparvarlik", "O'zbek an'analari", "Sevgi"], answer: "Tinchlik va insonparvarlik" },
+            { id: 920, q: "Adabiyotda 'Sintaksis' nima?", options: ["So'z yasalishi", "Gap qurilishi va so'z birikmasi", "Qofiya", "Vazn"], answer: "Gap qurilishi va so'z birikmasi" },
+            { id: 921, q: "G'afur G'ulomning 'Tirilgan murda' asari janri?", options: ["Roman", "Komediya", "Hajviy pyesa", "Tragediya"], answer: "Hajviy pyesa" },
+            { id: 922, q: "O'zbekiston xalq shoiri, 'Hayotim o'zimga' asari muallifi?", options: ["Abdulla Oripov", "Erkin Vohidov", "Mirtemir", "Said Ahmad"], answer: "Erkin Vohidov" },
+            { id: 923, q: "Lermontovning 'Zamonamiz qahramoni' asari qaysi janrga oid?", options: ["Roman", "Filosofik roman", "Pyesa", "Hikoya"], answer: "Filosofik roman" },
+            { id: 924, q: "Oybek qaysi shoir ijodini chuqur o'rgangan?", options: ["Bobur", "Navoiy", "Lutfiy", "Jomiy"], answer: "Navoiy" },
+            { id: 925, q: "Adabiyotda 'Epitet' nima?", options: ["Jonlantirish", "Mubolag'a", "Badiiy sifat (ta'riflovchi so'z)", "Ramz"], answer: "Badiiy sifat (ta'riflovchi so'z)" },
+            { id: 926, q: "Jahon adabiyotida 'Dante Aligyeri' qaysi asari bilan mashhur?", options: ["Odisseya", "Iliada", "Ilohiy komediya", "G'azallar"], answer: "Ilohiy komediya" },
+            { id: 927, q: "G'afur G'ulomning bolalik yillari tasvirlangan asar?", options: ["Mening o'g'rigina bolam", "Shum bola", "Tirilgan murda", "Yodgor"], answer: "Shum bola" },
+            { id: 928, q: "Asarda tasvirning badiiy qisqa bo'lishi nima deyiladi?", options: ["Mubolag'a", "Tavsif", "Lakonzm", "Sifatlash"], answer: "Lakonzm" },
+            { id: 929, q: "Zulfiyaning she'riy to'plami?", options: ["Tanlangan asarlar", "Qutlug' qon", "Yurak", "G'azallar devoni"], answer: "Yurak" },
+            { id: 930, q: "Adabiy asarda kulgi orqali ijtimoiy nuqsonlarni fosh etish usuli?", options: ["Tragediya", "Hajv", "Lirika", "Epos"], answer: "Hajv" }
+        ],
+        
+        // 10-sinf: Adabiy oqimlar, Abdulla Oripov, Erkin Vohidov, Qahhor
+        10: [
+            { id: 1001, q: "O'zbekiston Qahramoni, 'Jannatga yo'l' asari muallifi?", options: ["Zulfiya", "Abdulla Oripov", "Erkin Vohidov", "Said Ahmad"], answer: "Abdulla Oripov" },
+            { id: 1002, q: "'O'zbegim' qasidasi muallifi kim?", options: ["Mirtemir", "Erkin Vohidov", "Abdulla Oripov", "Chorshanbiy"], answer: "Erkin Vohidov" },
+            { id: 1003, q: "Adabiyotda 'Romantizm' oqimiga xos xususiyat?", options: ["Haqiqatni oddiy tasvirlash", "Tuyg'u va orzularning ustunligi, g'ayrioddiy qahramon", "Faqat tarixiy mavzular", "Hajviya"], answer: "Tuyg'u va orzularning ustunligi, g'ayrioddiy qahramon" },
+            { id: 1004, q: "Erkin Vohidovning 'Ruhlar isyoni' asari qaysi shoirga bag'ishlangan?", options: ["Navoiy", "Lermontov", "Muhammad Fuzuliy", "Hamid Olimjon"], answer: "Muhammad Fuzuliy" },
+            { id: 1005, q: "Abdulla Qahhorning 'Sarob' romani qaysi davrni aks ettiradi?", options: ["Temuriylar davri", "XX asr boshlaridagi qishloq hayoti", "Qadimgi tarix", "Kelajak"], answer: "XX asr boshlaridagi qishloq hayoti" },
+            { id: 1006, q: "Adabiy asarda muallifning hayotiy tajribasi asosida yozilgan asar turi?", options: ["Tarixiy roman", "Avtobiografik asar", "Fantastika", "Drama"], answer: "Avtobiografik asar" },
+            { id: 1007, q: "Abdulla Oripovning eng mashhur dostonlaridan biri?", options: ["Ruhlar isyoni", "Jannatga yo'l", "Sohibqiron", "Dard"], answer: "Jannatga yo'l" },
+            { id: 1008, q: "Adabiyotda 'Klassitsizm' oqimining asosiy talabi?", options: ["Qoidasiz yozish", "Antik davr qoidalariga rioya qilish, mantiq", "Haddan tashqari his-tuyg'u", "Faqat ertak"], answer: "Antik davr qoidalariga rioya qilish, mantiq" },
+            { id: 1009, q: "Erkin Vohidovning tarjimasida qaysi mashhur asar mavjud?", options: ["Odisseya", "G'azallar devoni", "Faust (Gyote)", "Hamlet"], answer: "Faust (Gyote)" },
+            { id: 1010, q: "Abdulla Oripovning she'rlarida eng ko'p uchraydigan mavzu?", options: ["Sevgi va ayollar", "Vatan, inson, tarix", "Kosmik parvozlar", "Hajv"], answer: "Vatan, inson, tarix" },
+            { id: 1011, q: "'Adabiyot - yashash manbai' jumlasi qaysi adibga tegishli?", options: ["Oybek", "G'afur G'ulom", "Abdulla Qahhor", "Said Ahmad"], answer: "Abdulla Qahhor" },
+            { id: 1012, q: "O'zbekiston xalq yozuvchisi, 'Ufq' trilogiyasi muallifi?", options: ["Odil Yoqubov", "Pirimqul Qodirov", "Said Ahmad", "Shuhrat"], answer: "Shuhrat" },
+            { id: 1013, q: "Adabiyotda 'Modernizm' oqimining xususiyati?", options: ["An'analarga sodiqlik", "Shaklda erkinlik, ichki kechinmalarga e'tibor", "Faqat doston", "Hajviy tasvir"], answer: "Shaklda erkinlik, ichki kechinmalarga e'tibor" },
+            { id: 1014, q: "Erkin Vohidovning 'Palatada' asari qaysi janrga oid?", options: ["Roman", "Doston", "Hajviy pyesa", "Hikoya"], answer: "Hajviy pyesa" },
+            { id: 1015, q: "Abdulla Qahhorning 'Og'riq tishlar' hikoyasi asosiy g'oyasi?", options: ["Vatanparvarlik", "Byurokratiya, pastkashlikni fosh etish", "Sevgi", "Tarix"], answer: "Byurokratiya, pastkashlikni fosh etish" },
+            { id: 1016, q: "Adabiy asarda narsaning tovushini so'z orqali ifodalash?", options: ["Alliteratsiya", "Onomatopoeya (Taqlid so'z)", "Epitet", "Metafora"], answer: "Onomatopoeya (Taqlid so'z)" },
+            { id: 1017, q: "Abdulla Oripov qaysi xorijiy shoirning asarlarini tarjima qilgan?", options: ["Shekspir", "Dante", "Nizomiy Ganjaviy", "Rainer Mariya Rilke"], answer: "Nizomiy Ganjaviy" },
+            { id: 1018, q: "Erkin Vohidov qaysi she'riy vaznda mahoratli bo'lgan?", options: ["Erkin vazn", "Aruz va barmoq vazni", "Faqat nasr", "Sonet"], answer: "Aruz va barmoq vazni" },
+            { id: 1019, q: "O'zbek adabiyotida 'Drama' janri eng rivojlangan davr?", options: ["XIV asr", "Jadidchilik davri (XX asr boshlari)", "Sovet davri", "Hozirgi davr"], answer: "Jadidchilik davri (XX asr boshlari)" },
+            { id: 1020, q: "Abdulla Qahhorning 'Mening o'g'rigina bolam' asari janri?", options: ["Doston", "Hikoya", "Roman", "Pyesa"], answer: "Hikoya" },
+            { id: 1021, q: "Rus adabiyotida 'Anna Karenina' romani muallifi?", options: ["Gogol", "Turgenev", "Dostoyevskiy", "Lev Tolstoy"], answer: "Lev Tolstoy" },
+            { id: 1022, q: "Adabiy asarda qahramonning xatti-harakatlari asosida chiqariladigan xulosa?", options: ["Syujet", "G'oya", "Kompozitsiya", "Mavzu"], answer: "G'oya" },
+            { id: 1023, q: "Erkin Vohidovning 'Inson' she'rining asosiy g'oyasi?", options: ["Tabiat go'zalligi", "Insonning ulug'lanishi", "Siyosiy muammolar", "Sevgining kuchi"], answer: "Insonning ulug'lanishi" },
+            { id: 1024, q: "O'zbek adabiyotida 'Hajv'ning eng rivojlangan davri?", options: ["Jadidchilik va sovet davri", "Temuriylar davri", "O'rta asr", "Qadimgi davr"], answer: "Jadidchilik va sovet davri" },
+            { id: 1025, q: "Abdulla Oripov she'riyatining asosiy xususiyati?", options: ["O'ta murakkablik", "Soddalik, falsafiylik va vatanparvarlik", "Hajviy matnlar", "Faqat ishqiy"], answer: "Soddalik, falsafiylik va vatanparvarlik" },
+            { id: 1026, q: "'Epik' asarlar nima?", options: ["His-tuyg'ularni aks ettiruvchi", "Keng ko'lamli voqealarni bayon etuvchi", "Sahnada ijro etiluvchi", "Faqat hajviy"], answer: "Keng ko'lamli voqealarni bayon etuvchi" },
+            { id: 1027, q: "Abdulla Qahhorning 'Qo'shchinor chiroqlari' asarining janri?", options: ["Novella", "Pyesa", "Roman", "Doston"], answer: "Roman" },
+            { id: 1028, q: "She'riyatda fikrni teskari tartibda ifodalash usuli?", options: ["Inversiya", "Mubolag'a", "Metafora", "Qofiya"], answer: "Inversiya" },
+            { id: 1029, q: "Erkin Vohidov qayerda tug'ilgan?", options: ["Toshkent", "Andijon", "Farg'ona", "Samarqand"], answer: "Farg'ona" },
+            { id: 1030, q: "Abdulla Oripovning 'Sohibqiron' asari qaysi tarixiy shaxsga bag'ishlangan?", options: ["Bobur", "Mirzo Ulug'bek", "Amir Temur", "Alisher Navoiy"], answer: "Amir Temur" }
+        ],
+
+        // 11-sinf: Jahon adabiyoti, Cho'lpon (chuqur), Abdulla Qodiriy (chuqur), Nazariy masalalar
+        11: [
+            { id: 1101, q: "'Ruhlar isyoni' dostonida asosan qanday mavzu ilgari surilgan?", options: ["Sevgi va oila", "Tarixiy janglar", "Ozodlik, Vatan, fojialar", "Hajviya"], answer: "Ozodlik, Vatan, fojialar" },
+            { id: 1102, q: "Abdulla Qodiriyning 'O'tkan kunlar' asarida Otabek qaysi xonlikda yashagan?", options: ["Buxoro", "Xiva", "Qo'qon", "Xorazm"], answer: "Qo'qon" },
+            { id: 1103, q: "Jahon adabiyotida 'Ekzistensializm' oqimiga xos xususiyat?", options: ["Mantiq ustunligi", "Shaxsiy erkinlik, tanlov va hayotning ma'nosi", "Faqat tarixiy", "Komediyalar"], answer: "Shaxsiy erkinlik, tanlov va hayotning ma'nosi" },
+            { id: 1104, q: "Cho'lpon ijodida lirik qahramonning ruhiy holati qanday ifodalanadi?", options: ["Doimo xursand", "Kutish, iztirob va orzu", "Faqat boylik", "Siyosiy nutq"], answer: "Kutish, iztirob va orzu" },
+            { id: 1105, q: "Jahon adabiyotining 'Qadimgi Yunon' dostonlari?", options: ["Don Kixot", "Iliada va Odisseya (Gomer)", "Il.ohiy komediya", "Hamlet"], answer: "Iliada va Odisseya (Gomer)" },
+            { id: 1106, q: "Abdulla Oripovning 'Hazonrezgi' asarining janri?", options: ["Roman", "Qissa", "Doston", "She'riy to'plam"], answer: "She'riy to'plam" },
+            { id: 1107, q: "Adabiy asarning ichki qismidagi barcha elementlarning joylashishi va bog'liqligi?", options: ["Syujet", "Mavzu", "Kompozitsiya", "G'oya"], answer: "Kompozitsiya" },
+            { id: 1108, q: "Fransuz adabiyotining yirik vakili, 'Gertsoginya de Lanjey' asari muallifi?", options: ["Balzak", "Zola", "Kam.yu", "Prust"], answer: "Balzak" },
+            { id: 1109, q: "Qodiriyning 'Mehrobdan chayon' asari qaysi turdagi ziddiyatga asoslangan?", options: ["Shaxsiy", "Ijtimoiy-siyosiy", "Tabiat", "Diniy"], answer: "Ijtimoiy-siyosiy" },
+            { id: 1110, q: "Cho'lponning 'Buloq' she'rining asosiy ramziy ma'nosi?", options: ["O'lim", "Hayot manbai, tozalik, erkinlik", "Jang", "Boylik"], answer: "Hayot manbai, tozalik, erkinlik" },
+            { id: 1111, q: "Adabiyotda 'Satira' nima?", options: ["Maqtov", "Achchiq kulgi, keskin tanqid", "Oddiy tasvir", "Faqat ertak"], answer: "Achchiq kulgi, keskin tanqid" },
+            { id: 1112, q: "Erkin Vohidovning 'Nido' she'ri qaysi mavzuda?", options: ["Sevgi", "Vatanparvarlik va mustaqillik", "Hajv", "Tabiat"], answer: "Vatanparvarlik va mustaqillik" },
+            { id: 1113, q: "XX asr fransuz adabiyoti vakili, 'Begona' romani muallifi?", options: ["Ekzyuperi", "Albert Kamyu", "Viktor Gyugo", "Volter"], answer: "Albert Kamyu" },
+            { id: 1114, q: "Adabiyotda 'Fantastika' janriga xos xususiyat?", options: ["Aniq tarix", "Ilmiy-texnikaviy tahminlar, g'ayrioddiy voqealar", "Faqat sevgi", "Hajviy"], answer: "Ilmiy-texnikaviy tahminlar, g'ayrioddiy voqealar" },
+            { id: 1115, q: "She'rda 'Barmoq vazni' nima?", options: ["Tovushlarning cho'ziqligi", "Bo'g'inlar sonining tengligi", "Qofiya yo'qligi", "Faqat to'rt misra"], answer: "Bo'g'inlar sonining tengligi" },
+            { id: 1116, q: "Abdulla Qodiriyning qaysi asari tugallanmay qolgan?", options: ["O'tkan kunlar", "Mehrobdan chayon", "Obid ketmon", "Amir Umarxonning o'limi"], answer: "Amir Umarxonning o'limi" },
+            { id: 1117, q: "Jahon adabiyotida 'Detektiv' janrining asoschisi?", options: ["A. Shekspir", "Edgar Allan Po", "Artur Konan Doyl", "Agata Kristi"], answer: "Edgar Allan Po" },
+            { id: 1118, q: "Abdulla Oripovning 'Saraton' dostoni qanday g'oyani ilgari suradi?", options: ["Qahramonlik", "Jaholatga qarshi kurash", "Sevgi", "Tabiat"], answer: "Jaholatga qarshi kurash" },
+            { id: 1119, q: "Adabiy asarning 'Mavzu'si nima?", options: ["Yechim", "Asarda tasvirlangan voqea va hodisalar doirasi", "Qofiya", "Vazn"], answer: "Asarda tasvirlangan voqea va hodisalar doirasi" },
+            { id: 1120, q: "Cho'lponning 'Qora buzoq' asaridagi asosiy g'oya?", options: ["Tarixiy jang", "Ma'rifatsizlik va zulmning fojiali oqibati", "Tabiat go'zalligi", "Boylik"], answer: "Ma'rifatsizlik va zulmning fojiali oqibati" },
+            { id: 1121, q: "Abdulla Qahhorning 'Tobutdan tovush' asari janri?", options: ["Roman", "Pyesa", "Hikoya", "Novella"], answer: "Novella" },
+            { id: 1122, q: "Adabiyotda 'Alliteratsiya' nima?", options: ["So'z takrori", "Undosh tovushlarning takrorlanishi", "Unli tovushlarning takrorlanishi", "Qofiya turlari"], answer: "Undosh tovushlarning takrorlanishi" },
+            { id: 1123, q: "Amerikalik yozuvchi, 'Alvido, qurol' asari muallifi?", options: ["Mark Tven", "Jek London", "Ernest Xeminguey", "Uilyam Folkner"], answer: "Ernest Xeminguey" },
+            { id: 1124, q: "Erkin Vohidovning 'Istanbul fojiasi' dostonining asosiy mavzusi?", options: ["Tarixiy voqea", "Siyosiy kurash va sadoqat", "Sevgi", "Tabiat"], answer: "Siyosiy kurash va sadoqat" },
+            { id: 1125, q: "Cho'lponning 'Novvos' dramatik asarining asosiy g'oyasi?", options: ["Ma'rifatga chaqirish", "Eski urf-odatlarning yomon oqibati", "Qahramonlik", "Diniy"], answer: "Eski urf-odatlarning yomon oqibati" },
+            { id: 1126, q: "Adabiyotda 'Tragediya' janriga xos xususiyat?", options: ["Baxtli yakun", "Bosh qahramonning halokati va fojia", "Kulgili holatlar", "Oddiy tasvir"], answer: "Bosh qahramonning halokati va fojia" },
+            { id: 1127, q: "Abdulla Oripov 'Onajonim' she'rida qanday tuyg'ularni ifodalagan?", options: ["G'azab", "Siyosiy g'oyalar", "Onalarga cheksiz hurmat va ehtirom", "Faqat tarix"], answer: "Onalarga cheksiz hurmat va ehtirom" },
+            { id: 1128, q: "Rus adiblaridan 'Jinoyat va jazo' asari muallifi?", options: ["Pushkin", "Turgenev", "Dostoyevskiy", "Gogol"], answer: "Dostoyevskiy" },
+            { id: 1129, q: "Adabiy asarda qahramonning xarakterini rivojlantirish usuli?", options: ["Tavsif", "Badiiy detallar", "Dialog", "Barchasi to'g'ri"], answer: "Barchasi to'g'ri" },
+            { id: 1130, q: "O'zbekiston xalq yozuvchisi, 'Chinor' romani muallifi?", options: ["Murod Muhammad Do'st", "Odil Yoqubov", "Pirimqul Qodirov", "Said Ahmad"], answer: "Pirimqul Qodirov" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Sozlamalar Funksiyalari ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Sozlamalar saqlandi! Har bir testda ${questionLimit} ta savol bo'ladi.`);
+            closeSettings();
+        } else {
+            alert("Iltimos, savollar sonini 5 dan 30 gacha bo'lgan oraliqda kiriting.");
+        }
+    }
+
+    // --- 3. Testni Boshlash va Savollarni ko'rsatish ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Adabiyot bazasidan foydalanish
+        const allQuestions = literatureTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert(sinf + "-sinf uchun test savollari hali kiritilmagan. Iltimos, boshqa sinfni tanlang.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `${sinf}-sinf Adabiyot testi (${limit} ta savol)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                input.value = option;
+                
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // To'g'ri javobni topish
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => 
+                label.textContent.trim().replace(/\s\s+/g, ' ') === qItem.answer.trim().replace(/\s\s+/g, ' ')
+            );
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                if (selectedOption.value.trim().replace(/\s\s+/g, ' ') === qItem.answer.trim().replace(/\s\s+/g, ' ')) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>A'lo! Test yakunlandi.</h2>
+            <p>Siz ${totalQuestions} ta savoldan **${score}** tasiga to'g'ri javob berdingiz.</p>
+            <p>Foiz hisobida: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Qayta boshlash</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Adabiyot Testlariga Xush Kelibsiz!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
