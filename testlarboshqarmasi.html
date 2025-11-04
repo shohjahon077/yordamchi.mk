@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏛️ O'quv Fanlari Test Portali</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Theme Colors (Modern Dark Blue/Cyan) */
+            --primary-color: #007bff; /* To'q ko'k */
+            --secondary-color: #00bcd4; /* Och ko'k/Cyan */
+            --background-dark: #f0f2f5;
+            --text-dark: #212529;
+            --text-light: #fff;
+            --border-radius: 12px;
+            --shadow-subtle: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- Global Styles --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Animatsiya uchun o'tkazib yuborishni yashirish */
+        }
+        
+        /* --- 1. Kirish Animatsiyasi (Loading Screen) --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--text-light);
+            border-radius: 50%;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .splash-text {
+            color: var(--text-light);
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        /* --- 2. Main Container (Asosiy kontent) --- */
+        .container {
+            background-color: #ffffff;
+            padding: 50px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 1100px;
+            width: 90%;
+            opacity: 0; /* Boshida yashirish */
+            transform: scale(0.9);
+            transition: opacity 0.6s ease-in, transform 0.6s ease-in;
+            z-index: 10;
+        }
+        
+        .container.loaded {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        h1 {
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            font-weight: 800; /* Extra bold */
+            font-size: 2.5em;
+            text-align: left;
+        }
+        h3 {
+            color: #6c757d;
+            margin-bottom: 40px;
+            font-weight: 400;
+            text-align: left;
+        }
+
+        /* --- 3. Fanlar Grid va Kartochkalar (Modern Cards) --- */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 25px;
+        }
+        
+        .subject-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border: 1px solid #e9ecef;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 123, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .subject-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(0, 123, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .subject-card .name {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        
+        /* Specific Icon Colors for visual distinction */
+        .card-history .icon { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; } /* Gray */
+        .card-biology .icon { background-color: rgba(46, 204, 113, 0.1); color: #2ecc71; } /* Green */
+        .card-chemistry .icon { background-color: rgba(243, 156, 18, 0.1); color: #f39c12; } /* Orange */
+        .card-physics .icon { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; } /* Red */
+        .card-math .icon { background-color: rgba(155, 89, 182, 0.1); color: #9b59b6; } /* Purple */
+        /* ... Add more specific color classes here ... */
+
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div class="loader"></div>
+    <div class="splash-text">Portal yuklanmoqda...</div>
+</div>
+
+<div class="container" id="main-content">
+    <h1>🏛️ Test Fanlarini Tanlash</h1>
+    <h3>Boshlash uchun sinfingizga mos keladigan fanni tanlang va testni boshlang.</h3>
+
+    <div class="subject-grid" id="subject-grid">
+        </div>
+    
+    <p style="margin-top: 40px; color: #7f8c8d; font-size: 0.85em; text-align: right;">
+        Barcha test kodlari alohida **.html** fayllarda saqlangan bo'lishi kerak (masalan: `biology_test.html`).
+    </p>
+</div>
+
+<script>
+    // FANLAR RO'YXATI
+    // "link" - bu fanga oid test joylashgan fayl nomi
+    const subjects = [
+        { name: "Tarix", icon: "🏛️", link: "testlar.html", className: "card-history" },
+        { name: "Biologiya", icon: "🧬", link: "testlar10.html", className: "card-biology" },
+        { name: "Kimyo", icon: "🧪", link: "testlar2.html", className: "card-chemistry" },
+        { name: "Fizika", icon: "⚛️", link: "testlar4.html", className: "card-physics" },
+        { name: "Matematika", icon: "➕", link: "testlar6.html", className: "card-math" },
+        { name: "Geografiya", icon: "🌍", link: "testlar3.html", className: "card-geography" },
+        { name: "Ona tili", icon: "📝", link: "testlar7.html", className: "card-uzbek" },
+        { name: "Adabiyot", icon: "📚", link: "testlar5.html", className: "card-literature" },
+        
+        { name: "Ingliz tili", icon: "🇬🇧", link: "english_testlar8.html", className: "card-english" },
+        { name: "Rus tili", icon: "🇷🇺", link: "testlar9.html", className: "card-russian" },
+    ];
+
+    const grid = document.getElementById('subject-grid');
+    const splashScreen = document.getElementById('splash-screen');
+    const mainContent = document.getElementById('main-content');
+
+    // Fan kartochkalarini yaratish funksiyasi
+    function renderSubjects() {
+        subjects.forEach(subject => {
+            const card = document.createElement('a');
+            card.href = subject.link; // Fan testiga yo'naltirish
+            card.className = `subject-card ${subject.className}`;
+            
+            card.innerHTML = `
+                <span class="icon">${subject.icon}</span>
+                <span class="name">${subject.name}</span>
+            `;
+            
+            grid.appendChild(card);
+        });
+    }
+    
+    // Sayt yuklanganidan keyin animatsiyani o'chirish
+    function hideSplash() {
+        // Kontentni ko'rsatish
+        mainContent.classList.add('loaded');
+        
+        // Animatsiyani asta-sekin yashirish (0.5 sekunddan keyin)
+        setTimeout(() => {
+            splashScreen.style.opacity = '0';
+        }, 500);
+
+        // Animatsiya tugagandan keyin uni DOMdan olib tashlash (1 sekunddan keyin)
+        setTimeout(() => {
+            splashScreen.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Scrollni qaytarish
+        }, 1000);
+    }
+
+    // Kod ishga tushganda:
+    renderSubjects();
+    
+    // Page yuklanganda animatsiyani yopish. 
+    // Sun'iy ravishda 2 soniya kutish qo'shdik, shunda animatsiya ko'rinadi.
+    window.onload = function() {
+        setTimeout(hideSplash, 2000); // 2 soniya kutib, animatsiyani yopadi
+        alert("Eslatma: Bu portal ishlashi uchun Biologiya test kodini 'biology_test.html' nomi bilan saqlang. Keyingi qadamda Tarix testini yaratamiz.");
+    };
+
+</script>
+
+</body>
+</html>
