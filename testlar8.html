@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Language Test System (5-11 grades)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976D2; /* Ingliz tili uchun o'rta ko'k rang */
+            --english-color: #2196F3; /* Yengilroq ko'k */
+            --background-light: #e3f2fd; /* Juda och ko'k fon */
+            --background-card: #ffffff;
+            --text-dark: #263238;
+            --text-light: #fff;
+            --border-radius: 10px;
+            --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: var(--background-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--primary-color); 
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        h3 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* --- Buttons Styling --- */
+        button, .setting-btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover, .setting-btn:hover {
+            background-color: #0d47a1;
+            transform: translateY(-2px);
+        }
+
+        /* --- Class Selection and Settings Panel --- */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
+        .class-selection button {
+            background-color: var(--english-color); /* Class buttons light blue */
+            color: var(--text-light); 
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .class-selection button:hover {
+            background-color: #1e88e5;
+        }
+        #settings-btn {
+            background-color: #6c757d;
+            color: var(--text-light);
+        }
+        #settings-btn:hover {
+            background-color: #5a6268;
+        }
+        #intro-screen {
+            text-align: center;
+        }
+
+        /* --- Question Styling --- */
+        .question-box {
+            background-color: #bbdefb; /* Lightest blue background */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-color); 
+            transition: box-shadow 0.3s;
+        }
+        .question-box:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .question-box p {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            background-color: var(--background-card);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #ced4da;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options label:hover {
+            background-color: #e0f7fa; /* Lightest cyan hover */
+            border-color: var(--english-color);
+        }
+
+        /* --- Results and Submit --- */
+        #results {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #90caf9; /* Result background blue */
+            border: 1px solid #64b5f6;
+            color: #0d47a1;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            text-align: center;
+            display: none;
+        }
+        #results button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        /* --- Result Colors --- */
+        .correct-answer {
+            background-color: #c8e6c9 !important; /* Green for correct */
+            border-color: #a5d6a7 !important;
+            color: #1b5e20;
+        }
+        .wrong-answer {
+            background-color: #ffcdd2 !important; /* Red for wrong */
+            border-color: #ef9a9a !important;
+            color: #b71c1c;
+        }
+
+        /* --- Settings Modal (reused from previous design) --- */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--background-card);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-subtle);
+            width: 80%;
+            max-width: 500px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover {
+            color: var(--text-dark);
+        }
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        .setting-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="welcome-title">Welcome to the English Language Test System!</h1>
+    
+    <div class="header-controls">
+        <div class="class-selection">
+            <button onclick="startTest(5)">5-grade</button>
+            <button onclick="startTest(6)">6-grade</button>
+            <button onclick="startTest(7)">7-grade</button>
+            <button onclick="startTest(8)">8-grade</button>
+            <button onclick="startTest(9)">9-grade</button>
+            <button onclick="startTest(10)">10-grade</button>
+            <button onclick="startTest(11)">11-grade</button>
+        </div>
+        <button id="settings-btn" onclick="openSettings()">⚙️ Settings</button>
+    </div>
+
+    <div id="intro-screen" style="text-align: center;">
+        <h3>Please select a grade to start the test.</h3>
+        <p>Click the "Settings" button to adjust the number of questions.</p>
+    </div>
+
+    <div id="quiz-container" style="display:none;">
+        </div>
+
+    <button id="submit-btn" style="display:none;">Submit Test</button>
+
+    <div id="results"></div>
+</div>
+
+<div id="settings-modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2>⚙️ Test Settings</h2>
+        <div class="setting-group">
+            <label for="question-limit">Number of questions per test:</label>
+            <input type="number" id="question-limit" value="10" min="5" max="30">
+            <small style="color: #6c757d;">(Min 5, Max 30 questions)</small>
+        </div>
+        <button class="setting-btn" onclick="saveSettings()">Save and Close</button>
+    </div>
+</div>
+
+<script>
+    // --- 1. Test Questions DATABASE (English Language, 5-11 grades) ---
+
+    const englishTestDatabase = {
+        // 5-grade: Basic Vocabulary, Present Simple, To Be verb, Articles (A/An)
+        5: [
+            { id: 501, q: "Choose the correct article: I have ___ apple.", options: ["a", "an", "the", "no article"], answer: "an" },
+            { id: 502, q: "Choose the correct verb: They ___ students.", options: ["is", "am", "are", "be"], answer: "are" },
+            { id: 503, q: "Fill the gap: She ___ TV every evening (watch).", options: ["watch", "watches", "is watching", "watched"], answer: "watches" },
+            { id: 504, q: "What is the plural of 'child'?", options: ["childs", "children", "childes", "childsen"], answer: "children" },
+            { id: 505, q: "Choose the correct preposition: The book is ___ the table.", options: ["at", "on", "in", "to"], answer: "on" },
+            { id: 506, q: "Choose the correct option: I ___ go to school today (not).", options: ["don't", "doesn't", "am not", "aren't"], answer: "don't" },
+            { id: 507, q: "What time is it if it is 3:30?", options: ["Half past three", "Three thirty", "Quarter to three", "Quarter past three"], answer: "Half past three" },
+            { id: 508, q: "Choose the correct demonstrative pronoun: ___ is my house (near).", options: ["Those", "These", "That", "This"], answer: "This" },
+            { id: 509, q: "Which word is an animal?", options: ["Flower", "Chair", "Elephant", "Pencil"], answer: "Elephant" },
+            { id: 510, q: "Opposite of 'big'?", options: ["Large", "Small", "Tall", "Heavy"], answer: "Small" },
+            { id: 511, q: "Fill the gap: My mother ___ a teacher (to be).", options: ["am", "are", "is", "be"], answer: "is" },
+            { id: 512, q: "What is the past form of 'go'?", options: ["goed", "went", "gone", "going"], answer: "went" },
+            { id: 513, q: "Choose the correct article: ___ sun is bright.", options: ["a", "an", "the", "no article"], answer: "the" },
+            { id: 514, q: "Complete the sentence: ___ name is Tom.", options: ["Her", "His", "Their", "Our"], answer: "His" },
+            { id: 515, q: "Which word means 'cold season'?", options: ["Summer", "Autumn", "Spring", "Winter"], answer: "Winter" },
+            { id: 516, q: "Choose the correct question word: ___ old are you?", options: ["What", "Where", "How", "When"], answer: "How" },
+            { id: 517, q: "What is the plural of 'foot'?", options: ["foots", "feet", "footies", "foot"], answer: "feet" },
+            { id: 518, q: "Correct sentence order: a nice have I car.", options: ["I have a nice car.", "A nice car I have.", "Car I have a nice.", "Have I a nice car."], answer: "I have a nice car." },
+            { id: 519, q: "Choose the correct preposition: I go to bed ___ night.", options: ["on", "at", "in", "for"], answer: "at" },
+            { id: 520, q: "What do you call the brother of your mother?", options: ["Aunt", "Uncle", "Cousin", "Nephew"], answer: "Uncle" },
+            { id: 521, q: "I ___ happy right now (to be).", options: ["is", "are", "am", "be"], answer: "am" },
+            { id: 522, q: "We ___ lunch at 1 pm every day (have).", options: ["has", "have", "is having", "had"], answer: "have" },
+            { id: 523, q: "Choose the correct pronoun: This pencil is ___.", options: ["my", "I", "me", "mine"], answer: "mine" },
+            { id: 524, q: "Opposite of 'dirty'?", options: ["Clean", "Messy", "Bad", "Soft"], answer: "Clean" },
+            { id: 525, q: "Which day comes after Tuesday?", options: ["Monday", "Thursday", "Wednesday", "Friday"], answer: "Wednesday" },
+            { id: 526, q: "They ___ playing outside now (to be).", options: ["is", "am", "are", "be"], answer: "are" },
+            { id: 527, q: "Choose the correct article: She is ___ doctor.", options: ["a", "an", "the", "no article"], answer: "a" },
+            { id: 528, q: "Fill the gap: He ___ his teeth three times a day (brush).", options: ["brush", "brushes", "is brushing", "brushed"], answer: "brushes" },
+            { id: 529, q: "What is the plural of 'man'?", options: ["mans", "mens", "men", "manies"], answer: "men" },
+            { id: 530, q: "Choose the correct preposition: She is waiting ___ the bus stop.", options: ["on", "in", "at", "by"], answer: "at" }
+        ],
+        
+        // 6-grade: Present Continuous, Past Simple (regular/irregular), Adjectives/Adverbs, Possessive 's
+        6: [
+            { id: 601, q: "Choose the correct tense: He ___ a letter now (write).", options: ["writes", "is writing", "wrote", "will write"], answer: "is writing" },
+            { id: 602, q: "Fill the gap: I ___ to the cinema yesterday (go).", options: ["go", "went", "going", "have gone"], answer: "went" },
+            { id: 603, q: "Adverb for 'slow'?", options: ["slowly", "slowlyy", "slowful", "slowness"], answer: "slowly" },
+            { id: 604, q: "Which sentence uses the Possessive 's correctly?", options: ["The girls room is big.", "The girl's room is big.", "The girl room is big.", "The girls's room is big."], answer: "The girl's room is big." },
+            { id: 605, q: "Choose the correct adjective: This is a ___ day.", options: ["sunny", "sunnily", "sun", "sunshine"], answer: "sunny" },
+            { id: 606, q: "Past form of 'eat'?", options: ["eated", "ate", "itten", "eaten"], answer: "ate" },
+            { id: 607, q: "Complete the question: ___ you talking on the phone at the moment?", options: ["Do", "Are", "Is", "Did"], answer: "Are" },
+            { id: 608, q: "Choose the correct preposition: We waited ___ the rain stopped.", options: ["for", "until", "to", "at"], answer: "until" },
+            { id: 609, q: "Comparative form of 'good'?", options: ["gooder", "best", "better", "more good"], answer: "better" },
+            { id: 610, q: "Opposite of 'early'?", options: ["Soon", "Late", "Fast", "Quick"], answer: "Late" },
+            { id: 611, q: "They ___ their homework two hours ago (finish).", options: ["finish", "are finishing", "finished", "have finished"], answer: "finished" },
+            { id: 612, q: "Which word is an adverb of frequency?", options: ["Tomorrow", "Loudly", "Always", "Up"], answer: "Always" },
+            { id: 613, q: "She ___ not listen to the teacher yesterday (do).", options: ["do", "does", "did", "done"], answer: "did" },
+            { id: 614, q: "Plural of 'knife'?", options: ["knifes", "knives", "knifees", "knife"], answer: "knives" },
+            { id: 615, q: "___ rain in summer.", options: ["It often", "It often is", "It often rains", "It is raining often"], answer: "It often rains" },
+            { id: 616, q: "Superlative form of 'bad'?", options: ["badder", "worst", "baddest", "more bad"], answer: "worst" },
+            { id: 617, q: "The word 'beautifully' is a/an ___.", options: ["Adjective", "Noun", "Adverb", "Verb"], answer: "Adverb" },
+            { id: 618, q: "We are meeting ___ Monday morning.", options: ["at", "on", "in", "to"], answer: "on" },
+            { id: 619, q: "Which word is an abstract noun?", options: ["Table", "Honesty", "Car", "Water"], answer: "Honesty" },
+            { id: 620, q: "Past form of 'see'?", options: ["seed", "saw", "seen", "seeing"], answer: "saw" },
+            { id: 621, q: "Look! The cat ___ up the tree (climb).", options: ["climb", "climbs", "is climbing", "climbed"], answer: "is climbing" },
+            { id: 622, q: "Fill the gap: I went to the park ___ bus.", options: ["by", "with", "on", "in"], answer: "by" },
+            { id: 623, q: "___ the boys playing football?", options: ["Is", "Does", "Do", "Are"], answer: "Are" },
+            { id: 624, q: "Choose the correct option: She is ___ taller than her brother.", options: ["many", "much", "more", "most"], answer: "much" },
+            { id: 625, q: "Which sentence is grammatically correct?", options: ["She slowly drove the car.", "She drove the car slowly.", "Slowly she drove the car.", "All of the above"], answer: "All of the above" },
+            { id: 626, q: "The synonym for 'quick' is:", options: ["Slow", "Rapid", "Heavy", "Small"], answer: "Rapid" },
+            { id: 627, q: "Complete the sentence: ___ a lot of people at the party.", options: ["There was", "There were", "There is", "There are"], answer: "There were" },
+            { id: 628, q: "The baby ___ (cry) all night long.", options: ["cry", "cries", "cried", "is crying"], answer: "cried" },
+            { id: 629, q: "Correct order: always he breakfast has at 7am.", options: ["He always has breakfast at 7am.", "He has always breakfast at 7am.", "Always he has breakfast at 7am.", "He has breakfast always at 7am."], answer: "He always has breakfast at 7am." },
+            { id: 630, q: "Which word is a compound noun?", options: ["Book", "Happiness", "Teaspoon", "Run"], answer: "Teaspoon" }
+        ],
+        
+        // 7-grade: Future Simple, Present Perfect, Passive Voice (basics), Countable/Uncountable Nouns
+        7: [
+            { id: 701, q: "Choose the correct tense: I ___ visit London next year (promise).", options: ["am visiting", "will visit", "visit", "visited"], answer: "will visit" },
+            { id: 702, q: "Fill the gap: They ___ their lunch yet (not have).", options: ["haven't had", "didn't have", "don't have", "won't have"], answer: "haven't had" },
+            { id: 703, q: "Which noun is uncountable?", options: ["Car", "Book", "Advice", "Apple"], answer: "Advice" },
+            { id: 704, q: "Passive voice: The letter ___ yesterday (write).", options: ["wrote", "was written", "is written", "has been written"], answer: "was written" },
+            { id: 705, q: "We use 'going to' when we talk about ___.", options: ["Sudden decisions", "Habits", "Plans and intentions", "Facts"], answer: "Plans and intentions" },
+            { id: 706, q: "Choose the correct quantifier: I have ___ money.", options: ["many", "a few", "much", "a number of"], answer: "much" },
+            { id: 707, q: "Complete the sentence: She ___ never seen a lion.", options: ["did", "has", "is", "do"], answer: "has" },
+            { id: 708, q: "Past participle of 'break'?", options: ["breaked", "broke", "broken", "breaking"], answer: "broken" },
+            { id: 709, q: "Question form of 'He will help us.'", options: ["Will he help us?", "Does he help us?", "He will help us?", "Is he helping us?"], answer: "Will he help us?" },
+            { id: 710, q: "Which sentence is in the Present Perfect Tense?", options: ["I am reading a book.", "I read a book yesterday.", "I have read this book.", "I will read a book."], answer: "I have read this book." },
+            { id: 711, q: "Choose the correct modal verb: You ___ smoke here; it's forbidden.", options: ["can", "may", "mustn't", "should"], answer: "mustn't" },
+            { id: 712, q: "___ the weather be good tomorrow?", options: ["Is", "Does", "Will", "Did"], answer: "Will" },
+            { id: 713, q: "We need ___ sugar (uncountable).", options: ["many", "a few", "a little", "some"], answer: "some" },
+            { id: 714, q: "The concert ___ by a famous band (perform, passive).", options: ["performs", "was performed", "perform", "is perform"], answer: "was performed" },
+            { id: 715, q: "Which word is a synonym for 'difficult'?", options: ["Easy", "Hard", "Simple", "Light"], answer: "Hard" },
+            { id: 716, q: "When do we use 'since' in Present Perfect?", options: ["For a duration", "For a specific point in time", "For a period", "For uncountable nouns"], answer: "For a specific point in time" },
+            { id: 717, q: "They ___ to the USA yet.", options: ["haven't been", "didn't go", "won't go", "aren't going"], answer: "haven't been" },
+            { id: 718, q: "The opposite of 'generous'?", options: ["Kind", "Selfish", "Happy", "Polite"], answer: "Selfish" },
+            { id: 719, q: "Choose the correct time expression for Future Simple:", options: ["Yesterday", "Now", "Next week", "Already"], answer: "Next week" },
+            { id: 720, q: "How ___ people were at the meeting?", options: ["much", "many", "a lot", "little"], answer: "many" },
+            { id: 721, q: "The window ___ by the children (break, passive).", options: ["breaks", "broke", "was broken", "is breaking"], answer: "was broken" },
+            { id: 722, q: "I think it ___ rain tomorrow.", options: ["is going to", "will", "is", "does"], answer: "will" },
+            { id: 723, q: "She has been living here ___ ten years.", options: ["since", "for", "at", "on"], answer: "for" },
+            { id: 724, q: "Which modal verb expresses ability?", options: ["Must", "Should", "Can", "May"], answer: "Can" },
+            { id: 725, q: "We haven't seen them ___ 2020.", options: ["for", "since", "yet", "already"], answer: "since" },
+            { id: 726, q: "Which is a countable noun?", options: ["Water", "Furniture", "Idea", "Money"], answer: "Idea" },
+            { id: 727, q: "The dinner ___ at 7 pm tonight (prepare, passive).", options: ["is prepared", "will be prepared", "prepares", "is preparing"], answer: "will be prepared" },
+            { id: 728, q: "Complete the sentence: I am ___ travel next month.", options: ["will", "going to", "want to", "can"], answer: "going to" },
+            { id: 729, q: "I have ___ completed the task (adverb).", options: ["yet", "just", "since", "ago"], answer: "just" },
+            { id: 730, q: "Synonym for 'huge'?", options: ["Small", "Tiny", "Giant", "Fast"], answer: "Giant" }
+        ],
+
+        // 8-grade: Past Continuous, Past Perfect, Conditional sentences (Type 1), Reported Speech (basics)
+        8: [
+            { id: 801, q: "Choose the correct tense: I ___ when the phone rang (sleep).", options: ["slept", "was sleeping", "have slept", "am sleeping"], answer: "was sleeping" },
+            { id: 802, q: "Fill the gap: She ___ before he arrived (leave).", options: ["left", "has left", "had left", "was leaving"], answer: "had left" },
+            { id: 803, q: "Conditional Type 1: If it rains, we ___ inside.", options: ["stay", "will stay", "would stay", "stayed"], answer: "will stay" },
+            { id: 804, q: "Reported Speech: He said, 'I am busy.'", options: ["He said he is busy.", "He said he was busy.", "He said he had been busy.", "He said he busy."], answer: "He said he was busy." },
+            { id: 805, q: "Which tense describes an action completed before a specific point in the past?", options: ["Past Simple", "Past Continuous", "Past Perfect", "Present Perfect"], answer: "Past Perfect" },
+            { id: 806, q: "The action that was ongoing in the past when another action interrupted it:", options: ["Past Simple", "Past Continuous", "Past Perfect", "Future Simple"], answer: "Past Continuous" },
+            { id: 807, q: "Complete the conditional: If you study hard, you ___ the exam.", options: ["pass", "will pass", "passed", "would pass"], answer: "will pass" },
+            { id: 808, q: "She asked, 'Are you coming?'", options: ["She asked if I am coming.", "She asked if I was coming.", "She asked if I came.", "She asked if I had come."], answer: "She asked if I was coming." },
+            { id: 809, q: "What does Past Perfect use as its auxiliary verb?", options: ["Do/Does", "Be", "Have/Has", "Had"], answer: "Had" },
+            { id: 810, q: "They ___ (play) outside all afternoon.", options: ["played", "were playing", "have played", "had played"], answer: "were playing" },
+            { id: 811, q: "If I find her number, I ___ her.", options: ["call", "will call", "called", "would call"], answer: "will call" },
+            { id: 812, q: "The cinema ___ when we got there (close).", options: ["closed", "had closed", "was closing", "is closed"], answer: "had closed" },
+            { id: 813, q: "Reported Speech: She told me, 'It is cold today.'", options: ["She told me it was cold that day.", "She told me it is cold today.", "She told me it had been cold that day.", "She told me it was cold today."], answer: "She told me it was cold that day." },
+            { id: 814, q: "Which modal verb expresses strong necessity?", options: ["Should", "May", "Must", "Might"], answer: "Must" },
+            { id: 815, q: "Adjective clause (Relative clause) for 'The man who lives next door is friendly.'", options: ["The man next door is friendly.", "The man is friendly.", "who lives next door", "is friendly"], answer: "who lives next door" },
+            { id: 816, q: "Correct preposition: I was born ___ 1995.", options: ["at", "on", "in", "by"], answer: "in" },
+            { id: 817, q: "They ___ (work) when I saw them.", options: ["worked", "were working", "have worked", "had worked"], answer: "were working" },
+            { id: 818, q: "Before she went to bed, she ___ the lights (turn off).", options: ["turned off", "was turning off", "had turned off", "has turned off"], answer: "had turned off" },
+            { id: 819, q: "If we miss the bus, we ___ late.", options: ["are", "will be", "were", "would be"], answer: "will be" },
+            { id: 820, q: "Direct Speech: He asked where I lived.", options: ["He asked, 'Where I lived?'", "He asked, 'Where do you live?'", "He asked, 'Where did you live?'", "He asked, 'Where you live?'"], answer: "He asked, 'Where do you live?'" },
+            { id: 821, q: "The gerund form of 'swim'?", options: ["to swim", "swims", "swimming", "swam"], answer: "swimming" },
+            { id: 822, q: "I suddenly realized I ___ my keys at home (forget).", options: ["forgot", "had forgotten", "was forgetting", "have forgotten"], answer: "had forgotten" },
+            { id: 823, q: "They didn't hear the alarm because they ___ (sleep).", options: ["slept", "were sleeping", "had slept", "sleep"], answer: "were sleeping" },
+            { id: 824, q: "Which relative pronoun is for things?", options: ["Who", "Whom", "Which", "Whose"], answer: "Which" },
+            { id: 825, q: "If you heat water, it ___ (boil). (Zero Conditional)", options: ["boils", "will boil", "would boil", "boiled"], answer: "boils" },
+            { id: 826, q: "Modal verb for advice or suggestion?", options: ["Must", "Can", "Should", "Will"], answer: "Should" },
+            { id: 827, q: "She said she ___ dinner (cook) when I called.", options: ["cooked", "was cooking", "had cooked", "has cooked"], answer: "was cooking" },
+            { id: 828, q: "When converting to Reported Speech, 'tomorrow' changes to ___.", options: ["Today", "The next day", "Yesterday", "That day"], answer: "The next day" },
+            { id: 829, q: "Synonym for 'exhausted'?", options: ["Tired", "Energetic", "Sleepy", "Happy"], answer: "Tired" },
+            { id: 830, q: "The children ___ (watch) cartoons all evening.", options: ["watched", "were watching", "had watched", "watch"], answer: "were watching" }
+        ],
+
+        // 9-grade: Present Perfect Continuous, Conditional Type 2, Phrasal verbs, Gerund/Infinitive
+        9: [
+            { id: 901, q: "Choose the correct tense: I ___ here for three hours (wait).", options: ["wait", "have waited", "have been waiting", "am waiting"], answer: "have been waiting" },
+            { id: 902, q: "Conditional Type 2: If I had a million dollars, I ___ a new car.", options: ["buy", "will buy", "would buy", "bought"], answer: "would buy" },
+            { id: 903, q: "Complete the phrasal verb: Don't ___ smoking!", options: ["get up", "give up", "put up", "take up"], answer: "give up" },
+            { id: 904, q: "We avoided ___ the difficult question (answer).", options: ["to answer", "answer", "answering", "answered"], answer: "answering" },
+            { id: 905, q: "The action that started in the past and continues up to the present:", options: ["Past Perfect", "Present Perfect Simple", "Present Perfect Continuous", "Past Continuous"], answer: "Present Perfect Continuous" },
+            { id: 906, q: "We use Conditional Type 2 for ___ situations.", options: ["Real", "Possible", "Hypothetical or unreal", "Fact"], answer: "Hypothetical or unreal" },
+            { id: 907, q: "Fill the gap: She loves ___ in the ocean (swim).", options: ["to swim", "swims", "swimming", "swam"], answer: "swimming" },
+            { id: 908, q: "What does the phrasal verb 'look up to' mean?", options: ["Search for information", "Admire or respect", "Be careful", "Visit"], answer: "Admire or respect" },
+            { id: 909, q: "If I ___ you, I wouldn't do that (to be).", options: ["was", "were", "am", "have been"], answer: "were" },
+            { id: 910, q: "He has been running ___ he arrived.", options: ["for", "since", "just", "yet"], answer: "since" },
+            { id: 911, q: "Choose the correct modal verb for possibility:", options: ["Must", "Should", "Might", "Will"], answer: "Might" },
+            { id: 912, q: "They decided ___ a movie (watch).", options: ["to watch", "watching", "watch", "watched"], answer: "to watch" },
+            { id: 913, q: "Phrasal verb for 'invent' or 'create'?", options: ["take off", "make up", "turn on", "put away"], answer: "make up" },
+            { id: 914, q: "He ___ for hours when I called him.", options: ["was studying", "has studied", "had been studying", "studied"], answer: "had been studying" },
+            { id: 915, q: "Which sentence is grammatically correct?", options: ["I have been waited for you.", "I have been waiting for you.", "I was waiting for you.", "I wait for you."], answer: "I have been waiting for you." },
+            { id: 916, q: "If we went to the beach, we ___ a good time.", options: ["have", "will have", "would have", "had"], answer: "would have" },
+            { id: 917, q: "She suggested ___ to the park (go).", options: ["to go", "going", "goes", "go"], answer: "going" },
+            { id: 918, q: "Phrasal verb for 'remove clothes'?", options: ["put on", "take off", "look after", "run out"], answer: "take off" },
+            { id: 919, q: "They ___ all day, so they are tired.", options: ["work", "are working", "have been working", "worked"], answer: "have been working" },
+            { id: 920, q: "If I knew the answer, I ___ you.", options: ["tell", "will tell", "would tell", "told"], answer: "would tell" },
+            { id: 921, q: "The opposite of 'polite'?", options: ["Rude", "Friendly", "Kind", "Formal"], answer: "Rude" },
+            { id: 922, q: "They look forward ___ you again (see).", options: ["seeing", "to see", "to seeing", "see"], answer: "to seeing" },
+            { id: 923, q: "Which modal verb expresses strong probability?", options: ["Might", "Could", "May", "Must"], answer: "Must" },
+            { id: 924, q: "Phrasal verb for 'take care of'?", options: ["look up", "look after", "look for", "look out"], answer: "look after" },
+            { id: 925, q: "If I ___ (not) busy, I would help you.", options: ["wasn't", "weren't", "am not", "don't be"], answer: "weren't" },
+            { id: 926, q: "She confessed ___ the money (steal).", options: ["to steal", "stealing", "stole", "steal"], answer: "stealing" },
+            { id: 927, q: "The students ___ (learn) English for five years now.", options: ["learn", "are learning", "have learned", "have been learning"], answer: "have been learning" },
+            { id: 928, q: "We must ___ (do) our best.", options: ["to do", "do", "doing", "did"], answer: "do" },
+            { id: 929, q: "Synonym for 'wealthy'?", options: ["Poor", "Rich", "Happy", "Sad"], answer: "Rich" },
+            { id: 930, q: "Phrasal verb for 'postpone'?", options: ["put off", "put on", "take out", "make up"], answer: "put off" }
+        ],
+
+        // 10-grade: Conditional Type 3, Mixed Conditionals, Advanced Reported Speech, Passive Voice (Perfect/Modal)
+        10: [
+            { id: 1001, q: "Conditional Type 3: If I had known, I ___ (come).", options: ["come", "would come", "would have come", "came"], answer: "would have come" },
+            { id: 1002, q: "Passive Voice: The book ___ by the author (will be written).", options: ["will write", "will be written", "is written", "was written"], answer: "will be written" },
+            { id: 1003, q: "Mixed Conditional: If he had studied, he ___ (pass) the test now.", options: ["passes", "would pass", "would have passed", "passed"], answer: "would pass" },
+            { id: 1004, q: "Reported Speech (Command): He told me, 'Go away!'", options: ["He told me go away.", "He told me to go away.", "He told me going away.", "He told me that I go away."], answer: "He told me to go away." },
+            { id: 1005, q: "Conditional Type 3 expresses an unreal situation in the ___.", options: ["Present", "Future", "Past", "Any time"], answer: "Past" },
+            { id: 1006, q: "Passive Voice: The report ___ (must be finished) by tomorrow.", options: ["must finish", "must be finished", "has finished", "is finished"], answer: "must be finished" },
+            { id: 1007, q: "If you had gone to the party, you ___ (meet) my friends.", options: ["meet", "will meet", "would meet", "would have met"], answer: "would have met" },
+            { id: 1008, q: "Reported Speech (Question): She asked, 'Where did you go?'", options: ["She asked where I went.", "She asked where I had gone.", "She asked where did I go.", "She asked where I did go."], answer: "She asked where I had gone." },
+            { id: 1009, q: "Mixed Conditional (Present result): If he ___ (be) a good student, he wouldn't be failing now.", options: ["was", "were", "had been", "is"], answer: "were" },
+            { id: 1010, q: "Passive Voice: The house ___ (has been painted).", options: ["has painted", "has been painted", "have been painted", "is painting"], answer: "has been painted" },
+            { id: 1011, q: "Choose the correct phrasal verb: I need to ___ this document (review).", options: ["go up", "go over", "go for", "go away"], answer: "go over" },
+            { id: 1012, q: "If I ___ (study) harder, I would be a doctor now.", options: ["had studied", "studied", "was studying", "have studied"], answer: "had studied" },
+            { id: 1013, q: "Reported Speech (Suggestion): He suggested ___ a break.", options: ["take", "to take", "taking", "taken"], answer: "taking" },
+            { id: 1014, q: "Inversion for Conditional Type 3:", options: ["Had I known...", "Did I know...", "If I knew...", "If I had knew..."], answer: "Had I known..." },
+            { id: 1015, q: "Passive Voice: The work ___ (is being done) at the moment.", options: ["is done", "is being done", "has been done", "was done"], answer: "is being done" },
+            { id: 1016, q: "If she ___ (not be) late, she wouldn't have missed the train.", options: ["wasn't", "weren't", "hadn't been", "hasn't been"], answer: "hadn't been" },
+            { id: 1017, q: "Which word is an academic vocabulary term?", options: ["Go", "Beautiful", "Furthermore", "Jump"], answer: "Furthermore" },
+            { id: 1018, q: "Passive Voice with two objects: I was given a gift.", options: ["A gift was given to me.", "They gave me a gift.", "I was given a gift.", "All are correct"], answer: "All are correct" },
+            { id: 1019, q: "He insisted on ___ the whole truth (tell).", options: ["to tell", "telling", "tell", "told"], answer: "telling" },
+            { id: 1020, q: "Mixed Conditional (Past result): If I were rich, I ___ (buy) a yacht last year.", options: ["bought", "would buy", "would have bought", "buy"], answer: "would have bought" },
+            { id: 1021, q: "She apologized for ___ so rude (be).", options: ["to be", "being", "is", "was"], answer: "being" },
+            { id: 1022, q: "Reported Speech: He promised, 'I will call you.'", options: ["He promised he would call me.", "He promised he calls me.", "He promised he will call me.", "He promised to call me."], answer: "He promised he would call me." },
+            { id: 1023, q: "Synonym for 'crucial'?", options: ["Unimportant", "Vital", "Minor", "Easy"], answer: "Vital" },
+            { id: 1024, q: "Passive Voice (Future Perfect): The project ___ (will have been finished) by Monday.", options: ["will finish", "will have finished", "will have been finished", "has finished"], answer: "will have been finished" },
+            { id: 1025, q: "If they ___ (not study), they wouldn't know the answer now (Mixed Conditional).", options: ["didn't study", "hadn't studied", "don't study", "wouldn't study"], answer: "hadn't studied" },
+            { id: 1026, q: "Which word is a connector showing contrast?", options: ["Therefore", "Moreover", "Although", "In addition"], answer: "Although" },
+            { id: 1027, q: "We avoided ___ in traffic (get stuck).", options: ["to get stuck", "getting stuck", "get stuck", "got stuck"], answer: "getting stuck" },
+            { id: 1028, q: "If I ___ (be) able to speak Spanish, I would have taken the job.", options: ["was", "were", "had been", "am"], answer: "had been" },
+            { id: 1029, q: "Passive form of 'They should have completed the work.'", options: ["The work should be completed.", "The work should have completed.", "The work should have been completed.", "The work was completed."], answer: "The work should have been completed." },
+            { id: 1030, q: "Reported Speech: He advised me ___ (not to go).", options: ["not go", "not to go", "not going", "not going to go"], answer: "not to go" }
+        ],
+
+        // 11-grade: Advanced Conditionals (Inversion), Subjunctive, Cleft Sentences, Advanced Vocabulary (C1/C2)
+        11: [
+            { id: 1101, q: "Inversion (Conditional Type 3): ___ known, I would have told you.", options: ["If I had", "Had I", "Did I", "Should I"], answer: "Had I" },
+            { id: 1102, q: "Subjunctive: It is essential that he ___ (be) on time.", options: ["is", "was", "be", "to be"], answer: "be" },
+            { id: 1103, q: "Cleft Sentence: The thing that bothers me most is ___ (noise).", options: ["the noise", "noise is", "it is noise", "what noise"], answer: "the noise" },
+            { id: 1104, q: "Advanced Vocabulary: Synonym for 'ubiquitous'.", options: ["Rare", "Pervasive", "Unique", "Scarce"], answer: "Pervasive" },
+            { id: 1105, q: "Inversion (Conditional Type 2): ___ I rich, I would travel the world.", options: ["If I were", "Were I", "Had I been", "Should I be"], answer: "Were I" },
+            { id: 1106, q: "Subjunctive: I suggest that she ___ (not worry) about it.", options: ["doesn't worry", "not worry", "won't worry", "didn't worry"], answer: "not worry" },
+            { id: 1107, q: "Cleft Sentence: What I want is ___ (a cup of tea).", options: ["a cup of tea", "is a cup of tea", "that a cup of tea", "it's a cup of tea"], answer: "a cup of tea" },
+            { id: 1108, q: "Advanced Vocabulary: Meaning of 'ephemeral'.", options: ["Long-lasting", "Short-lived", "Permanent", "Eternal"], answer: "Short-lived" },
+            { id: 1109, q: "Inversion (Conditional Type 1): ___ you need help, call me.", options: ["If you", "Should you", "Do you", "Will you"], answer: "Should you" },
+            { id: 1110, q: "Subjunctive is often used after verbs of request, suggestion, and ___.", options: ["Emotion", "Reporting", "Necessity", "Fact"], answer: "Necessity" },
+            { id: 1111, q: "Cleft Sentence: It was John ___ broke the window.", options: ["what", "who", "which", "that"], answer: "who" },
+            { id: 1112, q: "Advanced Vocabulary: Antonym for 'meticulous'.", options: ["Careful", "Precise", "Careless", "Thorough"], answer: "Careless" },
+            { id: 1113, q: "If I ___ (find) the money, I would have called the police (Past Hypothetical).", options: ["find", "found", "had found", "would find"], answer: "had found" },
+            { id: 1114, q: "Subjunctive: The teacher demanded that all assignments ___ (submit) on time.", options: ["are submitted", "be submitted", "were submitted", "submitted"], answer: "be submitted" },
+            { id: 1115, q: "Cleft Sentence: What he lost was ___ (his keys).", options: ["his keys", "his keys were", "it was his keys", "that his keys"], answer: "his keys" },
+            { id: 1116, q: "Advanced Vocabulary: Synonym for 'adverse'.", options: ["Favorable", "Positive", "Harmful", "Helpful"], answer: "Harmful" },
+            { id: 1117, q: "Inversion (Negative Adverbs): Never ___ I seen such a beautiful sight.", options: ["I have", "have I", "I did", "did I"], answer: "have I" },
+            { id: 1118, q: "I wish I ___ (can) speak French.", options: ["can", "could", "would can", "am able to"], answer: "could" },
+            { id: 1119, q: "Cleft Sentence (Emphasis on time): It was yesterday ___ I saw him.", options: ["when", "that", "what", "where"], answer: "that" },
+            { id: 1120, q: "Advanced Vocabulary: Meaning of 'deleterious'.", options: ["Beneficial", "Harmful", "Delicious", "Useful"], answer: "Harmful" },
+            { id: 1121, q: "I would rather you ___ (not tell) anyone my secret.", options: ["don't tell", "didn't tell", "wouldn't tell", "not tell"], answer: "didn't tell" },
+            { id: 1122, q: "It's high time you ___ (start) studying.", options: ["start", "started", "will start", "to start"], answer: "started" },
+            { id: 1123, q: "Cleft Sentence: The reason why I left was ___ (tiredness).", options: ["tiredness", "because I was tired", "for tiredness", "it was tired"], answer: "tiredness" },
+            { id: 1124, q: "Advanced Vocabulary: Antonym for 'profound'.", options: ["Deep", "Shallow", "Serious", "Intense"], answer: "Shallow" },
+            { id: 1125, q: "Only after the party ___ (finish) did she go home (Inversion).", options: ["finished", "has finished", "had finished", "did finish"], answer: "had finished" },
+            { id: 1126, q: "I wish I ___ (not eat) so much chocolate yesterday.", options: ["didn't eat", "hadn't eaten", "wouldn't eat", "don't eat"], answer: "hadn't eaten" },
+            { id: 1127, q: "The place where I work is called ___ (Cleft Sentence).", options: ["my office", "it's my office", "that my office", "my office is"], answer: "my office" },
+            { id: 1128, q: "Advanced Vocabulary: Synonym for 'tenuous'.", options: ["Strong", "Weak", "Clear", "Thick"], answer: "Weak" },
+            { id: 1129, q: "We suggested that the meeting ___ (be) held in the afternoon.", options: ["is", "was", "be", "were"], answer: "be" },
+            { id: 1130, q: "Little ___ (know) about her past (Inversion).", options: ["is known", "did know", "was knowing", "knows"], answer: "is known" }
+        ]
+    };
+
+    let questions = [];
+    let currentClass = 0;
+    let questionLimit = 10; 
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsDiv = document.getElementById('results');
+    const settingsModal = document.getElementById('settings-modal');
+    const questionLimitInput = document.getElementById('question-limit');
+
+
+    // --- 2. Settings Functions ---
+
+    function openSettings() {
+        questionLimitInput.value = questionLimit; 
+        settingsModal.style.display = 'block';
+    }
+
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        let newLimit = parseInt(questionLimitInput.value);
+        if (newLimit >= 5 && newLimit <= 30) {
+            questionLimit = newLimit;
+            alert(`Settings saved! Each test will have ${questionLimit} questions.`);
+            closeSettings();
+        } else {
+            alert("Please enter a number of questions between 5 and 30.");
+        }
+    }
+
+    // --- 3. Test Start and Rendering Functions ---
+
+    function getRandomQuestions(allQuestions, limit) {
+        const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, limit); 
+    }
+
+    function startTest(sinf) {
+        currentClass = sinf;
+        
+        // Use the English database
+        const allQuestions = englishTestDatabase[sinf];
+
+        if (!allQuestions || allQuestions.length === 0) {
+            alert("No test questions available for grade " + sinf + ". Please select another grade.");
+            return;
+        }
+
+        const limit = Math.min(questionLimit, allQuestions.length);
+        questions = getRandomQuestions(allQuestions, limit);
+
+        introScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        submitBtn.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        document.getElementById('welcome-title').innerText = `English Test for Grade ${sinf} (${limit} questions)`;
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        questions.forEach((qItem, index) => {
+            const questionBox = document.createElement('div');
+            questionBox.className = 'question-box';
+            questionBox.id = 'q-' + qItem.id;
+            
+            const qText = document.createElement('p');
+            qText.innerHTML = `${index + 1}. ${qItem.q}`;
+            questionBox.appendChild(qText);
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const shuffledOptions = qItem.options.sort(() => 0.5 - Math.random());
+
+            shuffledOptions.forEach((option) => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                
+                input.type = 'radio';
+                input.name = `question_${qItem.id}`;
+                // Clean the option text for accurate value comparison
+                const cleanOption = option.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim(); 
+                input.value = cleanOption;
+                
+                label.appendChild(input);
+                label.innerHTML += option;
+                optionsDiv.appendChild(label);
+            });
+            
+            questionBox.appendChild(optionsDiv);
+            quizContainer.appendChild(questionBox);
+        });
+    }
+
+    submitBtn.onclick = checkResults;
+
+    function checkResults() {
+        let score = 0;
+        const totalQuestions = questions.length;
+        
+        document.querySelectorAll('.options label').forEach(label => {
+            label.style.pointerEvents = 'none'; 
+        });
+
+        questions.forEach((qItem) => {
+            const selectedOption = document.querySelector(`input[name="question_${qItem.id}"]:checked`);
+            const questionBox = document.getElementById('q-' + qItem.id);
+
+            // Clean the answer from any extra formatting for comparison
+            const cleanAnswer = qItem.answer.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim();
+
+            // Find the correct answer label and highlight it
+            const correctAnswerLabel = Array.from(questionBox.querySelectorAll('label')).find(label => {
+                const labelText = label.textContent.replace(/<\/?(sub|sup|i|b|small|br|div|span|strong|em)>/g, '').trim().replace(/\s\s+/g, ' ').replace(/\(([^)]+)\)/g, '').trim();
+                return labelText === cleanAnswer;
+            });
+            
+            if (correctAnswerLabel) {
+                correctAnswerLabel.classList.add('correct-answer');
+            }
+
+            if (selectedOption) {
+                // selectedOption.value is already cleaned
+                if (selectedOption.value === cleanAnswer) {
+                    score++;
+                } else {
+                    selectedOption.parentNode.classList.add('wrong-answer');
+                }
+            }
+        });
+
+        resultsDiv.innerHTML = `
+            <h2>Test Finished!</h2>
+            <p>You answered **${score}** out of ${totalQuestions} questions correctly.</p>
+            <p>Score: **${((score / totalQuestions) * 100).toFixed(1)}%**</p>
+            <button onclick="resetTest()">Start New Test</button>
+        `;
+        resultsDiv.style.display = 'block';
+        submitBtn.style.display = 'none';
+        
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetTest() {
+        introScreen.style.display = 'block';
+        quizContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        document.getElementById('welcome-title').innerText = `Welcome to the English Language Test System!`;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
