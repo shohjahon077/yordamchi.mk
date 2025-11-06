@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="title">6-Sinf Fanlari</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ==================================== */
+        /* 1. Mavzu (Theme) Sozlamalari (CSS Variables) */
+        /* ==================================== */
+        /* CSS o'zgaruvchilari avvalgi 5-sinf kodi bilan bir xil. */
+        :root {
+            --primary-color: #007bff;
+            --accent-color: #28a745;
+            --bg-color: #ffffff;
+            --text-color: #343a40;
+            --card-bg: #f8f9fa;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            --border-color: #e9ecef;
+        }
+
+        body.dark-theme {
+            --primary-color: #7952b3; 
+            --accent-color: #20c997;
+            --bg-color: #22222a;
+            --text-color: #e0e0e0;
+            --card-bg: #33333c;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --border-color: #495057;
+        }
+        
+        body.blue-theme {
+            --primary-color: #17a2b8; 
+            --accent-color: #ffc107;
+            --bg-color: #f0f8ff;
+            --text-color: #1e3a5f;
+            --card-bg: #ffffff;
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --border-color: #d8e6f1;
+        }
+
+        /* ==================================== */
+        /* 2. Umumiy Stil va Kontrol Paneli */
+        /* ==================================== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 10px;
+        }
+
+        .control-btn, .lang-select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .theme-btn-group { display: flex; align-items: center; gap: 5px; }
+        .theme-color-btn {
+            width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+            border: 2px solid var(--text-color); transition: transform 0.2s;
+        }
+        .theme-color-btn:hover { transform: scale(1.1); }
+        #light-theme-btn { background-color: white; border-color: #ccc; }
+        #dark-theme-btn { background-color: #22222a; border-color: #666; }
+        #blue-theme-btn { background-color: #17a2b8; border-color: #ccc; }
+        
+
+        /* ==================================== */
+        /* 3. Kirish Animatsiyasi */
+        /* ==================================== */
+        .animated-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        body.loaded .animated-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==================================== */
+        /* 4. Kontent va Kartochkalar */
+        /* ==================================== */
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
+        .header-content h1 { font-size: 3em; color: var(--primary-color); font-weight: 700; }
+        .header-content p { font-size: 1.1em; color: var(--text-color); opacity: 0.8; margin-bottom: 40px; }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .subject-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid var(--accent-color);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .subject-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            border-left-color: var(--primary-color);
+        }
+        
+        .subject-card h3 { color: var(--text-color); margin-top: 0; }
+        .subject-card p { color: var(--text-color); opacity: 0.7; font-size: 0.9em;}
+        .teacher-info span { display: block; font-weight: 600; color: var(--text-color); opacity: 0.9; }
+
+        .contact-btn {
+            display: block;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .contact-btn:hover { background-color: #0056b3; }
+        
+        /* Mobil uchun sozlash */
+        @media (max-width: 600px) {
+            .control-panel { position: static; padding: 20px; display: flex; flex-direction: column; }
+            .main-container { padding-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel animated-item" style="transition-delay: 0.1s;">
+        <div class="control-btn" data-key="theme_label" style="display: flex; align-items: center; justify-content: space-between;">
+            Mavzu:
+            <div class="theme-btn-group">
+                <div id="light-theme-btn" class="theme-color-btn" onclick="setTheme('light-theme')"></div>
+                <div id="dark-theme-btn" class="theme-color-btn" onclick="setTheme('dark-theme')"></div>
+                <div id="blue-theme-btn" class="theme-color-btn" onclick="setTheme('blue-theme')"></div>
+            </div>
+        </div>
+        
+        <button id="back-btn" class="control-btn" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> <span data-key="back">Ortga Qaytish</span>
+        </button>
+        
+        <select id="lang-select" class="lang-select">
+            <option value="uzb">O'zbekcha</option>
+            <option value="kor">한국어</option>
+            <option value="rus">Русский</option>
+            <option value="eng">English</option>
+            <option value="chi">中文</option>
+        </select>
+    </div>
+
+    <div class="main-container">
+        
+        <header class="header-content">
+            <h1 class="animated-item" style="transition-delay: 0.2s;" data-key="main_header">6-Sinf Dars Fanlari Ro'yxati</h1>
+            <p class="animated-item" style="transition-delay: 0.3s;" data-key="subheader">Yangi o'quv rejasidagi fanlar, qisqacha tavsif va o'qituvchi ma'lumotlari.</p>
+        </header>
+
+        <section class="subject-grid">
+            
+            <div class="subject-card animated-item" style="transition-delay: 0.4s;"><h3 data-key="sub_1">Ona tili va adabiyot</h3><p data-key="sub_1_desc">Nutq madaniyati, so‘z turkumlari chuqurlashtiriladi va adabiy janrlar tahlili.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Dildora Karimova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 0.5s;"><h3 data-key="sub_2">O‘zbek tili</h3><p data-key="sub_2_desc">Nutqni rivojlantirish va kundalik muloqot uchun til qoidalarini amaliy o‘rganish (boshqa tilda ta'lim oluvchilar uchun).</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Nodira Saidova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 0.6s;"><h3 data-key="sub_3">Matematika</h3><p data-key="sub_3_desc">Nisbat, proporsiya, butun va ratsional sonlar. Geometrik o‘lchovlar.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Alisher Hamidov</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 0.7s;"><h3 data-key="sub_4">Tabiiy fanlar</h3><p data-key="sub_4_desc">Odam anatomiyasi, tabiatdagi jarayonlar, Yer sirti tuzilishi va fizika elementlari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Malika Oripova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 0.8s;"><h3 data-key="sub_5">Chet tili (Ingliz Tili)</h3><p data-key="sub_5_desc">Muloqot, jumlalarni tuzish va o‘tgan zamon qoidalari bilan tanishish.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Yulduz Axmedova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 0.9s;"><h3 data-key="sub_6">Informatika va axborot texnologiyalari</h3><p data-key="sub_6_desc">Axborotni uzatish, kodlash, dasturlash asoslari va onlayn xavfsizlik.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Shohrux Rahimov</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.0s;"><h3 data-key="sub_7">Texnologiya</h3><p data-key="sub_7_desc">Amaliy dizayn, dastlabki hunarmandchilik ko'nikmalari va loyiha ishlari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Jasur Maxkamov</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.1s;"><h3 data-key="sub_8">Tasviriy san’at</h3><p data-key="sub_8_desc">Perspektiva, kompozitsiya va ranglar uyg‘unligi qoidalarini amaliy qo‘llash.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Mohira Alimova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.2s;"><h3 data-key="sub_9">Musiqa</h3><p data-key="sub_9_desc">Milliy va jahon musiqasining murakkabroq asarlari, kompozitorlar bilan tanishuv.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Ziyoda Rustamova</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.3s;"><h3 data-key="sub_10">Jismoniy tarbiya</h3><p data-key="sub_10_desc">Gimnastika, sport o‘yinlarida ishtirok etish va sog‘lom turmush tarzi tamoyillari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Erkin Voxidov</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.4s;"><h3 data-key="sub_11">Tarix</h3><p data-key="sub_11_desc">O‘zbekiston tarixi va Qadimgi dunyo tarixining chuqurlashtirilgan davrlari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Shavkat Rasulov</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+            <div class="subject-card animated-item" style="transition-delay: 1.5s;"><h3 data-key="sub_12">Sinf soati / Life Skills</h3><p data-key="sub_12_desc">Shaxsiy rivojlanish, jamoa bo‘lib ishlash va hayotiy ko‘nikmalarni shakllantirish.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Aziza Xamrayeva</span><a href="https://t.me/shohcore" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+
+        </section>
+
+    </div>
+
+    <script>
+        // ====================================
+        // JavaScript: Tarjimalar va Funksiyalar
+        // ====================================
+        
+        const translations = {
+            uzb: {
+                title: "6-Sinf Fanlari", back: "Ortga Qaytish", theme_label: "Mavzu:", main_header: "6-Sinf Dars Fanlari Ro'yxati", subheader: "Yangi o'quv rejasidagi fanlar, qisqacha tavsif va o'qituvchi ma'lumotlari.", teacher_label: "O'qituvchi:", contact_btn: " bilan bog'lanish",
+                sub_1: "Ona tili va adabiyot", sub_1_desc: "Nutq madaniyati, so‘z turkumlari chuqurlashtiriladi va adabiy janrlar tahlili.",
+                sub_2: "O‘zbek tili", sub_2_desc: "Nutqni rivojlantirish va kundalik muloqot uchun til qoidalarini amaliy o‘rganish (boshqa tilda ta'lim oluvchilar uchun).",
+                sub_3: "Matematika", sub_3_desc: "Nisbat, proporsiya, butun va ratsional sonlar. Geometrik o‘lchovlar.",
+                sub_4: "Tabiiy fanlar", sub_4_desc: "Odam anatomiyasi, tabiatdagi jarayonlar, Yer sirti tuzilishi va fizika elementlari.",
+                sub_5: "Chet tili (Ingliz Tili)", sub_5_desc: "Muloqot, jumlalarni tuzish va o‘tgan zamon qoidalari bilan tanishish.",
+                sub_6: "Informatika va axborot texnologiyalari", sub_6_desc: "Axborotni uzatish, kodlash, dasturlash asoslari va onlayn xavfsizlik.",
+                sub_7: "Texnologiya", sub_7_desc: "Amaliy dizayn, dastlabki hunarmandchilik ko'nikmalari va loyiha ishlari.",
+                sub_8: "Tasviriy san’at", sub_8_desc: "Perspektiva, kompozitsiya va ranglar uyg‘unligi qoidalarini amaliy qo‘llash.",
+                sub_9: "Musiqa", sub_9_desc: "Milliy va jahon musiqasining murakkabroq asarlari, kompozitorlar bilan tanishuv.",
+                sub_10: "Jismoniy tarbiya", sub_10_desc: "Gimnastika, sport o‘yinlarida ishtirok etish va sog‘lom turmush tarzi tamoyillari.",
+                sub_11: "Tarix", sub_11_desc: "O‘zbekiston tarixi va Qadimgi dunyo tarixining chuqurlashtirilgan davrlari.",
+                sub_12: "Sinf soati / Life Skills", sub_12_desc: "Shaxsiy rivojlanish, jamoa bo‘lib ishlash va hayotiy ko‘nikmalarni shakllantirish.",
+            },
+            kor: {
+                title: "6학년 과목", back: "뒤로 가기", theme_label: "테마:", main_header: "6학년 과목 목록", subheader: "새로운 교육 과정, 간단한 설명 및 교사 정보를 확인하십시오.", teacher_label: "교사:", contact_btn: " 에게 연락하기",
+                sub_1: "모국어 및 문학", sub_1_desc: "화법 문화, 품사 심화 학습 및 문학 장르 분석.",
+                sub_2: "우즈벡어", sub_2_desc: "의사 소통 능력 향상 및 일상 대화를 위한 언어 규칙 실습 (다른 언어 교육 학생용).",
+                sub_3: "수학", sub_3_desc: "비율, 비례, 정수 및 유리수. 기하학적 측정.",
+                sub_4: "자연 과학", sub_4_desc: "인간 해부학, 자연 현상, 지구 표면 구조 및 물리학 요소.",
+                sub_5: "외국어 (영어)", sub_5_desc: "의사 소통, 문장 구성 및 과거 시제 규칙 학습.",
+                sub_6: "정보학 및 정보 기술", sub_6_desc: "정보 전송, 코딩, 프로그래밍 기초 및 온라인 보안.",
+                sub_7: "기술", sub_7_desc: "실용 디자인, 초기 공예 기술 및 프로젝트 작업.",
+                sub_8: "미술", sub_8_desc: "원근법, 구도 및 색상 조화 규칙 실습.",
+                sub_9: "음악", sub_9_desc: "국내외 음악의 더 복잡한 작품, 작곡가 소개.",
+                sub_10: "체육", sub_10_desc: "체조, 스포츠 게임 참여 및 건강한 생활 방식 원칙.",
+                sub_11: "역사", sub_11_desc: "우즈베키스탄 역사 및 고대 세계 역사의 심화된 시대.",
+                sub_12: "담임 시간 / 생활 기술", sub_12_desc: "개인 발달, 팀워크 및 생활 기술 습득.",
+            },
+            rus: {
+                title: "Предметы 6 класса", back: "Назад", theme_label: "Тема:", main_header: "Список предметов для 6-го класса", subheader: "Ознакомьтесь с предметами по новой учебной программе, кратким описанием и информацией об учителях.", teacher_label: "Учитель:", contact_btn: " связаться",
+                sub_1: "Родной язык и литература", sub_1_desc: "Углубление культуры речи, частей речи и анализ литературных жанров.",
+                sub_2: "Узбекский язык", sub_2_desc: "Практическое изучение правил языка для развития речи и повседневного общения (для классов с другим языком обучения).",
+                sub_3: "Математика", sub_3_desc: "Отношение, пропорция, целые и рациональные числа. Геометрические измерения.",
+                sub_4: "Естественные науки", sub_4_desc: "Анатомия человека, природные процессы, строение земной поверхности и элементы физики.",
+                sub_5: "Иностранный язык (Английский)", sub_5_desc: "Общение, построение предложений и знакомство с правилами прошедшего времени.",
+                sub_6: "Информатика и информационные технологии", sub_6_desc: "Передача информации, кодирование, основы программирования и онлайн-безопасность.",
+                sub_7: "Технология", sub_7_desc: "Практический дизайн, начальные навыки ремесла и проектные работы.",
+                sub_8: "Изобразительное искусство", sub_8_desc: "Практическое применение правил перспективы, композиции и цветовой гармонии.",
+                sub_9: "Музыка", sub_9_desc: "Знакомство с более сложными произведениями национальной и мировой музыки, композиторами.",
+                sub_10: "Физическая культура", sub_10_desc: "Гимнастика, участие в спортивных играх и принципы здорового образа жизни.",
+                sub_11: "История", sub_11_desc: "История Узбекистана и углубленные периоды истории Древнего мира.",
+                sub_12: "Классный час / Life Skills", sub_12_desc: "Личностное развитие, работа в команде и формирование жизненных навыков.",
+            },
+            eng: {
+                title: "6th Grade Subjects", back: "Go Back", theme_label: "Theme:", main_header: "List of 6th Grade Subjects", subheader: "Subjects from the new curriculum, brief descriptions, and teacher information.", teacher_label: "Teacher:", contact_btn: " contact",
+                sub_1: "Native Language and Literature", sub_1_desc: "Deepening of speech culture, parts of speech, and analysis of literary genres.",
+                sub_2: "Uzbek Language", sub_2_desc: "Practical study of language rules for speech development and daily communication (for non-Uzbek instruction classes).",
+                sub_3: "Mathematics", sub_3_desc: "Ratio, proportion, integers, and rational numbers. Geometric measurements.",
+                sub_4: "Natural Sciences", sub_4_desc: "Human anatomy, natural processes, Earth surface structure, and elements of physics.",
+                sub_5: "Foreign Language (English)", sub_5_desc: "Communication, sentence construction, and introduction to past tense rules.",
+                sub_6: "Informatics and Information Technologies", sub_6_desc: "Information transfer, coding, basics of programming, and online safety.",
+                sub_7: "Technology", sub_7_desc: "Practical design, initial craft skills, and project work.",
+                sub_8: "Fine Arts", sub_8_desc: "Practical application of rules of perspective, composition, and color harmony.",
+                sub_9: "Music", sub_9_desc: "Introduction to more complex works of national and world music, and composers.",
+                sub_10: "Physical Education", sub_10_desc: "Gymnastics, participation in sports games, and principles of a healthy lifestyle.",
+                sub_11: "History", sub_11_desc: "History of Uzbekistan and advanced periods of Ancient World history.",
+                sub_12: "Class Hour / Life Skills", sub_12_desc: "Personal development, teamwork, and the formation of life skills.",
+            },
+            chi: {
+                title: "六年级科目", back: "返回", theme_label: "主题:", main_header: "六年级科目列表", subheader: "查看新课程科目、简要说明和教师信息。", teacher_label: "老师:", contact_btn: " 联系",
+                sub_1: "母语和文学", sub_1_desc: "深入学习言语文化、词性以及文学体裁分析。",
+                sub_2: "乌兹别克语", sub_2_desc: "旨在发展口语和日常交流的语言规则实用学习（适用于非乌语教学班级）。",
+                sub_3: "数学", sub_3_desc: "比率、比例、整数和有理数。几何测量。",
+                sub_4: "自然科学", sub_4_desc: "人体解剖学、自然过程、地球表面结构和物理学元素。",
+                sub_5: "外语 (英语)", sub_5_desc: "交流、句子构建以及过去时态规则介绍。",
+                sub_6: "信息学与信息技术", sub_6_desc: "信息传输、编码、编程基础和在线安全。",
+                sub_7: "技术", sub_7_desc: "实用设计、初步工艺技能和项目工作。",
+                sub_8: "美术", sub_8_desc: "透视、构图和色彩和谐规则的实际应用。",
+                sub_9: "音乐", sub_9_desc: "介绍更复杂的民族和世界音乐作品以及作曲家。",
+                sub_10: "体育", sub_10_desc: "体操、参与体育比赛和健康生活方式原则。",
+                sub_11: "历史", sub_11_desc: "乌兹别克斯坦历史和古代世界历史的深入时期。",
+                sub_12: "班级时间 / 生活技能", sub_12_desc: "个人发展、团队合作和生活技能的形成。",
+            }
+        };
+
+        // 1. Mavzu Almashtirish Funksiyasi (To'g'ri ishlaydigan versiya)
+        function setTheme(themeName) {
+            document.body.className = themeName;
+            localStorage.setItem('theme', themeName);
+        }
+
+        // 2. Til Almashtirish Funksiyasi
+        function updateContent(lang) {
+            const tr = translations[lang];
+            if (!tr) return;
+
+            // Umumiy matnlar
+            document.title = tr.title;
+            document.querySelector('[data-key="title"]').textContent = tr.title;
+            document.querySelector('[data-key="back"]').textContent = tr.back;
+            
+            // Mavzu tugmasidagi matnni yangilash
+            const themeLabel = document.querySelector('[data-key="theme_label"]');
+            if (themeLabel && themeLabel.childNodes.length > 0) {
+                 // Faqat matn qismini yangilash
+                 themeLabel.childNodes[0].nodeValue = tr.theme_label + ' '; 
+            }
+
+            document.querySelector('[data-key="main_header"]').textContent = tr.main_header;
+            document.querySelector('[data-key="subheader"]').textContent = tr.subheader;
+            document.querySelectorAll('[data-key="teacher_label"]').forEach(span => span.textContent = tr.teacher_label);
+            
+            // Fan kartochkalarini yangilash (12 tagacha)
+            for(let i = 1; i <= 12; i++) {
+                const subTitle = document.querySelector(`[data-key="sub_${i}"]`);
+                const subDesc = document.querySelector(`[data-key="sub_${i}_desc"]`);
+                if (subTitle) subTitle.textContent = tr[`sub_${i}`];
+                if (subDesc) subDesc.textContent = tr[`sub_${i}_desc`];
+            }
+
+            // Kontakt tugmalari
+            document.querySelectorAll('.contact-btn').forEach(btn => {
+                const tgHandle = btn.href.split('/').pop();
+                btn.innerHTML = `<i class="fab fa-telegram-plane"></i> @${tgHandle}` + tr.contact_btn;
+            });
+        }
+
+
+        // 3. Asosiy Yuklanish Funksiyasi
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const animatedItems = document.querySelectorAll('.animated-item');
+            const langSelect = document.getElementById('lang-select');
+            
+            // Kirish animatsiyasini ishga tushirish
+            let delay = 0.1;
+            const delayStep = 0.15;
+            animatedItems.forEach((item, index) => {
+                item.style.transitionDelay = `${delay + (index * delayStep)}s`;
+            });
+            setTimeout(() => {
+                body.classList.add('loaded');
+            }, 100); 
+
+            // Mavzu Holatini O'rnatish
+            const savedTheme = localStorage.getItem('theme');
+            setTheme(savedTheme || 'light-theme'); 
+
+            // Til Almashtirishni Boshlash
+            updateContent(langSelect.value); 
+            langSelect.addEventListener('change', (event) => {
+                updateContent(event.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
