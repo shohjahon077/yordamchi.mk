@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Biz Haqimizda Sayti</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ==================================== */
+        /* 1. Umumiy va Mavzu Sozlamalari (Dark/Light) */
+        /* ==================================== */
+        :root {
+            --bg-light: #f4f4f9;
+            --text-light: #333;
+            --primary-light: #007bff;
+            --bg-dark: #1a1a2e;
+            --text-dark: #e8e8e8;
+            --primary-dark: #3a86ff;
+            --main-bg: var(--bg-light);
+            --main-text: var(--text-light);
+            --main-primary: var(--primary-light);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--main-bg);
+            color: var(--main-text);
+            transition: background-color 0.5s, color 0.5s;
+            overflow-x: hidden; /* 3D effektlar uchun */
+        }
+
+        /* Qora Mavzu aktiv bo'lganda */
+        body.dark-mode {
+            --main-bg: var(--bg-dark);
+            --main-text: var(--text-dark);
+            --main-primary: var(--primary-dark);
+        }
+
+        /* ==================================== */
+        /* 2. Kirish Animatsiyasi (Fade-in) */
+        /* ==================================== */
+        .page-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            transition-delay: 0.5s;
+        }
+
+        .page-content.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==================================== */
+        /* 3. 3D Efekt Konteyneri */
+        /* ==================================== */
+        .scene-3d {
+            perspective: 1500px; /* 3D chuqurlik berish */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .about-card {
+            width: 80%;
+            max-width: 800px;
+            padding: 40px;
+            background: var(--main-bg);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            
+            /* 3D Transformatsiya */
+            transform-style: preserve-3d;
+            transform: rotateY(0deg) scale(1);
+            transition: transform 1s ease-in-out, box-shadow 0.5s;
+        }
+
+        .about-card:hover {
+            /* Hoverda 3D burilish effektini kuchaytirish */
+            transform: rotateY(5deg) scale(1.02); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ==================================== */
+        /* 4. Sozlamalar va Chiqish Tugmasi */
+        /* ==================================== */
+        .settings-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .settings-btn, .exit-btn, .lang-select {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            background-color: var(--main-primary);
+            color: white;
+        }
+
+        .settings-btn:hover, .exit-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .lang-select {
+            background-color: var(--main-primary);
+            color: white;
+            padding: 8px;
+            border: none;
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <div class="settings-panel">
+        <button id="theme-toggle" class="settings-btn">
+            <i class="fas fa-moon"></i> Mavzu
+        </button>
+        
+        <select id="lang-select" class="lang-select">
+            <option value="uzb">O'zbekcha</option>
+            <option value="kor">Korean (한국어)</option>
+            <option value="rus">Русский</option>
+            <option value="eng">English</option>
+            <option value="chi">中文 (Chinese)</option>
+        </select>
+        
+        <button id="exit-btn" class="exit-btn" onclick="alert('Saytdan chiqish simulyatsiyasi...');">
+            <i class="fas fa-sign-out-alt"></i> Chiqish
+        </button>
+    </div>
+
+    <div class="page-content">
+        <div class="scene-3d">
+            <section id="about-section" class="about-card">
+                <h1 id="title-text">Biz Haqimizda</h1>
+                <p id="intro-text">Kompaniyamiz 20XX yilda tashkil etilgan. Biz doimiy innovatsiyalar va mijozlarga yo'naltirilgan xizmatlarni taqdim etishga intilamiz. Bizning asosiy ustunligimiz - bu sifat va ishonchlilik.</p>
+                <div class="features-3d">
+                    <div style="margin-top: 30px; display: flex; justify-content: space-around; transform: translateZ(20px);">
+                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(10deg);">Sifat</div>
+                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(-10deg);">Innovatsiya</div>
+                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(5deg);">Jamoa</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // ====================================
+        // 1. Kirish Animatsiyasi (On Load)
+        // ====================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const pageContent = document.querySelector('.page-content');
+            
+            // Sahifa yuklangach, animatsiya sinfini qo'shish
+            setTimeout(() => {
+                pageContent.classList.add('loaded');
+            }, 100); 
+            
+            // ====================================
+            // 2. Mavzu Almashtirish (JS)
+            // ====================================
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            
+            themeToggle.addEventListener('click', () => {
+                if (body.classList.contains('light-mode')) {
+                    body.classList.remove('light-mode');
+                    body.classList.add('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Yorqin'; // Ikonka va matnni o'zgartirish
+                } else {
+                    body.classList.remove('dark-mode');
+                    body.classList.add('light-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Qora';
+                }
+            });
+
+            // ====================================
+            // 3. Til Almashtirish (JS - Minimal Tarjima)
+            // ====================================
+            const langSelect = document.getElementById('lang-select');
+            const titleText = document.getElementById('title-text');
+            const introText = document.getElementById('intro-text');
+            
+            const translations = {
+                uzb: { title: "Biz Haqimizda", intro: "Kompaniyamiz 20XX yilda tashkil etilgan. Biz doimiy innovatsiyalar va mijozlarga yo'naltirilgan xizmatlarni taqdim etishga intilamiz. Bizning asosiy ustunligimiz - bu sifat va ishonchlilik." },
+                kor: { title: "회사 소개 (Hoesa Sogae)", intro: "우리 회사는 20XX년에 설립되었습니다. 우리는 지속적인 혁신과 고객 중심 서비스를 제공하기 위해 노력합니다. 우리의 주요 강점은 품질과 신뢰성입니다." },
+                rus: { title: "О нас", intro: "Наша компания была основана в 20XX году. Мы стремимся предоставлять постоянные инновации и ориентированные на клиента услуги. Наше главное преимущество – это качество и надежность." },
+                eng: { title: "About Us", intro: "Our company was established in 20XX. We strive to provide continuous innovation and customer-centric services. Our main advantage is quality and reliability." },
+                chi: { title: "关于我们 (Guānyú Wǒmen)", intro: "我们公司成立于20XX年。我们致力于提供持续的创新和以客户为中心的服务。我们的主要优势是质量和可靠性。" }
+            };
+
+            langSelect.addEventListener('change', (event) => {
+                const lang = event.target.value;
+                const tr = translations[lang];
+                if (tr) {
+                    titleText.textContent = tr.title;
+                    introText.textContent = tr.intro;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
