@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'qituvchilar Bo'limi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ==================================== */
+        /* 1. Umumiy Stil va Animatsiya Sozlamalari */
+        /* ==================================== */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        /* Kirish Animatsiyasi uchun Dastlabki Holat */
+        .page-content {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            transition-delay: 0.5s; /* Animatsiya biroz kechikib boshlansin */
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-content.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==================================== */
+        /* 2. Bo'lim Sarlavhasi Stili */
+        /* ==================================== */
+        .header-content {
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-content h1 {
+            font-size: 2.8em;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .header-content p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        /* ==================================== */
+        /* 3. Sinf Tanlovi Stili */
+        /* ==================================== */
+        .class-selection {
+            display: flex;
+            flex-wrap: wrap; /* Sinflarni yangi qatorga o'tkazish */
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .class-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            width: 150px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .class-card i {
+            font-size: 3em;
+            color: #28a745; /* Yashil rang */
+            margin-bottom: 15px;
+        }
+
+        .class-card h3 {
+            font-size: 1.5em;
+            margin: 0;
+            color: #007bff;
+        }
+        
+        /* Mobil qurilmalar uchun stil */
+        @media (max-width: 768px) {
+            .class-card {
+                width: 45%; /* Mobil ekranda ikkitadan joylashish */
+                min-width: 120px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="page-content">
+        
+        <header class="header-content">
+            <h1><i class="fas fa-chalkboard-teacher"></i> O'qituvchilar Bo'limi</h1>
+            <p>Iltimos, dars berishni yoki ma'lumot olishni istagan sinfni tanlang.</p>
+        </header>
+
+        <section class="class-selection">
+            <a href="5sinf.html" class="class-card" data-class="5">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>5-Sinf</h3>
+            </a>
+            <a href="6sinf.html" class="class-card" data-class="6">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>6-Sinf</h3>
+            </a>
+            <a href="7sinf.html" class="class-card" data-class="7">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>7-Sinf</h3>
+            </a>
+            <a href="8sinf.html" class="class-card" data-class="8">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>8-Sinf</h3>
+            </a>
+            <a href="9sinf.html" class="class-card" data-class="9">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>9-Sinf</h3>
+            </a>
+            <a href="10sinf.html" class="class-card" data-class="10">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>10-Sinf</h3>
+            </a>
+            <a href="11sinf.html" class="class-card" data-class="11">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>11-Sinf</h3>
+            </a>
+        </section>
+
+    </div>
+
+    <script>
+        // ====================================
+        // JavaScript: Kirish Animatsiyasi
+        // ====================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const pageContent = document.querySelector('.page-content');
+            
+            // Sahifa yuklangach, animatsiya sinfini qo'shish (CSS effektini ishga tushiradi)
+            setTimeout(() => {
+                pageContent.classList.add('loaded');
+            }, 100); 
+
+            // ====================================
+            // JavaScript: Sinf Tanlanganda Harakat (Majburiy emas, lekin qo'shimcha interaktivlik)
+            // ====================================
+            const classCards = document.querySelectorAll('.class-card');
+            
+            classCards.forEach(card => {
+                card.addEventListener('click', (event) => {
+                    // Sinf raqamini olish
+                    const sinfRaqami = card.getAttribute('data-class');
+                    
+                    // A tegining standart harakatini o'chirish (Agar JavaScript orqali boshqarilsa)
+                    // event.preventDefault(); 
+
+                    // Foydalanuvchiga xabar berish (ixtiyoriy)
+                    console.log(`${sinfRaqami}-sinf tanlandi. Navigatsiya boshlanmoqda...`);
+                    
+                    // Bu yerda siz AJAX so'rovi yoki boshqa JS harakatini qo'shishingiz mumkin
+                    
+                    // Hozirda biz to'g'ridan-to'g'ri HTML dagi `href` manziliga o'tyapmiz.
+                    // window.location.href = `sinf${sinfRaqami}.html`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
