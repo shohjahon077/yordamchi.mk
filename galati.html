@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G'alati yordam</title>
+    <style>
+        /* Umumiy Sayt Uslubi (O'zgarishsiz) */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #0d0d1e;
+            color: #ffffff;
+            font-family: 'Consolas', monospace;
+            padding-bottom: 50px;
+        }
+
+        h1 {
+            color: #ff00ff;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2.5em;
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.9);
+        }
+
+        .devices-container {
+            display: flex;
+            gap: 50px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .device {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff00ff;
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+            width: 350px; 
+            box-sizing: border-box;
+        }
+        
+        /* SOAT, KALKULYATOR USLUBI (O'zgarishsiz) */
+        .world-clock-tower { width: 320px; height: 980px; perspective: 1200px; margin: 20px auto; transform-style: preserve-3d; animation: globalWobble 15s infinite alternate ease-in-out; }
+        @keyframes globalWobble { 0% { transform: rotateX(5deg) rotateY(-5deg) scale(1); } 100% { transform: rotateX(6deg) rotateY(-4deg) scale(1.005); } } 
+        .tower-stack { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .time-layer { position: absolute; width: 100%; height: 50px; line-height: 50px; border: 3px solid #00ffff; background-color: rgba(0, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; box-sizing: border-box; top: 0; transition: all 0.5s ease-out; }
+        .city-name { color: #ff00ff; font-weight: bold; font-size: 1.1em; margin-right: 15px; text-shadow: 0 0 8px rgba(255, 0, 255, 0.9); }
+        .time-value { color: #00ff00; font-size: 1.6em; letter-spacing: 3px; text-shadow: 0 0 10px rgba(0, 255, 0, 0.8); }
+        
+        .calculator { perspective: 1000px; transform: rotateX(15deg) rotateY(-15deg); animation: none; }
+        .calc-body { padding: 15px; border-radius: 10px; background-color: #1a0033; box-shadow: 0 0 30px rgba(255, 0, 255, 0.8); transform-style: preserve-3d; transform: translateZ(0); }
+        .display { position: relative; top: auto; left: auto; width: auto; transform: translateZ(5px); background-color: #000000; color: #00ffff; font-size: 2.5em; text-align: right; padding: 15px; margin-bottom: 20px; border: 3px solid #00ffff; height: 60px; overflow: hidden; border-radius: 5px; text-shadow: 0 0 15px #00ffff; animation: displayGlitch 0.2s infinite; }
+        @keyframes displayGlitch { 0% { text-shadow: 0 0 10px #00ff00; } 50% { text-shadow: 0 0 15px #ff00ff; } 100% { text-shadow: 0 0 10px #00ff00; } }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0; }
+        .btn { background-color: #ff00ff; color: #fff; padding: 18px; font-size: 1.4em; border: none; cursor: pointer; border-radius: 5px; transition: background-color 0.2s, transform 0.1s; transform-style: preserve-3d; box-shadow: 0 0 10px rgba(255, 0, 255, 0.7); }
+        .btn:active { transform: translateZ(5px) scale(0.95); box-shadow: none; }
+        .operator { background-color: #00ffff; color: #000; font-weight: bold; }
+
+        /* -------------------------------------- */
+        /* 3D KITOB USLUBI (Eng ustun qopqoqni ta'minlaymiz) */
+        /* -------------------------------------- */
+        .book-device {
+            width: 380px;
+            height: 500px;
+            perspective: 1500px; 
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(0deg) translateZ(0); 
+            animation: bookBaseWobble 12s infinite alternate ease-in-out;
+            border: 3px solid #00ff00; 
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0;
+        }
+
+        .book-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .book-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e; 
+            border: 1px solid #00ff00;
+            padding: 25px;
+            box-sizing: border-box;
+            backface-visibility: hidden; 
+            transform-origin: left center; 
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            text-align: left;
+            overflow-y: auto; 
+            transition: transform 0.8s, z-index 0.01s, opacity 0.8s; /* Opacity qo'shildi */
+        }
+        
+        /* Faqat qopqoqni eng ustda ko'rsatamiz */
+        #cover-page {
+            z-index: 1000; 
+            background-color: #330033; 
+            border: 5px double #ff00ff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        /* Boshqa uslublar (O'zgarishsiz) */
+        .page-content { color: #00ffff; }
+        .page-number { position: sticky; bottom: 0px; right: 10px; color: #ff00ff; font-size: 1.2em; background-color: #1a1a2e; padding: 5px 0; display: block; text-align: right; }
+        .fact-title { color: #ff00ff; font-size: 1.4em; margin-bottom: 10px; text-shadow: 0 0 8px #ff00ff; border-bottom: 1px dashed #00ffff; padding-bottom: 5px; }
+        .fact-text { font-size: 1em; line-height: 1.6; margin-bottom: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>[G'alati yordam]</h1>
+    </header>
+
+    <div class="devices-container">
+        
+        <div class="device book-device">
+            <h2>📖 3D Faktlar Kitobi</h2>
+            <div class="book-container" id="bookContainer">
+                
+                <div class="book-page" id="cover-page">
+                    <span style="font-size: 2em; color: #00ff00;">// MA'LUMOTLAR OLIB KELINDI //</span>
+                    <br><br>
+                    <span style="font-size: 1.5em;">[ KIBER ENSIKLOPEDIYA: 100+ FAKTLAR ]</span>
+                </div>
+                
+                </div>
+            <div class="book-controls">
+                <button onclick="prevPage()">← Oldingi</button>
+                <button onclick="nextPage()">Keyingi →</button>
+            </div>
+        </div>
+
+        <div class="device" style="height: 1080px;">
+            <h2>G'alati Dunyo Soati: Yumshoq Titroq</h2>
+            <div class="world-clock-tower">
+                <div class="tower-stack" id="towerStack">
+                </div>
+            </div>
+            <p style="color: #00ffff; margin-top: 10px;">Vaqtni o'qish qulaylashdi.</p>
+        </div>
+
+        <div class="device" style="width: 350px;">
+            <h2>G'alati 3D Kalkulyator</h2>
+            <div class="calculator">
+                <div class="calc-body">
+                    <div class="display" id="calcDisplay">0</div>
+                    <div class="buttons">
+                        <button class="btn operator" onclick="clearDisplay()">AC</button>
+                        <button class="btn operator" onclick="appendToDisplay('/')">/</button>
+                        <button class="btn operator" onclick="appendToDisplay('*')">x</button>
+                        <button class="btn operator" onclick="calculateResult()">=</button>
+                        
+                        <button class="btn" onclick="appendToDisplay('7')">7</button>
+                        <button class="btn" onclick="appendToDisplay('8')">8</button>
+                        <button class="btn" onclick="appendToDisplay('9')">9</button>
+                        <button class="btn operator" onclick="appendToDisplay('-')">-</button>
+                        
+                        <button class="btn" onclick="appendToDisplay('4')">4</button>
+                        <button class="btn" onclick="appendToDisplay('5')">5</button>
+                        <button class="btn" onclick="appendToDisplay('6')">6</button>
+                        <button class="btn operator" onclick="appendToDisplay('+')">+</button>
+                        
+                        <button class="btn" onclick="appendToDisplay('1')">1</button>
+                        <button class="btn" onclick="appendToDisplay('2')">2</button>
+                        <button class="btn" onclick="appendToDisplay('3')">3</button>
+                        <button class="btn operator" onclick="deleteLast()">DEL</button>
+                        
+                        <button class="btn" style="grid-column: span 2;" onclick="appendToDisplay('0')">0</button>
+                        <button class="btn" onclick="appendToDisplay('.')">.</button>
+                        <button class="btn operator" onclick="appendToDisplay('%')">%</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        /* ======================== */
+        /* SOAT MANTIG'I (O'zgarishsiz) */
+        /* ======================== */
+        const cities = [
+            { name: "Toshkent (UZ)", tz: "Asia/Tashkent" },
+            { name: "Nyu-York (US)", tz: "America/New_York" },
+            { name: "London (UK)", tz: "Europe/London" },
+            { name: "Tokio (JP)", tz: "Asia/Tokyo" },
+            { name: "Sidney (AU)", tz: "Australia/Sydney" },
+            { name: "Dubay (AE)", tz: "Asia/Dubai" },
+            { name: "Parij (FR)", tz: "Europe/Paris" },
+            { name: "Moskva (RU)", tz: "Europe/Moscow" },
+            { title: "Pekin (CN)", tz: "Asia/Shanghai" },
+            { name: "Rio (BR)", tz: "America/Sao_Paulo" },
+            { name: "Berlin (DE)", tz: "Europe/Berlin" },
+            { name: "Mexiko (MX)", tz: "America/Mexico_City" },
+            { name: "Qohira (EG)", tz: "Africa/Cairo" },
+            { name: "Istanbul (TR)", tz: "Europe/Istanbul" },
+            { name: "Vashington (US)", tz: "America/Detroit" },
+            { name: "Seul (KR)", tz: "Asia/Seoul" },
+            { name: "Jakarta (ID)", tz: "Asia/Jakarta" },
+            { name: "Rim (IT)", tz: "Europe/Rome" }
+        ];
+
+        const towerStack = document.getElementById('towerStack');
+        cities.forEach((city, index) => {
+            const layer = document.createElement('div');
+            layer.className = 'time-layer';
+            layer.id = `layer-${index}`;
+            layer.style.setProperty('--y-offset', `${index * 55}px`); 
+            layer.innerHTML = `<span class="city-name">${city.name}</span><span class="time-value" id="time-${index}">--:--:--</span>`;
+            towerStack.appendChild(layer);
+        });
+
+        function updateWorldClocks() {
+            const now = new Date();
+            const timeInSeconds = now.getTime() / 1000;
+            cities.forEach((city, index) => {
+                const timeElement = document.getElementById(`time-${index}`);
+                const layerElement = document.getElementById(`layer-${index}`);
+                const timeOptions = { timeZone: city.tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                try { timeElement.textContent = now.toLocaleTimeString('en-US', timeOptions); } catch (e) { timeElement.textContent = 'TZ Xato'; }
+
+                const rotation = Math.sin(timeInSeconds * (0.3 + index * 0.02)) * 3; 
+                const zShift = Math.cos(timeInSeconds * (0.5 + index * 0.04)) * 2; 
+                layerElement.style.transform = `translateY(${index * 55}px) rotateY(${rotation}deg) translateZ(${zShift}px)`;
+                
+                if (Math.random() < 0.1) { 
+                    layerElement.style.borderColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    layerElement.style.boxShadow = `0 0 10px hsl(${Math.random() * 360}, 100%, 50%)`;
+                } else {
+                    layerElement.style.borderColor = `#00ffff`;
+                    layerElement.style.boxShadow = `none`;
+                }
+            });
+        }
+        setInterval(updateWorldClocks, 100); 
+        updateWorldClocks(); 
+
+        /* ======================== */
+        /* KALKULYATOR MANTIG'I (O'zgarishsiz) */
+        /* ======================== */
+        let currentInput = '0';
+        const displayElement = document.getElementById('calcDisplay');
+        function updateDisplay() { displayElement.textContent = currentInput; }
+        function appendToDisplay(value) {
+            if (currentInput === '0' && value !== '.') { currentInput = value; } else { currentInput += value; }
+            updateDisplay();
+        }
+        function clearDisplay() { currentInput = '0'; updateDisplay(); }
+        function deleteLast() {
+            currentInput = currentInput.slice(0, -1);
+            if (currentInput === '') { currentInput = '0'; }
+            updateDisplay();
+        }
+        function calculateResult() {
+            try {
+                let result = eval(currentInput.replace('x', '*').replace('%', '/100*'));
+                currentInput = String(result);
+                if (currentInput === 'undefined' || currentInput === 'NaN') { currentInput = 'Xato'; }
+            } catch (error) { currentInput = 'Xato'; }
+            updateDisplay();
+        }
+
+        /* ======================== */
+        /* 3D KITOB MANTIG'I (MA'LUMOT ALMASHINI TUZATILDI) */
+        /* ======================== */
+        const bookContainer = document.getElementById('bookContainer');
+        let currentPage = 0; // 0 - Qopqoq
+        
+        // --- 100 DAN ORTIQ FAKTLAR --- (Ma'lumotlar massivi)
+        const factData = [
+            { title: "Fakt #1: Kibertezlik", text: "Ma'lumotlar uzatish tezligi dunyo bo'ylab har 18 oyda ikki barobar oshadi, bu kibernetik taraqqiyotning tezligini ko'rsatadi." },
+            { title: "Fakt #2: Kvant Kompyuterlar", text: "Oddiy kompyuterlar bitlardan foydalansa, kvant kompyuterlar kubitlardan foydalanadi, bu ularni ba'zi masalalarni bir lahzada yechishga qodir qiladi." },
+            { title: "Fakt #3: Tana Kodingi", text: "Inson DNKsi ma'lumotlarni saqlash uchun samarali tizimdir; bir gramm DNK 215 million gigabaytgacha ma'lumotni saqlashi mumkin." },
+            { title: "Fakt #4: Robotlar Huquqi", text: "Ba'zi davlatlarda sun'iy intellektga (AI) 'elektron shaxs' maqomini berish taklif qilingan, bu ularga huquq va majburiyatlarni yuklaydi." },
+            { title: "Fakt #5: Tungi Shovqin", text: "Internetdagi eng faol va tezkor 'jurnal' bu botlar va AI tizimlari o'rtasidagi ma'lumot almashinuvidir. Insoniyat bu trafikning atigi kichik bir qismidir." },
+            { title: "Fakt #6: Yupiterning G'alati Dengizlari", text: "Yupiter shunday kuchli bosimga egaki, uning ichida vodorod suyuq metall dengiziga aylanadi." },
+            { title: "Fakt #7: Yerning Eng Chuqur Nuqtasi", text: "Marian botig'ining chuqurligi Evere'st tog'ining balandligidan ham kattaroqdir." },
+            { title: "Fakt #8: Qorong'u Materiya", text: "Koinotning qariyb 85 foizi qorong'u materiyadan iborat bo'lib, uni to'g'ridan-to'g'ri kuzatish mumkin emas." },
+            { title: "Fakt #9: Pingvinlar", text: "Pingvinlar uchmaydigan qushlar bo'lsada, ular suv ostida havoda uchayotgandek harakatlana oladilar." },
+            { title: "Fakt #10: Qonning Rangi", text: "Odamlarning qoni temir tufayli qizil bo'lsa, ba'zi o'rgimchaklarning qoni mis asosida ko'k rangda bo'ladi." },
+            { title: "Fakt #11: Rim Raqamlari", text: "Rim raqamlari tizimida nol soni yo'q edi. Nol tushunchasi Hindistondan kelgan." },
+            { title: "Fakt #12: Vulqon Olmoslari", text: "Olimlar Yer ostidan olmoslarni olib chiqadigan vulqonlarning to'rt xil turini aniqlashgan." },
+            { title: "Fakt #13: Yana bir sekund", text: "Vaqtni sinxronlashtirish uchun har yili vaqti-vaqti bilan 'qo'shimcha sekund' qo'shiladi, bu Yerning sekinlashishi bilan bog'liq." },
+            { title: "Fakt #14: Qushlarning Tishi", text: "Zamonaviy qushlarning tishlari yo'q, lekin ularning barcha ajdodlarida tishlar bo'lgan." },
+            { title: "Fakt #15: Asalning Sirti", text: "Asalning sirti butunlay tuzilmagan shakar molekulalaridan iborat bo'lib, bu uning deyarli cheksiz saqlanish muddatiga sababdir." },
+            { title: "Fakt #16: Marsning Balandligi", text: "Marsdagi Olympus Mons Quyosh sistemasidagi eng baland tog' bo'lib, u Evere'st tog'idan uch baravar balanddir." },
+            { title: "Fakt #17: O'tga chidamli pufakchalar", text: "Sovun pufakchalarini propan yoki metan bilan to'ldirish mumkin, shunda ular yondirilganda yonib ketmaydi." },
+            { title: "Fakt #18: Oltin Balig'i Xotirasi", text: "Oltin baliqlar faqat uch soniyalik xotiraga ega degan afsona noto'g'ri. Ular oylarga cho'zilgan xotiraga ega bo'lishlari mumkin." },
+            { title: "Fakt #19: Eng yorqin yulduz", text: "Yerga eng yaqin yulduz (Quyoshdan tashqari) Proksima Sentavr bo'lib, u yorug'lik tezligida 4.2 yilda yetib borish masofasida joylashgan." },
+            { title: "Fakt #20: Qadimgi Kompyuter", text: "Antikitera mexanizmi - 2000 yildan oldin yaratilgan murakkab mexanik kompyuter bo'lib, astronomik hodisalarni bashorat qilish uchun ishlatilgan." },
+            { title: "Fakt #21: Muzlashdan To'xtash", text: "Issiq suv sovuq suvga qaraganda tezroq muzlashi mumkin (Mpemba effekti), ammo buning aniq sababi hali ham bahsli." },
+            { title: "Fakt #22: Odamning Hidi", text: "Inson tanasi soatiga 40 000 ga yaqin teri zarrachalarini to'kadi." },
+            { title: "Fakt #23: Sirtdagi Qatlam", text: "Yerning sirti (qobig'i) umumiy massaning atigi 1 foizini tashkil qiladi." },
+            { title: "Fakt #24: Tovush Tezligi", text: "Tovush kosmosda tarqalmaydi, chunki u harakatlanishi uchun muhit (havo, suv, qattiq jism) talab qilinadi." },
+            { title: "Fakt #25: Xitoy Devori", text: "Buyuk Xitoy devori kosmosdan ko'rinmaydi. Bu afsona." },
+            { title: "Fakt #26: Oyning Kichrayishi", text: "Oy Yerdan har yili taxminan 3.8 santimetrga uzoqlashib bormoqda." },
+            { title: "Fakt #27: Eng kichik suyak", text: "Odam tanasidagi eng kichik suyak quloqning o'rta qismida joylashgan 'uzangi' (stapes) dir." },
+            { title: "Fakt #28: Limonlar", text: "Limonlarda qulupnayga qaraganda ko'proq shakar bor." },
+            { title: "Fakt #29: Quyoshning Massasi", text: "Quyosh massasi Quyosh sistemasidagi jami massaning 99.8 foizini tashkil qiladi." },
+            { title: "Fakt #30: Internetning Massasi", text: "Internetdagi barcha ma'lumotlarning taxminiy massasi bir dona qulupnayga teng bo'lishi mumkin." },
+            { title: "Fakt #31: Tirnoqlarning O'sishi", text: "Qo'l tirnoqlari oyoq tirnoqlaridan taxminan to'rt baravar tezroq o'sadi." },
+            { title: "Fakt #32: Venera Sirti", text: "Veneradagi kun Yer yildan ko'ra uzoqroq davom etadi." },
+            { title: "Fakt #33: O'rgimchak To'ri", text: "O'rgimchak to'rining tolasi xuddi shu qalinlikdagi po'latdan besh baravar kuchliroqdir." },
+            { title: "Fakt #34: G'alati Bulutlar", text: "Lentikulyar bulutlar (linza shaklidagi) ko'pincha Uchar likopcha (UFO) deb noto'g'ri talqin qilinadi." },
+            { title: "Fakt #35: Suvning Yashi", text: "Yer yuzasidagi suvning umumiy hajmining atigi 3 foizi chuchuk suvdir, qolgan 97 foizi sho'r suvdir." },
+            { title: "Fakt #36: Rang Ko'rish", text: "Aslida faqat erkaklarning 8 foizi va ayollarning 0.5 foizi rang ajrata olmaslikdan aziyat chekadi." },
+            { title: "Fakt #37: Kriptografiya", text: "Qirollik oilasi a'zosi bo'lgan Mariya Antuanetta o'z sirlarini shifrlash uchun 'skitala' nomli kriptografik qurilmadan foydalangan." },
+            { title: "Fakt #38: Qisqichbaqa Qalbig'i", text: "Qisqichbaqalarning qalbi boshlarida joylashgan." },
+            { title: "Fakt #39: Kitoblar Qog'ozi", text: "Bir dona gazeta qog'ozi 1971-yilda dunyodagi barcha ma'lumotni saqlashga qodir edi." },
+            { title: "Fakt #40: Diktatorlar Shifri", text: "Iosif Stalin parollarni yaratish uchun random generator o'rniga maxsus kitoblardan foydalangan." },
+            { title: "Fakt #41: Quyoshning Issiqligi", text: "Quyoshning yuzasi 5,500°C bo'lsa, markazi 15 million °C ga yetadi." },
+            { title: "Fakt #42: Chayqalar", text: "Chayqalar suv o'tkazmaydigan tuklar tufayli cho'kib ketmaydi." },
+            { title: "Fakt #43: Uyquni yo'qotish", text: "O'rtacha inson hayotining uchdan bir qismini uyquga sarflaydi." },
+            { title: "Fakt #44: Chivinlar", text: "Chivinlar dunyodagi eng o'limga olib keladigan hayvonlardir." },
+            { title: "Fakt #45: Eng Uzun Hayvon", text: "Ko'k kit (Blue Whale) dunyodagi eng katta va eng uzun hayvondir." },
+            { title: "Fakt #46: Nyu-York Kofe", text: "Nyu-Yorkda bir kunda iste'mol qilinadigan kofe miqdori 7 million chashkadan oshadi." },
+            { title: "Fakt #47: Kompyuter Qotilligi", text: "1980-yillarda bir kishi o'z kompyuterini urib sindirgani uchun hibsga olingan, chunki u unga 'xiyonat' qilgan deb hisoblagan." },
+            { title: "Fakt #48: Qadimiy Dasturlash", text: "Birinchi dasturchi sifatida ko'pincha Ada Lavleys hisoblanadi, u XIX asrda mexanik kompyuter uchun algoritm yozgan." },
+            { title: "Fakt #49: Oyning Hid", text: "Astronavtlar Oy changi 'otilgan porox' hidiga o'xshashligini aytishadi." },
+            { title: "Fakt #50: Suv osti O'rmonlari", text: "Suv ostida joylashgan 'Kelp' o'rmonlari Yer yuzasidagi tropik o'rmonlarga o'xshash biologik xilma-xillikka ega." },
+            { title: "Fakt #51: Qalqib yuruvchi tog'lar", text: "Plutonda muzdan yasalgan, ammiak okeanida suzib yuruvchi 'muz tog'lari' bo'lishi mumkin." },
+            { title: "Fakt #52: Eng uzun yomg'ir", text: "Cherapunji (Hindiston) shahri dunyodagi eng uzoq davom etgan yomg'ir rekordiga ega – 2 yil to'xtovsiz yog'gan." },
+            { title: "Fakt #53: Yovuzlik Manbai", text: "Odam miyasidagi neyronlar soni Somon Yo'lidagi yulduzlar sonidan ancha kam." },
+            { title: "Fakt #54: Eng sekin o'suvchi daraxt", text: "Pinus longaeva (uzoq umr ko'ruvchi qarag'ay) 5000 yildan ortiq yashashi mumkin." },
+            { title: "Fakt #55: Kosmik Axlat", text: "Yer orbitasida minglab tonna inson tomonidan yaratilgan kosmik axlat aylanib yuradi." },
+            { title: "Fakt #56: Katta Rasm", text: "Dunyodagi eng katta rasm (rasm emas, ammo mato ishi) Afg'onistonda tug'ilgan qizlarning ismlaridan iborat bo'lib, 12000 m² dan ortiq maydonni egallaydi." },
+            { title: "Fakt #57: Qorong'u Energiya", text: "Koinotning kengayishini tezlashtiradigan qorong'u energiya koinotning 68% ini tashkil qiladi, ammo uning nima ekanligini bilmaymiz." },
+            { title: "Fakt #58: Baliqlar Hidi", text: "Baliqlar suzish yo'nalishini aniqlash uchun hid bilish qobiliyatidan foydalanadi." },
+            { title: "Fakt #59: Soatlarning Maqsadi", text: "Qadimgi Misrliklar va Bobilliklar soatlardan kunduzgi vaqtni o'lchash uchun foydalanishgan." },
+            { title: "Fakt #60: Olovsiz Yonish", text: "Ba'zi materiallar (masalan, silan) havoga tegishi bilan olovsiz yonishi mumkin." },
+            { title: "Fakt #61: Kompyuter Viruslari", text: "Birinchi kompyuter virusi 1983 yilda 15 yoshli talaba tomonidan hazil sifatida yaratilgan." },
+            { title: "Fakt #62: Erkak Ovoz", text: "Erkaklarning ovozlari ko'pincha ayollarnikiga qaraganda pastroq, chunki ularning ovoz bog'lamlari kattaroq." },
+            { title: "Fakt #63: Sayyoralar Tashqarisidagi Hayot", text: "Quyosh sistemasidan tashqarida topilgan minglab sayyoralar (ekzoplanetalar) mavjud." },
+            { title: "Fakt #64: To'xtovsiz Harakat", text: "Jigarrang harakati (Brownian motion) tufayli atomlar hech qachon to'liq to'xtamaydi." },
+            { title: "Fakt #65: Qadimgi O'yin", text: "Dunyo bo'ylab eng qadimgi stol o'yini 'Senet' bo'lib, 5000 yildan oldin Misrda o'ynalgan." },
+            { title: "Fakt #66: Kosmik Sovutgich", text: "Koinotning o'rtacha harorati mutlaq noldan (0 Kelvin) bir necha daraja yuqori, ya'ni -270.42 °C." },
+            { title: "Fakt #67: Sovutish Effektlari", text: "Muzlatgichlar aslida havo haroratini pasaytirish o'rniga, ichki issiqlikni tashqariga chiqaradi." },
+            { title: "Fakt #68: Yer Yuzasining Massasi", text: "Agar Yer yuzasini tekislash mumkin bo'lsa, u butunlay suv bilan qoplanadi." },
+            { title: "Fakt #69: Ko'rshapalaklar", text: "Ko'rshapalaklar sutemizuvchilar ichida uchishga qodir yagona hayvonlardir." },
+            { title: "Fakt #70: Yashirin Xaritalar", text: "Google Xaritalardagi ko'plab joylar harbiy yoki siyosiy sabablarga ko'ra ataylab buzilgan yoki yashirilgan." },
+            { title: "Fakt #71: Chidamlilik", text: "Tardigradalar (suv ayiqlari) mutlaq nolga yaqin haroratga, yuzlab marta yuqori bosimga va o'n yildan ortiq suvsizlikka chiday oladi." },
+            { title: "Fakt #72: Qora Tuynuk", text: "Qora tuynukning tortishish kuchi shunchalik kuchliki, hatto yorug'lik ham undan qochib qutula olmaydi." },
+            { title: "Fakt #73: O'rgimchak To'rining Foydasi", text: "Qadimgi Gretsiyada o'rgimchak to'rlari jarohatlarni yopish uchun antiseptik sifatida ishlatilgan." },
+            { title: "Fakt #74: Vaqtni Sezish", text: "Miya xavf ostida bo'lganida vaqt sekinlashgan bo'lib tuyuladi, chunki u ma'lumotni tezroq qayta ishlaydi." },
+            { title: "Fakt #75: Ko'priklar Sirri", text: "Ko'priklar odatda ularda paydo bo'lishi mumkin bo'lgan eng katta tirbandlik og'irligini hisoblab quriladi." },
+            { title: "Fakt #76: Neandertallar", text: "Neandertallar o'z jamoalarida san'at va marosimlarga ega bo'lishgan, bu ularning rivojlanganligini ko'rsatadi." },
+            { title: "Fakt #77: Kosmik Sovutgich", text: "Kosmosda sovigan metall sirtlar bir-biriga tegsa, ular 'sovuq payvandlash' deb ataladigan jarayon orqali butunlay birikadi." },
+            { title: "Fakt #78: Bulutlar", text: "O'rtacha bulutning og'irligi bir million funt (453 tonna) atrofida bo'lishi mumkin." },
+            { title: "Fakt #79: Olovning Rangi", text: "Olovning rangi uning haroratiga va yonayotgan material turiga bog'liq." },
+            { title: "Fakt #80: Birinchi Domen", text: "Birinchi ro'yxatdan o'tgan domen nomi **Symbolics.com** bo'lgan (1985)." },
+            { title: "Fakt #81: Yulduzlarning Chirog'i", text: "Biz ko'rayotgan yulduzlarning aksariyati juda qadimiy yorug'likdir, chunki ularning nuri bizga yetib kelishi uchun ko'p yillar kerak bo'ladi." },
+            { title: "Fakt #82: Kitlar", text: "Kitlar uxlash uchun miyasining yarmini 'uyg'oq' qoldiradilar." },
+            { title: "Fakt #83: Qadimgi Akkumulyator", text: "Bag'dod Batareyasi (taxminan miloddan avvalgi 250 yil) elektr energiyasini ishlab chiqarishi mumkin bo'lgan qadimgi qurilma deb taxmin qilinadi." },
+            { title: "Fakt #84: Chayonlar", text: "Chayonlar UV nuri ostida porlaydi, bu ularni tungi qidiruvlar uchun osonroq topishga yordam beradi." },
+            { title: "Fakt #85: Inson Miya Quvvati", text: "Inson miyasi bor-yo'g'i 20 vatt quvvatda ishlaydi (past quvvatli lampochkadan kam)." },
+            { title: "Fakt #86: Yilnomalar", text: "Har 4 yilda qo'shiladigan 'kabisa yili' Yerning Quyosh atrofidagi aylanish vaqtini sinxronlash uchun qo'shiladi." },
+            { title: "Fakt #87: Qahva Afsonasi", text: "Qahva birinchi marta Efiopiyalik echki boquvchi Kaldi tomonidan topilgan, u echkilarining ushbu o'simlikni yegandan so'ng raqsga tushganini ko'rgan." },
+            { title: "Fakt #88: Eng Katta Vulqon", text: "Yer yuzidagi eng katta vulqon (Faol) Hawaii dagi Mauna Loa hisoblanadi." },
+            { title: "Fakt #89: Haroratning Sirti", text: "Muzning sirtini bosim ostida eritib turadigan suv qatlami sirtni sirpanchiq qiladi." },
+            { title: "Fakt #90: Shokolad", text: "Qadimgi Mayyalar pul birligi sifatida kakao loviyasidan foydalanganlar." },
+            { title: "Fakt #91: Zaxira Reja", text: "Internet, avvaliga, Sovuq Urush davrida yadro urushi paytida aloqani ta'minlash uchun loyihalashtirilgan." },
+            { title: "Fakt #92: Kosmik Stansiya", text: "Xalqaro kosmik stansiya (XKS) dunyodagi eng qimmat ob'ekt hisoblanadi." },
+            { title: "Fakt #93: Yuz O'zgarishi", text: "Inson hayoti davomida o'rtacha 900 marta teri tashlaydi." },
+            { title: "Fakt #94: Oqimlarning Tezligi", text: "Dengiz oqimlari sayyoradagi eng yirik issiqlik tarqatuvchi tizim hisoblanadi." },
+            { title: "Fakt #95: Ko'p Xotira", text: "Kompyuterning bir gigabayt xotirasida taxminan 1,073,741,824 bayt mavjud." },
+            { title: "Fakt #96: Yerning Aylanma Harakati", text: "Yerning o'z o'qi atrofida aylanishi asta-sekin sekinlashmoqda, shuning uchun kunlar juda oz muddatga uzunlashmoqda." },
+            { title: "Fakt #97: Qadimgi Antibiotiklar", text: "Qadimgi Misrliklar va Xitoyliklar mog'orlardan (Penitsillin kabi) jarohatlarni davolash uchun foydalanishgan." },
+            { title: "Fakt #98: Tovush Yuqori Chegarasi", text: "Odamlar eshita oladigan eng yuqori tovush chastotasi 20,000 Hertz (20 kHz) atrofida." },
+            { title: "Fakt #99: Quyoshning Oxiri", text: "Taxminan 5 milliard yildan keyin Quyosh qizil gigantga aylanadi va Yer orbitasini yutib yuboradi." },
+            { title: "Fakt #100: Kiber-Orzular", text: "Inson miyasi uyqu paytida kompyuter kabi murakkab ma'lumotlarni qayta ishlaydi, ba'zida esa o'ziga xos 'glitch' larga (qo'rqinchli tushlarga) ega bo'ladi." },
+            { title: "Fakt #101: Virtual Haqiqat", text: "Virtual haqiqatdagi birinchi simulyatsiya 1950-yillarda harakatlanuvchi teatr (Sensorama) uchun yaratilgan." },
+            { title: "Fakt #102: Ko'z Harakati", text: "O'qish paytida ko'zingiz doimiy ravishda harakatlanmaydi; u har bir so'zga qisqa vaqtga to'xtaydi (fiksatsiya)." }
+        ];
+
+        // Sahifalarni dinamik yaratish
+        function createPages() {
+            const oldPages = bookContainer.querySelectorAll('.book-page:not(#cover-page)');
+            oldPages.forEach(page => page.remove());
+
+            factData.forEach((fact, index) => {
+                const page = document.createElement('div');
+                page.className = 'book-page';
+                page.id = `page-${index + 1}`;
+                page.innerHTML = `
+                    <div class="page-content">
+                        <div class="fact-title">${fact.title}</div>
+                        <div class="fact-text">${fact.text}</div>
+                    </div>
+                    <span class="page-number">Sahifa: ${index + 1} / ${factData.length}</span>
+                `;
+                // Sahifa z-index ni o'rnatamiz
+                page.style.zIndex = factData.length - index; 
+                bookContainer.appendChild(page);
+            });
+        }
+        
+        // Sahifani aylantirish va MA'LUMOTNI ALMASHTIRISH funksiyasi
+        function updateBookDisplay() {
+            const totalFacts = factData.length;
+            
+            const coverPage = document.getElementById('cover-page');
+            
+            // Qopqoqni aylantirish
+            if (currentPage === 0) {
+                coverPage.style.transform = `rotateY(0deg)`;
+            } else {
+                coverPage.style.transform = `rotateY(-180deg)`;
+            }
+
+            // Fakt sahifalarini yangilash
+            factData.forEach((fact, index) => {
+                const pageElement = document.getElementById(`page-${index + 1}`);
+                const pageNum = index + 1;
+
+                if (pageNum <= currentPage) {
+                    // O'qilgan sahifalar: 180° aylanib orqada qoladi (chap tomon)
+                    pageElement.style.transform = `rotateY(-180deg) translateZ(1px)`; // Oldinroqda turishi uchun translateZ(1px)
+                    pageElement.style.opacity = 1; 
+                    pageElement.style.pointerEvents = 'none'; // O'qilgan sahifani tanlashni o'chiramiz
+                    pageElement.style.zIndex = totalFacts - pageNum + 50; // Orqada, lekin oldinda turgan sahifadan pastroq
+
+                } else {
+                    // O'qilmagan sahifalar: 0° burchakda turadi (o'ng tomon)
+                    pageElement.style.transform = `rotateY(0deg) translateZ(1px)`; 
+                    
+                    if (pageNum === currentPage + 1) {
+                         // Hozirgi ko'rsatilayotgan sahifa
+                        pageElement.style.opacity = 1;
+                        pageElement.style.pointerEvents = 'auto';
+                        pageElement.style.zIndex = totalFacts + 100; // Eng ustki varaq
+
+                    } else {
+                        // Keyingi sahifalar (ko'rinmas bo'lishi kerak, shunda ma'lumot almashgani bilinadi)
+                        pageElement.style.opacity = 0; 
+                        pageElement.style.pointerEvents = 'none';
+                        pageElement.style.zIndex = totalFacts + 99; // Eng ustki varaqning ostida turadi
+                    }
+                }
+            });
+        }
+
+        window.nextPage = function() {
+            const totalFacts = factData.length;
+            if (currentPage < totalFacts) {
+                currentPage++;
+                updateBookDisplay();
+                const currentFactPage = document.getElementById(`page-${currentPage}`);
+                if (currentFactPage) { currentFactPage.scrollTop = 0; }
+            }
+        };
+
+        window.prevPage = function() {
+            if (currentPage > 0) {
+                currentPage--;
+                updateBookDisplay();
+            }
+        };
+
+        // Boshlash
+        createPages();
+        updateBookDisplay();
+
+        window.onload = function() {
+            updateBookDisplay();
+        };
+        
+        /* SOAT VA KALKULYATOR MANTIG'I (avvalgilar) */
+        // ... (Yuqoridagi kodning soat va kalkulyator qismi bu yerda joylashgan)
+        // (Vaqtni yangilash kabi funksiyalar to'liq kodda mavjud)
+        
+    </script>
+</body>
+</html>
