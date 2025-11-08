@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="gameTitle">3D CyberGuess | Raqamni Topish</title>
+    <style>
+        /* ==================== 1. RANG VA O'ZGARUVCHILAR (BOSH LANG'ICH - DARK) ==================== */
+        :root {
+            /* DARK CYBERPUNK THEME */
+            --bg-color: #0d0f19;
+            --container-bg: #1c2130;
+            --text-color: #e6e6fa;
+            --primary-color: #00ffc4; /* Neon Cyan */
+            --accent-color: #ff3399; /* Neon Magenta */
+            --shadow-3d: 0 15px 35px rgba(0, 0, 0, 0.7);
+            --glow-primary: 0 0 10px var(--primary-color), 0 0 20px rgba(0, 255, 196, 0.3);
+            --glow-accent: 0 0 10px var(--accent-color);
+            --border-glow: 1px solid var(--primary-color);
+        }
+
+        /* YORQIN MAVZU (LIGHT THEME) */
+        body.light-theme {
+            --bg-color: #f0f4f8;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #007bff; /* Klassik Blue */
+            --accent-color: #dc3545; /* Qizil */
+            --shadow-3d: 0 10px 20px rgba(0, 0, 0, 0.15);
+            --glow-primary: none;
+            --glow-accent: none;
+            --border-glow: 1px solid #ced4da;
+        }
+
+        /* ==================== 2. GLOBAL VA LAYOUT ==================== */
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px;
+            perspective: 1500px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+        }
+
+        /* ==================== 3. ASOSIY 3D KARTA (CARD) ==================== */
+        .game-container {
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-3d);
+            text-align: center;
+            border: var(--border-glow);
+            transform: rotateX(5deg) rotateY(-5deg) translateZ(50px);
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease-out, box-shadow 0.5s;
+        }
+        
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 5%;
+            width: 90%;
+            height: 10px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.5;
+            transform: translateZ(-1px);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-shadow: var(--glow-primary);
+            font-size: 2.8em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: color-mix(in srgb, var(--text-color) 80%, transparent);
+        }
+
+        /* ==================== 4. INPUT VA BUTTON STILI ==================== */
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        #guessInput {
+            flex-grow: 1;
+            padding: 18px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            font-size: 1.6em;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+            transform: translateZ(5px); 
+        }
+
+        #guessInput:focus {
+            border-color: var(--accent-color);
+            box-shadow: var(--glow-accent);
+        }
+
+        button {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            transform: translateZ(5px);
+        }
+
+        button:hover {
+            background-color: color-mix(in srgb, var(--accent-color) 80%, black);
+            transform: translateZ(10px) translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 51, 153, 0.5);
+        }
+        
+        #resetButton {
+            background-color: var(--primary-color);
+            margin-top: 20px;
+        }
+
+        /* ==================== 5. STATUS PANEL ==================== */
+        .status-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            transform: translateZ(10px);
+        }
+
+        .status-box {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: color-mix(in srgb, var(--container-bg) 70%, #000);
+            border: 1px solid var(--primary-color);
+            margin: 0 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 196, 0.2);
+        }
+        
+        .status-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: var(--glow-primary);
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            min-height: 40px;
+            transition: all 0.5s;
+        }
+        
+        .success { color: var(--primary-color); text-shadow: var(--glow-primary); }
+        .error { color: var(--accent-color); animation: shake 0.5s; }
+        .hint { color: #ffcc00; }
+        
+        /* ==================== 6. SOZLAMALAR PANELI ==================== */
+        #settingsBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            z-index: 10;
+            font-size: 1.5em;
+            line-height: 1;
+            transform: translateZ(10px);
+        }
+
+        .settings-panel {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 50%;
+            min-height: 100%;
+            background-color: var(--container-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-3d);
+            border: var(--border-glow);
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: translateZ(40px) translateX(20px);
+            z-index: 50;
+        }
+
+        .settings-panel.active {
+            transform: translateZ(40px) translateX(-500px);
+        }
+        
+        .settings-panel h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+        
+        .setting-group {
+            text-align: left;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .setting-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        body.light-theme .setting-group {
+             border: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+        
+        /* ==================== 7. ANIMATSIYALAR ==================== */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) translateZ(50px); }
+            20%, 60% { transform: translateX(-10px) translateZ(50px); }
+            40%, 80% { transform: translateX(10px) translateZ(50px); }
+        }
+        
+        /* ==================== 8. MOBILGA MOSLASHUV ==================== */
+        @media (max-width: 850px) {
+            .game-container {
+                transform: rotateX(0deg) rotateY(0deg) translateZ(0px);
+            }
+            .settings-panel {
+                width: 80%;
+                left: 20%;
+                transform: translateZ(40px) translateX(20px);
+            }
+            .settings-panel.active {
+                transform: translateZ(40px) translateX(-100%);
+            }
+        }
+        @media (max-width: 500px) {
+            .input-group {
+                flex-direction: column;
+            }
+            .settings-panel {
+                width: 100%;
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body id="gameBody">
+
+    <div class="game-wrapper">
+        <div class="game-container">
+            <h1 id="gameHeader">CyberGuess | Raqamni Topish</h1>
+            <p id="gameInstructions">Maxfiy raqamni topishga harakat qiling.</p>
+            
+            <button id="settingsBtn" title="Sozlamalar">⚙️</button>
+            
+            <div class="status-panel">
+                <div class="status-box">
+                    <div class="status-label" id="attemptLabel">Urinishlar</div>
+                    <div class="status-value"><span id="currentAttemptCount">0</span> / <span id="maxAttemptCount">10</span></div>
+                </div>
+                <div class="status-box">
+                    <div class="status-label" id="rangeLabel">Oraliq</div>
+                    <div class="status-value"><span id="currentRange">1-100</span></div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="guessInput" placeholder="Raqamni kiriting" min="1" max="100">
+                <button id="checkButton">Tekshirish</button>
+            </div>
+            
+            <div id="message"></div>
+            
+            <button id="resetButton" style="display: none;" id="resetBtnText">Qayta Boshlash</button>
+            
+        </div>
+        
+        <div class="settings-panel" id="settingsPanel">
+            <h3 id="settingsTitle">⚙️ O'yin Sozlamalari</h3>
+            
+            <div class="setting-group">
+                <label for="languageSelect" id="languageLabel">Tilni tanlang:</label>
+                <select id="languageSelect">
+                    <option value="uz">O'zbek (UZ)</option>
+                    <option value="ru">Русский (RU)</option>
+                    <option value="en">English (EN)</option>
+                    <option value="zh">中文 (ZH)</option>
+                    <option value="ko">한국어 (KO)</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="themeSelect" id="themeLabel">Mavzu:</label>
+                <select id="themeSelect">
+                    <option value="dark">Cyberpunk Qorong'i</option>
+                    <option value="light">Yorqin Klassik</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="difficultySelect" id="difficultyLabel">Qiyinchilik darajasi:</label>
+                <select id="difficultySelect">
+                    <option value="easy" id="diffEasy">Oson (1-50, 8 urinish)</option>
+                    <option value="medium" id="diffMedium">O'rta (1-100, 10 urinish)</option>
+                    <option value="hard" id="diffHard">Qiyin (1-200, 12 urinish)</option>
+                </select>
+            </div>
+            
+            <button id="closeSettingsBtn">Saqlash va Yopish</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== JAVASCRIPT: LOKALIZATSIYA VA O'YIN MANTIQI ====================
+
+        const checkButton = document.getElementById('checkButton');
+        const resetButton = document.getElementById('resetButton');
+        const guessInput = document.getElementById('guessInput');
+        const message = document.getElementById('message');
+        const currentAttemptCount = document.getElementById('currentAttemptCount');
+        const maxAttemptCount = document.getElementById('maxAttemptCount');
+        const currentRange = document.getElementById('currentRange');
+        const gameContainer = document.querySelector('.game-container');
+        
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const difficultySelect = document.getElementById('difficultySelect');
+        const languageSelect = document.getElementById('languageSelect');
+        const themeSelect = document.getElementById('themeSelect');
+        
+        let currentLanguage = localStorage.getItem('guessGameLang') || 'uz';
+        let currentTheme = localStorage.getItem('guessGameTheme') || 'dark';
+
+        let secretNumber;
+        let attempts;
+        let MAX_ATTEMPTS = 10;
+        let MAX_RANGE = 100;
+
+        // --- Qiyinchilik sozlamalari ---
+        const DIFFICULTY_SETTINGS = {
+            easy: { range: 50, attempts: 8 },
+            medium: { range: 100, attempts: 10 },
+            hard: { range: 200, attempts: 12 }
+        };
+
+        // --- 5 TILLI TRANSLATIONS ---
+        const TRANSLATIONS = {
+            uz: {
+                title: "3D CyberGuess | Raqamni Topish", header: "CyberGuess | Raqamni Topish", instructions: "Maxfiy raqamni topishga harakat qiling.",
+                attemptLabel: "Urinishlar", rangeLabel: "Oraliq", placeholder: "Raqamni kiriting", check: "Tekshirish", reset: "Qayta Boshlash",
+                settingsTitle: "⚙️ O'yin Sozlamalari", languageLabel: "Tilni tanlang:", themeLabel: "Mavzu:", difficultyLabel: "Qiyinchilik darajasi:", save: "Saqlash va Yopish",
+                diffEasy: "Oson (1-50, 8 urinish)", diffMedium: "O'rta (1-100, 10 urinish)", diffHard: "Qiyin (1-200, 12 urinish)",
+                themeDark: "Cyberpunk Qorong'i", themeLight: "Yorqin Klassik",
+                msgInvalid: (max) => `Iltimos, 1 dan ${max} gacha boʻlgan raqamni kiriting.`,
+                msgWin: (num, att) => `🎉 Bravo! Siz ${num} raqamini ${att} ta urinishda topdingiz!`,
+                msgLose: (num) => `Game Over! Maxfiy raqam ${num} edi.`,
+                msgHigh: "Raqam KICHIK! Pastroq raqamni kiriting. ⬇️",
+                msgLow: "Raqam KATTA! Yuqoriroq raqamni kiriting. ⬆️"
+            },
+            ru: {
+                title: "3D CyberGuess | Угадай Число", header: "CyberGuess | Угадай Число", instructions: "Попробуйте найти секретное число.",
+                attemptLabel: "Попытки", rangeLabel: "Диапазон", placeholder: "Введите число", check: "Проверить", reset: "Начать Снова",
+                settingsTitle: "⚙️ Настройки Игры", languageLabel: "Выберите язык:", themeLabel: "Тема:", difficultyLabel: "Уровень сложности:", save: "Сохранить и Закрыть",
+                diffEasy: "Легкий (1-50, 8 попыток)", diffMedium: "Средний (1-100, 10 попыток)", diffHard: "Сложный (1-200, 12 попыток)",
+                themeDark: "Киберпанк Темный", themeLight: "Светлый Классический",
+                msgInvalid: (max) => `Пожалуйста, введите число от 1 до ${max}.`,
+                msgWin: (num, att) => `🎉 Поздравляем! Вы угадали число ${num} за ${att} попыток!`,
+                msgLose: (num) => `Игра Окончена! Загаданное число было ${num}.`,
+                msgHigh: "Слишком БОЛЬШОЕ! Введите меньшее число. ⬇️",
+                msgLow: "Слишком МАЛЕНЬКОЕ! Введите большее число. ⬆️"
+            },
+            en: {
+                title: "3D CyberGuess | Guess The Number", header: "CyberGuess | Guess The Number", instructions: "Try to find the secret number.",
+                attemptLabel: "Attempts", rangeLabel: "Range", placeholder: "Enter a number", check: "Check", reset: "Restart",
+                settingsTitle: "⚙️ Game Settings", languageLabel: "Select Language:", themeLabel: "Theme:", difficultyLabel: "Difficulty Level:", save: "Save and Close",
+                diffEasy: "Easy (1-50, 8 attempts)", diffMedium: "Medium (1-100, 10 attempts)", diffHard: "Hard (1-200, 12 attempts)",
+                themeDark: "Cyberpunk Dark", themeLight: "Classic Light",
+                msgInvalid: (max) => `Please enter a valid number between 1 and ${max}.`,
+                msgWin: (num, att) => `🎉 Congratulations! You guessed ${num} in ${att} attempts!`,
+                msgLose: (num) => `Game Over! The secret number was ${num}.`,
+                msgHigh: "Too HIGH! Enter a lower number. ⬇️",
+                msgLow: "Too LOW! Enter a higher number. ⬆️"
+            },
+            zh: {
+                title: "3D CyberGuess | 猜数字", header: "CyberGuess | 猜数字", instructions: "尝试找到秘密数字。",
+                attemptLabel: "尝试次数", rangeLabel: "范围", placeholder: "输入数字", check: "检查", reset: "重新开始",
+                settingsTitle: "⚙️ 游戏设置", languageLabel: "选择语言:", themeLabel: "主题:", difficultyLabel: "难度级别:", save: "保存并关闭",
+                diffEasy: "简单 (1-50, 8 次)", diffMedium: "中等 (1-100, 10 次)", diffHard: "困难 (1-200, 12 次)",
+                themeDark: "赛博朋克暗色", themeLight: "经典亮色",
+                msgInvalid: (max) => `请输入 1 到 ${max} 之间的有效数字。`,
+                msgWin: (num, att) => `🎉 恭喜！您在 ${att} 次尝试中猜中了 ${num}！`,
+                msgLose: (num) => `游戏结束！秘密数字是 ${num}。`,
+                msgHigh: "太高了！输入一个更小的数字。⬇️",
+                msgLow: "太低了！输入一个更大的数字。⬆️"
+            },
+            ko: {
+                title: "3D CyberGuess | 숫자 맞추기", header: "CyberGuess | 숫자 맞추기", instructions: "비밀 숫자를 찾아보세요.",
+                attemptLabel: "시도", rangeLabel: "범위", placeholder: "숫자를 입력하세요", check: "확인", reset: "다시 시작",
+                settingsTitle: "⚙️ 게임 설정", languageLabel: "언어 선택:", themeLabel: "테마:", difficultyLabel: "난이도:", save: "저장 및 닫기",
+                diffEasy: "쉬움 (1-50, 8 시도)", diffMedium: "중간 (1-100, 10 시도)", diffHard: "어려움 (1-200, 12 시도)",
+                themeDark: "사이버펑크 다크", themeLight: "클래식 라이트",
+                msgInvalid: (max) => `1에서 ${max} 사이의 유효한 숫자를 입력하세요.`,
+                msgWin: (num, att) => `🎉 축하합니다! ${att} 번의 시도 만에 ${num}을 맞췄습니다!`,
+                msgLose: (num) => `게임 오버! 비밀 숫자는 ${num}입니다.`,
+                msgHigh: "너무 높습니다! 더 낮은 숫자를 입력하세요. ⬇️",
+                msgLow: "너무 낮습니다! 더 높은 숫자를 입력하세요. ⬆️"
+            }
+        };
+
+
+        // --- FUNKSIYALAR ---
+
+        // CSS o'zgaruvchisini olish uchun yordamchi funksiya
+        function varCss(variable) {
+            return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+        }
+        
+        // --- Tilni almashtirish va matnlarni yangilash ---
+        function updateContent(lang) {
+            const t = TRANSLATIONS[lang];
+            
+            document.getElementById('gameTitle').textContent = t.title;
+            document.getElementById('gameHeader').textContent = t.header;
+            document.getElementById('gameInstructions').textContent = t.instructions;
+            
+            document.getElementById('attemptLabel').textContent = t.attemptLabel;
+            document.getElementById('rangeLabel').textContent = t.rangeLabel;
+            
+            guessInput.placeholder = t.placeholder;
+            checkButton.textContent = t.check;
+            resetButton.textContent = t.reset;
+            
+            document.getElementById('settingsTitle').textContent = t.settingsTitle;
+            document.getElementById('languageLabel').textContent = t.languageLabel;
+            document.getElementById('themeLabel').textContent = t.themeLabel;
+            document.getElementById('difficultyLabel').textContent = t.difficultyLabel;
+            document.getElementById('closeSettingsBtn').textContent = t.save;
+            
+            document.getElementById('diffEasy').textContent = t.diffEasy;
+            document.getElementById('diffMedium').textContent = t.diffMedium;
+            document.getElementById('diffHard').textContent = t.diffHard;
+            
+            // Mavzu nomlarini yangilash (garchi ularni JS da almashtirmasak ham)
+            themeSelect.options[0].textContent = t.themeDark;
+            themeSelect.options[1].textContent = t.themeLight;
+            
+            // Agar ekranda xabar bo'lsa, tilini yangilash kerak emas, u yangi o'yinda o'zgaradi.
+        }
+        
+        // --- Mavzuni o'zgartirish ---
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.remove('light-theme');
+            }
+            localStorage.setItem('guessGameTheme', theme);
+        }
+
+        // --- O'yinni Boshlash/Tiklash Funksiyasi ---
+        function startGame() {
+            const difficulty = difficultySelect.value;
+            const settings = DIFFICULTY_SETTINGS[difficulty];
+            const t = TRANSLATIONS[currentLanguage];
+            
+            MAX_RANGE = settings.range;
+            MAX_ATTEMPTS = settings.attempts;
+            secretNumber = Math.floor(Math.random() * MAX_RANGE) + 1;
+            attempts = 0;
+            
+            message.textContent = t.instructions; // Yangi o'yin boshlanganda yo'riqnomani ko'rsatish
+            message.className = 'hint';
+            guessInput.value = '';
+            guessInput.disabled = false;
+            checkButton.style.display = 'block';
+            resetButton.style.display = 'none';
+            
+            maxAttemptCount.textContent = MAX_ATTEMPTS;
+            currentRange.textContent = `1-${MAX_RANGE}`;
+            guessInput.placeholder = `${t.placeholder} (1-${MAX_RANGE})`;
+            guessInput.max = MAX_RANGE;
+
+            updateAttemptsDisplay();
+             // 3D holatni tiklash
+             gameContainer.style.transform = 'rotateX(5deg) rotateY(-5deg) translateZ(50px)';
+        }
+
+        // --- Urinishlar hisoblagichini yangilash ---
+        function updateAttemptsDisplay() {
+            currentAttemptCount.textContent = attempts;
+            const remaining = MAX_ATTEMPTS - attempts;
+            
+            const statusBox = document.querySelector('.status-box:first-child');
+            if (remaining <= 2) {
+                statusBox.style.borderColor = varCss('--accent-color');
+            } else {
+                statusBox.style.borderColor = varCss('--primary-color');
+            }
+        }
+
+        // --- Taxminni Tekshirish Funksiyasi ---
+        function checkGuess() {
+            const userGuess = parseInt(guessInput.value);
+            const t = TRANSLATIONS[currentLanguage];
+
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > MAX_RANGE) {
+                message.textContent = t.msgInvalid(MAX_RANGE);
+                message.className = 'error';
+                return;
+            }
+
+            attempts++;
+            updateAttemptsDisplay();
+
+            if (userGuess === secretNumber) {
+                message.textContent = t.msgWin(secretNumber, attempts);
+                message.className = 'success';
+                gameOver(true);
+            } else if (attempts >= MAX_ATTEMPTS) {
+                message.textContent = t.msgLose(secretNumber);
+                message.className = 'error';
+                gameOver(false);
+            } else if (userGuess < secretNumber) {
+                message.textContent = t.msgLow;
+                message.className = 'hint';
+            } else {
+                message.textContent = t.msgHigh;
+                message.className = 'hint';
+            }
+            guessInput.value = '';
+        }
+
+        // --- O'yinni Tugatish Funksiyasi ---
+        function gameOver(won) {
+            guessInput.disabled = true;
+            checkButton.style.display = 'none';
+            resetButton.style.display = 'block';
+            
+            if (won) {
+                 gameContainer.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(80px) scale(1.05)';
+            } else {
+                 gameContainer.style.transform = 'rotateX(10deg) rotateY(0deg) translateZ(20px) scale(0.9)';
+            }
+        }
+        
+        // --- Sozlamalar Panelini Boshqarish ---
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.add('active');
+            gameContainer.style.opacity = '0.3';
+            gameContainer.style.pointerEvents = 'none';
+        });
+
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.remove('active');
+            gameContainer.style.opacity = '1';
+            gameContainer.style.pointerEvents = 'auto';
+            
+            // Yangi til va mavzuni saqlash
+            currentLanguage = languageSelect.value;
+            currentTheme = themeSelect.value;
+            localStorage.setItem('guessGameLang', currentLanguage);
+            
+            applyTheme(currentTheme);
+            updateContent(currentLanguage);
+            startGame(); // Sozlamalarni saqlab, o'yinni qayta boshlash
+        });
+
+        // --- Event Listenerlar ---
+        checkButton.addEventListener('click', checkGuess);
+        resetButton.addEventListener('click', startGame);
+        guessInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !guessInput.disabled) {
+                checkGuess();
+            }
+        });
+        
+        // --- Yuklash ---
+        function loadSettingsAndStart() {
+            // Tilni va mavzuni tiklash
+            languageSelect.value = currentLanguage;
+            themeSelect.value = currentTheme;
+            
+            applyTheme(currentTheme);
+            updateContent(currentLanguage);
+            startGame();
+        }
+
+        // O'yinni sahifa yuklanganda boshlash
+        loadSettingsAndStart();
+    </script>
+</body>
+</html>
