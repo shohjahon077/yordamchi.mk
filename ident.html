@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>“Identitet.O'zgarish” – Ko'p O'lchovli Sinov</title>
+    <style>
+        /* ========================================= */
+        /* I. CSS GLOBAL O'ZGARUVCHILAR VA TEMA ASOSLARI */
+        /* ========================================= */
+        :root {
+            /* Yorqin Tema (Default) */
+            --bg-color: #e0e5ec;
+            --main-color: #f0f5f9;
+            --text-color: #3f51b5; /* Ko'k aksent */
+            --soft-shadow: 6px 6px 12px #b8becc, -6px -6px 12px #ffffff;
+            --inset-shadow: inset 2px 2px 5px #b8becc, inset -5px -5px 10px #ffffff;
+            --accent-yes: #4CAF50;
+            --accent-no: #F44336;
+        }
+        
+        /* To'q Tema (Dark) */
+        .theme-dark {
+            --bg-color: #212121;
+            --main-color: #333333;
+            --text-color: #00bcd4; /* Cyan aksent */
+            --soft-shadow: 6px 6px 12px #1c1c1c, -6px -6px 12px #444444;
+            --inset-shadow: inset 2px 2px 5px #1c1c1c, inset -5px -5px 10px #444444;
+            --accent-yes: #66bb6a;
+            --accent-no: #ef5350;
+        }
+
+        /* Zen Tema (Soft) */
+        .theme-zen {
+            --bg-color: #f8f0e5;
+            --main-color: #ffffff;
+            --text-color: #795548; /* Jigarrang aksent */
+            --soft-shadow: 4px 4px 8px #d9cec1, -4px -4px 8px #ffffff;
+            --inset-shadow: inset 2px 2px 4px #d9cec1, inset -4px -4px 8px #ffffff;
+            --accent-yes: #aed581;
+            --accent-no: #ffab91;
+        }
+
+        /* ========================================= */
+        /* II. NEUMORPHISM ASOSIY USLUBLARI */
+        /* ========================================= */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.5s, color 0.5s;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: var(--main-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--soft-shadow);
+            max-width: 800px;
+            width: 90%;
+            transition: all 0.5s;
+            z-index: 10;
+        }
+
+        /* Boshqaruv va Sozlamalar Uchun Kichik Elementlar */
+        .settings-btn, #back-btn {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            background-color: var(--main-color);
+            border-radius: 50%;
+            box-shadow: var(--soft-shadow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        
+        .settings-btn:active, #back-btn:active, .buttons button:active {
+            box-shadow: var(--inset-shadow);
+        }
+
+        /* Sozlamalar Paneli (Modal) */
+        .settings-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--main-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--soft-shadow);
+            z-index: 100;
+        }
+        
+        .setting-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        .setting-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        /* Tugmalar uchun umumiy Neumorphism uslubi */
+        .buttons button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            box-shadow: var(--soft-shadow);
+            transition: all 0.3s;
+            flex-grow: 1;
+        }
+
+        #yes-btn { background-color: var(--accent-yes); color: white; }
+        #no-btn { background-color: var(--accent-no); color: white; }
+        
+        .buttons button:hover {
+            transform: scale(1.03);
+        }
+        
+        /* Yuqori qism (Til va Sozlamalar) */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* ========================================= */
+        /* III. MOBILGA MOSLASHUV */
+        /* ========================================= */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 10px;
+                max-width: 95%;
+            }
+
+            .header-controls {
+                margin-bottom: 15px;
+            }
+
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .buttons button {
+                padding: 12px;
+                font-size: 1em;
+            }
+            
+            .question {
+                font-size: 1.2em;
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-light" id="body-main">
+
+    <div id="settings-modal" class="settings-panel" style="display: none;">
+        <div class="setting-group">
+            <label for="language-select">TİLNI TANLASH / LANGUAGE</label>
+            <select id="language-select" onchange="changeLanguage()">
+                <option value="uzb">O'zbekcha (UZB)</option>
+                <option value="rus">Русский (RUS)</option>
+                <option value="eng">English (ENG)</option>
+                <option value="kor">한국어 (KOR)</option>
+                <option value="chi">中文 (CHI)</option>
+            </select>
+        </div>
+        
+        <div class="setting-group">
+            <label for="theme-select">MAVZU / THEME</label>
+            <select id="theme-select" onchange="changeTheme()">
+                <option value="light" data-uzb="Yorqin">Yorqin</option>
+                <option value="dark" data-uzb="To'q">To'q</option>
+                <option value="zen" data-uzb="Zen">Zen</option>
+            </select>
+        </div>
+        
+        <button onclick="closeSettings()" style="margin-top: 10px; padding: 8px 15px; background-color: var(--text-color); color: white; border-radius: 10px;" id="close-settings-btn">Yopish</button>
+    </div>
+
+    <div class="container" id="main-container">
+        
+        <div class="header-controls">
+            <div id="back-btn" onclick="goBack()" style="visibility: hidden;">
+                <span id="back-icon">&#8592;</span> </div>
+            <div id="settings-btn" class="settings-btn" onclick="openSettings()">
+                ⚙️
+            </div>
+        </div>
+
+        <h1 id="main-title">Identitet.O'zgarish</h1>
+        
+        <div id="quiz-area">
+            <div class="question" id="question-text">
+                [Yuklanmoqda...]
+            </div>
+
+            <div class="buttons">
+                <button id="yes-btn" onclick="answerQuestion(true)"></button>
+                <button id="no-btn" onclick="answerQuestion(false)"></button>
+            </div>
+        </div>
+
+        <div id="result-area" class="result" style="display: none;">
+            </div>
+    </div>
+
+    <audio id="sound-yes" src="https://www.soundjay.com/misc/button-09.mp3" preload="auto"></audio>
+    <audio id="sound-no" src="https://www.soundjay.com/misc/click-07.mp3" preload="auto"></audio>
+
+    <script>
+        // =========================================
+        // JAVASCRIPT: TILLAR VA MANTIQ
+        // =========================================
+
+        // 1. TIL XARITASI (Language Map)
+        const translations = {
+            'main-title': {
+                uzb: "Identitet.O'zgarish", rus: "Идентичность.Изменение", eng: "Identity.Shift", kor: "정체성.변환", chi: "身份.转换"
+            },
+            'yes-btn': {
+                uzb: "Ha (Qabul)", rus: "Да (Принять)", eng: "Yes (Accept)", kor: "네 (수락)", chi: "是 (接受)"
+            },
+            'no-btn': {
+                uzb: "Yo'q (Inkor)", rus: "Нет (Отрицать)", eng: "No (Deny)", kor: "아니오 (거부)", chi: "否 (拒绝)"
+            },
+            'result-heading': {
+                uzb: "YAKUNIY Tahlil", rus: "ИТОГОВЫЙ Анализ", eng: "FINAL Analysis", kor: "최종 분석", chi: "最终分析"
+            },
+            'close-settings-btn': {
+                uzb: "Yopish", rus: "Закрыть", eng: "Close", kor: "닫기", chi: "关闭"
+            },
+            'loading': {
+                uzb: "[Yuklanmoqda...]", rus: "[Загрузка...]", eng: "[Loading...]", kor: "[로드 중...]", chi: "[加载中...]"
+            }
+        };
+
+        const questionsData = [
+            // Dimension: R - Ratsionallik, E - Emotsiya, A - Abstraktsiya
+            { dimension: 'E', weight: 1.5, yesEffect: 1, noEffect: -0.5,
+                uzb: "O'zingizni osongina kechira olasizmi, hatto katta xato qilgan bo'lsangiz ham?", 
+                rus: "Можете ли вы легко простить себя, даже совершив большую ошибку?", 
+                eng: "Can you easily forgive yourself, even after making a big mistake?", 
+                kor: "큰 실수를 저지른 후에도 자신을 쉽게 용서할 수 있습니까?", 
+                chi: "即使犯了大错，你也能轻易原谅自己吗？"
+            },
+            { dimension: 'R', weight: 1.8, yesEffect: -0.8, noEffect: 1.2,
+                uzb: "Mantiqiy yechimni bilganingiz holda, hislaringizga quloq tutasizmi?", 
+                rus: "Слушаете ли вы свои чувства, зная логическое решение?", 
+                eng: "Do you listen to your feelings, even when you know the logical solution?", 
+                kor: "논리적인 해결책을 알면서도 감정을 따르는 편입니까?", 
+                chi: "你知道逻辑解决方案，但会听从你的感受吗？"
+            },
+            { dimension: 'A', weight: 2.0, yesEffect: 1.5, noEffect: -0.5,
+                uzb: "Siz uchun vaqt oddiy chiziqli tushuncha emasmi, balki egiluvchan materiyami?", 
+                rus: "Является ли время для вас не просто линейным понятием, а гибкой материей?", 
+                eng: "Is time for you not just a linear concept, but a flexible matter?", 
+                kor: "시간은 당신에게 단순한 선형 개념이 아니라 유연한 물질입니까?", 
+                chi: "时间对你来说不仅仅是线性概念，而是一种柔性物质吗？"
+            },
+            { dimension: 'E', weight: 1.2, yesEffect: 0.7, noEffect: -0.2,
+                uzb: "Kutilmagan muvaffaqiyatdan ko'ra, kutilgan sokinlikni afzal ko'rasizmi?", 
+                rus: "Предпочитаете ли вы ожидаемое спокойствие неожиданному успеху?", 
+                eng: "Do you prefer expected tranquility over unexpected success?", 
+                kor: "예상치 못한 성공보다 예상된 평온을 선호합니까?", 
+                chi: "你更喜欢预期的平静，而不是意外的成功吗？"
+            },
+            { dimension: 'R', weight: 1.4, yesEffect: 0.9, noEffect: -0.6,
+                uzb: "Mantiqiy xatoni shaxsiy norozilik deb qabul qilasizmi?", 
+                rus: "Воспринимаете ли вы логическую ошибку как личное недовольство?", 
+                eng: "Do you take a logical mistake as a personal grievance?", 
+                kor: "논리적 오류를 개인적인 불만으로 받아들입니까?", 
+                chi: "你会将逻辑错误视为个人委屈吗？"
+            }
+        ];
+
+        let currentLang = 'uzb';
+        let currentTheme = 'light';
+        let currentQuestionIndex = 0;
+        let answerHistory = []; // [ { index: 0, isYes: true, scoreChange: 2.7 } ]
+        
+        let scores = { R: 0, E: 0, A: 0, TotalMax: 0 };
+
+        const DOMElements = {
+            mainTitle: document.getElementById('main-title'),
+            questionText: document.getElementById('question-text'),
+            yesBtn: document.getElementById('yes-btn'),
+            noBtn: document.getElementById('no-btn'),
+            body: document.getElementById('body-main'),
+            backBtn: document.getElementById('back-btn'),
+            resultArea: document.getElementById('result-area'),
+            quizArea: document.getElementById('quiz-area'),
+            settingsModal: document.getElementById('settings-modal'),
+            closeSettingsBtn: document.getElementById('close-settings-btn'),
+            langSelect: document.getElementById('language-select'),
+            themeSelect: document.getElementById('theme-select'),
+            yesSound: document.getElementById('sound-yes'),
+            noSound: document.getElementById('sound-no')
+        };
+        
+        // 2. TILLARNI ALMASHTIRISH FUNKSIYASI
+        function changeLanguage() {
+            currentLang = DOMElements.langSelect.value;
+            
+            DOMElements.mainTitle.textContent = translations['main-title'][currentLang];
+            DOMElements.yesBtn.textContent = translations['yes-btn'][currentLang];
+            DOMElements.noBtn.textContent = translations['no-btn'][currentLang];
+            DOMElements.closeSettingsBtn.textContent = translations['close-settings-btn'][currentLang];
+
+            // Sozlamalar menyusidagi matnni almashtirish (Theme Label)
+            const themeLabel = document.querySelector('label[for="theme-select"]');
+            themeLabel.textContent = currentLang === 'uzb' ? 'MAVZU / THEME' : translations['close-settings-btn'][currentLang];
+            
+            // Theme Select Options uchun ham almashtirish
+            Array.from(DOMElements.themeSelect.options).forEach(opt => {
+                if(currentLang === 'uzb'){
+                    opt.textContent = opt.dataset.uzb;
+                } else if(opt.value === 'light'){
+                    opt.textContent = translations['theme-light'] ? translations['theme-light'][currentLang] : 'Light';
+                } else if(opt.value === 'dark'){
+                    opt.textContent = translations['theme-dark'] ? translations['theme-dark'][currentLang] : 'Dark';
+                } else if(opt.value === 'zen'){
+                    opt.textContent = translations['theme-zen'] ? translations['theme-zen'][currentLang] : 'Zen';
+                }
+            });
+
+
+            // Joriy savol matnini almashtirish
+            if (currentQuestionIndex < questionsData.length) {
+                DOMElements.questionText.textContent = questionsData[currentQuestionIndex][currentLang];
+            } else {
+                 DOMElements.resultArea.innerHTML = translations['result-heading'][currentLang];
+                 // Natija matnini qayta yuklash kerak bo'ladi
+                 if (DOMElements.resultArea.style.display !== 'none') {
+                    showResult(); 
+                }
+            }
+        }
+        
+        // 3. MAVZUNI ALMASHTIRISH FUNKSIYASI
+        function changeTheme() {
+            currentTheme = DOMElements.themeSelect.value;
+            DOMElements.body.className = 'theme-' + currentTheme;
+        }
+
+        // 4. ORTGA QAYTISH FUNKSIYASI
+        function goBack() {
+            if (answerHistory.length === 0) return;
+
+            // Oxirgi javobni olib tashlash
+            const lastAnswer = answerHistory.pop();
+            currentQuestionIndex = lastAnswer.index;
+
+            // Ballni qaytarish (minus qilish)
+            const question = questionsData[currentQuestionIndex];
+            const scoreKey = question.dimension;
+            
+            // Hisob-kitobni teskarisiga bajarish
+            scores[scoreKey] -= lastAnswer.scoreChange; 
+            scores.TotalMax -= lastAnswer.maxScoreChange;
+
+            // UI ni yangilash
+            DOMElements.resultArea.style.display = 'none';
+            DOMElements.quizArea.style.display = 'block';
+            DOMElements.questionText.textContent = questionsData[currentQuestionIndex][currentLang];
+
+            // Orqaga tugmasini holatini tekshirish
+            DOMElements.backBtn.style.visibility = answerHistory.length > 0 ? 'visible' : 'hidden';
+
+            // Rangni eski holatga qaytarish (agar kerak bo'lsa)
+            DOMElements.body.style.backgroundColor = 'var(--bg-color)'; 
+        }
+
+        // 5. JAVOB BERISH FUNKSIYASI (Ball hisoblash)
+        function answerQuestion(isYes) {
+            
+            const question = questionsData[currentQuestionIndex];
+            const scoreKey = question.dimension;
+            
+            // Ballni hisoblash
+            const scoreChange = isYes ? question.yesEffect : question.noEffect;
+            const finalChange = scoreChange * question.weight;
+            const maxScoreChange = question.weight * (isYes ? 1 : 0.5); 
+            
+            // Tarixga saqlash
+            answerHistory.push({
+                index: currentQuestionIndex,
+                isYes: isYes,
+                scoreChange: finalChange,
+                maxScoreChange: maxScoreChange
+            });
+
+            // Ballni yangilash
+            scores[scoreKey] += finalChange;
+            scores.TotalMax += maxScoreChange;
+
+            // Ovoz effektini chiqarish
+            isYes ? DOMElements.yesSound.play() : DOMElements.noSound.play();
+
+            currentQuestionIndex++;
+            DOMElements.backBtn.style.visibility = 'visible';
+
+            if (currentQuestionIndex < questionsData.length) {
+                // Keyingi savolga o'tish
+                DOMElements.questionText.textContent = questionsData[currentQuestionIndex][currentLang];
+            } else {
+                // Testni tugatish
+                showResult();
+            }
+        }
+        
+        // 6. NATIJA FUNKSIYASI (Murakkab tahlil)
+        function showResult() {
+            DOMElements.quizArea.style.display = 'none';
+            DOMElements.resultArea.style.display = 'block';
+            DOMElements.backBtn.style.visibility = 'hidden'; 
+
+            const finalScores = { R: scores.R, E: scores.E, A: scores.A };
+            const dimensionMap = { 
+                R: { uzb: "Ratsionallik", eng: "Rationality" }, 
+                E: { uzb: "Emotsiya", eng: "Emotion" }, 
+                A: { uzb: "Abstraktsiya", eng: "Abstraction" } 
+            };
+            
+            const leadingDimensionKey = Object.keys(finalScores).reduce((a, b) => finalScores[a] > finalScores[b] ? a : b);
+            const leadingDimensionName = dimensionMap[leadingDimensionKey][currentLang] || dimensionMap[leadingDimensionKey]['uzb'];
+            
+            let resultTitle = ``;
+            let resultAnalysis = "";
+            
+            // Natija logikasi (Tilga moslashtirilgan)
+            if (scores[leadingDimensionKey] > scores.TotalMax * 0.6) {
+                resultTitle = `${leadingDimensionName} Markazi (CORE)`;
+                resultAnalysis = (currentLang === 'uzb') ? `Sizning shaxsiyatingiz butunlay ${leadingDimensionName} tomonidan boshqariladi. Bu g'ayrioddiy diqqatni jamlashni ko'rsatadi. Siz o'zingizning to'liq versiyangizsiz, lekin boshqa o'lchovlarni rivojlantirish uchun biroz xavfni qabul qiling.` 
+                                : `Your personality is entirely dominated by ${leadingDimensionName}. This indicates extraordinary focus. You are a complete version of yourself, but take a small risk to develop other dimensions.`;
+            } else if (Math.abs(finalScores.R - finalScores.E) < 1 && scores.A < finalScores.R) {
+                 resultTitle = "Muvozanat Markazi (Hybrid)";
+                resultAnalysis = (currentLang === 'uzb') ? `Sizda Ratsionallik va Emotsiya o'lchovlari deyarli teng. Siz 'Ideal Gibrid'siz. Sizning g'ayrioddiy shaxsiyatingiz - bu doimiy muvozanat izlash ehtiyojidir. Doimiy o'zgarishda tinchlikni toping.`
+                                : `Your Rationality and Emotion scores are nearly equal. You are an 'Ideal Hybrid.' Your extraordinary nature is the constant need to seek balance. Find peace in continuous change.`;
+            } else {
+                resultTitle = "Tarqalgan Potensial (Scattered)";
+                resultAnalysis = (currentLang === 'uzb') ? `Natijalaringiz tarqoq. Siz o'zingizning kuchli tomonlaringizni to'liq aniqlamagansiz. O'zligingizni fokuslang va kuting, natijalar kutilmagan bo'ladi.`
+                                : `Your results are scattered. You haven't fully defined your strong sides. Focus your identity, and the results will be unexpected.`;
+            }
+
+            // Ballar jadvali
+            const tableLang = {
+                uzb: { dim: "O'lchov", score: "Ball", analysis: "Tahlil", R: "Ratsionallik", E: "Emotsiya", A: "Abstraktsiya" },
+                eng: { dim: "Dimension", score: "Score", analysis: "Analysis", R: "Rationality", E: "Emotion", A: "Abstraction" }
+            }[currentLang] || { dim: "Dimension", score: "Score", analysis: "Analysis", R: "Rationality", E: "Emotion", A: "Abstraction" };
+
+            const scoreTableHTML = `
+                <table class="score-table">
+                    <thead>
+                        <tr><th>${tableLang.dim}</th><th>${tableLang.score}</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>${tableLang.R}</td><td>${finalScores.R.toFixed(2)}</td></tr>
+                        <tr><td>${tableLang.E}</td><td>${finalScores.E.toFixed(2)}</td></tr>
+                        <tr><td>${tableLang.A}</td><td>${finalScores.A.toFixed(2)}</td></tr>
+                    </tbody>
+                </table>
+            `;
+
+            DOMElements.resultArea.innerHTML = `
+                <h2>${resultTitle}</h2>
+                ${scoreTableHTML}
+                <p>${resultAnalysis}</p>
+                <button onclick="window.location.reload()" style="margin-top: 30px; background-color: var(--text-color); color: white; border-radius: 15px; box-shadow: var(--soft-shadow);">Qayta Boshlash</button>
+            `;
+            // Natijada tugmani ham tilga moslashishini unutmang (real loyihada bu ham tarjima qilinadi)
+        }
+        
+        // 7. SOZLAMALAR MODALI
+        function openSettings() {
+            DOMElements.settingsModal.style.display = 'block';
+        }
+
+        function closeSettings() {
+            DOMElements.settingsModal.style.display = 'none';
+        }
+
+        // Boshlash
+        document.addEventListener('DOMContentLoaded', () => {
+            changeLanguage(); // Boshlang'ich tilni yuklash
+            changeTheme();    // Boshlang'ich temani yuklash
+            DOMElements.questionText.textContent = questionsData[0][currentLang];
+        });
+
+    </script>
+</body>
+</html>
