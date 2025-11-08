@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Game Portal | Asosiy Sahifa</title>
+    <style>
+        /* ==================== 1. RANG O'ZGARUVCHILARI (DEFAULT: HYPER BEAM DARK) ==================== */
+        :root {
+            /* DARK THEME: Hyper Beam */
+            --bg-color: #0d1a26; /* Deep Blue/Black */
+            --container-bg: #1e2833;
+            --text-color: #f0f8ff;
+            --primary-color: #39ff14; /* Asosiy rang: Neon Green */
+            --accent-color: #ff073a; /* Aksent rang: Neon Red/Pink */
+            --card-bg: #1c2730;
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.7);
+            --glow-primary: 0 0 10px rgba(57, 255, 20, 0.8);
+            --glow-accent: 0 0 10px rgba(255, 7, 58, 0.6);
+        }
+
+        /* YORQIN REJIM (LIGHT THEME) */
+        body.light-theme {
+            --bg-color: #f4f7f9;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #007bff; /* Blue */
+            --accent-color: #ffc107; /* Yellow */
+            --card-bg: #ffffff;
+            --shadow-card: 0 5px 20px rgba(0, 0, 0, 0.15);
+            --glow-primary: none;
+            --glow-accent: none;
+        }
+
+        /* ==================== 2. GLOBAL STIL VA LAYOUT ==================== */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.7s ease-in-out;
+            margin: 0;
+            padding-top: 90px;
+            min-height: 100vh;
+        }
+
+        /* NAVIGATSIYA va boshqa elementlar... (o'zgarishsiz) */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--container-bg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-shadow: var(--glow-primary);
+        }
+        
+        .settings-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .settings-nav select, .theme-toggle-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+        }
+        
+        .settings-nav select:focus, .theme-toggle-btn:hover {
+            border-color: var(--accent-color);
+            box-shadow: var(--glow-accent);
+        }
+
+        .theme-toggle-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            font-weight: 600;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-size: 4em;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            text-shadow: var(--glow-primary);
+            font-weight: 900;
+            animation: textFlow 2s ease-out;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.4em;
+            margin-bottom: 70px;
+            color: color-mix(in srgb, var(--text-color) 70%, transparent);
+            animation: textFlow 2.5s ease-out;
+        }
+        
+        @keyframes textFlow {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== 5. O'YIN KARTALARI (YANGI O'ZGARTIRISH) ==================== */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 40px;
+        }
+        
+        /* Kartani bosiladigan qilish uchun asosiy kartaning o'zini link qilib olamiz */
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            text-align: left;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s;
+            border: 2px solid var(--primary-color);
+            text-decoration: none; /* Link bo'lgani uchun tagidagi chiziqni olib tashlash */
+            color: var(--text-color); /* Link bo'lgani uchun matn rangini tiklash */
+            display: block; /* To'liq bosiladigan qilish */
+            perspective: 1000px;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-15px) rotateX(2deg) scale(1.03);
+            box-shadow: 0 20px 40px rgba(255, 7, 58, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        .card-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            text-shadow: var(--glow-accent);
+        }
+        
+        .game-card-body {
+            padding: 30px;
+        }
+
+        .game-card-body h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-shadow: var(--glow-primary);
+        }
+
+        .game-card-body p {
+            color: color-mix(in srgb, var(--text-color) 80%, transparent);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* Tugma stili (kartochka ichida bo'lsa ham, alohida stil berib turish) */
+        .play-btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 14px 35px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        /* Tugmaning o'zini hover qilishni olib tashladik, chunki butun karta hover bo'ladi */
+        .game-card:hover .play-btn {
+             background-color: color-mix(in srgb, var(--accent-color) 80%, black);
+             transform: scale(1.05); /* Tugma o'zini kattalashtirish */
+        }
+        
+        /* ==================== 6. FOOTER VA MOBILGA MOSLASHUV ==================== */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 60px;
+            background-color: var(--container-bg);
+            border-top: 1px solid var(--primary-color);
+            color: color-mix(in srgb, var(--text-color) 50%, transparent);
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            /* ... (Mobil sozlamalari) */
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+            .settings-nav {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .settings-nav select, .theme-toggle-btn {
+                flex-grow: 1;
+                font-size: 0.8em;
+                padding: 8px;
+            }
+            .welcome-title {
+                font-size: 3em;
+            }
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">GAMECENTER 🧠</div>
+        <div class="settings-nav">
+            <select id="languageSelect">
+                <option value="uz">O'zbek (UZ)</option>
+                <option value="ru">Русский (RU)</option>
+                <option value="en">English (EN)</option>
+                <option value="zh">中文 (ZH)</option>
+                <option value="ko">한국어 (KO)</option>
+            </select>
+            <button id="themeToggle" class="theme-toggle-btn">
+                <span id="themeIcon">☀️ Qorong'i</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h1 class="welcome-title" id="mainWelcome">O'yinlar Olami 🎮</h1>
+        <p class="welcome-subtitle" id="subWelcome">O'ynashni boshlash uchun o'yinni tanlang. Har bir o'yin yangi sarguzasht!</p>
+
+        <section class="game-grid" id="gameGrid">
+            
+            <a href="psihologtest.html" class="game-card" data-game-id="g1">
+                <div class="game-card-body">
+                    <div class="card-icon">🎭</div>
+                    <h2 id="g1Title">Psixologik Test</h2>
+                    <p id="g1Desc">O'zingizni bilib oling! Sizning asosiy xarakter turi, kuchli tomonlar va motivatsiyangiz.</p>
+                    <span class="play-btn" id="g1Play">Boshlash</span>
+                </div>
+            </a>
+
+            <a href="ident.html" class="game-card" data-game-id="g2">
+                <div class="game-card-body">
+                    <div class="card-icon">🆔</div>
+                    <h2 id="g2Title">Identifikatsiya Testi</h2>
+                    <p id="g2Desc">Mantiq va tahlil. Qiziqarli, qiyin va tezkor savollar orqali shaxsingizni aniqlang.</p>
+                    <span class="play-btn" id="g2Play">Boshlash</span>
+                </div>
+            </a>
+
+            <a href="guess_number.html" class="game-card" data-game-id="g3">
+                <div class="game-card-body">
+                    <div class="card-icon">#️⃣</div>
+                    <h2 id="g3Title">Raqamni Topish</h2>
+                    <p id="g3Desc">Mantiqiy o'yin. 1 dan 100 gacha bo'lgan raqamni topishga harakat qiling. Cheklangan urinishlar!</p>
+                    <span class="play-btn" id="g3Play">O'ynash</span>
+                </div>
+            </a>
+
+            <a href="#" class="game-card" data-game-id="g4">
+                <div class="game-card-body">
+                    <div class="card-icon">⚡️</div>
+                    <h2 id="g4Title">Tezlik Testi</h2>
+                    <p id="g4Desc">Miya mashg'uloti. Belirlangan vaqt ichida qancha oddiy masalani yechishingizni tekshiring.</p>
+                    <span class="play-btn" id="g4Play">Tez orada</span>
+                </div>
+            </a>
+
+            <a href="memory_game.html" class="game-card" data-game-id="g5">
+                <div class="game-card-body">
+                    <div class="card-icon">🧠</div>
+                    <h2 id="g5Title">Xotira Sinovi</h2>
+                    <p id="g5Desc">Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.</p>
+                    <span class="play-btn" id="g5Play">O'ynash</span>
+                </div>
+            </a>
+
+            <a href="cipher_break.html" class="game-card" data-game-id="g6">
+                <div class="game-card-body">
+                    <div class="card-icon">🔓</div>
+                    <h2 id="g6Title">Kod Buzish</h2>
+                    <p id="g6Desc">Kriptografik mantiqiy o'yin. Berilgan shifrni yechish orqali maxfiy kodni toping.</p>
+                    <span class="play-btn" id="g6Play">Boshlash</span>
+                </div>
+            </a>
+            
+            <a href="reaction_test.html" class="game-card" data-game-id="g7">
+                <div class="game-card-body">
+                    <div class="card-icon">🚥</div>
+                    <h2 id="g7Title">Rang Reaksiya</h2>
+                    <p id="g7Desc">Reaksiya tezligingizni tekshiring! Ekrandagi rang o'zgarishiga imkon qadar tez munosabat bildiring.</p>
+                    <span class="play-btn" id="g7Play">Test</span>
+                </div>
+            </a>
+            
+            <a href="#" class="game-card" data-game-id="g8">
+                <div class="game-card-body">
+                    <div class="card-icon">✨</div>
+                    <h2 id="g8Title">Bonus O'yin</h2>
+                    <p id="g8Desc">Ertaga kuting! Biz tez-tez yangi, qiziqarli o'yinlar qo'shib boramiz.</p>
+                    <span class="play-btn" id="g8Play">Kuting</span>
+                </div>
+            </a>
+
+
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p id="footerText"></p>
+    </footer>
+
+    <script>
+        // ==================== JAVASCRIPT MANTIQI (5 TIL LOKALIZATSIYASI) ====================
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const langSelect = document.getElementById('languageSelect');
+        let currentLanguage = localStorage.getItem('siteLang') || 'uz';
+
+        const TRANSLATIONS = {
+            // O'ZBEK TILI
+            uz: {
+                pageTitle: "Game Portal | Asosiy Sahifa", mainWelcome: "O'yinlar Olami 🎮", subWelcome: "O'ynashni boshlash uchun o'yinni tanlang. Har bir o'yin yangi sarguzasht!",
+                g1Title: "Psixologik Test", g1Desc: "O'zingizni bilib oling! Sizning asosiy xarakter turi, kuchli tomonlar va motivatsiyangiz.", g1Play: "Boshlash",
+                g2Title: "Identifikatsiya Testi", g2Desc: "Mantiq va tahlil. Qiziqarli, qiyin va tezkor savollar orqali shaxsingizni aniqlang.", g2Play: "Boshlash",
+                g3Title: "Raqamni Topish", g3Desc: "Mantiqiy o'yin. 1 dan 100 gacha bo'lgan raqamni topishga harakat qiling. Cheklangan urinishlar!", g3Play: "O'ynash",
+                g4Title: "Tezlik Testi", g4Desc: "Miya mashg'uloti. Belirlangan vaqt ichida qancha oddiy masalani yechishingizni tekshiring.", g4Play: "Tez orada",
+                g5Title: "Xotira Sinovi", g5Desc: "Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.", g5Play: "O'ynash",
+                g6Title: "Kod Buzish", g6Desc: "Kriptografik mantiqiy o'yin. Berilgan shifrni yechish orqali maxfiy kodni toping.", g6Play: "Boshlash",
+                g7Title: "Rang Reaksiya", g7Desc: "Reaksiya tezligingizni tekshiring! Ekrandagi rang o'zgarishiga imkon qadar tez munosabat bildiring.", g7Play: "Test",
+                g8Title: "Bonus O'yin", g8Desc: "Ertaga kuting! Biz tez-tez yangi, qiziqarli o'yinlar qo'shib boramiz.", g8Play: "Kuting",
+                themeDark: "Qorong'i", themeLight: "Yorqin", footerText: "© 2025 GameCenter. Barcha huquqlar himoyalangan. HyperBeam Portali."
+            },
+            // RUS TILI
+            ru: {
+                pageTitle: "Игровой Портал | Главная", mainWelcome: "Мир Игр 🎮", subWelcome: "Выберите игру, чтобы начать. Каждая игра - новое приключение!",
+                g1Title: "Психологический Тест", g1Desc: "Познайте себя! Ваш основной тип характера, сильные стороны и мотивация.", g1Play: "Начать",
+                g2Title: "Тест Идентификации", g2Desc: "Логика и анализ. Определите свою личность с помощью увлекательных, сложных и быстрых вопросов.", g2Play: "Начать",
+                g3Title: "Угадай Число", g3Desc: "Логическая игра. Попробуйте найти число от 1 до 100. Количество попыток ограничено!", g3Play: "Играть",
+                g4Title: "Тест на Скорость", g4Desc: "Тренировка мозга. Проверьте, сколько простых задач вы сможете решить за отведенное время.", g4Play: "Скоро",
+                g5Title: "Тест Памяти", g5Desc: "Визуальная память и концентрация. Попробуйте найти пары на карточках.", g5Play: "Играть",
+                g6Title: "Взлом Кода", g6Desc: "Криптографическая логическая игра. Найдите секретный код, разгадав данный шифр.", g6Play: "Начать",
+                g7Title: "Цветовая Реакция", g7Desc: "Проверьте скорость реакции! Реагируйте как можно быстрее на изменение цвета на экране.", g7Play: "Тест",
+                g8Title: "Бонус Игра", g8Desc: "Ждите завтра! Мы часто добавляем новые, интересные игры.", g8Play: "Ожидать",
+                themeDark: "Темная", themeLight: "Светлая", footerText: "© 2025 GameCenter. Все права защищены. HyperBeam Портал."
+            },
+            // INGLIZ TILI
+            en: {
+                pageTitle: "Game Portal | Home Page", mainWelcome: "World of Games 🎮", subWelcome: "Select a game to start playing. Every game is a new adventure!",
+                g1Title: "Psychological Test", g1Desc: "Get to know yourself! Your core personality type, strengths, and motivation.", g1Play: "Start",
+                g2Title: "Identification Test", g2Desc: "Logic and analysis. Define your identity through engaging, difficult, and rapid questions.", g2Play: "Start",
+                g3Title: "Guess The Number", g3Desc: "A logic game. Try to find the secret number between 1 and 100. Limited attempts!", g3Play: "Play Now",
+                g4Title: "Speed Test", g4Desc: "Brain training. See how many simple math problems you can solve within a set time.", g4Play: "Coming Soon",
+                g5Title: "Memory Challenge", g5Desc: "Visual memory and concentration. Try to find the matching pairs on the cards.", g5Play: "Play",
+                g6Title: "Cipher Break", g6Desc: "A cryptographic logic game. Find the secret code by deciphering the given cipher.", g6Play: "Start",
+                g7Title: "Color Reaction", g7Desc: "Test your reaction speed! Respond as quickly as possible to the color change on the screen.", g7Play: "Test",
+                g8Title: "Bonus Game", g8Desc: "Wait until tomorrow! We frequently add new, exciting games.", g8Play: "Wait",
+                themeDark: "Dark", themeLight: "Light", footerText: "© 2025 GameCenter. All rights reserved. HyperBeam Portal."
+            },
+            // XITOY TILI
+            zh: {
+                pageTitle: "游戏门户 | 主页", mainWelcome: "游戏世界 🎮", subWelcome: "选择一个游戏开始玩。每一次都是新的冒险！",
+                g1Title: "心理测试", g1Desc: "了解自己！您的核心性格类型、优势和动机。", g1Play: "开始",
+                g2Title: "身份鉴定测试", g2Desc: "逻辑与分析。通过引人入胜、困难而迅速的问题来定义您的身份。", g2Play: "开始",
+                g3Title: "猜数字", g3Desc: "逻辑游戏。尝试找到 1 到 100 之间的秘密数字。尝试次数有限！", g3Play: "现在玩",
+                g4Title: "速度测试", g4Desc: "大脑训练。检查您在规定时间内可以解决多少简单的数学问题。", g4Play: "即将推出",
+                g5Title: "记忆挑战", g5Desc: "视觉记忆和注意力集中。尝试在卡片上找到匹配的对。", g5Play: "玩",
+                g6Title: "密码破解", g6Desc: "一种加密逻辑游戏。通过解密给定的密码来找到秘密代码。", g6Play: "开始",
+                g7Title: "颜色反应", g7Desc: "测试您的反应速度！尽快对屏幕上的颜色变化做出反应。", g7Play: "测试",
+                g8Title: "奖励游戏", g8Desc: "等到明天！我们经常添加新的、令人兴奋的游戏。", g8Play: "等待",
+                themeDark: "黑暗", themeLight: "光明", footerText: "© 2025 GameCenter. 版权所有。HyperBeam 门户。"
+            },
+            // KOREYS TILI
+            ko: {
+                pageTitle: "게임 포털 | 홈", mainWelcome: "게임의 세계 🎮", subWelcome: "플레이할 게임을 선택하세요. 모든 게임은 새로운 모험입니다!",
+                g1Title: "심리 테스트", g1Desc: "자신을 알아보세요! 당신의 핵심 성격 유형, 강점 및 동기.", g1Play: "시작",
+                g2Title: "식별 테스트", g2Desc: "논리와 분석. 흥미롭고 어렵고 빠른 질문을 통해 당신의 정체성을 정의하세요.", g2Play: "시작",
+                g3Title: "숫자 맞추기", g3Desc: "논리 게임. 1부터 100 사이의 비밀 숫자를 찾아보세요. 시도 횟수 제한!", g3Play: "지금 플레이",
+                g4Title: "속도 테스트", g4Desc: "두뇌 훈련. 정해진 시간 안에 얼마나 많은 간단한 수학 문제를 풀 수 있는지 확인하세요.", g4Play: "출시 예정",
+                g5Title: "기억력 도전", g5Desc: "시각적 기억력과 집중력. 카드에서 짝을 찾아보세요.", g5Play: "플레이",
+                g6Title: "암호 해독", g6Desc: "암호화 논리 게임. 주어진 암호를 해독하여 비밀 코드를 찾으십시오.", g6Play: "시작",
+                g7Title: "색상 반응", g7Desc: "반응 속도를 테스트하세요! 화면의 색상 변화에 최대한 빨리 반응하세요.", g7Play: "테스트",
+                g8Title: "보너스 게임", g8Desc: "내일까지 기다려주세요! 우리는 자주 새롭고 흥미로운 게임을 추가합니다.", g8Play: "기다림",
+                themeDark: "어두운", themeLight: "밝은", footerText: "© 2025 GameCenter. 모든 권리 보유. HyperBeam 포털."
+            }
+        };
+
+        // --- FUNKSIYALAR ---
+        function updateContent(lang) {
+            const t = TRANSLATIONS[lang];
+            
+            // Asosiy sahifa matnlari
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('mainWelcome').textContent = t.mainWelcome;
+            document.getElementById('subWelcome').textContent = t.subWelcome;
+            document.getElementById('footerText').innerHTML = t.footerText;
+            
+            // O'yin kartalari (8 ta elementni yangilash)
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`g${i}Title`).textContent = t[`g${i}Title`];
+                document.getElementById(`g${i}Desc`).textContent = t[`g${i}Desc`];
+                document.getElementById(`g${i}Play`).textContent = t[`g${i}Play`];
+            }
+
+            updateThemeButtonText(document.body.classList.contains('light-theme'));
+        }
+
+        function updateThemeButtonText(isLight) {
+            const lang = currentLanguage;
+            const t = TRANSLATIONS[lang];
+            themeIcon.textContent = isLight 
+                ? `🌙 ${t.themeDark}` 
+                : `☀️ ${t.themeLight}`;
+        }
+        
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            
+            updateThemeButtonText(isLight);
+            
+            localStorage.setItem('gamePortalTheme', isLight ? 'light' : 'dark');
+        }
+
+        function loadSettings() {
+            // Tilni tiklash
+            langSelect.value = currentLanguage;
+            
+            // Mavzuni tiklash
+            const savedTheme = localStorage.getItem('gamePortalTheme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+            // Kontent va mavzu tugmasini yuklash
+            updateContent(currentLanguage);
+        }
+
+        // --- EVENT LISTENERS ---
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        langSelect.addEventListener('change', function() {
+            currentLanguage = this.value;
+            localStorage.setItem('siteLang', currentLanguage);
+            updateContent(currentLanguage);
+        });
+
+        // Sayt yuklanganda ishga tushirish
+        loadSettings();
+    </script>
+</body>
+</html>
