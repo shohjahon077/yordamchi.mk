@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Shaxsiyat Tahlili</title>
+    <style>
+        /* ==================== 1. GLOBAL O'ZGARUVCHILAR VA RANG PALITRASI ==================== */
+        :root {
+            /* Yorqin (Light) rejim */
+            --bg-color: #f0f4f8;
+            --container-bg: #ffffff;
+            --text-color: #212529;
+            --primary-color: #007bff; /* Moviy (Primary) */
+            --primary-dark: #0056b3;
+            --secondary-color: #17a2b8; /* Turkuaz (Accent) */
+            --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Qorong'i (Dark) rejim ranglari */
+        body.dark-theme {
+            --bg-color: #1a1a2e;
+            --container-bg: #2c2c44;
+            --text-color: #e0e0f0;
+            --primary-color: #ff5722; 
+            --primary-dark: #e64a19;
+            --secondary-color: #64ffda;
+            --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.4);
+            --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ==================== 2. ASOSIY VAZIYAT VA TIPOGRAFIYA ==================== */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.4s, color 0.4s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            max-width: 750px;
+            width: 100%;
+            transition: background-color 0.4s, box-shadow 0.4s;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            transition: color 0.4s;
+        }
+
+        /* ==================== 3. SOZLAMALAR VA YOSH TANLASH QISMI ==================== */
+        #settingsAndAge {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: color-mix(in srgb, var(--primary-color) 5%, var(--container-bg));
+            border: 2px dashed var(--primary-color);
+        }
+
+        .setting-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-basis: 30%; /* Uch element qatorga joylashishi uchun */
+        }
+        .setting-item label {
+             font-weight: 600;
+             margin-bottom: 8px;
+             color: var(--primary-dark);
+        }
+
+        select, input[type="number"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            font-size: 1em;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* Start Button */
+        #startQuizButton {
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #startQuizButton:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ==================== 4. SAVOLLAR STILI ==================== */
+        #quizForm {
+            display: none;
+        }
+        .quiz-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: color-mix(in srgb, var(--secondary-color) 5%, var(--container-bg));
+            border-radius: 12px;
+            border-left: 5px solid var(--secondary-color);
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out; 
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        p.question {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+        
+        label {
+            display: block;
+            margin: 10px 0;
+            padding: 15px;
+            background-color: var(--container-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid color-mix(in srgb, var(--text-color) 10%, var(--container-bg));
+        }
+        label:hover {
+            background-color: color-mix(in srgb, var(--primary-color) 10%, var(--container-bg));
+            border-color: var(--primary-color);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-hover);
+        }
+
+        input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            accent-color: var(--primary-color);
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background-color: #28a745; /* Yashil rang */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        /* ==================== 5. ANIMATSIYA VA NATIJA STILI ==================== */
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: color-mix(in srgb, var(--container-bg) 95%, transparent);
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; transition: opacity 0.5s ease;
+        }
+        .spinner {
+            border: 10px solid color-mix(in srgb, var(--primary-color) 20%, transparent); 
+            border-top: 10px solid var(--primary-color);
+            border-radius: 50%; width: 80px; height: 80px;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            margin-bottom: 30px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #loading p { font-size: 1.7em; font-weight: bold; color: var(--primary-dark); }
+
+        #result {
+            padding: 30px;
+            background-color: color-mix(in srgb, var(--primary-color) 10%, var(--bg-color));
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 30px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #result h2 { color: var(--primary-dark); font-size: 2em; margin-top: 0; }
+        #result h3 { color: var(--secondary-color); margin-top: 25px; font-size: 1.5em; }
+        
+        /* ==================== 6. MOBILGA MOSLASHUV (MEDIA QUERIES) ==================== */
+        @media (max-width: 600px) {
+            .container { padding: 20px; margin: 10px; }
+            h1 { font-size: 2em; }
+            .setting-group { flex-direction: column; }
+            .setting-item { width: 100%; flex-basis: auto; } /* Mobil uchun barchasi bitta ustunda */
+            select, input[type="number"] { width: 100%; min-width: auto; }
+            #startQuizButton, button[type="submit"] { font-size: 1.1em; padding: 15px; }
+            p.question { font-size: 1em; }
+            label { font-size: 0.9em; padding: 10px; }
+            .spinner { width: 60px; height: 60px; }
+            #loading p { font-size: 1.4em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="mainTitle">Shaxsiyat Tahlili</h1>
+
+    <div id="settingsAndAge">
+        <div class="setting-group">
+            <div class="setting-item">
+                <label for="languageSelect" id="labelLang">Tilni tanlang:</label>
+                <select id="languageSelect">
+                    <option value="uz">O'zbek (UZ)</option>
+                    <option value="en">English (EN)</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="themeSelect" id="labelTheme">Mavzuni tanlang:</label>
+                <select id="themeSelect">
+                    <option value="light" id="themeLight">Yorqin rejim</option>
+                    <option value="dark" id="themeDark">Qorong'i rejim</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="ageInput" id="labelAge">Yoshingizni kiriting:</label>
+                <input type="number" id="ageInput" min="7" max="100" placeholder="Masalan: 28" required>
+            </div>
+        </div>
+        <button type="button" id="startQuizButton">Testni Boshlash</button>
+    </div>
+
+    <form id="quizForm">
+        <div id="quizQuestionsContainer">
+            </div>
+        
+        <button type="submit" id="submitButton"></button>
+    </form>
+
+    <div id="result">
+        <h2 id="resultTitle"></h2>
+        <h3 id="styleName"></h3>
+        <p id="styleDescription"></p>
+        <h3 id="recommendationsHeader"></h3>
+        <p id="recommendations"></p>
+    </div>
+</div>
+
+<div id="loading">
+    <div class="spinner"></div>
+    <p id="loadingText"></p>
+    <p id="loadingSubText" style="font-size: 1em; font-weight: normal;"></p>
+</div>
+
+<script>
+    // ==================== JAVASCRIPT MANTIQI ====================
+
+    // --- 1. DOM Elementlar va Global O'zgaruvchilar ---
+    let currentLanguage = 'uz'; 
+    let currentQuestions = [];
+    const ageInput = document.getElementById('ageInput');
+    const startButton = document.getElementById('startQuizButton');
+    const quizForm = document.getElementById('quizForm');
+    const quizContainer = document.getElementById('quizQuestionsContainer');
+    const themeSelect = document.getElementById('themeSelect');
+    const langSelect = document.getElementById('languageSelect');
+    const submitButton = document.getElementById('submitButton');
+    const loadingScreen = document.getElementById('loading');
+    const resultDiv = document.getElementById('result');
+
+
+    // --- 2. TARJIMA VA NATIJALAR MA'LUMOTI ---
+    const TRANSLATIONS = {
+        uz: {
+            title: "Shaxsiyat Tahlili", labelLang: "Tilni tanlang:", labelTheme: "Mavzuni tanlang:", labelAge: "Yoshingizni kiriting:",
+            themeLight: "Yorqin rejim", themeDark: "Qorong'i rejim", start: "Testni Boshlash", submit: "Tahlilni Boshlash",
+            alertAge: "Iltimos, haqiqiy yoshingizni kiriting (7 dan 100 gacha).", alertAnswer: "Iltimos, barcha savollarga javob bering!",
+            loading: "Ma'lumotlar Tahlil Qilinmoqda...", loadingSub: "Bu 3 soniya vaqtni oladi. Sabr qiling.",
+            resultTitle: "✅ Natija: Sizning Asosiy Xarakter Tarzingiz", recommendationsHeader: "Kengaytirilgan Tahlil va Tavsiyalar (Nimani Qilishingiz Kerak):",
+            A_name: "Analitik (Tizimli Mutaxassis)", A_desc: "Sizning kuchingiz **chuqur tahlil, mantiqiy tizimlilik va ehtiyotkor rejalashtirishda**.", A_rec: "🔥 **Rivojlanish uchun Tavsiya:** Tezlik mukammallikdan muhimroq ekanini unutmang. Odamlar bilan ishlashda **aloqalarning hissiy tomonlariga** ham ko'proq e'tibor qarating.",
+            B_name: "Emotsional (Gumanitar Koordinator)", B_desc: "Sizning asosiy diqqat markazingiz **insonlar, ularning his- tuyg'ulari va munosabatlar**.", B_rec: "🔥 **Rivojlanish uchun Tavsiya:** Shaxsiy chegaralaringizni belgilashni va 'Yo'q' deyishni o'rganing. Muhim qarorlarda **hissiyotlarni faktlar bilan muvozanatlashga** harakat qiling.",
+            C_name: "Dominant (Harakatga Yo'naltirilgan Lider)", C_desc: "Sizning asosiy yondashuvingiz **tezkorlik, qat'iyatlilik va natijaga erishish**.", C_rec: "🔥 **Rivojlanish uchun Tavsiya:** Tezkorlikka intilish ba'zan **katta xavflarga** olib keladi. Atrofdagilarga **ularning g'oyalari uchun ko'proq imkoniyatlar** bering.",
+            TIE_name: "Muvozanatli (Moslashuvchan Strateg)", TIE_desc: "Sizda barcha uslublar deyarli teng taqsimlangan. Siz har qanday vaziyatga **o'z uslubingizni tezda o'zgartira** olasiz.", TIE_rec: "🔥 **Rivojlanish uchun Tavsiya:** Eng muhim vaziyatlarda **o'zingizning asosiy ustuvor uslubingizni** aniqlashga e'tibor bering."
+        },
+        en: {
+            title: "Personality Analysis", labelLang: "Select Language:", labelTheme: "Select Theme:", labelAge: "Enter Your Age:",
+            themeLight: "Light Mode", themeDark: "Dark Mode", start: "Start Quiz", submit: "Start Analysis",
+            alertAge: "Please enter a valid age (between 7 and 100).", alertAnswer: "Please answer all questions!",
+            loading: "Analyzing Data...", loadingSub: "This will take about 3 seconds. Please wait.",
+            resultTitle: "✅ Result: Your Core Personality Style", recommendationsHeader: "Extended Analysis and Recommendations (What You Should Do):",
+            A_name: "Analytic (Systematic Specialist)", A_desc: "Your strength lies in **deep analysis, logical systematization, and careful planning**.", A_rec: "🔥 **Recommendation for Growth:** Learn to reduce the time spent on analysis; **speed is sometimes better than perfection**. Focus on the **emotional aspects of relationships** in addition to logic.",
+            B_name: "Emotional (Humanitarian Coordinator)", B_desc: "Your main focus is **people, their feelings, and relationships**.", B_rec: "🔥 **Recommendation for Growth:** Learn to establish and defend your personal boundaries. Try to **balance emotions with facts** in important decisions.",
+            C_name: "Dominant (Action-Oriented Leader)", C_desc: "Your primary approach is **speed, determination, and achieving results**.", C_rec: "🔥 **Recommendation for Growth:** The pursuit of speed can sometimes lead to **major risks**. Give others **more opportunities for their ideas**, as your way is not always the only correct one.",
+            TIE_name: "Balanced (Adaptive Strategist)", TIE_desc: "All styles are almost equally distributed in you. You are able to **quickly change your approach** according to the situation.", TIE_rec: "🔥 **Recommendation for Growth:** While maintaining flexibility, focus on identifying your **core priority style** in the most critical situations."
+        }
+    };
+
+    const QUESTIONS_DATA = {
+        uz: {
+            under18: [
+                { q: "1. Do'stingiz muammoga duch kelganda, siz unga qanday yordam berasiz?", a: { A: "Muammoni qismlarga bo'lib, yechim plani tuzaman.", B: "Uning his-tuyg'ularini tinglayman va qo'llab-quvvatlayman.", C: "Muammoni hal qilishning eng tez yo'lini aytaman va harakat qilishga undayman." } },
+                { q: "2. Katta loyiha oxirgi muddati yaqinlashganda, nima qilasiz?", a: { A: "Qolgan barcha ishlar ro'yxatini tuzib, tartiblayman.", B: "Loyihani yanada yaxshi qilish uchun ijodiy g'oyalar qo'shishga harakat qilaman.", C: "Jamoani yig'ib, majburiyatlarni qat'iy ravishda taqsimlayman." } },
+                { q: "3. Yangi qoidalar joriy etilsa (maktabda/uyda), birinchi reaksiyangiz?", a: { A: "Qoidalarning mantiqiy asosini tushunishga harakat qilaman.", B: "Bu qoidalar boshqalarga qanday ta'sir qilishini va ularning kayfiyatini o'ylayman.", C: "Agar ular maqsadga to'sqinlik qilsa, ularni chetlab o'tish yo'lini izlayman." } },
+                { q: "4. Siz uchun ideal o'quv materiali qanday bo'lishi kerak?", a: { A: "Aniq diagrammalar, faktlar va qisqacha xulosalar bo'lgan, tartibli material.", B: "Qiziqarli hikoyalar va muallifning shaxsiy fikri aks etgan material.", C: "Faqat eng muhim ma'lumotni o'z ichiga olgan, tez natija beradigan qo'llanma." } },
+                { q: "5. Jamoada kimdir o'z vazifasini uddalay olmasa, nima qilasiz?", a: { A: "Muammoning texnik sababini tahlil qilaman va tuzatish usulini ishlab chiqaman.", B: "Uning sabriga yordam beraman, vaziyatni yumshatishga urinaman.", C: "Vazifani o'z zimmamga olaman yoki uni uddalay oladigan boshqa shaxsga topshiraman." } },
+                { q: "6. Shaxsiy qadriyatlaringiz nimaga asoslanadi?", a: { A: "Adolat, ob'ektivlik va haqqoniylikka.", B: "Hamdardlik, ishonch va samimiylikka.", C: "Qat'iyatlilik, mustaqillik va muvaffaqiyatga." } },
+                { q: "7. Qanday turdagi film yoki kitobni afzal ko'rasiz?", a: { A: "Ilmiy fantastika yoki tarixiy, mantiqiy syujetga ega asarlar.", B: "Dramalar, inson munosabatlari va his-tuyg'ularini ochib beruvchi asarlar.", C: "Ekshn yoki trillerlar, tezkor harakatlar va keskin g'alabalarga ega asarlar." } },
+                { q: "8. Biror ishni bajarishga 'ilhom' topa olmasangiz, nima qilasiz?", a: { A: "Jadvalimni tekshiraman va uni bajarishning eng maqbul vaqtini aniqlayman.", B: "Boshqa ishga chalg'ib, o'zimni yaxshi his qilishni kutaman.", C: "O'zimni kuch bilan majburlayman, chunki natijaga erishish muhim." } },
+            ],
+            over18: [
+                { q: "1. Karyerada muhim qaror qabul qilishdan oldin, nima qilasiz?", a: { A: "SWOT tahlil (kuchli/zaif tomonlar, xavflar) o'tkazaman.", B: "Ushbu qarorning shaxsiy qadriyatlarimga qanchalik mos kelishini his qilaman.", C: "Hamkasblar va rahbarlar orasida kimning qo'llab-quvvatlashini aniqlayman." } },
+                { q: "2. Moliyaviy xavf-xatarlar haqida gap ketganda, yondashuvingiz qanday?", a: { A: "Barcha xavflarni hisoblab, minimal riskli sarmoyani tanlayman.", B: "Katta daromad va imkoniyatlar uchun o'rtacha xavfga kirishishga tayyorman.", C: "Tez va katta daromad beradigan, ammo yuqori riskli loyihaga pul tikaman." } },
+                { q: "3. Jamoada keskin norozilik paydo bo'lsa, sizning boshqaruv yondashuvingiz?", a: { A: "Har bir tomonning dalillarini sovuqqonlik bilan o'rganish va ob'ektiv yechim topish.", B: "Hamma tinglanayotganini his qilishini ta'minlash va munosabatlarni tiklashga ustuvorlik berish.", C: "Vaziyatni tezda hal qilish va harakat rejasini qat'iyat bilan amalga oshirish." } },
+                { q: "4. Kelajak uchun strategik rejalar tuzishda nimaga ko'proq e'tibor berasiz?", a: { A: "Maqsadlarning o'lchanadiganligi, aniq xavflar va yechimlar ro'yxati.", B: "Shaxsiy qoniqish, jamoaning ruhiga ta'sir va uzoq muddatli munosabatlar.", C: "Tez va katta g'alabalarga olib keladigan, raqibni ortda qoldiradigan imkoniyatlarga." } },
+                { q: "5. Shaxsiy tanqidni qanday qabul qilasiz?", a: { A: "Tanqidning mantiqiy asosini izlayman va dalillarga asoslangan bo'lsa, uni qabul qilaman.", B: "Tanqidning ortidagi shaxsning hissiy holatini tushunishga harakat qilaman.", C: "Agar u bevosita natijaga bog'liq bo'lmasa, uni e'tiborsiz qoldiraman." } },
+                { q: "6. Kompaniyangizning asosiy 'qiymat'ini nima tashkil etishi kerak?", a: { A: "Yuqori samaradorlik va optimal operatsion tizim.", B: "Mijozlar va xodimlar orasidagi yuqori darajadagi ishonch va hurmat.", C: "Bozorda dominant mavqega ega bo'lish va tezkor o'sish." } },
+                { q: "7. Qiyin sharoitda qanday motivatsiya usulini qo'llaysiz?", a: { A: "Maqsadlarga erishishdan keladigan aniq foyda va mukofotlarni eslataman.", B: "Jamoa orasidagi aloqalarni mustahkamlayman va hissiy qo'llab-quvvatlayman.", C: "Men ularga shaxsan o'rnak bo'laman va to'g'ridan-to'g'ri harakatga undayman." } },
+                { q: "8. Raqamli ma'lumotlar bilan ishlashda afzal ko'rgan vositangiz?", a: { A: "Keng tahlil imkoniyatlari bo'lgan jadval (Excel/Sheets).", B: "Jamoaviy hamkorlik va muloqotni osonlashtiradigan vizual vositalar.", C: "Tezkor qaror qabul qilish uchun kerakli yagona muhim ko'rsatkichni ko'rsatadigan dashboard." } },
+            ]
+        },
+        en: {
+            under18: [
+                { q: "1. When a friend faces a problem, how do you help?", a: { A: "I break down the problem and create an action plan for a solution.", B: "I listen to their feelings and let them know I support them emotionally.", C: "I tell them the quickest way to solve the problem and push them to act now." } },
+                { q: "2. When a big project deadline nears, what do you do?", a: { A: "I list all remaining tasks and prioritize them logically.", B: "I try to add creative ideas to make the project even better.", C: "I gather the team and strictly delegate responsibilities for immediate completion." } },
+                { q: "3. What is your first reaction to a new rule (at school/home)?", a: { A: "I try to understand the logical basis of the rule.", B: "I think about how this rule will affect others' feelings and mood.", C: "If it hinders my goal, I look for a way around it." } },
+                { q: "4. What makes an ideal learning material for you?", a: { A: "Organized material with clear diagrams, facts, and concise summaries.", B: "Material containing interesting stories, real-life examples, and personal insights.", C: "A guide that only includes the most crucial information for quick results." } },
+                { q: "5. If someone on your team fails a task, what do you do?", a: { A: "I analyze the technical reason for the failure and develop a fix.", B: "I try to comfort them, ease the tension, and raise their spirits.", C: "I take over the task myself or assign it to someone who can handle it." } },
+                { q: "6. What are your personal values based on?", a: { A: "Justice, objectivity, and truthfulness.", B: "Empathy, trust, and sincerity.", C: "Determination, independence, and success." } },
+                { q: "7. What kind of movie or book do you prefer?", a: { A: "Sci-fi or historical works with a strong, logical plot.", B: "Dramas, exploring human relationships and emotions.", C: "Action or thrillers, with fast-paced action and sharp victories." } },
+                { q: "8. If you can't find 'inspiration' to do a task, what do you do?", a: { A: "I check my schedule and determine the optimal time to complete it.", B: "I distract myself with another activity and wait until I feel better.", C: "I force myself to do it, because achieving the result is what matters." } },
+            ],
+            over18: [
+                { q: "1. What is the most important criterion for investing in a new business idea?", a: { A: "Market analysis, ROI projection, and competitive advantage.", B: "The social impact of the idea and the value it creates for the community.", C: "The strength and reliability of the people executing the idea." } },
+                { q: "2. What is your approach when dealing with financial risks?", a: { A: "Analyzing all risks and selecting the investment with minimal risk guaranteed.", B: "Willing to take moderate risk for greater potential returns and opportunities.", C: "Investing in a high-risk project that promises quick and significant returns." } },
+                { q: "3. If sharp disagreement arises in a team, what is your management approach?", a: { A: "Coolly examining the arguments of each side and proposing an objective solution.", B: "Prioritizing the restoration of relationships and ensuring everyone feels heard.", C: "Resolving the situation quickly and decisively executing an action plan." } },
+                { q: "4. What do you focus on most when creating strategic plans for the future?", a: { A: "Measurable goals, a list of precise risks, and contingency plans.", B: "Personal satisfaction, the impact on team morale, and long-term relationships.", C: "Opportunities that lead to quick, major victories and outperforming the competition." } },
+                { q: "5. How do you handle personal criticism?", a: { A: "I look for the logical basis of the criticism and accept it if it's fact-based.", B: "I try to understand the emotional state of the person behind the criticism.", C: "I ignore it if it's not directly related to the result I'm trying to achieve." } },
+                { q: "6. What should constitute your company's core 'value'?", a: { A: "High efficiency and an optimal operational system.", B: "A high level of trust and respect between customers and employees.", C: "Achieving a dominant market position and rapid growth." } },
+                { q: "7. What method of motivation do you use in difficult circumstances?", a: { A: "Reminding the team of the clear benefits and rewards from achieving the goals.", B: "Strengthening bonds within the team and providing emotional support.", C: "I personally lead by example and push them directly into action." } },
+                { q: "8. What is your preferred tool when working with digital data?", a: { A: "Spreadsheets (Excel/Sheets) with extensive analysis capabilities.", B: "Visual tools that facilitate collaboration and communication.", C: "A dashboard showing the single most important KPI needed for a quick decision." } },
+            ]
+        }
+    };
+
+
+    // --- 3. FUNKSIYALAR ---
+
+    // Sozlamalar va matnlarni yangilash
+    function updateContent() {
+        const lang = currentLanguage;
+        const t = TRANSLATIONS[lang];
+
+        document.getElementById('pageTitle').textContent = t.title;
+        document.getElementById('mainTitle').textContent = t.title;
+        document.getElementById('labelLang').textContent = t.labelLang;
+        document.getElementById('labelTheme').textContent = t.labelTheme;
+        document.getElementById('labelAge').textContent = t.labelAge;
+        document.getElementById('themeLight').textContent = t.themeLight;
+        document.getElementById('themeDark').textContent = t.themeDark;
+        startButton.textContent = t.start;
+        submitButton.textContent = t.submit;
+        document.getElementById('loadingText').textContent = t.loading;
+        document.getElementById('loadingSubText').textContent = t.loadingSub;
+        
+        // Agar test ko'rsatilgan bo'lsa, savollarni ham qayta render qilish
+        if (quizForm.style.display === 'block') {
+             renderQuestions();
+        }
+    }
+
+    // Savollarni HTMLga generatsiya qilish
+    function renderQuestions() {
+        quizContainer.innerHTML = '';
+        if (currentQuestions.length === 0) return;
+
+        currentQuestions.forEach((qObj, index) => {
+            const qNum = index + 1;
+            let html = `
+                <div class="quiz-section">
+                    <p class="question">${qNum}. ${qObj.q}</p>`;
+
+            for (const key in qObj.a) {
+                html += `
+                    <label>
+                        <input type="radio" name="q${qNum}" value="${key}" required> ${key}) ${qObj.a[key]}
+                    </label>`;
+            }
+            html += `</div>`;
+            quizContainer.innerHTML += html;
+        });
+    }
+
+    // Natijalarni ko'rsatish
+    function displayResult(resultType) {
+        const t = TRANSLATIONS[currentLanguage];
+        let styleName, description, recommendations;
+
+        if (resultType === 'A') {
+            styleName = t.A_name; description = t.A_desc; recommendations = t.A_rec;
+        } else if (resultType === 'B') {
+            styleName = t.B_name; description = t.B_desc; recommendations = t.B_rec;
+        } else if (resultType === 'C') {
+            styleName = t.C_name; description = t.C_desc; recommendations = t.C_rec;
+        } else {
+            styleName = t.TIE_name; description = t.TIE_desc; recommendations = t.TIE_rec;
+        }
+
+        document.getElementById('resultTitle').textContent = t.resultTitle;
+        document.getElementById('recommendationsHeader').textContent = t.recommendationsHeader;
+        document.getElementById('styleName').textContent = styleName;
+        document.getElementById('styleDescription').textContent = description;
+        document.getElementById('recommendations').textContent = recommendations;
+
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => { 
+            loadingScreen.style.display = 'none';
+            resultDiv.style.display = 'block';
+            submitButton.disabled = false;
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }, 500);
+    }
+
+
+    // --- 4. TINGLOVCHILAR (EVENT LISTENERS) ---
+
+    // Tilni o'zgartirish
+    langSelect.addEventListener('change', function() {
+        currentLanguage = this.value;
+        updateContent();
+    });
+
+    // Mavzuni o'zgartirish
+    themeSelect.addEventListener('change', function() {
+        document.body.classList.toggle('dark-theme', this.value === 'dark');
+    });
+
+    // Testni boshlash
+    startButton.addEventListener('click', function() {
+        const age = parseInt(ageInput.value);
+        const lang = currentLanguage;
+
+        if (isNaN(age) || age < 7 || age > 100) {
+            alert(TRANSLATIONS[lang].alertAge);
+            return;
+        }
+
+        if (age < 18) {
+            currentQuestions = QUESTIONS_DATA[lang].under18;
+        } else {
+            currentQuestions = QUESTIONS_DATA[lang].over18;
+        }
+
+        renderQuestions();
+
+        document.getElementById('settingsAndAge').style.display = 'none';
+        quizForm.style.display = 'block';
+        quizForm.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Formani yuborish (Tahlil qilish) - XATO TO'G'IRLANGAN
+    quizForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const totalQuestions = currentQuestions.length;
+        
+        let allAnswered = true;
+        const counts = { A: 0, B: 0, C: 0 };
+
+        for (let i = 1; i <= totalQuestions; i++) {
+            const qName = `q${i}`;
+            const checkedElement = form.querySelector(`input[name="${qName}"]:checked`);
+            
+            if (checkedElement) {
+                counts[checkedElement.value]++;
+            } else {
+                allAnswered = false;
+                break; 
+            }
+        }
+
+        if (!allAnswered) {
+            alert(TRANSLATIONS[currentLanguage].alertAnswer);
+            return;
+        }
+
+        // Animatsiyani boshlash
+        submitButton.disabled = true;
+        resultDiv.style.display = 'none';
+        loadingScreen.style.display = 'flex';
+        setTimeout(() => { loadingScreen.style.opacity = '1'; }, 10);
+
+        // Natijalarni hisoblash
+        setTimeout(() => {
+            let resultType = '';
+            let maxCount = 0;
+            let tied = false;
+
+            for (const type in counts) {
+                if (counts[type] > maxCount) {
+                    maxCount = counts[type];
+                    resultType = type;
+                    tied = false;
+                } else if (counts[type] === maxCount) {
+                    tied = true;
+                }
+            }
+            if (tied && maxCount > 0) {
+                resultType = 'TIE';
+            }
+
+            displayResult(resultType);
+        }, 3000); 
+    });
+
+    // Sayt yuklanganda kontentni o'zbek tiliga moslash
+    updateContent();
+</script>
+
+</body>
+</html>
