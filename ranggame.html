@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎨 Rang Reaksiya | Reaksiya Tezligi Testi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== GLOBAL VARIABLES ===== */
+    :root {
+      --bg: #0c0b1a;
+      --surface: #1a182e;
+      --card: #262340;
+      --text: #e0e0ff;
+      --accent: #ff2a6d;
+      --ready: #ff6b6b;
+      --go: #00f3ff;
+      --glass: rgba(30, 28, 50, 0.6);
+      --glow-ready: 0 0 20px rgba(255, 107, 107, 0.6);
+      --glow-go: 0 0 30px rgba(0, 243, 255, 0.8);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --card: #f1f3f5;
+      --text: #212529;
+      --accent: #e63946;
+      --ready: #ff6b6b;
+      --go: #1d7a7a;
+      --glass: rgba(255, 255, 255, 0.9);
+      --glow-ready: 0 0 12px rgba(255, 107, 107, 0.4);
+      --glow-go: 0 0 16px rgba(29, 122, 122, 0.5);
+    }
+
+    [data-theme="neon"] {
+      --bg: #000;
+      --surface: #0a001a;
+      --card: #0f002a;
+      --text: #00ffea;
+      --accent: #ff00f7;
+      --ready: #ff2a6d;
+      --go: #00ffaa;
+      --glass: rgba(15, 0, 42, 0.8);
+      --glow-ready: 0 0 25px rgba(255, 42, 109, 0.8);
+      --glow-go: 0 0 35px rgba(0, 255, 170, 0.9);
+    }
+
+    [data-theme="nature"] {
+      --bg: #0d1b1e;
+      --surface: #1b2a2d;
+      --card: #2a3a3d;
+      --text: #d0f0c0;
+      --accent: #4ade80;
+      --ready: #fbbf24;
+      --go: #4ade80;
+      --glass: rgba(42, 58, 61, 0.7);
+      --glow-ready: 0 0 15px rgba(251, 191, 36, 0.5);
+      --glow-go: 0 0 20px rgba(74, 222, 128, 0.6);
+    }
+
+    [data-theme="cyber"] {
+      --bg: #000;
+      --surface: #050510;
+      --card: #0b0b20;
+      --text: #00ffaa;
+      --accent: #00f3ff;
+      --ready: #ff2a6d;
+      --go: #00f3ff;
+      --glass: rgba(11, 11, 32, 0.85);
+      --glow-ready: 0 0 20px rgba(255, 42, 109, 0.7);
+      --glow-go: 0 0 40px rgba(0, 243, 255, 0.9);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #1a172d);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ===== HEADER ===== */
+    .lang-switcher {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lang-btn {
+      width: 36px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: none;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover { transform: scale(1.1); }
+    .lang-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #000;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin: 60px 0 10px;
+      text-align: center;
+      background: linear-gradient(90deg, var(--accent), var(--go), #a1c4fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 25px;
+      max-width: 700px;
+      line-height: 1.6;
+    }
+
+    /* ===== TEST AREA ===== */
+    .test-area {
+      width: 100%;
+      height: 300px;
+      border-radius: 24px;
+      background: var(--card);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 25px 0;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      transition: all 0.3s;
+    }
+
+    .test-area:hover {
+      transform: scale(1.02);
+    }
+
+    .status {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .ready { color: var(--ready); text-shadow: var(--glow-ready); }
+    .go { color: var(--go); text-shadow: var(--glow-go); animation: pulse 1.5s infinite; }
+
+    .instruction {
+      font-size: 1.3rem;
+      opacity: 0.8;
+      margin-top: 20px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* ===== RESULTS ===== */
+    .results {
+      width: 100%;
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 25px 0;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 15px;
+      background: var(--card);
+      border-radius: 16px;
+      min-width: 140px;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--go);
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .record {
+      color: #ffcc00;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+      border-bottom: 1px solid var(--glass);
+    }
+
+    th {
+      color: var(--accent);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ===== CONTROLS ===== */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    /* ===== MODALS ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 35px;
+      width: 90%;
+      max-width: 550px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+      transform: scale(0.8);
+      animation: modalIn 0.5s forwards;
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--accent);
+    }
+
+    @keyframes modalIn {
+      to { transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .close {
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .setting-group {
+      margin: 22px 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--glass);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; margin-top: 50px; }
+      .test-area { height: 250px; }
+      .status { font-size: 1.8rem; }
+      .instruction { font-size: 1.1rem; }
+      .stat-value { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="uz">🇺🇿</button>
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="ko">🇰🇷</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+
+  <div class="container">
+    <h1 id="title">🎨 Rang Reaksiya</h1>
+    <p class="subtitle" id="subtitle">
+      Reaksiya tezligingizni tekshiring! Ekrandagi rang o'zgarishiga imkon qadar tez munosabat bildiring.
+    </p>
+
+    <div class="test-area" id="testArea">
+      <div class="status" id="status">Tayyor...</div>
+      <div class="instruction" id="instruction">Bo'shliq tugmasini bosing yoki ekranni bosing</div>
+    </div>
+
+    <div class="results">
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-value" id="avgTime">--</div>
+          <div class="stat-label" id="avgLabel">O'rtacha</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="bestTime">--</div>
+          <div class="stat-label" id="bestLabel">Rekord</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="count">0/5</div>
+          <div class="stat-label" id="countLabel">Urinishlar</div>
+        </div>
+      </div>
+
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th id="th1">#</th>
+            <th id="th2">Vaqt (ms)</th>
+            <th id="th3">Holat</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <tr><td colspan="3" id="noResults">Hali natija yo'q</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" id="startBtn">
+        <i class="fas fa-play"></i> <span id="startText">▶️ Boshlash</span>
+      </button>
+      <button class="btn btn-outline" id="resetBtn">
+        <i class="fas fa-redo"></i> <span id="resetText">🔄 Tozalash</span>
+      </button>
+      <button class="btn btn-outline" id="settingsBtn">
+        <i class="fas fa-cog"></i> <span id="settingsText">⚙️ Sozlamalar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="settingsTitle">⚙️ Sozlamalar</h2>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <div class="setting-group">
+        <label id="langLabel">Til</label>
+        <select id="langSelect">
+          <option value="uz">O'zbekcha</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="themeLabel">Mavzu</label>
+        <select id="themeSelect">
+          <option value="dark">Qorong'u (standart)</option>
+          <option value="light">Yorug'</option>
+          <option value="neon">Neon</option>
+          <option value="nature">Tabiat</option>
+          <option value="cyber">Kiberpunk</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="difficultyLabel">Qiyinchilik</label>
+        <select id="difficultySelect">
+          <option value="simple">Oddiy (qizil → yashil)</option>
+          <option value="advanced">Murakkab (ko'p ranglar)</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="soundLabel">Tovush</label>
+        <select id="soundSelect">
+          <option value="off">O‘chirilgan</option>
+          <option value="on">Yoqilgan</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="autoLabel">Avtomatik boshlash</label>
+        <select id="autoSelect">
+          <option value="off">Yo‘q</option>
+          <option value="on">Ha (5 soniyadan keyin)</option>
+        </select>
+      </div>
+
+      <div style="margin-top: 25px; display: flex; gap: 12px;">
+        <button class="btn btn-outline" id="saveSettings" style="flex:1;">
+          <i class="fas fa-save"></i> Saqlash
+        </button>
+        <button class="btn btn-primary" id="closeSettings" style="flex:1;">
+          <i class="fas fa-check"></i> Yopish
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      uz: {
+        title: "🎨 Rang Reaksiya",
+        subtitle: "Reaksiya tezligingizni tekshiring! Ekrandagi rang o'zgarishiga imkon qadar tez munosabat bildiring.",
+        startText: "▶️ Boshlash",
+        resetText: "🔄 Tozalash",
+        settingsText: "⚙️ Sozlamalar",
+        settingsTitle: "⚙️ Sozlamalar",
+        langLabel: "Til",
+        themeLabel: "Mavzu",
+        difficultyLabel: "Qiyinchilik",
+        soundLabel: "Tovush",
+        autoLabel: "Avtomatik boshlash",
+        avgLabel: "O'rtacha",
+        bestLabel: "Rekord",
+        countLabel: "Urinishlar",
+        th1: "#",
+        th2: "Vaqt (ms)",
+        th3: "Holat",
+        ready: "Tayyor...",
+        go: "Bosing! 🚀",
+        tooEarly: "⚡ Juda erta!",
+        instructionSpace: "Bo'shliq tugmasini bosing yoki ekranni bosing",
+        instructionWait: "Rang o'zgarishini kuting...",
+        success: "✅",
+        failure: "❌",
+        noResults: "Hali natija yo'q"
+      },
+      en: {
+        title: "🎨 Color Reaction",
+        subtitle: "Test your reaction time! React as fast as possible when the color changes.",
+        startText: "▶️ Start",
+        resetText: "🔄 Reset",
+        settingsText: "⚙️ Settings",
+        settingsTitle: "⚙️ Settings",
+        langLabel: "Language",
+        themeLabel: "Theme",
+        difficultyLabel: "Difficulty",
+        soundLabel: "Sound",
+        autoLabel: "Auto Start",
+        avgLabel: "Average",
+        bestLabel: "Best",
+        countLabel: "Attempts",
+        th1: "#",
+        th2: "Time (ms)",
+        th3: "Status",
+        ready: "Ready...",
+        go: "Go! 🚀",
+        tooEarly: "⚡ Too early!",
+        instructionSpace: "Press Space or tap screen",
+        instructionWait: "Wait for color change...",
+        success: "✅",
+        failure: "❌",
+        noResults: "No results yet"
+      },
+      ru: {
+        title: "🎨 Цветовая Реакция",
+        subtitle: "Проверьте время реакции! Реагируйте как можно быстрее при смене цвета.",
+        startText: "▶️ Начать",
+        resetText: "🔄 Сброс",
+        settingsText: "⚙️ Настройки",
+        settingsTitle: "⚙️ Настройки",
+        langLabel: "Язык",
+        themeLabel: "Тема",
+        difficultyLabel: "Сложность",
+        soundLabel: "Звук",
+        autoLabel: "Авто-старт",
+        avgLabel: "Среднее",
+        bestLabel: "Рекорд",
+        countLabel: "Попытки",
+        th1: "#",
+        th2: "Время (мс)",
+        th3: "Статус",
+        ready: "Готов...",
+        go: "Вперёд! 🚀",
+        tooEarly: "⚡ Слишком рано!",
+        instructionSpace: "Нажмите Пробел или коснитесь экрана",
+        instructionWait: "Ждите смены цвета...",
+        success: "✅",
+        failure: "❌",
+        noResults: "Нет результатов"
+      },
+      ko: {
+        title: "🎨 색상 반응",
+        subtitle: "반응 속도를 테스트하세요! 화면 색상이 바뀌면 최대한 빨리 반응하세요.",
+        startText: "▶️ 시작",
+        resetText: "🔄 초기화",
+        settingsText: "⚙️ 설정",
+        settingsTitle: "⚙️ 설정",
+        langLabel: "언어",
+        themeLabel: "테마",
+        difficultyLabel: "난이도",
+        soundLabel: "소리",
+        autoLabel: "자동 시작",
+        avgLabel: "평균",
+        bestLabel: "최고",
+        countLabel: "시도",
+        th1: "#",
+        th2: "시간 (ms)",
+        th3: "상태",
+        ready: "준비...",
+        go: "시작! 🚀",
+        tooEarly: "⚡ 너무 일찍!",
+        instructionSpace: "스페이스바를 누르거나 화면을 탭하세요",
+        instructionWait: "색상 변경을 기다리세요...",
+        success: "✅",
+        failure: "❌",
+        noResults: "아직 결과 없음"
+      },
+      zh: {
+        title: "🎨 颜色反应",
+        subtitle: "测试您的反应速度！当屏幕颜色变化时，尽快做出反应。",
+        startText: "▶️ 开始",
+        resetText: "🔄 重置",
+        settingsText: "⚙️ 设置",
+        settingsTitle: "⚙️ 设置",
+        langLabel: "语言",
+        themeLabel: "主题",
+        difficultyLabel: "难度",
+        soundLabel: "声音",
+        autoLabel: "自动开始",
+        avgLabel: "平均",
+        bestLabel: "最佳",
+        countLabel: "尝试",
+        th1: "#",
+        th2: "时间 (毫秒)",
+        th3: "状态",
+        ready: "准备中...",
+        go: "开始！🚀",
+        tooEarly: "⚡ 太早了！",
+        instructionSpace: "按下空格键或点击屏幕",
+        instructionWait: "等待颜色变化...",
+        success: "✅",
+        failure: "❌",
+        noResults: "暂无结果"
+      }
+    };
+
+    // ===== STATE =====
+    const state = {
+      lang: 'uz',
+      theme: 'dark',
+      difficulty: 'simple',
+      sound: false,
+      autoStart: false,
+      testActive: false,
+      waitingForGo: false,
+      startTime: null,
+      results: [],
+      best: localStorage.getItem('reaction-best') || null
+    };
+
+    // DOM Elements
+    const els = {
+      title: document.getElementById('title'),
+      subtitle: document.getElementById('subtitle'),
+      testArea: document.getElementById('testArea'),
+      status: document.getElementById('status'),
+      instruction: document.getElementById('instruction'),
+      avgTime: document.getElementById('avgTime'),
+      bestTime: document.getElementById('bestTime'),
+      count: document.getElementById('count'),
+      resultsBody: document.getElementById('resultsBody'),
+      noResults: document.getElementById('noResults'),
+      startBtn: document.getElementById('startBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      startText: document.getElementById('startText'),
+      resetText: document.getElementById('resetText'),
+      settingsText: document.getElementById('settingsText'),
+      settingsModal: document.getElementById('settingsModal'),
+      langBtns: document.querySelectorAll('.lang-btn'),
+      langSelect: document.getElementById('langSelect'),
+      themeSelect: document.getElementById('themeSelect'),
+      difficultySelect: document.getElementById('difficultySelect'),
+      soundSelect: document.getElementById('soundSelect'),
+      autoSelect: document.getElementById('autoSelect'),
+      closeModal: document.getElementById('closeModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      saveSettings: document.getElementById('saveSettings'),
+      settingsTitle: document.getElementById('settingsTitle'),
+      langLabel: document.getElementById('langLabel'),
+      themeLabel: document.getElementById('themeLabel'),
+      difficultyLabel: document.getElementById('difficultyLabel'),
+      soundLabel: document.getElementById('soundLabel'),
+      autoLabel: document.getElementById('autoLabel'),
+      avgLabel: document.getElementById('avgLabel'),
+      bestLabel: document.getElementById('bestLabel'),
+      countLabel: document.getElementById('countLabel'),
+      th1: document.getElementById('th1'),
+      th2: document.getElementById('th2'),
+      th3: document.getElementById('th3')
+    };
+
+    // Audio context for beep (optional)
+    let audioContext = null;
+    function playBeep(frequency = 800, duration = 0.1) {
+      if (!state.sound || typeof window.AudioContext === 'undefined') return;
+      if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = frequency;
+      gainNode.gain.value = 0.1;
+      
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+      oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    // ===== HELPERS =====
+    function updateUI() {
+      const t = translations[state.lang];
+      
+      els.title.textContent = t.title;
+      els.subtitle.textContent = t.subtitle;
+      els.startText.textContent = t.startText;
+      els.resetText.textContent = t.resetText;
+      els.settingsText.textContent = t.settingsText;
+      els.settingsTitle.textContent = t.settingsTitle;
+      els.langLabel.textContent = t.langLabel;
+      els.themeLabel.textContent = t.themeLabel;
+      els.difficultyLabel.textContent = t.difficultyLabel;
+      els.soundLabel.textContent = t.soundLabel;
+      els.autoLabel.textContent = t.autoLabel;
+      els.avgLabel.textContent = t.avgLabel;
+      els.bestLabel.textContent = t.bestLabel;
+      els.countLabel.textContent = t.countLabel;
+      els.th1.textContent = t.th1;
+      els.th2.textContent = t.th2;
+      els.th3.textContent = t.th3;
+      els.noResults.textContent = t.noResults;
+
+      // Update stats
+      const avg = state.results.length ? (state.results.reduce((a, b) => a + b, 0) / state.results.length).toFixed(1) : '--';
+      els.avgTime.textContent = avg === '--' ? '--' : `${avg}ms`;
+      els.bestTime.textContent = state.best ? `${state.best}ms` : '--';
+      els.count.textContent = `${state.results.length}/5`;
+
+      // Update table
+      renderResults();
+
+      // Sozlamalar selectlarni yangilash
+      els.langSelect.value = state.lang;
+      els.themeSelect.value = state.theme;
+      els.difficultySelect.value = state.difficulty;
+      els.soundSelect.value = state.sound ? 'on' : 'off';
+      els.autoSelect.value = state.autoStart ? 'on' : 'off';
+    }
+
+    function setTheme() {
+      document.documentElement.setAttribute('data-theme', state.theme);
+    }
+
+    function renderResults() {
+      if (state.results.length === 0) {
+        els.resultsBody.innerHTML = `<tr><td colspan="3" id="noResults">${translations[state.lang].noResults}</td></tr>`;
+        return;
+      }
+
+      els.resultsBody.innerHTML = state.results.map((time, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${time}ms</td>
+          <td>${time > 0 ? '✅' : '❌'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function startTest() {
+      if (state.testActive) return;
+      
+      state.testActive = true;
+      state.waitingForGo = false;
+      els.startBtn.disabled = true;
+      els.resetBtn.disabled = true;
+
+      // Reset test area
+      els.testArea.style.background = 'var(--card)';
+      els.status.textContent = translations[state.lang].ready;
+      els.status.className = 'status ready';
+      els.instruction.textContent = translations[state.lang].instructionWait;
+
+      // Random delay (1-3 sec)
+      const delay = 1000 + Math.random() * 2000;
+      
+      setTimeout(() => {
+        if (!state.testActive) return;
+        
+        // Change to "GO" color
+        els.testArea.style.background = 'var(--go)';
+        els.status.textContent = translations[state.lang].go;
+        els.status.className = 'status go';
+        els.instruction.textContent = translations[state.lang].instructionSpace;
+        
+        state.waitingForGo = true;
+        state.startTime = Date.now();
+        
+        playBeep(1000, 0.05);
+      }, delay);
+    }
+
+    function handleReaction() {
+      if (!state.testActive || !state.waitingForGo) {
+        // Too early!
+        if (state.testActive) {
+          state.results.push(-1); // Mark as failed
+          state.testActive = false;
+          els.testArea.style.background = 'var(--card)';
+          els.status.textContent = translations[state.lang].tooEarly;
+          els.status.className = 'status';
+          playBeep(200, 0.2);
+          setTimeout(() => {
+            nextOrFinish();
+          }, 1000);
+        }
+        return;
+      }
+
+      const reactionTime = Date.now() - state.startTime;
+      state.results.push(reactionTime);
+      
+      // Update best
+      if (!state.best || reactionTime < parseInt(state.best)) {
+        state.best = reactionTime;
+        localStorage.setItem('reaction-best', reactionTime);
+      }
+
+      els.testArea.style.background = 'var(--card)';
+      els.status.textContent = `⏱ ${reactionTime}ms`;
+      els.status.className = 'status';
+      playBeep(600, 0.1);
+
+      state.testActive = false;
+      state.waitingForGo = false;
+
+      setTimeout(() => {
+        nextOrFinish();
+      }, 800);
+    }
+
+    function nextOrFinish() {
+      updateUI();
+      
+      if (state.results.length < 5) {
+        if (state.autoStart) {
+          setTimeout(startTest, 1500);
+        } else {
+          els.startBtn.disabled = false;
+          els.resetBtn.disabled = false;
+        }
+      } else {
+        // Test finished
+        els.startBtn.disabled = false;
+        els.resetBtn.disabled = false;
+      }
+    }
+
+    function resetTest() {
+      state.results = [];
+      state.testActive = false;
+      state.waitingForGo = false;
+      updateUI();
+      els.testArea.style.background = 'var(--card)';
+      els.status.textContent = translations[state.lang].ready;
+      els.status.className = 'status ready';
+      els.instruction.textContent = translations[state.lang].instructionSpace;
+    }
+
+    // ===== EVENT LISTENERS =====
+    els.testArea.addEventListener('click', handleReaction);
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        handleReaction();
+      }
+    });
+
+    els.startBtn.addEventListener('click', () => {
+      if (state.results.length >= 5) resetTest();
+      startTest();
+    });
+
+    els.resetBtn.addEventListener('click', resetTest);
+
+    els.settingsBtn.addEventListener('click', () => {
+      els.settingsModal.style.display = 'flex';
+    });
+
+    els.closeModal.addEventListener('click', () => els.settingsModal.style.display = 'none');
+    els.closeSettings.addEventListener('click', () => els.settingsModal.style.display = 'none');
+
+    els.saveSettings.addEventListener('click', () => {
+      state.lang = els.langSelect.value;
+      state.theme = els.themeSelect.value;
+      state.difficulty = els.difficultySelect.value;
+      state.sound = els.soundSelect.value === 'on';
+      state.autoStart = els.autoSelect.value === 'on';
+
+      els.langBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.lang);
+      });
+
+      setTheme();
+      updateUI();
+      els.settingsModal.style.display = 'none';
+    });
+
+    // Language switch
+    els.langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.lang = btn.dataset.lang;
+        els.langBtns.forEach(b => b.classList.toggle('active', b === btn));
+        updateUI();
+      });
+    });
+
+    // Close modals on outside click
+    window.addEventListener('click', e => {
+      if (e.target === els.settingsModal) els.settingsModal.style.display = 'none';
+    });
+
+    // Init
+    setTheme();
+    updateUI();
+  </script>
+</body>
+</html>
+
