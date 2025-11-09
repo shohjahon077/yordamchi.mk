@@ -1,0 +1,627 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  background-color: white; /* Ensure the iframe has a white background */
+                }
+    
+                
+              </style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Barcha Narsa Haqida 🌐</title>
+  <style>
+    :root {
+      --bg: #0f0c29;
+      --text: white;
+      --shadow: rgba(0,0,0,0.5);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8f9fa;
+      --text: #212529;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --text: #e0e0e0;
+    }
+    [data-theme="ocean"] {
+      --bg: #003b46;
+    }
+    [data-theme="fire"] {
+      --bg: #2c003e;
+    }
+    [data-theme="forest"] {
+      --bg: #1a2b1a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.5s ease;
+    }
+
+    .settings-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .settings-panel {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 380px;
+      height: 100vh;
+      background: rgba(20, 20, 40, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      color: white;
+      transition: right 0.4s ease;
+      z-index: 99;
+      border-left: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .settings-panel.open {
+      right: 0;
+    }
+
+    .close-settings {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      float: right;
+    }
+
+    h2.settings-title {
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .setting-group {
+      margin-bottom: 30px;
+    }
+
+    .setting-group h3 {
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 40px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+      padding: 10px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      perspective: 1200px;
+    }
+
+    .card {
+      width: 100%;
+      height: 230px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .card-link:hover .card {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .card:nth-child(5n+1) .card-front { background: linear-gradient(45deg, #ff9a9e, #fad0c4); }
+    .card:nth-child(5n+2) .card-front { background: linear-gradient(45deg, #a1c4fd, #c2e9fb); }
+    .card:nth-child(5n+3) .card-front { background: linear-gradient(45deg, #ffecd2, #fcb69f); }
+    .card:nth-child(5n+4) .card-front { background: linear-gradient(45deg, #84fab0, #8fd3f4); }
+    .card:nth-child(5n+5) .card-front { background: linear-gradient(45deg, #d4fc79, #96e6a1); }
+
+    .card-back {
+      background: linear-gradient(45deg, #2c3e50, #4a6491);
+      transform: rotateY(180deg);
+      font-size: 1.05rem;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      .settings-panel { width: 300px; }
+      h1 { font-size: 2rem; }
+      .card { height: 210px; }
+    }
+
+    @media (max-width: 480px) {
+      .settings-panel { width: 280px; }
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <button class="settings-btn" id="settingsBtn">⚙️</button>
+
+  <div class="settings-panel" id="settingsPanel">
+    <button class="close-settings" id="closeSettings">×</button>
+    <h2 class="settings-title">⚙️ Sozlamalar</h2>
+
+    <div class="setting-group">
+      <h3 id="langLabel">Tilni tanlang</h3>
+      <select id="languageSelect">
+        <option value="uz">O'zbekcha</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+        <option value="zh">中文</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <h3 id="themeLabel">Mavzu</h3>
+      <select id="themeSelect">
+        <option value="dark">Qora (Standart)</option>
+        <option value="light">Yorqin</option>
+        <option value="ocean">Okean</option>
+        <option value="fire">Olov</option>
+        <option value="forest">O'rmon</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 id="mainTitle">Barcha Narsa Haqida — Bilim Dunyosi</h1>
+    <div class="cards-grid" id="cardsGrid">
+      <!-- Kartochkalar dinamik yaratiladi -->
+    </div>
+  </div>
+
+  <script>
+    // === 50 ta mavzu — 5 ta til uchun to'liq tarjima ===
+    const translations = {
+      uz: {
+        title: "Barcha Narsa Haqida — Bilim Dunyosi",
+        langLabel: "Tilni tanlang",
+        themeLabel: "Mavzu",
+        cards: [
+          { title: "Matematika", desc: "Sonlar va shakllar dunyosi", url: "https://uz.wikipedia.org/wiki/Matematika" },
+          { title: "Fizika", desc: "Kuch, harakat va energiya qonunlari", url: "https://uz.wikipedia.org/wiki/Fizika" },
+          { title: "Kimyo", desc: "Moddalarning tuzilishi", url: "https://uz.wikipedia.org/wiki/Kimyo" },
+          { title: "Biologiya", desc: "Hayot haqida fan", url: "https://uz.wikipedia.org/wiki/Biologiya" },
+          { title: "Astronomiya", desc: "Yulduzlar, sayyoralar va kosmos", url: "https://uz.wikipedia.org/wiki/Astronomiya" },
+          { title: "Geografiya", desc: "Dunyo xaritalari va iqlim", url: "https://uz.wikipedia.org/wiki/Geografiya" },
+          { title: "Tarix", desc: "Insoniyatning o'tmishi", url: "https://uz.wikipedia.org/wiki/Tarix" },
+          { title: "Adabiyot", desc: "She'rlar, hikoyalar va romanlar", url: "https://uz.wikipedia.org/wiki/Adabiyot" },
+          { title: "San'at", desc: "Rassomlik, haykaltaroshlik", url: "https://uz.wikipedia.org/wiki/San%27at" },
+          { title: "Musiqa", desc: "Notalar va ijodkorlik", url: "https://uz.wikipedia.org/wiki/Musiqa" },
+          { title: "Filosofiya", desc: "Aql, haqiqat va axloq", url: "https://uz.wikipedia.org/wiki/Filosofiya" },
+          { title: "Psixologiya", desc: "Inson ongi va xulq-atvori", url: "https://uz.wikipedia.org/wiki/Psixologiya" },
+          { title: "Iqtisodiyot", desc: "Pul, bozor va resurslar", url: "https://uz.wikipedia.org/wiki/Iqtisodiyot" },
+          { title: "Siyosat", desc: "Hokimiyat va boshqaruv", url: "https://uz.wikipedia.org/wiki/Siyosat" },
+          { title: "Texnologiya", desc: "Innovatsiyalar va kelajak", url: "https://uz.wikipedia.org/wiki/Texnologiya" },
+          { title: "Informatika", desc: "Dasturlash va ma'lumotlar", url: "https://uz.wikipedia.org/wiki/Informatika" },
+          { title: "Robototexnika", desc: "Sun'iy ongli mashinalar", url: "https://uz.wikipedia.org/wiki/Robototexnika" },
+          { title: "Kosmonavtika", desc: "Fazoga sayohatlar", url: "https://uz.wikipedia.org/wiki/Kosmonavtika" },
+          { title: "Okeanografiya", desc: "Dengizlar va okeanlar sirli", url: "https://uz.wikipedia.org/wiki/Okeanografiya" },
+          { title: "Meteorologiya", desc: "Ob-havo va iqlim", url: "https://uz.wikipedia.org/wiki/Meteorologiya" },
+          { title: "Arxeologiya", desc: "Qadimiy sirlarni qazish", url: "https://uz.wikipedia.org/wiki/Arxeologiya" },
+          { title: "Lingvistika", desc: "Tillar tuzilishi", url: "https://uz.wikipedia.org/wiki/Lingvistika" },
+          { title: "Sotsiologiya", desc: "Jamiyat va munosabatlar", url: "https://uz.wikipedia.org/wiki/Sotsiologiya" },
+          { title: "Antropologiya", desc: "Insonning kelib chiqishi", url: "https://uz.wikipedia.org/wiki/Antropologiya" },
+          { title: "Mifologiya", desc: "Qadimiy afsonalar", url: "https://uz.wikipedia.org/wiki/Mifologiya" },
+          { title: "Dinlar", desc: "Dunyo dinlari", url: "https://uz.wikipedia.org/wiki/Din" },
+          { title: "Sport", desc: "Futbol, basketbol, yengil atletika", url: "https://uz.wikipedia.org/wiki/Sport" },
+          { title: "Oshxona", desc: "Taomlar tayyorlash san'ati", url: "https://uz.wikipedia.org/wiki/Oshxona" },
+          { title: "Moda", desc: "Kiyim-kechak va uslublar", url: "https://uz.wikipedia.org/wiki/Moda" },
+          { title: "Kino", desc: "Film san'ati", url: "https://uz.wikipedia.org/wiki/Kino" },
+          { title: "Teatr", desc: "Sahna ijrosi", url: "https://uz.wikipedia.org/wiki/Teatr" },
+          { title: "Fotografiya", desc: "Lahzalarni yashash", url: "https://uz.wikipedia.org/wiki/Fotografiya" },
+          { title: "Dizayn", desc: "Go'zallik va qulaylik", url: "https://uz.wikipedia.org/wiki/Dizayn" },
+          { title: "Arxitektura", desc: "Binolar va shaharlar", url: "https://uz.wikipedia.org/wiki/Arxitektura" },
+          { title: "Transport", desc: "Mashinalar, qayiqlar, samolyotlar", url: "https://uz.wikipedia.org/wiki/Transport" },
+          { title: "Energetika", desc: "Quvvat manbalari", url: "https://uz.wikipedia.org/wiki/Energetika" },
+          { title: "Ekologiya", desc: "Tabiatni muhofaza qilish", url: "https://uz.wikipedia.org/wiki/Ekologiya" },
+          { title: "Tibbiyot", desc: "Kasalliklarni davolash", url: "https://uz.wikipedia.org/wiki/Tibbiyot" },
+          { title: "Farmatsiya", desc: "Dorilar tayyorlash", url: "https://uz.wikipedia.org/wiki/Farmatsiya" },
+          { title: "Pedagogika", desc: "Ta'lim va tarbiya", url: "https://uz.wikipedia.org/wiki/Pedagogika" },
+          { title: "Huquq", desc: "Qonunlar va adolat", url: "https://uz.wikipedia.org/wiki/Huquq" },
+          { title: "Jurnalistika", desc: "Axborot vositalari", url: "https://uz.wikipedia.org/wiki/Jurnalistika" },
+          { title: "Marketing", desc: "Mahsulotlarni targ'ib qilish", url: "https://uz.wikipedia.org/wiki/Marketing" },
+          { title: "Menejment", desc: "Jamoa boshqaruvi", url: "https://uz.wikipedia.org/wiki/Menejment" },
+          { title: "Avtomobillar", desc: "Mashinalar tarixi", url: "https://uz.wikipedia.org/wiki/Avtomobil" },
+          { title: "Videoo'yinlar", desc: "O'yin sanoati", url: "https://uz.wikipedia.org/wiki/Videoo%27yin" },
+          { title: "Kriptovalyutalar", desc: "Bitcoin, Ethereum", url: "https://uz.wikipedia.org/wiki/Kriptovalyuta" },
+          { title: "Kiberxavfsizlik", desc: "Ma'lumotlarni himoya", url: "https://uz.wikipedia.org/wiki/Kiberxavfsizlik" },
+          { title: "Sun'iy intellekt", desc: "Mashinalarning o'ylashi", url: "https://uz.wikipedia.org/wiki/Sun%27iy_intellekt" },
+          { title: "Kvant fizikasi", desc: "Zarrachalar dunyosi", url: "https://uz.wikipedia.org/wiki/Kvant_fizikasi" }
+        ]
+      },
+
+      ru: {
+        title: "Обо всём на свете — Мир знаний",
+        langLabel: "Выберите язык",
+        themeLabel: "Тема",
+        cards: [
+          { title: "Математика", desc: "Мир чисел и фигур", url: "https://ru.wikipedia.org/wiki/Математика" },
+          { title: "Физика", desc: "Законы движения и энергии", url: "https://ru.wikipedia.org/wiki/Физика" },
+          { title: "Химия", desc: "Строение веществ", url: "https://ru.wikipedia.org/wiki/Химия" },
+          { title: "Биология", desc: "Наука о жизни", url: "https://ru.wikipedia.org/wiki/Биология" },
+          { title: "Астрономия", desc: "Звёзды, планеты и космос", url: "https://ru.wikipedia.org/wiki/Астрономия" },
+          { title: "География", desc: "Карты мира и климат", url: "https://ru.wikipedia.org/wiki/География" },
+          { title: "История", desc: "Прошлое человечества", url: "https://ru.wikipedia.org/wiki/История" },
+          { title: "Литература", desc: "Стихи, рассказы, романы", url: "https://ru.wikipedia.org/wiki/Литература" },
+          { title: "Искусство", desc: "Живопись и скульптура", url: "https://ru.wikipedia.org/wiki/Искусство" },
+          { title: "Музыка", desc: "Ноты и творчество", url: "https://ru.wikipedia.org/wiki/Музыка" },
+          { title: "Философия", desc: "Разум, истина и мораль", url: "https://ru.wikipedia.org/wiki/Философия" },
+          { title: "Психология", desc: "Сознание и поведение", url: "https://ru.wikipedia.org/wiki/Психология" },
+          { title: "Экономика", desc: "Деньги, рынки и ресурсы", url: "https://ru.wikipedia.org/wiki/Экономика" },
+          { title: "Политика", desc: "Власть и управление", url: "https://ru.wikipedia.org/wiki/Политика" },
+          { title: "Технологии", desc: "Инновации и будущее", url: "https://ru.wikipedia.org/wiki/Технология" },
+          { title: "Информатика", desc: "Программирование и данные", url: "https://ru.wikipedia.org/wiki/Информатика" },
+          { title: "Робототехника", desc: "Машины с ИИ", url: "https://ru.wikipedia.org/wiki/Робототехника" },
+          { title: "Космонавтика", desc: "Полёты в космос", url: "https://ru.wikipedia.org/wiki/Космонавтика" },
+          { title: "Океанография", desc: "Тайны океанов", url: "https://ru.wikipedia.org/wiki/Океанография" },
+          { title: "Метеорология", desc: "Погода и климат", url: "https://ru.wikipedia.org/wiki/Метеорология" },
+          { title: "Археология", desc: "Раскопки древностей", url: "https://ru.wikipedia.org/wiki/Археология" },
+          { title: "Лингвистика", desc: "Строение языков", url: "https://ru.wikipedia.org/wiki/Лингвистика" },
+          { title: "Социология", desc: "Общество и отношения", url: "https://ru.wikipedia.org/wiki/Социология" },
+          { title: "Антропология", desc: "Происхождение человека", url: "https://ru.wikipedia.org/wiki/Антропология" },
+          { title: "Мифология", desc: "Древние мифы", url: "https://ru.wikipedia.org/wiki/Мифология" },
+          { title: "Религии", desc: "Мировые верования", url: "https://ru.wikipedia.org/wiki/Религия" },
+          { title: "Спорт", desc: "Футбол, баскетбол", url: "https://ru.wikipedia.org/wiki/Спорт" },
+          { title: "Кулинария", desc: "Искусство готовки", url: "https://ru.wikipedia.org/wiki/Кулинария" },
+          { title: "Мода", desc: "Одежда и стиль", url: "https://ru.wikipedia.org/wiki/Мода" },
+          { title: "Кино", desc: "Кинематограф", url: "https://ru.wikipedia.org/wiki/Кино" },
+          { title: "Театр", desc: "Сценическое искусство", url: "https://ru.wikipedia.org/wiki/Театр" },
+          { title: "Фотография", desc: "Искусство запечатления", url: "https://ru.wikipedia.org/wiki/Фотография" },
+          { title: "Дизайн", desc: "Красота и удобство", url: "https://ru.wikipedia.org/wiki/Дизайн" },
+          { title: "Архитектура", desc: "Здания и города", url: "https://ru.wikipedia.org/wiki/Архитектура" },
+          { title: "Транспорт", desc: "Машины, корабли, самолёты", url: "https://ru.wikipedia.org/wiki/Транспорт" },
+          { title: "Энергетика", desc: "Источники энергии", url: "https://ru.wikipedia.org/wiki/Энергетика" },
+          { title: "Экология", desc: "Защита природы", url: "https://ru.wikipedia.org/wiki/Экология" },
+          { title: "Медицина", desc: "Лечение болезней", url: "https://ru.wikipedia.org/wiki/Медицина" },
+          { title: "Фармация", desc: "Производство лекарств", url: "https://ru.wikipedia.org/wiki/Фармация" },
+          { title: "Педагогика", desc: "Образование и воспитание", url: "https://ru.wikipedia.org/wiki/Педагогика" },
+          { title: "Право", desc: "Законы и справедливость", url: "https://ru.wikipedia.org/wiki/Право" },
+          { title: "Журналистика", desc: "СМИ и информация", url: "https://ru.wikipedia.org/wiki/Журналистика" },
+          { title: "Маркетинг", desc: "Продвижение товаров", url: "https://ru.wikipedia.org/wiki/Маркетинг" },
+          { title: "Менеджмент", desc: "Управление командой", url: "https://ru.wikipedia.org/wiki/Менеджмент" },
+          { title: "Автомобили", desc: "История машин", url: "https://ru.wikipedia.org/wiki/Автомобиль" },
+          { title: "Видеоигры", desc: "Игровая индустрия", url: "https://ru.wikipedia.org/wiki/Видеоигра" },
+          { title: "Криптовалюты", desc: "Биткоин, Эфириум", url: "https://ru.wikipedia.org/wiki/Криптовалюта" },
+          { title: "Кибербезопасность", desc: "Защита данных", url: "https://ru.wikipedia.org/wiki/Кибербезопасность" },
+          { title: "Искусственный интеллект", desc: "Машины, которые думают", url: "https://ru.wikipedia.org/wiki/Искусственный_интеллект" },
+          { title: "Квантовая физика", desc: "Мир частиц", url: "https://ru.wikipedia.org/wiki/Квантовая_физика" }
+        ]
+      },
+
+      en: {
+        title: "About Everything — World of Knowledge",
+        langLabel: "Select Language",
+        themeLabel: "Theme",
+        cards: [
+          { title: "Mathematics", desc: "World of numbers and shapes", url: "https://en.wikipedia.org/wiki/Mathematics" },
+          { title: "Physics", desc: "Laws of motion and energy", url: "https://en.wikipedia.org/wiki/Physics" },
+          { title: "Chemistry", desc: "Structure of matter", url: "https://en.wikipedia.org/wiki/Chemistry" },
+          { title: "Biology", desc: "Science of life", url: "https://en.wikipedia.org/wiki/Biology" },
+          { title: "Astronomy", desc: "Stars, planets and space", url: "https://en.wikipedia.org/wiki/Astronomy" },
+          { title: "Geography", desc: "World maps and climate", url: "https://en.wikipedia.org/wiki/Geography" },
+          { title: "History", desc: "Humanity's past", url: "https://en.wikipedia.org/wiki/History" },
+          { title: "Literature", desc: "Poems, stories, novels", url: "https://en.wikipedia.org/wiki/Literature" },
+          { title: "Art", desc: "Painting and sculpture", url: "https://en.wikipedia.org/wiki/Art" },
+          { title: "Music", desc: "Notes and creativity", url: "https://en.wikipedia.org/wiki/Music" },
+          { title: "Philosophy", desc: "Reason, truth and ethics", url: "https://en.wikipedia.org/wiki/Philosophy" },
+          { title: "Psychology", desc: "Mind and behavior", url: "https://en.wikipedia.org/wiki/Psychology" },
+          { title: "Economics", desc: "Money, markets and resources", url: "https://en.wikipedia.org/wiki/Economics" },
+          { title: "Politics", desc: "Power and governance", url: "https://en.wikipedia.org/wiki/Politics" },
+          { title: "Technology", desc: "Innovation and future", url: "https://en.wikipedia.org/wiki/Technology" },
+          { title: "Computer Science", desc: "Programming and data", url: "https://en.wikipedia.org/wiki/Computer_science" },
+          { title: "Robotics", desc: "AI-powered machines", url: "https://en.wikipedia.org/wiki/Robotics" },
+          { title: "Space Exploration", desc: "Journeys into space", url: "https://en.wikipedia.org/wiki/Space_exploration" },
+          { title: "Oceanography", desc: "Secrets of oceans", url: "https://en.wikipedia.org/wiki/Oceanography" },
+          { title: "Meteorology", desc: "Weather and climate", url: "https://en.wikipedia.org/wiki/Meteorology" },
+          { title: "Archaeology", desc: "Excavating ancient sites", url: "https://en.wikipedia.org/wiki/Archaeology" },
+          { title: "Linguistics", desc: "Structure of languages", url: "https://en.wikipedia.org/wiki/Linguistics" },
+          { title: "Sociology", desc: "Society and relationships", url: "https://en.wikipedia.org/wiki/Sociology" },
+          { title: "Anthropology", desc: "Human origins", url: "https://en.wikipedia.org/wiki/Anthropology" },
+          { title: "Mythology", desc: "Ancient myths", url: "https://en.wikipedia.org/wiki/Mythology" },
+          { title: "Religions", desc: "World beliefs", url: "https://en.wikipedia.org/wiki/Religion" },
+          { title: "Sports", desc: "Football, basketball", url: "https://en.wikipedia.org/wiki/Sport" },
+          { title: "Culinary Arts", desc: "Art of cooking", url: "https://en.wikipedia.org/wiki/Culinary_arts" },
+          { title: "Fashion", desc: "Clothing and style", url: "https://en.wikipedia.org/wiki/Fashion" },
+          { title: "Cinema", desc: "Film art", url: "https://en.wikipedia.org/wiki/Cinema" },
+          { title: "Theater", desc: "Stage performance", url: "https://en.wikipedia.org/wiki/Theater" },
+          { title: "Photography", desc: "Capturing moments", url: "https://en.wikipedia.org/wiki/Photography" },
+          { title: "Design", desc: "Beauty and usability", url: "https://en.wikipedia.org/wiki/Design" },
+          { title: "Architecture", desc: "Buildings and cities", url: "https://en.wikipedia.org/wiki/Architecture" },
+          { title: "Transport", desc: "Cars, ships, planes", url: "https://en.wikipedia.org/wiki/Transport" },
+          { title: "Energy", desc: "Power sources", url: "https://en.wikipedia.org/wiki/Energy" },
+          { title: "Ecology", desc: "Nature protection", url: "https://en.wikipedia.org/wiki/Ecology" },
+          { title: "Medicine", desc: "Disease treatment", url: "https://en.wikipedia.org/wiki/Medicine" },
+          { title: "Pharmacy", desc: "Drug production", url: "https://en.wikipedia.org/wiki/Pharmacy" },
+          { title: "Pedagogy", desc: "Education methods", url: "https://en.wikipedia.org/wiki/Pedagogy" },
+          { title: "Law", desc: "Justice and rules", url: "https://en.wikipedia.org/wiki/Law" },
+          { title: "Journalism", desc: "Media and news", url: "https://en.wikipedia.org/wiki/Journalism" },
+          { title: "Marketing", desc: "Product promotion", url: "https://en.wikipedia.org/wiki/Marketing" },
+          { title: "Management", desc: "Team leadership", url: "https://en.wikipedia.org/wiki/Management" },
+          { title: "Automobiles", desc: "Car history", url: "https://en.wikipedia.org/wiki/Automobile" },
+          { title: "Video Games", desc: "Gaming industry", url: "https://en.wikipedia.org/wiki/Video_game" },
+          { title: "Cryptocurrencies", desc: "Bitcoin, Ethereum", url: "https://en.wikipedia.org/wiki/Cryptocurrency" },
+          { title: "Cybersecurity", desc: "Data protection", url: "https://en.wikipedia.org/wiki/Cybersecurity" },
+          { title: "Artificial Intelligence", desc: "Machines that think", url: "https://en.wikipedia.org/wiki/Artificial_intelligence" },
+          { title: "Quantum Physics", desc: "World of particles", url: "https://en.wikipedia.org/wiki/Quantum_physics" }
+        ]
+      },
+
+      ko: {
+        title: "모든 것에 대해 — 지식의 세계",
+        langLabel: "언어 선택",
+        themeLabel: "테마",
+        cards: [
+          { title: "수학", desc: "숫자와 도형의 세계", url: "https://ko.wikipedia.org/wiki/수학" },
+          { title: "물리학", desc: "운동과 에너지의 법칙", url: "https://ko.wikipedia.org/wiki/물리학" },
+          { title: "화학", desc: "물질의 구조", url: "https://ko.wikipedia.org/wiki/화학" },
+          { title: "생물학", desc: "생명에 관한 과학", url: "https://ko.wikipedia.org/wiki/생물학" },
+          { title: "천문학", desc: "별, 행성, 우주", url: "https://ko.wikipedia.org/wiki/천문학" },
+          { title: "지리학", desc: "세계 지도와 기후", url: "https://ko.wikipedia.org/wiki/지리학" },
+          { title: "역사", desc: "인류의 과거", url: "https://ko.wikipedia.org/wiki/역사" },
+          { title: "문학", desc: "시, 이야기, 소설", url: "https://ko.wikipedia.org/wiki/문학" },
+          { title: "예술", desc: "회화와 조각", url: "https://ko.wikipedia.org/wiki/예술" },
+          { title: "음악", desc: "음표와 창의성", url: "https://ko.wikipedia.org/wiki/음악" },
+          { title: "철학", desc: "이성, 진리, 윤리", url: "https://ko.wikipedia.org/wiki/철학" },
+          { title: "심리학", desc: "마음과 행동", url: "https://ko.wikipedia.org/wiki/심리학" },
+          { title: "경제학", desc: "돈, 시장, 자원", url: "https://ko.wikipedia.org/wiki/경제학" },
+          { title: "정치", desc: "권력과 통치", url: "https://ko.wikipedia.org/wiki/정치" },
+          { title: "기술", desc: "혁신과 미래", url: "https://ko.wikipedia.org/wiki/기술" },
+          { title: "컴퓨터 과학", desc: "프로그래밍과 데이터", url: "https://ko.wikipedia.org/wiki/컴퓨터_과학" },
+          { title: "로봇공학", desc: "인공지능 기계", url: "https://ko.wikipedia.org/wiki/로봇공학" },
+          { title: "우주 탐사", desc: "우주 여행", url: "https://ko.wikipedia.org/wiki/우주_탐사" },
+          { title: "해양학", desc: "바다의 비밀", url: "https://ko.wikipedia.org/wiki/해양학" },
+          { title: "기상학", desc: "날씨와 기후", url: "https://ko.wikipedia.org/wiki/기상학" },
+          { title: "고고학", desc: "고대 유적 발굴", url: "https://ko.wikipedia.org/wiki/고고학" },
+          { title: "언어학", desc: "언어의 구조", url: "https://ko.wikipedia.org/wiki/언어학" },
+          { title: "사회학", desc: "사회와 관계", url: "https://ko.wikipedia.org/wiki/사회학" },
+          { title: "인류학", desc: "인간의 기원", url: "https://ko.wikipedia.org/wiki/인류학" },
+          { title: "신화학", desc: "고대 신화", url: "https://ko.wikipedia.org/wiki/신화" },
+          { title: "종교", desc: "세계의 믿음", url: "https://ko.wikipedia.org/wiki/종교" },
+          { title: "스포츠", desc: "축구, 농구", url: "https://ko.wikipedia.org/wiki/스포츠" },
+          { title: "요리", desc: "요리의 예술", url: "https://ko.wikipedia.org/wiki/요리" },
+          { title: "패션", desc: "의상과 스타일", url: "https://ko.wikipedia.org/wiki/패션" },
+          { title: "영화", desc: "영화 예술", url: "https://ko.wikipedia.org/wiki/영화" },
+          { title: "연극", desc: "무대 공연", url: "https://ko.wikipedia.org/wiki/연극" },
+          { title: "사진", desc: "순간 포착", url: "https://ko.wikipedia.org/wiki/사진" },
+          { title: "디자인", desc: "아름다움과 사용성", url: "https://ko.wikipedia.org/wiki/디자인" },
+          { title: "건축", desc: "건물과 도시", url: "https://ko.wikipedia.org/wiki/건축" },
+          { title: "교통", desc: "자동차, 배, 비행기", url: "https://ko.wikipedia.org/wiki/교통" },
+          { title: "에너지", desc: "에너지 자원", url: "https://ko.wikipedia.org/wiki/에너지" },
+          { title: "생태학", desc: "자연 보호", url: "https://ko.wikipedia.org/wiki/생태학" },
+          { title: "의학", desc: "질병 치료", url: "https://ko.wikipedia.org/wiki/의학" },
+          { title: "약학", desc: "약물 제조", url: "https://ko.wikipedia.org/wiki/약학" },
+          { title: "교육학", desc: "교육 방법", url: "https://ko.wikipedia.org/wiki/교육학" },
+          { title: "법학", desc: "정의와 규칙", url: "https://ko.wikipedia.org/wiki/법학" },
+          { title: "저널리즘", desc: "미디어와 뉴스", url: "https://ko.wikipedia.org/wiki/저널리즘" },
+          { title: "마케팅", desc: "상품 홍보", url: "https://ko.wikipedia.org/wiki/마케팅" },
+          { title: "경영학", desc: "팀 리더십", url: "https://ko.wikipedia.org/wiki/경영학" },
+          { title: "자동차", desc: "자동차 역사", url: "https://ko.wikipedia.org/wiki/자동차" },
+          { title: "비디오 게임", desc: "게임 산업", url: "https://ko.wikipedia.org/wiki/비디오_게임" },
+          { title: "암호화폐", desc: "비트코인, 이더리움", url: "https://ko.wikipedia.org/wiki/암호화폐" },
+          { title: "사이버 보안", desc: "데이터 보호", url: "https://ko.wikipedia.org/wiki/사이버_보안" },
+          { title: "인공지능", desc: "생각하는 기계", url: "https://ko.wikipedia.org/wiki/인공지능" },
+          { title: "양자물리학", desc: "입자의 세계", url: "https://ko.wikipedia.org/wiki/양자물리학" }
+        ]
+      },
+
+      zh: {
+        title: "关于一切 — 知识的世界",
+        langLabel: "选择语言",
+        themeLabel: "主题",
+        cards: [
+          { title: "数学", desc: "数字与图形的世界", url: "https://zh.wikipedia.org/wiki/数学" },
+          { title: "物理学", desc: "运动与能量定律", url: "https://zh.wikipedia.org/wiki/物理学" },
+          { title: "化学", desc: "物质的结构", url: "https://zh.wikipedia.org/wiki/化学" },
+          { title: "生物学", desc: "生命科学", url: "https://zh.wikipedia.org/wiki/生物学" },
+          { title: "天文学", desc: "恒星、行星与宇宙", url: "https://zh.wikipedia.org/wiki/天文学" },
+          { title: "地理学", desc: "世界地图与气候", url: "https://zh.wikipedia.org/wiki/地理学" },
+          { title: "历史", desc: "人类的过去", url: "https://zh.wikipedia.org/wiki/历史" },
+          { title: "文学", desc: "诗歌、故事、小说", url: "https://zh.wikipedia.org/wiki/文学" },
+          { title: "艺术", desc: "绘画与雕塑", url: "https://zh.wikipedia.org/wiki/艺术" },
+          { title: "音乐", desc: "音符与创造力", url: "https://zh.wikipedia.org/wiki/音乐" },
+          { title: "哲学", desc: "理性、真理与伦理", url: "https://zh.wikipedia.org/wiki/哲学" },
+          { title: "心理学", desc: "心灵与行为", url: "https://zh.wikipedia.org/wiki/心理学" },
+          { title: "经济学", desc: "金钱、市场与资源", url: "https://zh.wikipedia.org/wiki/经济学" },
+          { title: "政治", desc: "权力与治理", url: "https://zh.wikipedia.org/wiki/政治" },
+          { title: "技术", desc: "创新与未来", url: "https://zh.wikipedia.org/wiki/技术" },
+          { title: "计算机科学", desc: "编程与数据", url: "https://zh.wikipedia.org/wiki/计算机科学" },
+          { title: "机器人学", desc: "人工智能机器", url: "https://zh.wikipedia.org/wiki/机器人学" },
+          { title: "太空探索", desc: "太空之旅", url: "https://zh.wikipedia.org/wiki/太空探索" },
+          { title: "海洋学", desc: "海洋的奥秘", url: "https://zh.wikipedia.org/wiki/海洋学" },
+          { title: "气象学", desc: "天气与气候", url: "https://zh.wikipedia.org/wiki/气象学" },
+          { title: "考古学", desc: "发掘古代遗址", url: "https://zh.wikipedia.org/wiki/考古学" },
+          { title: "语言学", desc: "语言的结构", url: "https://zh.wikipedia.org/wiki/语言学" },
+          { title: "社会学", desc: "社会与关系", url: "https://zh.wikipedia.org/wiki/社会学" },
+          { title: "人类学", desc: "人类起源", url: "https://zh.wikipedia.org/wiki/人类学" },
+          { title: "神话学", desc: "古代神话", url: "https://zh.wikipedia.org/wiki/神话" },
+          { title: "宗教", desc: "世界信仰", url: "https://zh.wikipedia.org/wiki/宗教" },
+          { title: "体育", desc: "足球、篮球", url: "https://zh.wikipedia.org/wiki/体育" },
+          { title: "烹饪", desc: "烹饪艺术", url: "https://zh.wikipedia.org/wiki/烹饪" },
+          { title: "时尚", desc: "服装与风格", url: "https://zh.wikipedia.org/wiki/时尚" },
+          { title: "电影", desc: "电影艺术", url: "https://zh.wikipedia.org/wiki/电影" },
+          { title: "戏剧", desc: "舞台表演", url: "https://zh.wikipedia.org/wiki/戏剧" },
+          { title: "摄影", desc: "捕捉瞬间", url: "https://zh.wikipedia.org/wiki/摄影" },
+          { title: "设计", desc: "美观与可用性", url: "https://zh.wikipedia.org/wiki/设计" },
+          { title: "建筑", desc: "建筑与城市", url: "https://zh.wikipedia.org/wiki/建筑" },
+          { title: "交通", desc: "汽车、船舶、飞机", url: "https://zh.wikipedia.org/wiki/交通" },
+          { title: "能源", desc: "能源资源", url: "https://zh.wikipedia.org/wiki/能源" },
+          { title: "生态学", desc: "自然保护", url: "https://zh.wikipedia.org/wiki/生态学" },
+          { title: "医学", desc: "疾病治疗", url: "https://zh.wikipedia.org/wiki/医学" },
+          { title: "药学", desc: "药物生产", url: "https://zh.wikipedia.org/wiki/药学" },
+          { title: "教育学", desc: "教育方法", url: "https://zh.wikipedia.org/wiki/教育学" },
+          { title: "法学", desc: "正义与规则", url: "https://zh.wikipedia.org/wiki/法学" },
+          { title: "新闻学", desc: "媒体与新闻", url: "https://zh.wikipedia.org/wiki/新闻学" },
+          { title: "市场营销", desc: "产品推广", url: "https://zh.wikipedia.org/wiki/市场营销" },
+          { title: "管理学", desc: "团队领导", url: "https://zh.wikipedia.org/wiki/管理学" },
+          { title: "汽车", desc: "汽车历史", url: "https://zh.wikipedia.org/wiki/汽车" },
+          { title: "电子游戏", desc: "游戏产业", url: "https://zh.wikipedia.org/wiki/电子游戏" },
+          { title: "加密货币", desc: "比特币、以太坊", url: "https://zh.wikipedia.org/wiki/加密货币" },
+          { title: "网络安全", desc: "数据保护", url: "https://zh.wikipedia.org/wiki/网络安全" },
+          { title: "人工智能", desc: "会思考的机器", url: "https://zh.wikipedia.org/wiki/人工智能" },
+          { title: "量子物理", desc: "粒子世界", url: "https://zh.wikipedia.org/wiki/量子物理" }
+        ]
+      }
+    };
+
+    // DOM elementlari
+    const settingsBtn = document.getElementById('settingsBtn');
+    const closeSettings = document.getElementById('closeSettings');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const langSelect = document.getElementById('languageSelect');
+    const themeSelect = document.getElementById('themeSelect');
+    const mainTitle = document.getElementById('mainTitle');
+    const langLabel = document.getElementById('langLabel');
+    const themeLabel = document.getElementById('themeLabel');
+    const cardsGrid = document.getElementById('cardsGrid');
+
+    let currentLang = localStorage.getItem('language') || 'uz';
+    let currentTheme = localStorage.getItem('theme') || 'dark';
+
+    // Kartochkalarni yaratish
+    function renderCards() {
+      cardsGrid.innerHTML = '';
+      const cards = translations[currentLang].cards;
+      cards.forEach(card => {
+        const link = document.createElement('a');
+        link.href = card.url;
+        link.target = "_blank";
+        link.className = "card-link";
+        link.innerHTML = `
+          <div class="card">
+            <div class="card-front"><h2>${card.title}</h2></div>
+            <div class="card-back"><p>${card.desc}</p></div>
+          </div>
+        `;
+        cardsGrid.appendChild(link);
+      });
+    }
+
+    // UI ni yangilash
+    function updateUI() {
+      const t = translations[currentLang];
+      document.documentElement.lang = currentLang;
+      document.title = t.title;
+      mainTitle.textContent = t.title;
+      langLabel.textContent = t.langLabel;
+      themeLabel.textContent = t.themeLabel;
+      renderCards();
+    }
+
+    // Mavzuni o'rnatish
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    // Hodisalar
+    settingsBtn.addEventListener('click', () => settingsPanel.classList.add('open'));
+    closeSettings.addEventListener('click', () => settingsPanel.classList.remove('open'));
+
+    langSelect.addEventListener('change', (e) => {
+      currentLang = e.target.value;
+      localStorage.setItem('language', currentLang);
+      updateUI();
+    });
+
+    themeSelect.addEventListener('change', (e) => {
+      setTheme(e.target.value);
+    });
+
+    // Ishga tushirish
+    langSelect.value = currentLang;
+    themeSelect.value = currentTheme;
+    setTheme(currentTheme);
+    updateUI();
+  </script>
+</body>
+</html>
+
