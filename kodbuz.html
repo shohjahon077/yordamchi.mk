@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔓 Kod Buzish | Maxfiy Kodni Toping</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== GLOBAL VARIABLES ===== */
+    :root {
+      --bg: #0b091a;
+      --surface: #161429;
+      --card: #211f36;
+      --text: #e0e0ff;
+      --accent: #8a2be2;
+      --success: #00f3ff;
+      --warning: #ff2a6d;
+      --glass: rgba(25, 23, 45, 0.6);
+      --glow: 0 0 12px rgba(138, 43, 226, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --card: #f1f3f5;
+      --text: #212529;
+      --accent: #6a0dad;
+      --success: #0d6efd;
+      --warning: #dc3545;
+      --glass: rgba(255, 255, 255, 0.9);
+      --glow: 0 0 8px rgba(106, 13, 173, 0.3);
+    }
+
+    [data-theme="neon"] {
+      --bg: #000;
+      --surface: #0a001a;
+      --card: #0f002a;
+      --text: #00ffea;
+      --accent: #ff00f7;
+      --success: #00ffaa;
+      --warning: #ff2a6d;
+      --glass: rgba(15, 0, 42, 0.8);
+      --glow: 0 0 20px rgba(255, 0, 247, 0.7);
+    }
+
+    [data-theme="nature"] {
+      --bg: #0d1b1e;
+      --surface: #1b2a2d;
+      --card: #2a3a3d;
+      --text: #d0f0c0;
+      --accent: #4ade80;
+      --success: #a7f3d0;
+      --warning: #fbbf24;
+      --glass: rgba(42, 58, 61, 0.7);
+    }
+
+    [data-theme="cyber"] {
+      --bg: #000;
+      --surface: #050510;
+      --card: #0b0b20;
+      --text: #00ffaa;
+      --accent: #00f3ff;
+      --success: #00ffcc;
+      --warning: #ff2a6d;
+      --glass: rgba(11, 11, 32, 0.85);
+      --glow: 0 0 16px rgba(0, 243, 255, 0.6);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #1a172d);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      margin: 20px 0 30px;
+      position: relative;
+    }
+
+    .lang-switcher {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lang-btn {
+      width: 36px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: none;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover { transform: scale(1.1); }
+    .lang-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #000;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--success), #a1c4fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      opacity: 0.85;
+      margin-bottom: 25px;
+      max-width: 700px;
+      line-height: 1.6;
+    }
+
+    /* ===== STATS & PROGRESS ===== */
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--glass);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      width: 20%;
+      transition: width 0.5s ease;
+    }
+
+    /* ===== GAME AREA ===== */
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      transform-style: preserve-3d;
+      transition: transform 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(138,43,226,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) rotateX(5deg);
+    }
+
+    .level-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+
+    .cipher-type {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .encrypted {
+      font-size: 2.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 25px 0;
+      letter-spacing: 3px;
+      color: var(--success);
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+      font-family: monospace;
+    }
+
+    /* ===== INPUT ===== */
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    #answer {
+      flex: 1;
+      padding: 16px 20px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 16px;
+      background: var(--glass);
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      box-shadow: var(--glow);
+    }
+
+    #answer:focus {
+      box-shadow: 0 0 0 3px var(--accent), var(--glow);
+    }
+
+    #submit {
+      padding: 16px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #submit:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+    }
+
+    #submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ===== FEEDBACK ===== */
+    .feedback {
+      text-align: center;
+      min-height: 36px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .correct { color: var(--success); animation: pulse 0.6s; }
+    .wrong { color: var(--warning); animation: shake 0.5s; }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    /* ===== HELP & CONTROLS ===== */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #000;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+    }
+
+    /* ===== MODALS ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 35px;
+      width: 90%;
+      max-width: 550px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+      transform: scale(0.8);
+      animation: modalIn 0.5s forwards;
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--accent);
+    }
+
+    @keyframes modalIn {
+      to { transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .close {
+      font-size: 2rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .setting-group {
+      margin: 22px 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--glass);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 1.05rem;
+    }
+
+    /* ===== RESULT MODAL ===== */
+    .result-screen {
+      text-align: center;
+    }
+
+    .result-title {
+      font-size: 2.2rem;
+      margin: 20px 0;
+      color: var(--success);
+    }
+
+    .code-revealed {
+      font-size: 2.8rem;
+      font-weight: bold;
+      margin: 20px 0;
+      color: var(--accent);
+      font-family: monospace;
+      letter-spacing: 4px;
+      text-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
+    }
+
+    /* ===== MOBILE ===== */
+    @media (max-width: 600px) {
+      h1 { font-size: 2.1rem; }
+      .encrypted { font-size: 1.8rem; }
+      .input-group { flex-direction: column; }
+      .stats { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="uz">🇺🇿</button>
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="ko">🇰🇷</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1 id="title">🔓 Kod Buzish</h1>
+      <p class="subtitle" id="subtitle">
+        Kriptografik mantiqiy o'yin. Berilgan shifrni yechish orqali maxfiy kodni toping.
+      </p>
+    </div>
+
+    <div class="stats">
+      <div>
+        <div>✅ To'g'ri: <span id="correct">0</span></div>
+        <div>🔢 Jami: <span id="total">0</span></div>
+      </div>
+      <div>
+        <div id="level">Bosqich: 1/5</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="level-badge" id="levelBadge">Bosqich 1</div>
+      <div class="cipher-type">
+        <i class="fas fa-lock"></i>
+        <span id="cipherDesc">Caesar shifri (3 ta siljish)</span>
+      </div>
+
+      <div class="encrypted" id="encrypted">KHOOR</div>
+
+      <div class="input-group">
+        <input type="text" id="answer" placeholder="Javobni kiriting..." autocomplete="off" autofocus />
+        <button id="submit">✅ Tekshirish</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="btn btn-outline" id="hintBtn">
+          <i class="fas fa-lightbulb"></i> <span id="hintText">💡 Yordam</span>
+        </button>
+        <button class="btn btn-outline" id="settingsBtn">
+          <i class="fas fa-cog"></i> <span id="settingsText">⚙️ Sozlamalar</span>
+        </button>
+        <button class="btn btn-success" id="nextBtn" style="display:none;">
+          <i class="fas fa-arrow-right"></i> <span id="nextText">➡️ Keyingi</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="settingsTitle">⚙️ Sozlamalar</h2>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <div class="setting-group">
+        <label id="langLabel">Til</label>
+        <select id="langSelect">
+          <option value="uz">O'zbekcha</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="themeLabel">Mavzu</label>
+        <select id="themeSelect">
+          <option value="dark">Qorong'u (standart)</option>
+          <option value="light">Yorug'</option>
+          <option value="neon">Neon</option>
+          <option value="nature">Tabiat</option>
+          <option value="cyber">Kiberpunk</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="difficultyLabel">Qiyinchilik</label>
+        <select id="difficultySelect">
+          <option value="easy">Oson (Caesar, Atbash)</option>
+          <option value="medium" selected>O‘rta (Morze, T9)</option>
+          <option value="hard">Qiyin (XOR, ASCII)</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="hintLabel">Yordam</label>
+        <select id="hintSelect">
+          <option value="on">Yoqilgan (5 ta yordam)</option>
+          <option value="off">O‘chirilgan</option>
+        </select>
+      </div>
+
+      <div style="margin-top: 25px; display: flex; gap: 12px;">
+        <button class="btn btn-outline" id="saveSettings" style="flex:1;">
+          <i class="fas fa-save"></i> Saqlash
+        </button>
+        <button class="btn btn-success" id="closeSettings" style="flex:1;">
+          <i class="fas fa-check"></i> Yopish
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div class="modal" id="resultModal">
+    <div class="modal-content">
+      <div class="result-screen">
+        <h2 class="result-title" id="resultTitle">🎉 Tabriklaymiz!</h2>
+        <p id="resultMessage">Siz barcha shifrlarni yechdingiz!</p>
+        <div class="code-revealed" id="finalCode">UZB-2025</div>
+        <p>Maxfiy kod: <strong>UZB-2025</strong></p>
+        <button class="btn btn-success" id="playAgainBtn" style="margin-top: 25px;">
+          <i class="fas fa-redo"></i> Qayta boshlash
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      uz: {
+        title: "🔓 Kod Buzish",
+        subtitle: "Kriptografik mantiqiy o'yin. Berilgan shifrni yechish orqali maxfiy kodni toping.",
+        hintText: "💡 Yordam",
+        settingsText: "⚙️ Sozlamalar",
+        nextText: "➡️ Keyingi",
+        settingsTitle: "⚙️ Sozlamalar",
+        langLabel: "Til",
+        themeLabel: "Mavzu",
+        difficultyLabel: "Qiyinchilik",
+        hintLabel: "Yordam",
+        resultTitle: "🎉 Tabriklaymiz!",
+        resultMessage: (level) => `Siz ${level} ta shifrdan ${level} tasini yechdingiz!`,
+        finalCode: "UZB-2025",
+        cipherDesc: {
+          caesar: "Caesar shifri (3 ta siljish)",
+          atbash: "Atbash shifri (A↔Z, B↔Y...)",
+          morse: "Morze kodi",
+          t9: "Telefon raqamlari (T9)",
+          reverse: "Matnni teskari",
+          xor: "XOR shifrlash (kalit=7)",
+          ascii: "ASCII kodlar (bo'shliq bilan)"
+        },
+        hints: {
+          caesar: "Har bir harfni 3 ta oldinga siljiting (D → A)",
+          atbash: "Lotin alifbosida A=Z, B=Y, C=X...",
+          morse: ".- = A, -... = B, -.-. = C...",
+          t9: "2=ABC, 3=DEF, 4=GHI, 5=JKL, 6=MNO, 7=PQRS, 8=TUV, 9=WXYZ",
+          reverse: "So'zni orqasidan o'qing",
+          xor: "Har bir belgi kodini 7 bilan XOR qiling",
+          ascii: "Har bir raqam ASCII kodiga mos keladi"
+        }
+      },
+      en: {
+        title: "🔓 Code Breaker",
+        subtitle: "Cryptographic logic game. Find the secret code by solving the given cipher.",
+        hintText: "💡 Hint",
+        settingsText: "⚙️ Settings",
+        nextText: "➡️ Next",
+        settingsTitle: "⚙️ Settings",
+        langLabel: "Language",
+        themeLabel: "Theme",
+        difficultyLabel: "Difficulty",
+        hintLabel: "Hint",
+        resultTitle: "🎉 Congratulations!",
+        resultMessage: (level) => `You solved ${level} out of ${level} ciphers!`,
+        finalCode: "CODE-2025",
+        cipherDesc: {
+          caesar: "Caesar cipher (shift 3)",
+          atbash: "Atbash cipher (A↔Z, B↔Y...)",
+          morse: "Morse code",
+          t9: "Phone keypad (T9)",
+          reverse: "Reverse the text",
+          xor: "XOR encryption (key=7)",
+          ascii: "ASCII codes (space-separated)"
+        },
+        hints: {
+          caesar: "Shift each letter 3 positions backward (D → A)",
+          atbash: "A=Z, B=Y, C=X in Latin alphabet",
+          morse: ".- = A, -... = B, -.-. = C...",
+          t9: "2=ABC, 3=DEF, 4=GHI, 5=JKL, 6=MNO, 7=PQRS, 8=TUV, 9=WXYZ",
+          reverse: "Read the word backwards",
+          xor: "XOR each char code with 7",
+          ascii: "Each number is an ASCII code"
+        }
+      },
+      ru: {
+        title: "🔓 Взлом кода",
+        subtitle: "Криптографическая логическая игра. Найдите секретный код, расшифровав заданный шифр.",
+        hintText: "💡 Подсказка",
+        settingsText: "⚙️ Настройки",
+        nextText: "➡️ Далее",
+        settingsTitle: "⚙️ Настройки",
+        langLabel: "Язык",
+        themeLabel: "Тема",
+        difficultyLabel: "Сложность",
+        hintLabel: "Подсказка",
+        resultTitle: "🎉 Поздравляем!",
+        resultMessage: (level) => `Вы расшифровали ${level} из ${level} шифров!`,
+        finalCode: "RUS-2025",
+        cipherDesc: {
+          caesar: "Шифр Цезаря (сдвиг 3)",
+          atbash: "Шифр Атбаш (A↔Z, B↔Y...)",
+          morse: "Азбука Морзе",
+          t9: "Клавиатура телефона (T9)",
+          reverse: "Переверните текст",
+          xor: "Шифрование XOR (ключ=7)",
+          ascii: "Коды ASCII (через пробел)"
+        },
+        hints: {
+          caesar: "Сдвиньте каждую букву на 3 назад (D → A)",
+          atbash: "A=Z, B=Y, C=X в латинском алфавите",
+          morse: ".- = А, -... = Б, -.-. = Ц...",
+          t9: "2=АБВ, 3=ГДЕ, 4=ЖЗИ, 5=ЙКЛ, 6=МНО, 7=ПРСТ, 8=УФХ, 9=ЦЧШЩ",
+          reverse: "Прочтите слово задом наперёд",
+          xor: "XOR каждого кода символа с 7",
+          ascii: "Каждое число — код ASCII"
+        }
+      },
+      ko: {
+        title: "🔓 코드 해독",
+        subtitle: "암호학적 논리 게임. 주어진 암호를 풀어 비밀 코드를 찾아보세요.",
+        hintText: "💡 힌트",
+        settingsText: "⚙️ 설정",
+        nextText: "➡️ 다음",
+        settingsTitle: "⚙️ 설정",
+        langLabel: "언어",
+        themeLabel: "테마",
+        difficultyLabel: "난이도",
+        hintLabel: "힌트",
+        resultTitle: "🎉 축하합니다!",
+        resultMessage: (level) => `총 ${level}개의 암호 중 ${level}개를 해독했습니다!`,
+        finalCode: "KOR-2025",
+        cipherDesc: {
+          caesar: "시저 암호 (3글자 이동)",
+          atbash: "아트바쉬 암호 (A↔Z, B↔Y...)",
+          morse: "모스 부호",
+          t9: "전화 키패드 (T9)",
+          reverse: "텍스트 뒤집기",
+          xor: "XOR 암호화 (키=7)",
+          ascii: "ASCII 코드 (공백 구분)"
+        },
+        hints: {
+          caesar: "각 글자를 3자리 앞으로 이동 (D → A)",
+          atbash: "라틴 알파벳 A=Z, B=Y, C=X",
+          morse: ".- = A, -... = B, -.-. = C...",
+          t9: "2=ABC, 3=DEF, 4=GHI, 5=JKL, 6=MNO, 7=PQRS, 8=TUV, 9=WXYZ",
+          reverse: "단어를 거꾸로 읽기",
+          xor: "문자 코드를 7과 XOR 연산",
+          ascii: "각 숫자는 ASCII 코드"
+        }
+      },
+      zh: {
+        title: "🔓 密码破解",
+        subtitle: "密码逻辑游戏。通过破解给定密码，找出秘密代码。",
+        hintText: "💡 提示",
+        settingsText: "⚙️ 设置",
+        nextText: "➡️ 下一题",
+        settingsTitle: "⚙️ 设置",
+        langLabel: "语言",
+        themeLabel: "主题",
+        difficultyLabel: "难度",
+        hintLabel: "提示",
+        resultTitle: "🎉 恭喜！",
+        resultMessage: (level) => `您已成功破解全部 ${level} 个密码！`,
+        finalCode: "CN-2025",
+        cipherDesc: {
+          caesar: "凯撒密码（位移3）",
+          atbash: "阿特巴什密码（A↔Z, B↔Y...）",
+          morse: "摩斯电码",
+          t9: "手机键盘（T9）",
+          reverse: "文本反转",
+          xor: "XOR加密（密钥=7）",
+          ascii: "ASCII码（空格分隔）"
+        },
+        hints: {
+          caesar: "每个字母向前移动3位（D → A）",
+          atbash: "拉丁字母表中 A=Z, B=Y, C=X",
+          morse: ".- = A, -... = B, -.-. = C...",
+          t9: "2=ABC, 3=DEF, 4=GHI, 5=JKL, 6=MNO, 7=PQRS, 8=TUV, 9=WXYZ",
+          reverse: "将单词倒过来读",
+          xor: "每个字符代码与7进行XOR运算",
+          ascii: "每个数字代表一个ASCII码"
+        }
+      }
+    };
+
+    // ===== CIPHER LEVELS =====
+    const levels = [
+      {
+        type: 'caesar',
+        encrypted: 'KHOOR',
+        answer: 'HELLO',
+        help: 'Caesar: shift -3'
+      },
+      {
+        type: 'atbash',
+        encrypted: 'SVOOL',
+        answer: 'HELLO',
+        help: 'Atbash: A↔Z'
+      },
+      {
+        type: 'morse',
+        encrypted: '.... . .-.. .-.. ---',
+        answer: 'HELLO',
+        help: 'Morse: .- = A'
+      },
+      {
+        type: 't9',
+        encrypted: '43556',
+        answer: 'HELLO',
+        help: 'T9: 4=GHI, 3=DEF, 5=JKL, 5=JKL, 6=MNO → H-E-L-L-O'
+      },
+      {
+        type: 'reverse',
+        encrypted: 'OLLEH',
+        answer: 'HELLO',
+        help: 'Reverse text'
+      }
+    ];
+
+    // ===== STATE =====
+    const state = {
+      lang: 'uz',
+      theme: 'dark',
+      difficulty: 'medium',
+      hints: 5,
+      hintEnabled: true,
+      currentLevel: 0,
+      correct: 0,
+      total: 0
+    };
+
+    // DOM Elements
+    const els = {
+      title: document.getElementById('title'),
+      subtitle: document.getElementById('subtitle'),
+      correct: document.getElementById('correct'),
+      total: document.getElementById('total'),
+      level: document.getElementById('level'),
+      progress: document.getElementById('progress'),
+      levelBadge: document.getElementById('levelBadge'),
+      cipherDesc: document.getElementById('cipherDesc'),
+      encrypted: document.getElementById('encrypted'),
+      answer: document.getElementById('answer'),
+      submit: document.getElementById('submit'),
+      feedback: document.getElementById('feedback'),
+      hintBtn: document.getElementById('hintBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      hintText: document.getElementById('hintText'),
+      settingsText: document.getElementById('settingsText'),
+      nextText: document.getElementById('nextText'),
+      settingsModal: document.getElementById('settingsModal'),
+      resultModal: document.getElementById('resultModal'),
+      langBtns: document.querySelectorAll('.lang-btn'),
+      langSelect: document.getElementById('langSelect'),
+      themeSelect: document.getElementById('themeSelect'),
+      difficultySelect: document.getElementById('difficultySelect'),
+      hintSelect: document.getElementById('hintSelect'),
+      closeModal: document.getElementById('closeModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      saveSettings: document.getElementById('saveSettings'),
+      resultTitle: document.getElementById('resultTitle'),
+      resultMessage: document.getElementById('resultMessage'),
+      finalCode: document.getElementById('finalCode'),
+      playAgainBtn: document.getElementById('playAgainBtn')
+    };
+
+    // ===== CIPHER UTILS =====
+    function caesarDecrypt(str, shift = 3) {
+      return str.replace(/[A-Z]/g, c => 
+        String.fromCharCode((c.charCodeAt(0) - 65 - shift + 26) % 26 + 65)
+      );
+    }
+
+    function atbashDecrypt(str) {
+      return str.replace(/[A-Z]/g, c =>
+        String.fromCharCode(90 - (c.charCodeAt(0) - 65))
+      );
+    }
+
+    const morseMap = {
+      '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
+      '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+      '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
+      '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+      '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
+      '--..': 'Z'
+    };
+
+    function morseDecrypt(str) {
+      return str.split(' ').map(code => morseMap[code] || '?').join('');
+    }
+
+    const t9Map = {
+      '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL',
+      '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ'
+    };
+
+    function t9Decrypt(str) {
+      // For "HELLO" → 4(H),3(E),5(L),5(L),6(O)
+      const expected = ['43556', '43556'];
+      return str === '43556' ? 'HELLO' : '';
+    }
+
+    function reverseDecrypt(str) {
+      return str.split('').reverse().join('');
+    }
+
+    // ===== GAME LOGIC =====
+    function updateUI() {
+      const t = translations[state.lang];
+      
+      els.title.textContent = t.title;
+      els.subtitle.textContent = t.subtitle;
+      els.hintText.textContent = t.hintText;
+      els.settingsText.textContent = t.settingsText;
+      els.nextText.textContent = t.nextText;
+      els.settingsTitle.textContent = t.settingsTitle;
+      els.langLabel.textContent = t.langLabel;
+      els.themeLabel.textContent = t.themeLabel;
+      els.difficultyLabel.textContent = t.difficultyLabel;
+      els.hintLabel.textContent = t.hintLabel;
+      els.resultTitle.textContent = t.resultTitle;
+
+      // Update level description
+      const level = levels[state.currentLevel];
+      if (level) {
+        els.cipherDesc.textContent = t.cipherDesc[level.type] || level.type;
+      }
+
+      // Update stats
+      els.correct.textContent = state.correct;
+      els.total.textContent = state.total;
+      els.level.textContent = `Bosqich: ${state.currentLevel + 1}/${levels.length}`;
+      els.progress.style.width = `${((state.currentLevel) / levels.length) * 100}%`;
+      els.levelBadge.textContent = `Bosqich ${state.currentLevel + 1}`;
+
+      // Sozlamalar selectlarni yangilash
+      els.langSelect.value = state.lang;
+      els.themeSelect.value = state.theme;
+      els.difficultySelect.value = state.difficulty;
+      els.hintSelect.value = state.hintEnabled ? 'on' : 'off';
+    }
+
+    function setTheme() {
+      document.documentElement.setAttribute('data-theme', state.theme);
+    }
+
+    function loadLevel(index) {
+      state.currentLevel = index;
+      const level = levels[index];
+      els.encrypted.textContent = level.encrypted;
+      els.answer.value = '';
+      els.answer.placeholder = translations[state.lang].hintText;
+      els.feedback.textContent = '';
+      els.feedback.className = 'feedback';
+      els.nextBtn.style.display = 'none';
+      els.submit.disabled = false;
+      updateUI();
+    }
+
+    function checkAnswer() {
+      const level = levels[state.currentLevel];
+      const userAnswer = els.answer.value.trim().toUpperCase();
+      const correct = userAnswer === level.answer;
+
+      state.total++;
+      if (correct) state.correct++;
+
+      const t = translations[state.lang];
+      els.feedback.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+      els.feedback.textContent = correct ? '✅ To\'g\'ri!' : '❌ Xato!';
+
+      els.submit.disabled = true;
+
+      if (correct) {
+        setTimeout(() => {
+          if (state.currentLevel < levels.length - 1) {
+            els.nextBtn.style.display = 'inline-flex';
+          } else {
+            // O'yin tugadi
+            els.finalCode.textContent = t.finalCode;
+            els.resultMessage.textContent = t.resultMessage(levels.length);
+            els.resultModal.style.display = 'flex';
+          }
+        }, 800);
+      }
+    }
+
+    function showHint() {
+      if (!state.hintEnabled || state.hints <= 0) return;
+
+      const level = levels[state.currentLevel];
+      const t = translations[state.lang];
+      const hint = t.hints[level.type] || "Yordam mavjud emas.";
+      
+      alert(`💡 ${t.hintText}:\n\n${hint}\n\n(Qolgan yordamlar: ${state.hints - 1})`);
+      state.hints--;
+    }
+
+    // ===== INIT =====
+    function initGame() {
+      state.currentLevel = 0;
+      state.correct = 0;
+      state.total = 0;
+      state.hints = 5;
+      loadLevel(0);
+    }
+
+    // ===== EVENT LISTENERS =====
+    els.submit.addEventListener('click', checkAnswer);
+    els.answer.addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    els.nextBtn.addEventListener('click', () => {
+      loadLevel(state.currentLevel + 1);
+    });
+
+    els.hintBtn.addEventListener('click', showHint);
+
+    els.settingsBtn.addEventListener('click', () => {
+      els.settingsModal.style.display = 'flex';
+    });
+
+    els.closeModal.addEventListener('click', () => els.settingsModal.style.display = 'none');
+    els.closeSettings.addEventListener('click', () => els.settingsModal.style.display = 'none');
+
+    els.saveSettings.addEventListener('click', () => {
+      state.lang = els.langSelect.value;
+      state.theme = els.themeSelect.value;
+      state.difficulty = els.difficultySelect.value;
+      state.hintEnabled = els.hintSelect.value === 'on';
+
+      els.langBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.lang);
+      });
+
+      setTheme();
+      updateUI();
+      els.settingsModal.style.display = 'none';
+    });
+
+    els.playAgainBtn.addEventListener('click', () => {
+      els.resultModal.style.display = 'none';
+      initGame();
+    });
+
+    // Language switch
+    els.langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.lang = btn.dataset.lang;
+        els.langBtns.forEach(b => b.classList.toggle('active', b === btn));
+        updateUI();
+      });
+    });
+
+    // Close modals on outside click
+    window.addEventListener('click', e => {
+      if (e.target === els.settingsModal) els.settingsModal.style.display = 'none';
+      if (e.target === els.resultModal) els.resultModal.style.display = 'none';
+    });
+
+    // Start
+    setTheme();
+    updateUI();
+    initGame();
+  </script>
+</body>
+</html>
+
