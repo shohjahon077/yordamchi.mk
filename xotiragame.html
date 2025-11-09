@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Xotira Sinovi | Juftlikni Top</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== GLOBAL VARIABLES ===== */
+    :root {
+      /* Standart (Dark Purple) */
+      --bg: #0f0c29;
+      --surface: #1a172d;
+      --card-front: #24243e;
+      --card-back: #8a2be2;
+      --text: #f0f0f0;
+      --accent: #ff9a9e;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --glass: rgba(30, 25, 60, 0.6);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="light"] {
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --card-front: #f3f4f6;
+      --card-back: #8a2be2;
+      --text: #1f2937;
+      --glass: rgba(255, 255, 255, 0.8);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="neon"] {
+      --bg: #0c0c1a;
+      --surface: #14142a;
+      --card-front: #0f0f23;
+      --card-back: #00f3ff;
+      --text: #ffffff;
+      --accent: #ff00e6;
+      --glass: rgba(10, 10, 30, 0.7);
+    }
+
+    [data-theme="nature"] {
+      --bg: #1a2b1f;
+      --surface: #2a3d2f;
+      --card-front: #3a4d3f;
+      --card-back: #4ade80;
+      --text: #e0f0e0;
+    }
+
+    [data-theme="cyber"] {
+      --bg: #000;
+      --surface: #0a0a14;
+      --card-front: #0f0f1a;
+      --card-back: #00f3ff;
+      --text: #00ffaa;
+      --accent: #ff2a6d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #24243e);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      text-align: center;
+      margin: 20px 0 30px;
+      position: relative;
+    }
+
+    .lang-switcher {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lang-btn {
+      width: 36px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: none;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lang-btn.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #000;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, var(--accent), #a1c4fd, var(--success));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .subtitle {
+      opacity: 0.85;
+      margin-bottom: 20px;
+    }
+
+    /* ===== STATS BAR ===== */
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* ===== GAME BOARD ===== */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      perspective: 1200px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      height: 0;
+      padding-bottom: 100%; /* 1:1 aspect ratio */
+      position: relative;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      transition: transform 0.5s;
+    }
+
+    .card-inner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card.matched .card-inner {
+      transform: rotateY(180deg);
+      opacity: 0.9;
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 2.5rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .card-front {
+      background: var(--card-front);
+      color: var(--text);
+    }
+
+    .card-back {
+      background: var(--card-back);
+      color: white;
+      transform: rotateY(180deg);
+    }
+
+    /* ===== CONTROLS ===== */
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transform: scale(0.9);
+      animation: modalIn 0.4s forwards;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes modalIn {
+      to { transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .close {
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .setting-group {
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--glass);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    /* ===== RESULT SCREEN ===== */
+    .result-screen {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: var(--success);
+    }
+
+    .stars {
+      font-size: 2.5rem;
+      margin: 15px 0;
+      color: #fbbf24;
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .board {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      h1 { font-size: 2rem; }
+      .stat-value { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .board {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stats { flex-direction: column; gap: 12px; }
+      .controls { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="uz">🇺🇿</button>
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="ko">🇰🇷</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1 id="title">🧠 Xotira Sinovi</h1>
+      <p class="subtitle" id="subtitle">Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="time">00:00</div>
+        <div class="stat-label" id="timeLabel">⏱ Vaqt</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="moves">0</div>
+        <div class="stat-label" id="movesLabel">👣 Urinishlar</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="pairs">0/5</div>
+        <div class="stat-label" id="pairsLabel">✅ Juftliklar</div>
+      </div>
+    </div>
+
+    <div class="board" id="board">
+      <!-- Kartalar JavaScript orqali yaratiladi -->
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" id="startBtn">
+        <i class="fas fa-play"></i> <span id="startText">▶️ Boshlash</span>
+      </button>
+      <button class="btn btn-outline" id="resetBtn">
+        <i class="fas fa-redo"></i> <span id="resetText">🔄 Qayta</span>
+      </button>
+      <button class="btn btn-outline" id="settingsBtn">
+        <i class="fas fa-cog"></i> <span id="settingsText">⚙️ Sozlamalar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="settingsTitle">⚙️ Sozlamalar</h2>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+
+      <div class="setting-group">
+        <label id="langLabel">Til</label>
+        <select id="langSelect">
+          <option value="uz">O'zbekcha</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="themeLabel">Mavzu</label>
+        <select id="themeSelect">
+          <option value="dark">Qorong'u (standart)</option>
+          <option value="light">Yorug'</option>
+          <option value="neon">Neon</option>
+          <option value="nature">Tabiat</option>
+          <option value="cyber">Kiberpunk</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="difficultyLabel">Qiyinchilik</label>
+        <select id="difficultySelect">
+          <option value="4">Oson (4 juftlik = 8 karta)</option>
+          <option value="6" selected>O‘rta (6 juftlik = 12 karta)</option>
+          <option value="8">Qiyin (8 juftlik = 16 karta)</option>
+          <option value="10">Mukammal (10 juftlik = 20 karta)</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="deckLabel">Kartalar To'plami</label>
+        <select id="deckSelect">
+          <option value="animals">🐾 Hayvonlar</option>
+          <option value="fruits" selected>🍎 Mevalar</option>
+          <option value="emoji">😊 Emoji</option>
+          <option value="colors">🎨 Ranglar</option>
+          <option value="space">🚀 Kosmos</option>
+        </select>
+      </div>
+
+      <div style="margin-top: 25px; display: flex; gap: 10px;">
+        <button class="btn btn-outline" id="saveSettings" style="flex:1;">
+          <i class="fas fa-save"></i> <span id="saveText">💾 Saqlash</span>
+        </button>
+        <button class="btn btn-primary" id="closeSettings" style="flex:1;">
+          <i class="fas fa-check"></i> <span id="closeText">✅ Yopish</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Modal -->
+  <div class="modal" id="resultModal">
+    <div class="modal-content">
+      <div class="result-screen">
+        <h2 class="result-title" id="resultTitle">🎉 Ajoyib!</h2>
+        <div class="stars" id="stars">⭐⭐⭐</div>
+        <p id="resultMessage">Siz 6 juftlikni 24 urinishda 1:45 daqiqada topdingiz!</p>
+        <button class="btn btn-primary" id="playAgainBtn" style="margin-top: 20px;">
+          <i class="fas fa-play"></i> <span id="playAgainText">🔄 Yana o'ynash</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      uz: {
+        title: "🧠 Xotira Sinovi",
+        subtitle: "Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.",
+        timeLabel: "⏱ Vaqt",
+        movesLabel: "👣 Urinishlar",
+        pairsLabel: "✅ Juftliklar",
+        startText: "▶️ Boshlash",
+        resetText: "🔄 Qayta",
+        settingsText: "⚙️ Sozlamalar",
+        settingsTitle: "⚙️ Sozlamalar",
+        langLabel: "Til",
+        themeLabel: "Mavzu",
+        difficultyLabel: "Qiyinchilik",
+        deckLabel: "Kartalar To'plami",
+        saveText: "💾 Saqlash",
+        closeText: "✅ Yopish",
+        playAgainText: "🔄 Yana o'ynash",
+        resultTitle: "🎉 Ajoyib!",
+        perfect: "Mukammal! 🌟",
+        great: "Ajoyib! ⭐⭐⭐",
+        good: "Yaxshi! ⭐⭐",
+        tryAgain: "Yana urinib ko'ring! ⭐",
+        resultMessage: (pairs, moves, timeStr) => `Siz ${pairs} juftlikni ${moves} urinishda ${timeStr} daqiqada topdingiz!`
+      },
+      en: {
+        title: "🧠 Memory Challenge",
+        subtitle: "Test your visual memory and focus. Try to find all matching pairs.",
+        timeLabel: "⏱ Time",
+        movesLabel: "👣 Moves",
+        pairsLabel: "✅ Pairs",
+        startText: "▶️ Start",
+        resetText: "🔄 Reset",
+        settingsText: "⚙️ Settings",
+        settingsTitle: "⚙️ Settings",
+        langLabel: "Language",
+        themeLabel: "Theme",
+        difficultyLabel: "Difficulty",
+        deckLabel: "Card Deck",
+        saveText: "💾 Save",
+        closeText: "✅ Close",
+        playAgainText: "🔄 Play Again",
+        resultTitle: "🎉 Amazing!",
+        perfect: "Perfect! 🌟",
+        great: "Great job! ⭐⭐⭐",
+        good: "Good! ⭐⭐",
+        tryAgain: "Try again! ⭐",
+        resultMessage: (pairs, moves, timeStr) => `You found all ${pairs} pairs in ${moves} moves and ${timeStr}!`
+      },
+      ru: {
+        title: "🧠 Проверка памяти",
+        subtitle: "Проверьте зрительную память и концентрацию. Найдите все совпадающие пары.",
+        timeLabel: "⏱ Время",
+        movesLabel: "👣 Ходы",
+        pairsLabel: "✅ Пары",
+        startText: "▶️ Начать",
+        resetText: "🔄 Сброс",
+        settingsText: "⚙️ Настройки",
+        settingsTitle: "⚙️ Настройки",
+        langLabel: "Язык",
+        themeLabel: "Тема",
+        difficultyLabel: "Сложность",
+        deckLabel: "Колоды карт",
+        saveText: "💾 Сохранить",
+        closeText: "✅ Закрыть",
+        playAgainText: "🔄 Играть снова",
+        resultTitle: "🎉 Великолепно!",
+        perfect: "Идеально! 🌟",
+        great: "Отлично! ⭐⭐⭐",
+        good: "Хорошо! ⭐⭐",
+        tryAgain: "Попробуйте ещё! ⭐",
+        resultMessage: (pairs, moves, timeStr) => `Вы нашли все ${pairs} пар за ${moves} ходов и ${timeStr}!`
+      },
+      ko: {
+        title: "🧠 기억력 도전",
+        subtitle: "시각적 기억력과 집중력을 테스트하세요. 모든 짝을 찾아보세요.",
+        timeLabel: "⏱ 시간",
+        movesLabel: "👣 시도",
+        pairsLabel: "✅ 짝",
+        startText: "▶️ 시작",
+        resetText: "🔄 재시작",
+        settingsText: "⚙️ 설정",
+        settingsTitle: "⚙️ 설정",
+        langLabel: "언어",
+        themeLabel: "테마",
+        difficultyLabel: "난이도",
+        deckLabel: "카드 덱",
+        saveText: "💾 저장",
+        closeText: "✅ 닫기",
+        playAgainText: "🔄 다시 하기",
+        resultTitle: "🎉 대단해요!",
+        perfect: "완벽해요! 🌟",
+        great: "훌륭해요! ⭐⭐⭐",
+        good: "좋아요! ⭐⭐",
+        tryAgain: "다시 도전해보세요! ⭐",
+        resultMessage: (pairs, moves, timeStr) => `총 ${pairs}쌍을 ${moves}번 시도해 ${timeStr} 만에 완료했습니다!`
+      },
+      zh: {
+        title: "🧠 记忆力挑战",
+        subtitle: "测试您的视觉记忆和专注力。尝试找出所有配对。",
+        timeLabel: "⏱ 时间",
+        movesLabel: "👣 步数",
+        pairsLabel: "✅ 配对",
+        startText: "▶️ 开始",
+        resetText: "🔄 重置",
+        settingsText: "⚙️ 设置",
+        settingsTitle: "⚙️ 设置",
+        langLabel: "语言",
+        themeLabel: "主题",
+        difficultyLabel: "难度",
+        deckLabel: "卡牌组",
+        saveText: "💾 保存",
+        closeText: "✅ 关闭",
+        playAgainText: "🔄 再玩一次",
+        resultTitle: "🎉 太棒了！",
+        perfect: "完美！🌟",
+        great: "干得漂亮！⭐⭐⭐",
+        good: "不错！⭐⭐",
+        tryAgain: "再试一次！⭐",
+        resultMessage: (pairs, moves, timeStr) => `您用${moves}步，在${timeStr}内找到了全部${pairs}对！`
+      }
+    };
+
+    // ===== CARD DECKS =====
+    const decks = {
+      animals: ["🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮"],
+      fruits: ["🍎", "🍌", "🍇", "🍓", "🍒", "🍑", "🍍", "🥝", "🍉", "🍋"],
+      emoji: ["😊", "😂", "😍", "😎", "🤩", "😜", "🥳", "🤓", "😏", "😴"],
+      colors: ["🔴", "🔵", "🟢", "🟡", "🟠", "🟣", "🟤", "⚫", "⚪", "🟠"],
+      space: ["🚀", "🛸", "👨‍🚀", "🌍", "🌕", "⭐", "☄️", "🌌", "🔭", "🛰️"]
+    };
+
+    // ===== STATE =====
+    const state = {
+      lang: 'uz',
+      theme: 'dark',
+      difficulty: 6, // juftliklar soni (6 → 12 karta)
+      deck: 'fruits',
+      gameActive: false,
+      board: [],
+      flippedCards: [],
+      matchedCount: 0,
+      moves: 0,
+      startTime: null,
+      timerId: null,
+      time: 0 // seconds
+    };
+
+    // DOM Elements
+    const els = {
+      board: document.getElementById('board'),
+      time: document.getElementById('time'),
+      moves: document.getElementById('moves'),
+      pairs: document.getElementById('pairs'),
+      startBtn: document.getElementById('startBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      settingsModal: document.getElementById('settingsModal'),
+      resultModal: document.getElementById('resultModal'),
+      langBtns: document.querySelectorAll('.lang-btn'),
+      ...Object.fromEntries(
+        ['title','subtitle','timeLabel','movesLabel','pairsLabel','startText','resetText','settingsText','settingsTitle',
+        'langLabel','themeLabel','difficultyLabel','deckLabel','saveText','closeText','playAgainText','resultTitle',
+        'resultMessage','playAgainBtn'].map(id => [id, document.getElementById(id)])
+      )
+    };
+
+    // ===== HELPERS =====
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateStats() {
+      els.time.textContent = formatTime(state.time);
+      els.moves.textContent = state.moves;
+      els.pairs.textContent = `${state.matchedCount}/${state.difficulty}`;
+    }
+
+    function updateUI() {
+      const t = translations[state.lang];
+      els.title.textContent = t.title;
+      els.subtitle.textContent = t.subtitle;
+      els.timeLabel.textContent = t.timeLabel;
+      els.movesLabel.textContent = t.movesLabel;
+      els.pairsLabel.textContent = t.pairsLabel;
+      els.startText.textContent = t.startText;
+      els.resetText.textContent = t.resetText;
+      els.settingsText.textContent = t.settingsText;
+      els.settingsTitle.textContent = t.settingsTitle;
+      els.langLabel.textContent = t.langLabel;
+      els.themeLabel.textContent = t.themeLabel;
+      els.difficultyLabel.textContent = t.difficultyLabel;
+      els.deckLabel.textContent = t.deckLabel;
+      els.saveText.textContent = t.saveText;
+      els.closeText.textContent = t.closeText;
+      els.playAgainText.textContent = t.playAgainText;
+      els.resultTitle.textContent = t.resultTitle;
+
+      // Sozlamalarni yangilash
+      document.getElementById('langSelect').value = state.lang;
+      document.getElementById('themeSelect').value = state.theme;
+      document.getElementById('difficultySelect').value = state.difficulty;
+      document.getElementById('deckSelect').value = state.deck;
+    }
+
+    function setTheme() {
+      document.documentElement.setAttribute('data-theme', state.theme);
+    }
+
+    // ===== GAME LOGIC =====
+    function shuffle(array) {
+      return [...array]
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+    }
+
+    function initBoard() {
+      els.board.innerHTML = '';
+      state.flippedCards = [];
+      state.matchedCount = 0;
+      state.moves = 0;
+      state.time = 0;
+      updateStats();
+
+      const symbols = decks[state.deck].slice(0, state.difficulty);
+      const cards = [...symbols, ...symbols];
+      const shuffled = shuffle(cards);
+
+      state.board = shuffled.map((symbol, i) => ({
+        id: i,
+        symbol,
+        flipped: false,
+        matched: false
+      }));
+
+      renderBoard();
+    }
+
+    function renderBoard() {
+      els.board.style.gridTemplateColumns = `repeat(${Math.min(5, Math.ceil(Math.sqrt(state.board.length)))}, 1fr)`;
+      els.board.innerHTML = state.board.map(card => `
+        <div class="card ${card.flipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''}"
+             data-id="${card.id}">
+          <div class="card-inner">
+            <div class="card-face card-front">?</div>
+            <div class="card-face card-back">${card.symbol}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', handleCardClick);
+      });
+    }
+
+    function handleCardClick(e) {
+      if (!state.gameActive || state.flippedCards.length >= 2) return;
+
+      const cardEl = e.currentTarget;
+      const id = parseInt(cardEl.dataset.id);
+      const card = state.board.find(c => c.id === id);
+
+      if (card.flipped || card.matched) return;
+
+      // Flip card
+      card.flipped = true;
+      cardEl.classList.add('flipped');
+
+      state.flippedCards.push(card);
+
+      if (state.flippedCards.length === 2) {
+        state.moves++;
+        updateStats();
+
+        const [c1, c2] = state.flippedCards;
+        if (c1.symbol === c2.symbol) {
+          // Match!
+          c1.matched = true;
+          c2.matched = true;
+          state.matchedCount++;
+          state.flippedCards = [];
+
+          if (state.matchedCount === state.difficulty) {
+            endGame();
+          }
+        } else {
+          // No match — flip back after delay
+          setTimeout(() => {
+            c1.flipped = false;
+            c2.flipped = false;
+            document.querySelectorAll(`.card[data-id="${c1.id}"], .card[data-id="${c2.id}"]`)
+              .forEach(el => el.classList.remove('flipped'));
+            state.flippedCards = [];
+          }, 800);
+        }
+      }
+    }
+
+    function startTimer() {
+      state.startTime = Date.now();
+      clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        state.time = Math.floor((Date.now() - state.startTime) / 1000);
+        els.time.textContent = formatTime(state.time);
+      }, 1000);
+    }
+
+    function startGame() {
+      state.gameActive = true;
+      initBoard();
+      startTimer();
+      els.startBtn.disabled = true;
+      els.resetBtn.disabled = false;
+    }
+
+    function resetGame() {
+      clearInterval(state.timerId);
+      state.gameActive = false;
+      els.startBtn.disabled = false;
+      els.resetBtn.disabled = true;
+      initBoard();
+    }
+
+    function endGame() {
+      clearInterval(state.timerId);
+      state.gameActive = false;
+      els.startBtn.disabled = false;
+      els.resetBtn.disabled = true;
+
+      // Calculate stars
+      const perfectMoves = state.difficulty; // minimal moves
+      const maxMoves = perfectMoves * 3;
+      let stars = "⭐";
+      if (state.moves <= perfectMoves * 1.2) stars = "⭐⭐⭐";
+      else if (state.moves <= perfectMoves * 2) stars = "⭐⭐";
+
+      const t = translations[state.lang];
+      els.stars.textContent = stars;
+      const timeStr = formatTime(state.time);
+      els.resultMessage.textContent = t.resultMessage(state.difficulty, state.moves, timeStr);
+
+      // Bonus title
+      if (stars === "⭐⭐⭐") els.resultTitle.textContent = t.perfect;
+      else if (stars === "⭐⭐") els.resultTitle.textContent = t.great;
+      else if (stars === "⭐") els.resultTitle.textContent = t.good;
+      else els.resultTitle.textContent = t.tryAgain;
+
+      els.resultModal.style.display = 'flex';
+    }
+
+    // ===== EVENT LISTENERS =====
+    els.startBtn.addEventListener('click', startGame);
+    els.resetBtn.addEventListener('click', resetGame);
+    els.settingsBtn.addEventListener('click', () => {
+      els.settingsModal.style.display = 'flex';
+    });
+
+    [els.closeModal, els.closeSettings].forEach(btn =>
+      btn.addEventListener('click', () => els.settingsModal.style.display = 'none')
+    );
+
+    els.saveSettings.addEventListener('click', () => {
+      state.lang = document.getElementById('langSelect').value;
+      state.theme = document.getElementById('themeSelect').value;
+      state.difficulty = parseInt(document.getElementById('difficultySelect').value);
+      state.deck = document.getElementById('deckSelect').value;
+
+      els.langBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.lang);
+      });
+
+      setTheme();
+      updateUI();
+      els.settingsModal.style.display = 'none';
+    });
+
+    els.playAgainBtn.addEventListener('click', () => {
+      els.resultModal.style.display = 'none';
+      startGame();
+    });
+
+    // Language buttons
+    els.langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.lang = btn.dataset.lang;
+        els.langBtns.forEach(b => b.classList.toggle('active', b === btn));
+        updateUI();
+      });
+    });
+
+    // Close modals on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target === els.settingsModal) els.settingsModal.style.display = 'none';
+      if (e.target === els.resultModal) els.resultModal.style.display = 'none';
+    });
+
+    // Init
+    setTheme();
+    updateUI();
+    initBoard();
+  </script>
+</body>
+</html>
+
