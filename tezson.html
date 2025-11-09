@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Tezlik Testi | Miya Mashg'uloti</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== GLOBAL STYLES ===== */
+    :root {
+      --bg-primary: #0f0c29;
+      --bg-secondary: #302b63;
+      --accent: #24243e;
+      --text: #f0f0f0;
+      --correct: #4ade80;
+      --wrong: #f87171;
+      --primary: #8a2be2;
+      --btn-hover: #7a1bd2;
+      --card-bg: rgba(40, 35, 80, 0.7);
+      --glass: rgba(255, 255, 255, 0.08);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8f9fa;
+      --bg-secondary: #e9ecef;
+      --accent: #dee2e6;
+      --text: #212529;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --glass: rgba(255, 255, 255, 0.7);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 3D Depth Effect */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      perspective: 1000px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 20px var(--glass);
+      transform-style: preserve-3d;
+      transform: translateY(0);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card:hover {
+      transform: translateY(-10px) rotateX(5deg);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ff9a9e, #fad0c4, #a1c4fd);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 30px;
+    }
+
+    /* ===== PROGRESS & TIMER ===== */
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      font-size: 1.2rem;
+    }
+
+    .timer {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #ff6b6b;
+    }
+
+    /* ===== PROBLEM DISPLAY ===== */
+    .problem {
+      font-size: 3.5rem;
+      text-align: center;
+      margin: 40px 0;
+      font-weight: 700;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ===== INPUT ===== */
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    #answer {
+      width: 150px;
+      padding: 16px 20px;
+      font-size: 1.5rem;
+      text-align: center;
+      border: none;
+      border-radius: 16px;
+      background: var(--glass);
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #answer:focus {
+      box-shadow: 0 0 0 3px var(--primary), 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #submit {
+      padding: 16px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+    }
+
+    #submit:hover {
+      background: var(--btn-hover);
+      transform: scale(1.05);
+    }
+
+    /* ===== FEEDBACK ===== */
+    .feedback {
+      text-align: center;
+      font-size: 1.4rem;
+      height: 40px;
+      margin: 20px 0;
+    }
+
+    .correct { color: var(--correct); animation: pulse 0.6s; }
+    .wrong { color: var(--wrong); animation: shake 0.5s; }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* ===== RESULTS ===== */
+    .results {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.6rem;
+    }
+
+    /* ===== SETTINGS MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      transform-style: preserve-3d;
+      transform: rotateY(10deg);
+      animation: modalPop 0.5s forwards;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.7) rotateY(-20deg); opacity: 0; }
+      to { transform: scale(1) rotateY(0); opacity: 1; }
+    }
+
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .setting-group {
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--accent);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: transparent; border: 2px solid var(--primary); }
+
+    /* ===== LANGUAGES ===== */
+    .lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      width: 40px;
+      height: 30px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .lang-btn.active {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .problem { font-size: 2.5rem; }
+      #answer { width: 120px; font-size: 1.3rem; }
+      .input-group { flex-direction: column; align-items: center; }
+      .stats { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="uz">🇺🇿</button>
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="ko">🇰🇷</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h1 id="title">🧠 Tezlik Testi</h1>
+      <p class="subtitle" id="subtitle">Belgilangan vaqt ichida qancha oddiy masalani yecha olasiz?</p>
+
+      <div class="stats">
+        <div id="score">✅ To'g'ri: <span>0</span></div>
+        <div class="timer" id="timer">⏱️ 60s</div>
+        <div id="total">🔢 Jami: <span>0</span></div>
+      </div>
+
+      <div class="problem" id="problem">7 + 9 = ?</div>
+
+      <div class="input-group">
+        <input type="number" id="answer" placeholder="?" autofocus />
+        <button id="submit">✅ Tekshirish</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="buttons">
+        <button class="btn btn-primary" id="startBtn">▶️ Boshlash</button>
+        <button class="btn btn-outline" id="settingsBtn">⚙️ Sozlamalar</button>
+      </div>
+
+      <div class="results" id="results" style="display:none;">
+        <p id="finalResult">Siz 60 soniyada 12 ta masalani yechdingiz!</p>
+        <button class="btn btn-primary" id="restartBtn">🔄 Qayta boshlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2 id="settingsTitle">⚙️ Sozlamalar</h2>
+
+      <div class="setting-group">
+        <label id="langLabel">Til</label>
+        <select id="langSelect">
+          <option value="uz">O'zbekcha</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="ko">한국어</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="themeLabel">Mavzu</label>
+        <select id="themeSelect">
+          <option value="dark">Qorong'u (standart)</option>
+          <option value="light">Yorug'</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="timeLabel">Vaqt (soniya)</label>
+        <select id="timeSelect">
+          <option value="30">30 soniya</option>
+          <option value="60" selected>60 soniya</option>
+          <option value="90">90 soniya</option>
+          <option value="120">2 daqiqa</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="difficultyLabel">Qiyinchilik</label>
+        <select id="difficultySelect">
+          <option value="easy">Oson (1-10)</option>
+          <option value="medium" selected>O‘rta (1-20)</option>
+          <option value="hard">Qiyin (1-50)</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label id="operationLabel">Amallar</label>
+        <select id="operationSelect" multiple size="3">
+          <option value="+" selected>Qo‘shish (+)</option>
+          <option value="-" selected>Ayirish (–)</option>
+          <option value="*">Ko‘paytirish (×)</option>
+        </select>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-outline" id="saveSettings">💾 Saqlash</button>
+        <button class="btn btn-primary" id="closeSettings">✅ Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      uz: {
+        title: "🧠 Tezlik Testi",
+        subtitle: "Belgilangan vaqt ichida qancha oddiy masalani yecha olasiz?",
+        score: "✅ To'g'ri:",
+        total: "🔢 Jami:",
+        timer: "⏱️",
+        start: "▶️ Boshlash",
+        settings: "⚙️ Sozlamalar",
+        restart: "🔄 Qayta boshlash",
+        settingsTitle: "⚙️ Sozlamalar",
+        langLabel: "Til",
+        themeLabel: "Mavzu",
+        timeLabel: "Vaqt (soniya)",
+        difficultyLabel: "Qiyinchilik",
+        operationLabel: "Amallar",
+        save: "💾 Saqlash",
+        close: "✅ Yopish",
+        result: (correct, total, time) => `Siz ${time} soniyada ${total} ta masaladan ${correct} tasini to'g'ri yechdingiz!`,
+        feedbackCorrect: "✅ To'g'ri! Ajoyib!",
+        feedbackWrong: "❌ Xato! Keyingisi baxtliroq bo'ladi!",
+        problemPlaceholder: "?"
+      },
+      en: {
+        title: "🧠 Speed Test",
+        subtitle: "How many simple math problems can you solve in the given time?",
+        score: "✅ Correct:",
+        total: "🔢 Total:",
+        timer: "⏱️",
+        start: "▶️ Start",
+        settings: "⚙️ Settings",
+        restart: "🔄 Restart",
+        settingsTitle: "⚙️ Settings",
+        langLabel: "Language",
+        themeLabel: "Theme",
+        timeLabel: "Time (seconds)",
+        difficultyLabel: "Difficulty",
+        operationLabel: "Operations",
+        save: "💾 Save",
+        close: "✅ Close",
+        result: (correct, total, time) => `You solved ${correct} out of ${total} problems correctly in ${time}s!`,
+        feedbackCorrect: "✅ Correct! Great job!",
+        feedbackWrong: "❌ Wrong! Better luck next time!",
+        problemPlaceholder: "?"
+      },
+      ru: {
+        title: "🧠 Тест на скорость",
+        subtitle: "Сколько простых математических задач вы решите за отведённое время?",
+        score: "✅ Верно:",
+        total: "🔢 Всего:",
+        timer: "⏱️",
+        start: "▶️ Начать",
+        settings: "⚙️ Настройки",
+        restart: "🔄 Перезапуск",
+        settingsTitle: "⚙️ Настройки",
+        langLabel: "Язык",
+        themeLabel: "Тема",
+        timeLabel: "Время (секунды)",
+        difficultyLabel: "Сложность",
+        operationLabel: "Операции",
+        save: "💾 Сохранить",
+        close: "✅ Закрыть",
+        result: (correct, total, time) => `Вы правильно решили ${correct} из ${total} задач за ${time} секунд!`,
+        feedbackCorrect: "✅ Верно! Отлично!",
+        feedbackWrong: "❌ Ошибка! Повезёт в следующий раз!",
+        problemPlaceholder: "?"
+      },
+      ko: {
+        title: "🧠 속도 테스트",
+        subtitle: "제한 시간 안에 얼마나 많은 간단한 수학 문제를 풀 수 있나요?",
+        score: "✅ 정답:",
+        total: "🔢 전체:",
+        timer: "⏱️",
+        start: "▶️ 시작",
+        settings: "⚙️ 설정",
+        restart: "🔄 다시 시작",
+        settingsTitle: "⚙️ 설정",
+        langLabel: "언어",
+        themeLabel: "테마",
+        timeLabel: "시간(초)",
+        difficultyLabel: "난이도",
+        operationLabel: "연산",
+        save: "💾 저장",
+        close: "✅ 닫기",
+        result: (correct, total, time) => `${time}초 동안 총 ${total}문제 중 ${correct}문제를 맞혔습니다!`,
+        feedbackCorrect: "✅ 정답입니다! 대단해요!",
+        feedbackWrong: "❌ 틀렸습니다! 다음엔 잘 될 거예요!",
+        problemPlaceholder: "?"
+      },
+      zh: {
+        title: "🧠 速度测试",
+        subtitle: "在规定时间内，你能解出多少道简单数学题？",
+        score: "✅ 正确：",
+        total: "🔢 总计：",
+        timer: "⏱️",
+        start: "▶️ 开始",
+        settings: "⚙️ 设置",
+        restart: "🔄 重新开始",
+        settingsTitle: "⚙️ 设置",
+        langLabel: "语言",
+        themeLabel: "主题",
+        timeLabel: "时间（秒）",
+        difficultyLabel: "难度",
+        operationLabel: "运算",
+        save: "💾 保存",
+        close: "✅ 关闭",
+        result: (correct, total, time) => `您在${time}秒内答对了${total}题中的${correct}题！`,
+        feedbackCorrect: "✅ 正确！太棒了！",
+        feedbackWrong: "❌ 错误！下次加油！",
+        problemPlaceholder: "?"
+      }
+    };
+
+    // ===== STATE =====
+    let state = {
+      lang: 'uz',
+      theme: 'dark',
+      timeLimit: 60,
+      difficulty: 'medium',
+      operations: ['+', '-'],
+      score: 0,
+      total: 0,
+      timeLeft: 60,
+      gameActive: false,
+      timerId: null,
+      currentProblem: { a: 0, b: 0, op: '+', answer: 0 }
+    };
+
+    // DOM Elements
+    const els = {
+      title: document.getElementById('title'),
+      subtitle: document.getElementById('subtitle'),
+      score: document.getElementById('score').querySelector('span'),
+      total: document.getElementById('total').querySelector('span'),
+      timer: document.getElementById('timer'),
+      problem: document.getElementById('problem'),
+      answer: document.getElementById('answer'),
+      submit: document.getElementById('submit'),
+      feedback: document.getElementById('feedback'),
+      startBtn: document.getElementById('startBtn'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      results: document.getElementById('results'),
+      finalResult: document.getElementById('finalResult'),
+      restartBtn: document.getElementById('restartBtn'),
+      settingsModal: document.getElementById('settingsModal'),
+      closeModal: document.getElementById('closeModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      saveSettings: document.getElementById('saveSettings'),
+      langSelect: document.getElementById('langSelect'),
+      themeSelect: document.getElementById('themeSelect'),
+      timeSelect: document.getElementById('timeSelect'),
+      difficultySelect: document.getElementById('difficultySelect'),
+      operationSelect: document.getElementById('operationSelect'),
+      langBtns: document.querySelectorAll('.lang-btn')
+    };
+
+    // ===== INIT =====
+    function updateUI() {
+      const t = translations[state.lang];
+      els.title.textContent = t.title;
+      els.subtitle.textContent = t.subtitle;
+      els.score.textContent = state.score;
+      els.total.textContent = state.total;
+      els.timer.textContent = `⏱️ ${state.timeLeft}s`;
+      els.startBtn.textContent = t.start;
+      els.settingsBtn.textContent = t.settings;
+      els.restartBtn.textContent = t.restart;
+
+      // Settings modal
+      document.getElementById('settingsTitle').textContent = t.settingsTitle;
+      document.getElementById('langLabel').textContent = t.langLabel;
+      document.getElementById('themeLabel').textContent = t.themeLabel;
+      document.getElementById('timeLabel').textContent = t.timeLabel;
+      document.getElementById('difficultyLabel').textContent = t.difficultyLabel;
+      document.getElementById('operationLabel').textContent = t.operationLabel;
+      els.saveSettings.textContent = t.save;
+      els.closeSettings.textContent = t.close;
+
+      // Update language select options
+      const langOptions = {
+        uz: "O'zbekcha",
+        en: "English",
+        ru: "Русский",
+        ko: "한국어",
+        zh: "中文"
+      };
+      els.langSelect.innerHTML = '';
+      Object.entries(langOptions).forEach(([code, name]) => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = name;
+        if (code === state.lang) opt.selected = true;
+        els.langSelect.appendChild(opt);
+      });
+
+      // Update operation options
+      const ops = [
+        { val: '+', text: { uz: "Qo‘shish (+)", en: "Addition (+)", ru: "Сложение (+)", ko: "덧셈 (+)", zh: "加法 (+)" } },
+        { val: '-', text: { uz: "Ayirish (–)", en: "Subtraction (–)", ru: "Вычитание (–)", ko: "뺄셈 (–)", zh: "减法 (–)" } },
+        { val: '*', text: { uz: "Ko‘paytirish (×)", en: "Multiplication (×)", ru: "Умножение (×)", ko: "곱셈 (×)", zh: "乘法 (×)" } }
+      ];
+      els.operationSelect.innerHTML = '';
+      ops.forEach(op => {
+        const opt = document.createElement('option');
+        opt.value = op.val;
+        opt.textContent = op.text[state.lang];
+        if (state.operations.includes(op.val)) opt.selected = true;
+        els.operationSelect.appendChild(opt);
+      });
+    }
+
+    function setTheme() {
+      document.documentElement.setAttribute('data-theme', state.theme);
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateProblem() {
+      const ranges = {
+        easy: [1, 10],
+        medium: [1, 20],
+        hard: [1, 50]
+      };
+      const [min, max] = ranges[state.difficulty];
+      const op = state.operations[Math.floor(Math.random() * state.operations.length)];
+      let a, b, answer;
+
+      if (op === '*') {
+        a = getRandomInt(1, Math.min(12, max));
+        b = getRandomInt(1, Math.min(12, max));
+        answer = a * b;
+      } else if (op === '-') {
+        a = getRandomInt(min, max);
+        b = getRandomInt(min, a); // to avoid negative results
+        answer = a - b;
+      } else { // '+'
+        a = getRandomInt(min, max);
+        b = getRandomInt(min, max);
+        answer = a + b;
+      }
+
+      state.currentProblem = { a, b, op, answer };
+      els.problem.textContent = `${a} ${op === '*' ? '×' : op} ${b} = ?`;
+      els.answer.value = '';
+      els.answer.placeholder = translations[state.lang].problemPlaceholder;
+    }
+
+    function startGame() {
+      state.score = 0;
+      state.total = 0;
+      state.timeLeft = state.timeLimit;
+      state.gameActive = true;
+      els.results.style.display = 'none';
+      els.startBtn.disabled = true;
+      els.settingsBtn.disabled = true;
+
+      updateUI();
+      generateProblem();
+      els.answer.focus();
+
+      clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        state.timeLeft--;
+        els.timer.textContent = `⏱️ ${state.timeLeft}s`;
+        if (state.timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      state.gameActive = false;
+      clearInterval(state.timerId);
+      els.startBtn.disabled = false;
+      els.settingsBtn.disabled = false;
+
+      const t = translations[state.lang];
+      els.finalResult.textContent = t.result(state.score, state.total, state.timeLimit);
+      els.results.style.display = 'block';
+    }
+
+    function checkAnswer() {
+      if (!state.gameActive) return;
+
+      const userAnswer = parseInt(els.answer.value);
+      const correct = userAnswer === state.currentProblem.answer;
+      state.total++;
+      if (correct) state.score++;
+
+      const t = translations[state.lang];
+      els.feedback.className = 'feedback ' + (correct ? 'correct' : 'wrong');
+      els.feedback.textContent = correct ? t.feedbackCorrect : t.feedbackWrong;
+
+      updateUI();
+      setTimeout(() => {
+        if (state.gameActive) {
+          generateProblem();
+          els.answer.focus();
+        }
+      }, 800);
+    }
+
+    // ===== EVENT LISTENERS =====
+    els.submit.addEventListener('click', checkAnswer);
+    els.answer.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkAnswer();
+    });
+
+    els.startBtn.addEventListener('click', startGame);
+    els.restartBtn.addEventListener('click', startGame);
+
+    els.settingsBtn.addEventListener('click', () => {
+      els.settingsModal.style.display = 'flex';
+      // Sync settings to UI
+      els.langSelect.value = state.lang;
+      els.themeSelect.value = state.theme;
+      els.timeSelect.value = state.timeLimit;
+      els.difficultySelect.value = state.difficulty;
+      Array.from(els.operationSelect.options).forEach(opt => {
+        opt.selected = state.operations.includes(opt.value);
+      });
+    });
+
+    [els.closeModal, els.closeSettings].forEach(btn => 
+      btn.addEventListener('click', () => els.settingsModal.style.display = 'none')
+    );
+
+    els.saveSettings.addEventListener('click', () => {
+      state.lang = els.langSelect.value;
+      state.theme = els.themeSelect.value;
+      state.timeLimit = parseInt(els.timeSelect.value);
+      state.difficulty = els.difficultySelect.value;
+      state.operations = Array.from(els.operationSelect.selectedOptions).map(opt => opt.value);
+
+      els.langBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.lang);
+      });
+
+      setTheme();
+      updateUI();
+      els.settingsModal.style.display = 'none';
+    });
+
+    // Language buttons
+    els.langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.lang = btn.dataset.lang;
+        els.langBtns.forEach(b => b.classList.toggle('active', b === btn));
+        updateUI();
+      });
+    });
+
+    // Init
+    setTheme();
+    updateUI();
+
+    // Close modal on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target === els.settingsModal) {
+        els.settingsModal.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
+
