@@ -6,9 +6,7 @@
   <title>🧠 Xotira Sinovi | Juftlikni Top</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    /* ===== GLOBAL VARIABLES ===== */
     :root {
-      /* Standart (Dark Purple) */
       --bg: #0f0c29;
       --surface: #1a172d;
       --card-front: #24243e;
@@ -81,17 +79,10 @@
       margin: 0 auto;
     }
 
-    /* ===== HEADER ===== */
-    header {
-      text-align: center;
-      margin: 20px 0 30px;
-      position: relative;
-    }
-
     .lang-switcher {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 16px;
+      right: 16px;
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
@@ -120,7 +111,8 @@
 
     h1 {
       font-size: 2.6rem;
-      margin-bottom: 8px;
+      margin: 60px 0 10px;
+      text-align: center;
       background: linear-gradient(90deg, var(--accent), #a1c4fd, var(--success));
       -webkit-background-clip: text;
       background-clip: text;
@@ -129,11 +121,12 @@
     }
 
     .subtitle {
+      text-align: center;
       opacity: 0.85;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      max-width: 700px;
     }
 
-    /* ===== STATS BAR ===== */
     .stats {
       display: flex;
       justify-content: space-around;
@@ -160,7 +153,6 @@
       opacity: 0.8;
     }
 
-    /* ===== GAME BOARD ===== */
     .board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -171,7 +163,7 @@
 
     .card {
       height: 0;
-      padding-bottom: 100%; /* 1:1 aspect ratio */
+      padding-bottom: 100%;
       position: relative;
       transform-style: preserve-3d;
       cursor: pointer;
@@ -205,7 +197,7 @@
       align-items: center;
       justify-content: center;
       border-radius: 14px;
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       box-shadow: 0 6px 16px rgba(0,0,0,0.2);
     }
 
@@ -220,7 +212,6 @@
       transform: rotateY(180deg);
     }
 
-    /* ===== CONTROLS ===== */
     .controls {
       display: flex;
       gap: 12px;
@@ -230,7 +221,7 @@
     }
 
     .btn {
-      padding: 12px 24px;
+      padding: 12px 20px;
       font-size: 1rem;
       font-weight: bold;
       border: none;
@@ -253,7 +244,7 @@
       color: var(--accent);
     }
 
-    .btn:hover {
+    .btn:hover:not(:disabled) {
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.2);
     }
@@ -264,7 +255,6 @@
       transform: none;
     }
 
-    /* ===== MODAL ===== */
     .modal {
       display: none;
       position: fixed;
@@ -317,7 +307,7 @@
       font-weight: 600;
     }
 
-    select, button {
+    select {
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -327,7 +317,16 @@
       font-size: 1rem;
     }
 
-    /* ===== RESULT SCREEN ===== */
+    .modal-footer {
+      margin-top: 25px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-footer .btn {
+      flex: 1;
+    }
+
     .result-screen {
       text-align: center;
       padding: 20px;
@@ -345,19 +344,13 @@
       color: #fbbf24;
     }
 
-    /* ===== MOBILE RESPONSIVE ===== */
     @media (max-width: 768px) {
-      .board {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      h1 { font-size: 2rem; }
-      .stat-value { font-size: 1.5rem; }
+      .board { grid-template-columns: repeat(3, 1fr); }
+      h1 { font-size: 2rem; margin-top: 50px; }
     }
 
     @media (max-width: 480px) {
-      .board {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .board { grid-template-columns: repeat(2, 1fr); }
       .stats { flex-direction: column; gap: 12px; }
       .controls { flex-direction: column; }
     }
@@ -374,10 +367,8 @@
   </div>
 
   <div class="container">
-    <header>
-      <h1 id="title">🧠 Xotira Sinovi</h1>
-      <p class="subtitle" id="subtitle">Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.</p>
-    </header>
+    <h1 id="title">🧠 Xotira Sinovi</h1>
+    <p class="subtitle" id="subtitle">Vizual xotira va diqqatni jamlash. Kartalardagi juftliklarni topishga urinib ko'ring.</p>
 
     <div class="stats">
       <div class="stat-item">
@@ -389,24 +380,22 @@
         <div class="stat-label" id="movesLabel">👣 Urinishlar</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value" id="pairs">0/5</div>
+        <div class="stat-value" id="pairs">0/6</div>
         <div class="stat-label" id="pairsLabel">✅ Juftliklar</div>
       </div>
     </div>
 
-    <div class="board" id="board">
-      <!-- Kartalar JavaScript orqali yaratiladi -->
-    </div>
+    <div class="board" id="board"></div>
 
     <div class="controls">
       <button class="btn btn-primary" id="startBtn">
-        <i class="fas fa-play"></i> <span id="startText">▶️ Boshlash</span>
+        <i class="fas fa-play"></i> <span id="startBtnText">▶️ Boshlash</span>
       </button>
-      <button class="btn btn-outline" id="resetBtn">
-        <i class="fas fa-redo"></i> <span id="resetText">🔄 Qayta</span>
+      <button class="btn btn-outline" id="resetBtn" disabled>
+        <i class="fas fa-redo"></i> <span id="resetBtnText">🔄 Qayta</span>
       </button>
       <button class="btn btn-outline" id="settingsBtn">
-        <i class="fas fa-cog"></i> <span id="settingsText">⚙️ Sozlamalar</span>
+        <i class="fas fa-cog"></i> <span id="settingsBtnText">⚙️ Sozlamalar</span>
       </button>
     </div>
   </div>
@@ -444,10 +433,10 @@
       <div class="setting-group">
         <label id="difficultyLabel">Qiyinchilik</label>
         <select id="difficultySelect">
-          <option value="4">Oson (4 juftlik = 8 karta)</option>
-          <option value="6" selected>O‘rta (6 juftlik = 12 karta)</option>
-          <option value="8">Qiyin (8 juftlik = 16 karta)</option>
-          <option value="10">Mukammal (10 juftlik = 20 karta)</option>
+          <option value="4">Oson (8 karta)</option>
+          <option value="6" selected>O‘rta (12 karta)</option>
+          <option value="8">Qiyin (16 karta)</option>
+          <option value="10">Mukammal (20 karta)</option>
         </select>
       </div>
 
@@ -462,12 +451,12 @@
         </select>
       </div>
 
-      <div style="margin-top: 25px; display: flex; gap: 10px;">
-        <button class="btn btn-outline" id="saveSettings" style="flex:1;">
-          <i class="fas fa-save"></i> <span id="saveText">💾 Saqlash</span>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="saveSettings">
+          <i class="fas fa-save"></i> Saqlash
         </button>
-        <button class="btn btn-primary" id="closeSettings" style="flex:1;">
-          <i class="fas fa-check"></i> <span id="closeText">✅ Yopish</span>
+        <button class="btn btn-primary" id="closeSettings">
+          <i class="fas fa-check"></i> Yopish
         </button>
       </div>
     </div>
@@ -481,7 +470,7 @@
         <div class="stars" id="stars">⭐⭐⭐</div>
         <p id="resultMessage">Siz 6 juftlikni 24 urinishda 1:45 daqiqada topdingiz!</p>
         <button class="btn btn-primary" id="playAgainBtn" style="margin-top: 20px;">
-          <i class="fas fa-play"></i> <span id="playAgainText">🔄 Yana o'ynash</span>
+          <i class="fas fa-play"></i> Yana o'ynash
         </button>
       </div>
     </div>
@@ -496,17 +485,15 @@
         timeLabel: "⏱ Vaqt",
         movesLabel: "👣 Urinishlar",
         pairsLabel: "✅ Juftliklar",
-        startText: "▶️ Boshlash",
-        resetText: "🔄 Qayta",
-        settingsText: "⚙️ Sozlamalar",
+        startBtnText: "▶️ Boshlash",
+        resetBtnText: "🔄 Qayta",
+        settingsBtnText: "⚙️ Sozlamalar",
         settingsTitle: "⚙️ Sozlamalar",
         langLabel: "Til",
         themeLabel: "Mavzu",
         difficultyLabel: "Qiyinchilik",
         deckLabel: "Kartalar To'plami",
-        saveText: "💾 Saqlash",
-        closeText: "✅ Yopish",
-        playAgainText: "🔄 Yana o'ynash",
+        playAgainBtnText: "🔄 Yana o'ynash",
         resultTitle: "🎉 Ajoyib!",
         perfect: "Mukammal! 🌟",
         great: "Ajoyib! ⭐⭐⭐",
@@ -520,17 +507,15 @@
         timeLabel: "⏱ Time",
         movesLabel: "👣 Moves",
         pairsLabel: "✅ Pairs",
-        startText: "▶️ Start",
-        resetText: "🔄 Reset",
-        settingsText: "⚙️ Settings",
+        startBtnText: "▶️ Start",
+        resetBtnText: "🔄 Reset",
+        settingsBtnText: "⚙️ Settings",
         settingsTitle: "⚙️ Settings",
         langLabel: "Language",
         themeLabel: "Theme",
         difficultyLabel: "Difficulty",
         deckLabel: "Card Deck",
-        saveText: "💾 Save",
-        closeText: "✅ Close",
-        playAgainText: "🔄 Play Again",
+        playAgainBtnText: "🔄 Play Again",
         resultTitle: "🎉 Amazing!",
         perfect: "Perfect! 🌟",
         great: "Great job! ⭐⭐⭐",
@@ -544,17 +529,15 @@
         timeLabel: "⏱ Время",
         movesLabel: "👣 Ходы",
         pairsLabel: "✅ Пары",
-        startText: "▶️ Начать",
-        resetText: "🔄 Сброс",
-        settingsText: "⚙️ Настройки",
+        startBtnText: "▶️ Начать",
+        resetBtnText: "🔄 Сброс",
+        settingsBtnText: "⚙️ Настройки",
         settingsTitle: "⚙️ Настройки",
         langLabel: "Язык",
         themeLabel: "Тема",
         difficultyLabel: "Сложность",
         deckLabel: "Колоды карт",
-        saveText: "💾 Сохранить",
-        closeText: "✅ Закрыть",
-        playAgainText: "🔄 Играть снова",
+        playAgainBtnText: "🔄 Играть снова",
         resultTitle: "🎉 Великолепно!",
         perfect: "Идеально! 🌟",
         great: "Отлично! ⭐⭐⭐",
@@ -568,17 +551,15 @@
         timeLabel: "⏱ 시간",
         movesLabel: "👣 시도",
         pairsLabel: "✅ 짝",
-        startText: "▶️ 시작",
-        resetText: "🔄 재시작",
-        settingsText: "⚙️ 설정",
+        startBtnText: "▶️ 시작",
+        resetBtnText: "🔄 재시작",
+        settingsBtnText: "⚙️ 설정",
         settingsTitle: "⚙️ 설정",
         langLabel: "언어",
         themeLabel: "테마",
         difficultyLabel: "난이도",
         deckLabel: "카드 덱",
-        saveText: "💾 저장",
-        closeText: "✅ 닫기",
-        playAgainText: "🔄 다시 하기",
+        playAgainBtnText: "🔄 다시 하기",
         resultTitle: "🎉 대단해요!",
         perfect: "완벽해요! 🌟",
         great: "훌륭해요! ⭐⭐⭐",
@@ -592,17 +573,15 @@
         timeLabel: "⏱ 时间",
         movesLabel: "👣 步数",
         pairsLabel: "✅ 配对",
-        startText: "▶️ 开始",
-        resetText: "🔄 重置",
-        settingsText: "⚙️ 设置",
+        startBtnText: "▶️ 开始",
+        resetBtnText: "🔄 重置",
+        settingsBtnText: "⚙️ 设置",
         settingsTitle: "⚙️ 设置",
         langLabel: "语言",
         themeLabel: "主题",
         difficultyLabel: "难度",
         deckLabel: "卡牌组",
-        saveText: "💾 保存",
-        closeText: "✅ 关闭",
-        playAgainText: "🔄 再玩一次",
+        playAgainBtnText: "🔄 再玩一次",
         resultTitle: "🎉 太棒了！",
         perfect: "完美！🌟",
         great: "干得漂亮！⭐⭐⭐",
@@ -625,7 +604,7 @@
     const state = {
       lang: 'uz',
       theme: 'dark',
-      difficulty: 6, // juftliklar soni (6 → 12 karta)
+      difficulty: 6, // juftliklar soni
       deck: 'fruits',
       gameActive: false,
       board: [],
@@ -634,10 +613,10 @@
       moves: 0,
       startTime: null,
       timerId: null,
-      time: 0 // seconds
+      time: 0
     };
 
-    // DOM Elements
+    // DOM Elements (to'g'ri id lar bilan)
     const els = {
       board: document.getElementById('board'),
       time: document.getElementById('time'),
@@ -649,11 +628,34 @@
       settingsModal: document.getElementById('settingsModal'),
       resultModal: document.getElementById('resultModal'),
       langBtns: document.querySelectorAll('.lang-btn'),
-      ...Object.fromEntries(
-        ['title','subtitle','timeLabel','movesLabel','pairsLabel','startText','resetText','settingsText','settingsTitle',
-        'langLabel','themeLabel','difficultyLabel','deckLabel','saveText','closeText','playAgainText','resultTitle',
-        'resultMessage','playAgainBtn'].map(id => [id, document.getElementById(id)])
-      )
+      
+      // Text elements (span ichidagi id lar)
+      title: document.getElementById('title'),
+      subtitle: document.getElementById('subtitle'),
+      timeLabel: document.getElementById('timeLabel'),
+      movesLabel: document.getElementById('movesLabel'),
+      pairsLabel: document.getElementById('pairsLabel'),
+      startBtnText: document.getElementById('startBtnText'),
+      resetBtnText: document.getElementById('resetBtnText'),
+      settingsBtnText: document.getElementById('settingsBtnText'),
+      settingsTitle: document.getElementById('settingsTitle'),
+      langLabel: document.getElementById('langLabel'),
+      themeLabel: document.getElementById('themeLabel'),
+      difficultyLabel: document.getElementById('difficultyLabel'),
+      deckLabel: document.getElementById('deckLabel'),
+      resultTitle: document.getElementById('resultTitle'),
+      stars: document.getElementById('stars'),
+      resultMessage: document.getElementById('resultMessage'),
+      playAgainBtn: document.getElementById('playAgainBtn'),
+      
+      // Modal elements
+      langSelect: document.getElementById('langSelect'),
+      themeSelect: document.getElementById('themeSelect'),
+      difficultySelect: document.getElementById('difficultySelect'),
+      deckSelect: document.getElementById('deckSelect'),
+      closeModal: document.getElementById('closeModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      saveSettings: document.getElementById('saveSettings')
     };
 
     // ===== HELPERS =====
@@ -671,29 +673,35 @@
 
     function updateUI() {
       const t = translations[state.lang];
+      
+      // Asosiy sarlavhalar
       els.title.textContent = t.title;
       els.subtitle.textContent = t.subtitle;
       els.timeLabel.textContent = t.timeLabel;
       els.movesLabel.textContent = t.movesLabel;
       els.pairsLabel.textContent = t.pairsLabel;
-      els.startText.textContent = t.startText;
-      els.resetText.textContent = t.resetText;
-      els.settingsText.textContent = t.settingsText;
+      
+      // Tugmalar
+      els.startBtnText.textContent = t.startBtnText;
+      els.resetBtnText.textContent = t.resetBtnText;
+      els.settingsBtnText.textContent = t.settingsBtnText;
+      els.playAgainBtn.innerHTML = `<i class="fas fa-play"></i> ${t.playAgainBtnText}`;
+      
+      // Sozlamalar modal
       els.settingsTitle.textContent = t.settingsTitle;
       els.langLabel.textContent = t.langLabel;
       els.themeLabel.textContent = t.themeLabel;
       els.difficultyLabel.textContent = t.difficultyLabel;
       els.deckLabel.textContent = t.deckLabel;
-      els.saveText.textContent = t.saveText;
-      els.closeText.textContent = t.closeText;
-      els.playAgainText.textContent = t.playAgainText;
+      
+      // Natija
       els.resultTitle.textContent = t.resultTitle;
 
-      // Sozlamalarni yangilash
-      document.getElementById('langSelect').value = state.lang;
-      document.getElementById('themeSelect').value = state.theme;
-      document.getElementById('difficultySelect').value = state.difficulty;
-      document.getElementById('deckSelect').value = state.deck;
+      // Sozlamalar selectlarni tayinlash
+      els.langSelect.value = state.lang;
+      els.themeSelect.value = state.theme;
+      els.difficultySelect.value = state.difficulty;
+      els.deckSelect.value = state.deck;
     }
 
     function setTheme() {
@@ -716,8 +724,12 @@
       state.time = 0;
       updateStats();
 
-      const symbols = decks[state.deck].slice(0, state.difficulty);
-      const cards = [...symbols, ...symbols];
+      const symbols = decks[state.deck];
+      if (symbols.length < state.difficulty) {
+        console.warn(`Deck '${state.deck}' has only ${symbols.length} symbols, but difficulty=${state.difficulty}. Using all available.`);
+      }
+      const selectedSymbols = symbols.slice(0, state.difficulty);
+      const cards = [...selectedSymbols, ...selectedSymbols];
       const shuffled = shuffle(cards);
 
       state.board = shuffled.map((symbol, i) => ({
@@ -731,10 +743,11 @@
     }
 
     function renderBoard() {
-      els.board.style.gridTemplateColumns = `repeat(${Math.min(5, Math.ceil(Math.sqrt(state.board.length)))}, 1fr)`;
+      const cols = Math.min(5, Math.ceil(Math.sqrt(state.board.length)));
+      els.board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      
       els.board.innerHTML = state.board.map(card => `
-        <div class="card ${card.flipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''}"
-             data-id="${card.id}">
+        <div class="card" data-id="${card.id}">
           <div class="card-inner">
             <div class="card-face card-front">?</div>
             <div class="card-face card-back">${card.symbol}</div>
@@ -742,25 +755,23 @@
         </div>
       `).join('');
 
-      // Add event listeners
-      document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', handleCardClick);
+      // Har bir kartaga click event qo'shish
+      document.querySelectorAll('.card').forEach(cardEl => {
+        cardEl.addEventListener('click', () => handleCardClick(cardEl));
       });
     }
 
-    function handleCardClick(e) {
+    function handleCardClick(cardEl) {
       if (!state.gameActive || state.flippedCards.length >= 2) return;
 
-      const cardEl = e.currentTarget;
       const id = parseInt(cardEl.dataset.id);
       const card = state.board.find(c => c.id === id);
 
       if (card.flipped || card.matched) return;
 
-      // Flip card
+      // Flip the card
       card.flipped = true;
       cardEl.classList.add('flipped');
-
       state.flippedCards.push(card);
 
       if (state.flippedCards.length === 2) {
@@ -769,7 +780,7 @@
 
         const [c1, c2] = state.flippedCards;
         if (c1.symbol === c2.symbol) {
-          // Match!
+          // Match
           c1.matched = true;
           c2.matched = true;
           state.matchedCount++;
@@ -779,7 +790,7 @@
             endGame();
           }
         } else {
-          // No match — flip back after delay
+          // Mismatch — flip back
           setTimeout(() => {
             c1.flipped = false;
             c2.flipped = false;
@@ -792,7 +803,7 @@
     }
 
     function startTimer() {
-      state.startTime = Date.now();
+      state.startTime = Date.now() - state.time * 1000; // Resume support
       clearInterval(state.timerId);
       state.timerId = setInterval(() => {
         state.time = Math.floor((Date.now() - state.startTime) / 1000);
@@ -822,19 +833,18 @@
       els.startBtn.disabled = false;
       els.resetBtn.disabled = true;
 
-      // Calculate stars
-      const perfectMoves = state.difficulty; // minimal moves
-      const maxMoves = perfectMoves * 3;
+      // Yulduzlar hisobi
+      const minMoves = state.difficulty;
       let stars = "⭐";
-      if (state.moves <= perfectMoves * 1.2) stars = "⭐⭐⭐";
-      else if (state.moves <= perfectMoves * 2) stars = "⭐⭐";
+      if (state.moves <= minMoves * 1.2) stars = "⭐⭐⭐";
+      else if (state.moves <= minMoves * 2) stars = "⭐⭐";
 
       const t = translations[state.lang];
       els.stars.textContent = stars;
       const timeStr = formatTime(state.time);
       els.resultMessage.textContent = t.resultMessage(state.difficulty, state.moves, timeStr);
 
-      // Bonus title
+      // Sarlavha yangilash
       if (stars === "⭐⭐⭐") els.resultTitle.textContent = t.perfect;
       else if (stars === "⭐⭐") els.resultTitle.textContent = t.great;
       else if (stars === "⭐") els.resultTitle.textContent = t.good;
@@ -850,16 +860,17 @@
       els.settingsModal.style.display = 'flex';
     });
 
-    [els.closeModal, els.closeSettings].forEach(btn =>
-      btn.addEventListener('click', () => els.settingsModal.style.display = 'none')
-    );
+    els.closeModal.addEventListener('click', () => els.settingsModal.style.display = 'none');
+    els.closeSettings.addEventListener('click', () => els.settingsModal.style.display = 'none');
 
     els.saveSettings.addEventListener('click', () => {
-      state.lang = document.getElementById('langSelect').value;
-      state.theme = document.getElementById('themeSelect').value;
-      state.difficulty = parseInt(document.getElementById('difficultySelect').value);
-      state.deck = document.getElementById('deckSelect').value;
+      // Sozlamalarni saqlash
+      state.lang = els.langSelect.value;
+      state.theme = els.themeSelect.value;
+      state.difficulty = parseInt(els.difficultySelect.value);
+      state.deck = els.deckSelect.value;
 
+      // Til tugmalarini yangilash
       els.langBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.lang === state.lang);
       });
@@ -874,7 +885,7 @@
       startGame();
     });
 
-    // Language buttons
+    // Til almashtirish
     els.langBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         state.lang = btn.dataset.lang;
@@ -883,13 +894,13 @@
       });
     });
 
-    // Close modals on outside click
+    // Modalni tashqari bosishda yopish
     window.addEventListener('click', (e) => {
       if (e.target === els.settingsModal) els.settingsModal.style.display = 'none';
       if (e.target === els.resultModal) els.resultModal.style.display = 'none';
     });
 
-    // Init
+    // Dastlabki holat
     setTheme();
     updateUI();
     initBoard();
