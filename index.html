@@ -19,6 +19,9 @@
             --btn-radius: 20px;
             --big-btn-height: 120px;
             --font-size-base: 16px;
+            --ai-btn-size: 70px;
+            --ai-btn-bottom: 30px;
+            --ai-btn-right: 30px;
         }
 
         /* THEMES */
@@ -165,6 +168,11 @@
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         /* ====== MAIN CONTENT ====== */
@@ -378,6 +386,47 @@
 
         .dark-mode .big-btn span { color: #aaa; }
 
+        /* ====== YORDAMCHI AI BUTTON ====== */
+        .ai-btn-container {
+            position: fixed;
+            bottom: var(--ai-btn-bottom);
+            right: var(--ai-btn-right);
+            z-index: 1001;
+            animation: pulse 3s infinite;
+        }
+
+        .ai-btn {
+            width: var(--ai-btn-size);
+            height: var(--ai-btn-size);
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .ai-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            box-shadow:
+                8px 8px 16px var(--dark-shadow),
+                -8px -8px 16px var(--light-shadow);
+        }
+
+        .ai-btn:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 4px;
+        }
+
         /* ====== FOOTER ====== */
         .footer {
             text-align: center;
@@ -519,12 +568,12 @@
         }
 
         @media (max-width: 768px) {
-            :root { --big-btn-height: 100px; }
+            :root { --big-btn-height: 100px; --ai-btn-size: 60px; --ai-btn-bottom: 20px; --ai-btn-right: 20px; }
             .main-buttons { padding: 100px 15px 60px; }
         }
 
         @media (max-width: 480px) {
-            :root { --big-btn-height: 92px; }
+            :root { --big-btn-height: 92px; --ai-btn-size: 56px; }
             .main-buttons { grid-template-columns: 1fr; }
             .options-container { flex-direction: column; }
         }
@@ -630,6 +679,11 @@
             © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
         </footer>
     </div>
+
+    <!-- YORDAMCHI AI BUTTON -->
+    <a href="ai.html" class="ai-btn-container" target="_blank" rel="noopener">
+        <button class="ai-btn" aria-label="Yordamchi AI bilan bog'lanish">🤖</button>
+    </a>
 
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle">
@@ -1053,4 +1107,3 @@
     </script>
 </body>
 </html>
-
