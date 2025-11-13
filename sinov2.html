@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Yordamchi Maktab – barcha fanlar bo‘yicha darsliklar, testlar, video darslar va maslahatlar." />
+    <title>Yordamchi Maktab | 3D Neumorphism + PWA</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ====== GLOBAL CSS VARIABLES ====== */
+        :root {
+            --base-color: #ecf0f3;
+            --primary-color: #3d5a80;
+            --accent-color: #98c1d9;
+            --light-shadow: #ffffff;
+            --dark-shadow: #a8b0c2;
+            --transition-speed: 0.3s;
+            --btn-radius: 20px;
+            --big-btn-height: 120px;
+            --font-size-base: 16px;
+            --ai-btn-size: 70px;
+            --ai-btn-bottom: 30px;
+            --ai-btn-right: 30px;
+        }
+
+        /* THEMES */
+        .theme-ocean { --primary-color: #1a535c; --accent-color: #4ecdc4; --dark-shadow: #4a5d73; }
+        .theme-green { --primary-color: #4CAF50; --accent-color: #8BC34A; --dark-shadow: #90a4ae; }
+        .theme-violet { --primary-color: #673AB7; --accent-color: #B39DDB; --dark-shadow: #9e8fb8; }
+        .theme-dark-red { --primary-color: #7f1d1d; --accent-color: #fca5a5; --dark-shadow: #a39999; }
+        .theme-soft { --primary-color: #5e6066; --accent-color: #b5c1d1; --dark-shadow: #b0b8c5; }
+
+        /* DARK MODE */
+        .dark-mode {
+            --base-color: #2c2f33;
+            --primary-color: #f5f7fa;
+            --accent-color: #7289da;
+            --light-shadow: #3b3f45;
+            --dark-shadow: #1e1e21;
+        }
+
+        /* ANIMATION REDUCTION (accessibility) */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ====== RESET & BASE STYLES ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--base-color);
+            color: var(--primary-color);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+            transition:
+                background-color var(--transition-speed),
+                color var(--transition-speed);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ====== NEUMORPHISM CORE ====== */
+        .neumorphic {
+            border-radius: var(--btn-radius);
+            background: var(--base-color);
+            box-shadow:
+                8px 8px 16px var(--dark-shadow),
+                -8px -8px 16px var(--light-shadow);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .neumorphic.pressed {
+            box-shadow:
+                inset 6px 6px 12px var(--dark-shadow),
+                inset -6px -6px 12px var(--light-shadow);
+        }
+
+        /* ====== INTRO SCREEN ====== */
+        #intro {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary-color), #293241);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 9999;
+            padding: 0 20px;
+            opacity: 1;
+            pointer-events: all;
+            transition: opacity 0.8s ease;
+        }
+
+        .intro-logo {
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            animation: float 3.5s ease-in-out infinite, fadeIn 1s forwards;
+        }
+
+        .intro-sub {
+            font-size: clamp(1rem, 3vw, 1.6rem);
+            margin-top: 12px;
+            font-weight: 400;
+            max-width: 800px;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            width: 80%;
+            max-width: 500px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-color);
+            border-radius: 3px;
+            animation: progress 3s linear forwards;
+        }
+
+        .skip-btn {
+            margin-top: 20px;
+            padding: 10px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .skip-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes progress { to { width: 100%; } }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* ====== MAIN CONTENT ====== */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease 0.2s;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ====== NAVIGATION ====== */
+        .menu-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1000;
+            color: var(--primary-color);
+            background: var(--base-color);
+            border-radius: 50%;
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover,
+        .menu-toggle:focus {
+            color: var(--accent-color);
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
+
+        .menu-toggle:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 4px;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 320px;
+            height: 100vh;
+            background: var(--base-color);
+            display: flex;
+            flex-direction: column;
+            padding: 70px 20px 30px;
+            gap: 12px;
+            z-index: 999;
+            transition: right 0.4s cubic-bezier(0.6, 0, 0.4, 1);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.12);
+            overscroll-behavior: contain;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-link {
+            display: block;
+            padding: 14px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 18px;
+            background: var(--base-color);
+            box-shadow:
+                5px 5px 10px var(--dark-shadow),
+                -5px -5px 10px var(--light-shadow);
+            transition: all 0.25s ease;
+        }
+
+        .mobile-link:hover,
+        .mobile-link:focus {
+            color: var(--accent-color);
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
+
+        .mobile-link:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 4px;
+        }
+
+        .navbar {
+            display: none;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px 0;
+            position: sticky;
+            top: 15px;
+            z-index: 900;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 20px;
+        }
+
+        .nav-link {
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 15px;
+            background: var(--base-color);
+            box-shadow:
+                4px 4px 8px var(--dark-shadow),
+                -4px -4px 8px var(--light-shadow);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus {
+            color: var(--accent-color);
+            box-shadow:
+                inset 3px 3px 6px var(--dark-shadow),
+                inset -3px -3px 6px var(--light-shadow);
+        }
+
+        .nav-link:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 3px;
+        }
+
+        /* ====== MAIN BUTTONS (3D POP-OUT) ====== */
+        .main-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 30px;
+            padding: 110px 20px 70px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .big-btn-container {
+            display: block;
+            text-decoration: none;
+            perspective: 1000px;
+        }
+
+        .big-btn {
+            width: 100%;
+            min-height: var(--big-btn-height);
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            background: var(--base-color);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+            box-shadow:
+                12px 12px 24px var(--dark-shadow),
+                -12px -12px 24px var(--light-shadow);
+        }
+
+        .big-btn:hover {
+            transform: translateY(-8px) scale(1.04);
+            color: var(--accent-color);
+            box-shadow:
+                18px 18px 36px var(--dark-shadow),
+                -18px -18px 36px var(--light-shadow);
+        }
+
+        .big-btn:active,
+        .big-btn:focus.pressed {
+            transform: translateY(0) scale(1);
+            box-shadow:
+                inset 10px 10px 20px var(--dark-shadow),
+                inset -10px -10px 20px var(--light-shadow);
+        }
+
+        .big-btn:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 6px;
+            transform: translateY(-4px);
+        }
+
+        .big-btn span {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #777;
+            margin-top: 6px;
+            transition: color 0.3s;
+        }
+
+        .dark-mode .big-btn span { color: #aaa; }
+
+        /* ====== YORDAMCHI AI BUTTON ====== */
+        .ai-btn-container {
+            position: fixed;
+            bottom: var(--ai-btn-bottom);
+            right: var(--ai-btn-right);
+            z-index: 1001;
+            animation: pulse 3s infinite;
+        }
+
+        .ai-btn {
+            width: var(--ai-btn-size);
+            height: var(--ai-btn-size);
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .ai-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-color);
+            box-shadow:
+                8px 8px 16px var(--dark-shadow),
+                -8px -8px 16px var(--light-shadow);
+        }
+
+        .ai-btn:focus {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 4px;
+        }
+
+        /* ====== FOOTER ====== */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            background: var(--primary-color);
+            color: #ecf0f3;
+            font-size: 0.95rem;
+            margin-top: 60px;
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        /* ====== SETTINGS MODAL ====== */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            padding-top: 30px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-modal.active {
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .settings-content {
+            background: var(--base-color);
+            width: 92%;
+            max-width: 580px;
+            border-radius: 26px;
+            padding: 32px;
+            box-shadow:
+                15px 15px 30px var(--dark-shadow),
+                -15px -15px 30px var(--light-shadow);
+            animation: slideIn 0.4s ease-out;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover { color: var(--accent-color); }
+
+        .settings-content h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 28px;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .settings-group {
+            margin-bottom: 26px;
+            padding: 18px;
+            border-radius: 18px;
+            background: var(--base-color);
+            box-shadow:
+                inset 3px 3px 7px var(--dark-shadow),
+                inset -3px -3px 7px var(--light-shadow);
+        }
+
+        .settings-group h3 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .setting-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 12px 0;
+            border: none;
+            border-radius: 14px;
+            background: var(--base-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow:
+                4px 4px 8px var(--dark-shadow),
+                -4px -4px 8px var(--light-shadow);
+            transition: all 0.2s;
+        }
+
+        .setting-btn:hover { color: var(--accent-color); }
+
+        .setting-btn.active {
+            color: var(--accent-color);
+            font-weight: 700;
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
+
+        /* ====== MEDIA QUERIES ====== */
+        @media (min-width: 769px) {
+            .navbar { display: flex; }
+            .menu-toggle { display: none; }
+            .main-buttons { padding: 140px 20px 80px; }
+        }
+
+        @media (max-width: 768px) {
+            :root { --big-btn-height: 100px; --ai-btn-size: 60px; --ai-btn-bottom: 20px; --ai-btn-right: 20px; }
+            .main-buttons { padding: 100px 15px 60px; }
+        }
+
+        @media (max-width: 480px) {
+            :root { --big-btn-height: 92px; --ai-btn-size: 56px; }
+            .main-buttons { grid-template-columns: 1fr; }
+            .options-container { flex-direction: column; }
+        }
+
+        /* ====== ACCESSIBILITY ====== */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body id="body" class="theme-default">
+
+    <!-- INTRO SCREEN -->
+    <div id="intro">
+        <div class="intro-logo">YORDAMCHI MAKTAB</div>
+        <div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
+
+        <nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
+            <a href="sinf.html" class="mobile-link" data-key="lessons">📚 Darsliklar</a>
+            <a href="testlarboshqarmasi.html" class="mobile-link" data-key="tests">📝 Testlar</a>
+            <a href="game.html" class="mobile-link" data-key="videos">🎥 Video Darslar</a>
+            <a href="maslahat.html" class="mobile-link" data-key="advice">💡 Maslahatlar</a>
+            <a href="galati.html" class="mobile-link" data-key="teachers">👩‍🏫 G‘alati</a>
+            <a href="biz.html" class="mobile-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
+            <a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
+            <a href="#" class="mobile-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
+        </nav>
+
+        <nav class="navbar neumorphic" aria-label="Desktop navigatsiya">
+            <a href="sinf.html" class="nav-link" data-key="lessons">📚 Darsliklar</a>
+            <a href="testlarboshqarmasi.html" class="nav-link" data-key="tests">📝 Testlar</a>
+            <a href="game.html" class="nav-link" data-key="videos">🎥 Video Darslar</a>
+            <a href="maslahat.html" class="nav-link" data-key="advice">💡 Maslahatlar</a>
+            <a href="galati.html" class="nav-link" data-key="teachers">👩‍🏫 G‘alati</a>
+            <a href="biz.html" class="nav-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
+            <a href="aloqa.html" class="nav-link" data-key="contact">📞 Aloqa</a>
+            <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
+        </nav>
+
+        <main class="main-buttons">
+            <a href="sinf.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="lessons" data-sub-key="lessons_sub">
+                    <span>📚 Darsliklar</span>
+                    <span>Barcha fanlar bo‘yicha</span>
+                </div>
+            </a>
+            <a href="testlarboshqarmasi.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="tests" data-sub-key="tests_sub">
+                    <span>📝 Testlar</span>
+                    <span>Bilimingizni sinovdan o‘tkazing</span>
+                </div>
+            </a>
+            <a href="game.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="videos" data-sub-key="videos_sub">
+                    <span>🎥 Video Darslar</span>
+                    <span>Vizual tushuntirishlar</span>
+                </div>
+            </a>
+            <a href="maslahat.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="advice" data-sub-key="advice_sub">
+                    <span>💡 Maslahatlar</span>
+                    <span>O‘qish sirlari</span>
+                </div>
+            </a>
+            <a href="galati.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="teachers" data-sub-key="teachers_sub">
+                    <span>👩‍🏫 G‘alati</span>
+                    <span>Mentorlar bilan tanishing</span>
+                </div>
+            </a>
+            <a href="biz.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="aboutUs" data-sub-key="aboutUs_sub">
+                    <span>ℹ️ Biz Haqimizda</span>
+                    <span>Loyihaning maqsadi</span>
+                </div>
+            </a>
+            <a href="aloqa.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="contact" data-sub-key="contact_sub">
+                    <span>📞 Aloqa</span>
+                    <span>Murojaat uchun</span>
+                </div>
+            </a>
+        </main>
+
+        <footer class="footer">
+            <span data-key="footer_protected">🔒 Sayt himoyalangan</span> |
+            © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
+        </footer>
+    </div>
+
+    <!-- YORDAMCHI AI BUTTON -->
+    <a href="https://t.me/Yordamchi_AI_Bot" class="ai-btn-container" target="_blank" rel="noopener">
+        <button class="ai-btn" aria-label="Yordamchi AI bilan bog'lanish">🤖</button>
+    </a>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle">
+        <div class="settings-content">
+            <button class="close-btn" id="closeSettings" aria-label="Sozlamalarni yopish">&times;</button>
+            <h2 id="settingsModalTitle">⚙️ Sozlamalar</h2>
+
+            <div class="settings-group">
+                <h3 id="languageTitle">🌐 Tilni tanlang:</h3>
+                <div class="options-container" id="language-options">
+                    <button class="setting-btn" data-lang="uz">O‘zbekcha</button>
+                    <button class="setting-btn" data-lang="ru">Русский</button>
+                    <button class="setting-btn" data-lang="en">English</button>
+                    <button class="setting-btn" data-lang="ko">한국어</button>
+                    <button class="setting-btn" data-lang="zh">中文</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 id="modeTitle">🌙 Rejim:</h3>
+                <div class="options-container" id="mode-options">
+                    <button class="setting-btn" data-mode="light">☀️ Yorug‘</button>
+                    <button class="setting-btn" data-mode="dark">🌑 To‘q</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 id="themeTitle">🎨 Mavzu:</h3>
+                <div class="options-container" id="theme-options">
+                    <button class="setting-btn" data-theme="default">Asosiy</button>
+                    <button class="setting-btn" data-theme="ocean">Okean</button>
+                    <button class="setting-btn" data-theme="green">Yashil</button>
+                    <button class="setting-btn" data-theme="violet">Binafsha</button>
+                    <button class="setting-btn" data-theme="dark-red">Qizil</button>
+                    <button class="setting-btn" data-theme="soft">Pastel</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 id="accessibilityTitle">♿ Qulaylik:</h3>
+                <div class="options-container">
+                    <button class="setting-btn" id="increaseFont">A+</button>
+                    <button class="setting-btn" id="decreaseFont">A−</button>
+                    <button class="setting-btn" id="resetFont">A</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ======================
+        // 🌍 TARJIMALAR
+        // ======================
+        const content = {
+            uz: {
+                introSubText: "Bilim Makoni. Yangi Imkoniyatlar. 💡",
+                lessons: "📚 Darsliklar",
+                lessons_sub: "Barcha fanlar bo‘yicha",
+                tests: "📝 Testlar",
+                tests_sub: "Bilimingizni sinovdan o‘tkazing",
+                videos: "🎥 Video Darslar",
+                videos_sub: "Vizual tushuntirishlar",
+                advice: "💡 Maslahatlar",
+                advice_sub: "O‘qish sirlari",
+                teachers: "👩‍🏫 G‘alati",
+                teachers_sub: "Mentorlar bilan tanishing",
+                aboutUs: "ℹ️ Biz Haqimizda",
+                aboutUs_sub: "Loyihaning maqsadi",
+                contact: "📞 Aloqa",
+                contact_sub: "Murojaat uchun",
+                footer_protected: "🔒 Sayt himoyalangan",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Sozlamalar",
+                settingsModalTitle: "⚙️ Sozlamalar",
+                languageTitle: "🌐 Tilni tanlang:",
+                modeTitle: "🌙 Rejim:",
+                themeTitle: "🎨 Mavzu:",
+                accessibilityTitle: "♿ Qulaylik:",
+                alertSuccess: (section) => `✅ "${section}" bo‘limiga muvaffaqiyatli o‘tildi!`,
+            },
+            ru: {
+                introSubText: "Пространство Знаний. Новые Возможности. 💡",
+                lessons: "📚 Учебники",
+                lessons_sub: "По всем предметам",
+                tests: "📝 Тесты",
+                tests_sub: "Проверьте свои знания",
+                videos: "🎥 Видео Уроки",
+                videos_sub: "Визуальные объяснения",
+                advice: "💡 Советы",
+                advice_sub: "Секреты обучения",
+                teachers: "👩‍🏫 Галати",
+                teachers_sub: "Познакомьтесь с менторами",
+                aboutUs: "ℹ️ О Нас",
+                aboutUs_sub: "Цель проекта",
+                contact: "📞 Контакты",
+                contact_sub: "Для обращений",
+                footer_protected: "🔒 Сайт защищён",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Настройки",
+                settingsModalTitle: "⚙️ Настройки",
+                languageTitle: "🌐 Выберите язык:",
+                modeTitle: "🌙 Режим:",
+                themeTitle: "🎨 Тема:",
+                accessibilityTitle: "♿ Доступность:",
+                alertSuccess: (section) => `✅ Вы успешно перешли в раздел "${section}"!`,
+            },
+            en: {
+                introSubText: "Space of Knowledge. New Opportunities. 💡",
+                lessons: "📚 Textbooks",
+                lessons_sub: "For all subjects",
+                tests: "📝 Tests",
+                tests_sub: "Test your knowledge",
+                videos: "🎥 Video Lessons",
+                videos_sub: "Visual explanations",
+                advice: "💡 Advice",
+                advice_sub: "Secrets of learning",
+                teachers: "👩‍🏫 Galati",
+                teachers_sub: "Meet the mentors",
+                aboutUs: "ℹ️ About Us",
+                aboutUs_sub: "Project goal",
+                contact: "📞 Contact",
+                contact_sub: "For inquiries",
+                footer_protected: "🔒 Site protected",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ Settings",
+                settingsModalTitle: "⚙️ Settings",
+                languageTitle: "🌐 Select Language:",
+                modeTitle: "🌙 Mode:",
+                themeTitle: "🎨 Theme:",
+                accessibilityTitle: "♿ Accessibility:",
+                alertSuccess: (section) => `✅ Successfully navigated to "${section}" section!`,
+            },
+            ko: {
+                introSubText: "지식의 공간. 새로운 기회. 💡",
+                lessons: "📚 교과서",
+                lessons_sub: "모든 과목",
+                tests: "📝 시험",
+                tests_sub: "지식 테스트",
+                videos: "🎥 비디오 수업",
+                videos_sub: "시각적 설명",
+                advice: "💡 조언",
+                advice_sub: "학습 비법",
+                teachers: "👩‍🏫 갈라티",
+                teachers_sub: "멘토 만나기",
+                aboutUs: "ℹ️ 우리 소개",
+                aboutUs_sub: "프로젝트 목표",
+                contact: "📞 연락처",
+                contact_sub: "문의하기",
+                footer_protected: "🔒 사이트 보호됨",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ 설정",
+                settingsModalTitle: "⚙️ 설정",
+                languageTitle: "🌐 언어 선택:",
+                modeTitle: "🌙 모드:",
+                themeTitle: "🎨 테마:",
+                accessibilityTitle: "♿ 접근성:",
+                alertSuccess: (section) => `✅ "${section}" 섹션으로 성공적으로 이동했습니다!`,
+            },
+            zh: {
+                introSubText: "知识空间。新机遇。💡",
+                lessons: "📚 教材",
+                lessons_sub: "所有科目",
+                tests: "📝 测验",
+                tests_sub: "测试你的知识",
+                videos: "🎥 视频课程",
+                videos_sub: "视觉讲解",
+                advice: "💡 建议",
+                advice_sub: "学习秘诀",
+                teachers: "👩‍🏫 加拉提",
+                teachers_sub: "认识导师",
+                aboutUs: "ℹ️ 关于我们",
+                aboutUs_sub: "项目目标",
+                contact: "📞 联系",
+                contact_sub: "查询",
+                footer_protected: "🔒 网站受保护",
+                footer_name: "Yordamchi Maktab",
+                settings: "⚙️ 设置",
+                settingsModalTitle: "⚙️ 设置",
+                languageTitle: "🌐 选择语言:",
+                modeTitle: "🌙 模式:",
+                themeTitle: "🎨 主题:",
+                accessibilityTitle: "♿ 可访问性:",
+                alertSuccess: (section) => `✅ 成功切换到“${section}”部分！`,
+            }
+        };
+
+        // ======================
+        // 🧠 GLOBAL STATE
+        // ======================
+        let currentLang = localStorage.getItem('siteLang') || getLangFromURL() || 'uz';
+        let currentTheme = localStorage.getItem('siteTheme') || 'default';
+        let currentMode = localStorage.getItem('siteMode') || 'light';
+        let fontSize = parseFloat(localStorage.getItem('fontSize') || '16');
+
+        function getLangFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lang = urlParams.get('lang');
+            return ['uz','ru','en','ko','zh'].includes(lang) ? lang : null;
+        }
+
+        // ======================
+        // 🎨 UPDATE UI
+        // ======================
+        function updateContent(lang) {
+            if (!content[lang]) return;
+
+            // Yangi matnlar
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (content[lang][key]) el.textContent = content[lang][key];
+            });
+
+            document.querySelectorAll('[data-sub-key]').forEach(el => {
+                const key = el.getAttribute('data-sub-key');
+                if (content[lang][key]) el.textContent = content[lang][key];
+            });
+
+            document.getElementById('introSubText').textContent = content[lang].introSubText;
+            document.getElementById('settingsModalTitle').textContent = content[lang].settingsModalTitle;
+            document.getElementById('languageTitle').textContent = content[lang].languageTitle;
+            document.getElementById('modeTitle').textContent = content[lang].modeTitle;
+            document.getElementById('themeTitle').textContent = content[lang].themeTitle;
+            document.getElementById('accessibilityTitle').textContent = content[lang].accessibilityTitle;
+
+            document.documentElement.lang = lang;
+            document.documentElement.setAttribute('lang', lang);
+        }
+
+        function applyTheme(theme) {
+            const body = document.body;
+            body.className = body.className
+                .split(' ')
+                .filter(c => !c.startsWith('theme-') && c !== 'dark-mode' && c !== 'light-mode')
+                .join(' ')
+                .trim();
+
+            if (theme !== 'default') body.classList.add(`theme-${theme}`);
+            if (currentMode === 'dark') body.classList.add('dark-mode');
+        }
+
+        function applyMode(mode) {
+            document.body.classList.toggle('dark-mode', mode === 'dark');
+        }
+
+        function applyFontSize(size) {
+            document.documentElement.style.setProperty('--font-size-base', `${size}px`);
+            localStorage.setItem('fontSize', size.toString());
+        }
+
+        // ======================
+        // ⚙️ SOZLAMALAR
+        // ======================
+        function setLanguage(lang) {
+            if (!content[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('siteLang', lang);
+            updateContent(lang);
+            setActiveButton('language-options', lang, 'data-lang');
+            history.replaceState(null, '', `?lang=${lang}`);
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('siteMode', mode);
+            applyMode(mode);
+            setActiveButton('mode-options', mode, 'data-mode');
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('siteTheme', theme);
+            applyTheme(theme);
+            setActiveButton('theme-options', theme, 'data-theme');
+        }
+
+        // ======================
+        // ✅ YORDAMCHI
+        // ======================
+        function setActiveButton(containerId, value, attr = 'data-lang') {
+            const container = document.getElementById(containerId);
+            container?.querySelectorAll('.setting-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute(attr) === value);
+            });
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('active');
+            toggleMobileMenu(false);
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function toggleMobileMenu(forceState = null) {
+            const menu = document.getElementById('mobileMenu');
+            if (forceState === null) {
+                menu.classList.toggle('active');
+            } else {
+                menu.classList.toggle('active', forceState);
+            }
+        }
+
+        // ======================
+        // 🚀 ISHGA TUSSH
+        // ======================
+        function initApp() {
+            // Sozlamalarni qo'llash
+            updateContent(currentLang);
+            applyTheme(currentTheme);
+            applyMode(currentMode);
+            applyFontSize(fontSize);
+
+            // Faol tugmalarni belgilash
+            setActiveButton('language-options', currentLang, 'data-lang');
+            setActiveButton('mode-options', currentMode, 'data-mode');
+            setActiveButton('theme-options', currentTheme, 'data-theme');
+
+            // Kirish ekranini boshqarish
+            const intro = document.getElementById('intro');
+            const mainContent = document.getElementById('main-content');
+            const skipBtn = document.getElementById('skipIntro');
+
+            const hideIntro = () => {
+                intro.style.opacity = '0';
+                intro.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    mainContent.classList.add('visible');
+                }, 800);
+            };
+
+            setTimeout(hideIntro, 3000);
+            skipBtn?.addEventListener('click', hideIntro);
+
+            // Event listeners
+            document.getElementById('menuToggle')?.addEventListener('click', () => toggleMobileMenu());
+            document.getElementById('closeSettings')?.addEventListener('click', closeSettingsModal);
+            document.getElementById('settingsModal')?.addEventListener('click', e => {
+                if (e.target === e.currentTarget) closeSettingsModal();
+            });
+
+            // Til tanlovi
+            document.querySelectorAll('[data-lang]').forEach(btn => {
+                btn.addEventListener('click', e => setLanguage(e.target.dataset.lang));
+            });
+
+            // Rejim tanlovi
+            document.querySelectorAll('[data-mode]').forEach(btn => {
+                btn.addEventListener('click', e => setMode(e.target.dataset.mode));
+            });
+
+            // Mavzu tanlovi
+            document.querySelectorAll('[data-theme]').forEach(btn => {
+                btn.addEventListener('click', e => setTheme(e.target.dataset.theme));
+            });
+
+            // Font kattalik
+            document.getElementById('increaseFont')?.addEventListener('click', () => {
+                fontSize = Math.min(fontSize + 2, 24);
+                applyFontSize(fontSize);
+            });
+            document.getElementById('decreaseFont')?.addEventListener('click', () => {
+                fontSize = Math.max(fontSize - 2, 12);
+                applyFontSize(fontSize);
+            });
+            document.getElementById('resetFont')?.addEventListener('click', () => {
+                fontSize = 16;
+                applyFontSize(fontSize);
+            });
+
+            // Tashqari bosishda menyu yopiladi
+            document.addEventListener('click', e => {
+                const menu = document.getElementById('mobileMenu');
+                const toggle = document.getElementById('menuToggle');
+                if (menu.classList.contains('active') && !menu.contains(e.target) && e.target !== toggle) {
+                    toggleMobileMenu(false);
+                }
+            });
+
+            // Keyboard navigation
+            document.querySelectorAll('.big-btn').forEach(btn => {
+                btn.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        btn.classList.add('pressed');
+                        setTimeout(() => btn.classList.remove('pressed'), 150);
+                    }
+                });
+                btn.addEventListener('keyup', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        btn.closest('a').click();
+                    }
+                });
+            });
+        }
+
+        // ======================
+        // 📲 PWA QO'SHIMCHA
+        // ======================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.warn('SW ro‘yxatdan o‘tmadi:', err);
+                });
+            });
+        }
+
+        // ======================
+        // 🎬 SAYT YUKLANGANDA
+        // ======================
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+
+    <!-- Minimal Service Worker for Offline (optional, create sw.js file separately) -->
+    <script>
+        // Agar sw.js kerak bo'lsa — alohida fayl sifatida yaratiladi:
+        // — `self.addEventListener('install', ...)`
+        // — `self.addEventListener('fetch', ...)`
+        // — static assetlarni keshlash (index.html, CSS, JS, iconlar)
+    </script>
+</body>
+</html>
