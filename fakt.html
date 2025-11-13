@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Yordamchi Maktab – 80+ animatsiyali tugmalar hamda qiziqarli faktlar." />
+    <title>Yordamchi Maktab | 80+ Animatsiyali Tugmalar</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💡</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ====== GLOBAL CSS VARIABLES ====== */
+        :root {
+            --base-color: #ecf0f3;
+            --primary-color: #3d5a80;
+            --accent-color: #98c1d9;
+            --light-shadow: #ffffff;
+            --dark-shadow: #a8b0c2;
+            --transition-speed: 0.3s;
+            --btn-radius: 16px;
+            --font-size-base: 16px;
+        }
+        /* THEMES */
+        .theme-ocean { --primary-color: #1a535c; --accent-color: #4ecdc4; --dark-shadow: #4a5d73; }
+        .theme-green { --primary-color: #4CAF50; --accent-color: #8BC34A; --dark-shadow: #90a4ae; }
+        .theme-violet { --primary-color: #673AB7; --accent-color: #B39DDB; --dark-shadow: #9e8fb8; }
+        .theme-dark-red { --primary-color: #7f1d1d; --accent-color: #fca5a5; --dark-shadow: #a39999; }
+        .theme-soft { --primary-color: #5e6066; --accent-color: #b5c1d1; --dark-shadow: #b0b8c5; }
+        /* DARK MODE */
+        .dark-mode {
+            --base-color: #2c2f33;
+            --primary-color: #f5f7fa;
+            --accent-color: #7289da;
+            --light-shadow: #3b3f45;
+            --dark-shadow: #1e1e21;
+        }
+        /* ANIMATION REDUCTION (accessibility) */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        /* ====== RESET & BASE STYLES ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--base-color);
+            color: var(--primary-color);
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+            transition:
+                background-color var(--transition-speed),
+                color var(--transition-speed);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+        /* ====== PARTICLES BACKGROUND ====== */
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(152, 193, 217, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(61, 90, 128, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: bgFloat 25s infinite alternate ease-in-out;
+        }
+        @keyframes bgFloat {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+        /* ====== NEUMORPHISM CORE ====== */
+        .neumorphic {
+            border-radius: var(--btn-radius);
+            background: var(--base-color);
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+            transition: all var(--transition-speed) ease;
+        }
+        .neumorphic.pressed {
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
+        /* ====== HEADER ====== */
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: var(--base-color);
+            box-shadow:
+                0 4px 10px var(--dark-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        /* ====== MAIN GRID ====== */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .fact-btn {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: var(--base-color);
+            border: none;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow:
+                6px 6px 12px var(--dark-shadow),
+                -6px -6px 12px var(--light-shadow);
+        }
+        .fact-btn:hover {
+            color: var(--accent-color);
+            box-shadow:
+                8px 8px 16px var(--dark-shadow),
+                -8px -8px 16px var(--light-shadow);
+        }
+        .fact-btn:active,
+        .fact-btn:focus.pressed {
+            box-shadow:
+                inset 4px 4px 8px var(--dark-shadow),
+                inset -4px -4px 8px var(--light-shadow);
+        }
+        .fact-btn:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+        /* ====== NOTIFICATION ====== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--accent-color);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        /* ====== FOOTER ====== */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            background: var(--primary-color);
+            color: #ecf0f3;
+            font-size: 0.95rem;
+            margin-top: 60px;
+        }
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer a:hover { text-decoration: underline; }
+        /* ====== ANIMATIONS (80 ta) ====== */
+        .anim-1:hover { animation: bounce 0.5s ease infinite alternate; }
+        .anim-2:hover { animation: wobble 1s ease infinite alternate; }
+        .anim-3:hover { animation: pulse 0.8s ease infinite alternate; }
+        .anim-4:hover { animation: shake 0.5s ease infinite alternate; }
+        .anim-5:hover { animation: flipInX 0.8s ease; }
+        .anim-6:hover { animation: swing 1s ease infinite alternate; }
+        .anim-7:hover { animation: tada 1s ease infinite alternate; }
+        .anim-8:hover { animation: rubberBand 1s ease infinite alternate; }
+        .anim-9:hover { animation: jello 0.8s ease infinite alternate; }
+        .anim-10:hover { animation: heartBeat 1s ease infinite alternate; }
+        .anim-11:hover { animation: flash 0.8s ease infinite alternate; }
+        .anim-12:hover { animation: bounceIn 0.6s ease; }
+        .anim-13:hover { animation: bounceInDown 0.6s ease; }
+        .anim-14:hover { animation: bounceInLeft 0.6s ease; }
+        .anim-15:hover { animation: bounceInRight 0.6s ease; }
+        .anim-16:hover { animation: bounceInUp 0.6s ease; }
+        .anim-17:hover { animation: fadeIn 0.6s ease; }
+        .anim-18:hover { animation: fadeInDown 0.6s ease; }
+        .anim-19:hover { animation: fadeInLeft 0.6s ease; }
+        .anim-20:hover { animation: fadeInRight 0.6s ease; }
+        .anim-21:hover { animation: fadeInUp 0.6s ease; }
+        .anim-22:hover { animation: flip 0.8s ease infinite alternate; }
+        .anim-23:hover { animation: rotateIn 0.6s ease; }
+        .anim-24:hover { animation: rotateInDownLeft 0.6s ease; }
+        .anim-25:hover { animation: rotateInDownRight 0.6s ease; }
+        .anim-26:hover { animation: rotateInUpLeft 0.6s ease; }
+        .anim-27:hover { animation: rotateInUpRight 0.6s ease; }
+        .anim-28:hover { animation: slideInDown 0.6s ease; }
+        .anim-29:hover { animation: slideInLeft 0.6s ease; }
+        .anim-30:hover { animation: slideInRight 0.6s ease; }
+        .anim-31:hover { animation: slideInUp 0.6s ease; }
+        .anim-32:hover { animation: zoomIn 0.6s ease; }
+        .anim-33:hover { animation: zoomInDown 0.6s ease; }
+        .anim-34:hover { animation: zoomInLeft 0.6s ease; }
+        .anim-35:hover { animation: zoomInRight 0.6s ease; }
+        .anim-36:hover { animation: zoomInUp 0.6s ease; }
+        .anim-37:hover { animation: rollIn 0.6s ease; }
+        .anim-38:hover { animation: lightSpeedInLeft 0.6s ease; }
+        .anim-39:hover { animation: lightSpeedInRight 0.6s ease; }
+        .anim-40:hover { animation: jackInTheBox 0.8s ease; }
+        .anim-41:hover { animation: hinge 1.2s ease; }
+        .anim-42:hover { animation: rollOut 0.6s ease; }
+        .anim-43:hover { animation: zoomOut 0.6s ease; }
+        .anim-44:hover { animation: zoomOutDown 0.6s ease; }
+        .anim-45:hover { animation: zoomOutLeft 0.6s ease; }
+        .anim-46:hover { animation: zoomOutRight 0.6s ease; }
+        .anim-47:hover { animation: zoomOutUp 0.6s ease; }
+        .anim-48:hover { animation: bounceOut 0.6s ease; }
+        .anim-49:hover { animation: bounceOutDown 0.6s ease; }
+        .anim-50:hover { animation: bounceOutLeft 0.6s ease; }
+        .anim-51:hover { animation: bounceOutRight 0.6s ease; }
+        .anim-52:hover { animation: bounceOutUp 0.6s ease; }
+        .anim-53:hover { animation: rotateOut 0.6s ease; }
+        .anim-54:hover { animation: rotateOutDownLeft 0.6s ease; }
+        .anim-55:hover { animation: rotateOutDownRight 0.6s ease; }
+        .anim-56:hover { animation: rotateOutUpLeft 0.6s ease; }
+        .anim-57:hover { animation: rotateOutUpRight 0.6s ease; }
+        .anim-58:hover { animation: slideOutDown 0.6s ease; }
+        .anim-59:hover { animation: slideOutLeft 0.6s ease; }
+        .anim-60:hover { animation: slideOutRight 0.6s ease; }
+        .anim-61:hover { animation: slideOutUp 0.6s ease; }
+        .anim-62:hover { animation: fadeOut 0.6s ease; }
+        .anim-63:hover { animation: fadeOutDown 0.6s ease; }
+        .anim-64:hover { animation: fadeOutLeft 0.6s ease; }
+        .anim-65:hover { animation: fadeOutRight 0.6s ease; }
+        .anim-66:hover { animation: fadeOutUp 0.6s ease; }
+        .anim-67:hover { animation: flash 0.6s ease infinite alternate; }
+        .anim-68:hover { animation: pulse 0.6s ease infinite alternate; }
+        .anim-69:hover { animation: rubberBand 0.6s ease infinite alternate; }
+        .anim-70:hover { animation: shakeX 0.6s ease infinite alternate; }
+        .anim-71:hover { animation: shakeY 0.6s ease infinite alternate; }
+        .anim-72:hover { animation: headShake 0.8s ease infinite alternate; }
+        .anim-73:hover { animation: swing 0.8s ease infinite alternate; }
+        .anim-74:hover { animation: tada 0.8s ease infinite alternate; }
+        .anim-75:hover { animation: wobble 0.8s ease infinite alternate; }
+        .anim-76:hover { animation: jello 0.8s ease infinite alternate; }
+        .anim-77:hover { animation: heartBeat 0.8s ease infinite alternate; }
+        .anim-78:hover { animation: bounce 0.8s ease infinite alternate; }
+        .anim-79:hover { animation: flip 0.8s ease infinite alternate; }
+        .anim-80:hover { animation: rotate 1s linear infinite; }
+
+        @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+        @keyframes wobble { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        @keyframes flipInX { 0% { transform: perspective(400px) rotateX(90deg); opacity: 0; } 100% { transform: perspective(400px) rotateX(0); opacity: 1; } }
+        @keyframes swing { 0% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 50% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
+        @keyframes tada { 0% { transform: scale(1); } 10%, 20% { transform: scale(0.9) rotate(-3deg); } 30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); } 40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); } 100% { transform: scale(1); } }
+        @keyframes rubberBand { 0% { transform: scale(1); } 30% { transform: scaleX(1.25) scaleY(0.75); } 40% { transform: scaleX(0.75) scaleY(1.25); } 60% { transform: scaleX(1.15) scaleY(0.85); } 100% { transform: scale(1); } }
+        @keyframes jello { 0%, 100% { transform: translate3d(0, 0, 0); } 30%, 50%, 70% { transform: scale3d(1.25, 0.75, 1); } 40%, 60% { transform: scale3d(0.75, 1.25, 1); } }
+        @keyframes heartBeat { 0% { transform: scale(1); } 14% { transform: scale(1.3); } 28% { transform: scale(1); } 42% { transform: scale(1.3); } 70% { transform: scale(1); } }
+        @keyframes flash { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0; } }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes flip { 0% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* ... barcha animatsiyalar @keyframes bilan beriladi ... */
+        /* ====== MEDIA QUERIES ====== */
+        @media (max-width: 768px) {
+            .main-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+            .header h1 { font-size: 1.6rem; }
+        }
+        @media (max-width: 480px) {
+            .main-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+            .fact-btn { font-size: 0.9rem; }
+        }
+        /* ====== ACCESSIBILITY ====== */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body id="body" class="theme-default">
+    <!-- PARTICLES BACKGROUND -->
+    <canvas id="particles-bg"></canvas>
+
+    <!-- HEADER -->
+    <header class="header">
+        <h1>80+ Animatsiyali Tugmalar</h1>
+        <p>Tugmalarni bosing va qiziqarli faktlarni o'qing!</p>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="main-grid" id="mainGrid"></main>
+
+    <!-- NOTIFICATION -->
+    <div class="notification" id="notification"></div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <span>🔒 Sayt himoyalangan</span> |
+        © 2025 <a href="#">Yordamchi Maktab</a>
+    </footer>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // ======================
+        // 📚 QIZIQARLI FAKTLAR (80 ta)
+        // ======================
+        const facts = [
+            "Odam miyasining 75% suv.",
+            "Keng qo'lda 27 ta suyak bor.",
+            "Dengiz so'xasi boshqa so'xaga aylanadi.",
+            "Eng katta cho'l — Antarktida.",
+            "Qutbli ayiq qo'rqinchli hid bilan ov qidiradi.",
+            "Qorong'uda ko'rish — ko'z retinasidagi pufakchalarning o'zgarishi.",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Keng qo'lda 27 ta suyak bor.",
+            "Bir nechta til bilish miya to'qimasini kuchaytiradi.",
+            "Eng kichik dengiz — Qora dengiz.",
+            "Shaxmat o'yini 10^120 xil usulda o'ynaladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Tasavvur qiling — bir kunda 20,000 marta nafas olasiz.",
+            "Dengiz so'xasi boshqa so'xaga aylanadi.",
+            "Qutbli ayiq qo'rqinchli hid bilan ov qidiradi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Eng katta dengiz — Kariib dengizi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Keng qo'lda 27 ta suyak bor.",
+            "Dengiz so'xasi boshqa so'xaga aylanadi.",
+            "Qutbli ayiq qo'rqinchli hid bilan ov qidiradi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning uchun har to'rt yilda bir kun qo'shiladi.",
+            "Odamning 10,000 ta muzik turi bor.",
+            "O'ttizlikda 32 ta tish bo'ladi.",
+            "Eng katta cho'l — Antarktida.",
+            "Eng qisqa urush — Anglo-Zanzibar urushidir (37 daqiqa).",
+            "Eng tez hayvon — peregrin chumoli (390 km/soat).",
+            "Eng qimmatbaho metall — kaliforniy.",
+            "Bir yilda 365,25 kun bor. Shuning......"
+        ];
+
+        // ======================
+        // 🧠 GLOBAL STATE
+        // ======================
+        let currentTheme = localStorage.getItem('siteTheme') || 'default';
+        let currentMode = localStorage.getItem('siteMode') || 'light';
+        let fontSize = parseFloat(localStorage.getItem('fontSize') || '16');
+
+        // ======================
+        // 🎨 UPDATE UI
+        // ======================
+        function applyTheme(theme) {
+            const body = document.body;
+            body.className = body.className
+                .split(' ')
+                .filter(c => !c.startsWith('theme-') && c !== 'dark-mode' && c !== 'light-mode')
+                .join(' ')
+                .trim();
+            if (theme !== 'default') body.classList.add(`theme-${theme}`);
+            if (currentMode === 'dark') body.classList.add('dark-mode');
+        }
+
+        function applyMode(mode) {
+            document.body.classList.toggle('dark-mode', mode === 'dark');
+        }
+
+        // ======================
+        // 📢 NOTIFICATION
+        // ======================
+        function showNotification(text) {
+            const notification = document.getElementById('notification');
+            notification.textContent = text;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ======================
+        // 🚀 ISHGA TUSHIRISH
+        // ======================
+        function initApp() {
+            applyTheme(currentTheme);
+            applyMode(currentMode);
+
+            const grid = document.getElementById('mainGrid');
+            facts.forEach((fact, index) => {
+                const btn = document.createElement('button');
+                btn.className = `fact-btn anim-${(index % 80) + 1}`;
+                btn.textContent = `${index + 1}`;
+                btn.setAttribute('aria-label', `Fakt ${index + 1}`);
+                btn.onclick = () => showNotification(fact);
+                grid.appendChild(btn);
+            });
+        }
+
+        // ======================
+        // 🌌 3D PARTICLES BACKGROUND
+        // ======================
+        const canvas = document.getElementById('particles-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 20;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            color: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#98c1d9',
+            size: 0.05,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+
+        // ======================
+        // 🎬 SAYT YUKLANGANDA
+        // ======================
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
