@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yordamchi AI</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Loader */
+    .loader {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+    }
+
+    .loader-content {
+      text-align: center;
+    }
+
+    .loader h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .loader .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main content */
+    .main {
+      display: none;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    header h1 {
+      font-size: 3rem;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    header p {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.2rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-section {
+      background: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .info-section h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .info-section p {
+      line-height: 1.6;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .info-section ul {
+      padding-left: 20px;
+      margin: 15px 0;
+    }
+
+    .info-section li {
+      margin-bottom: 8px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Chat section */
+    .chat-container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      overflow: hidden;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .chat-header h3 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 15px;
+      border-radius: 20px;
+      animation: slideIn 0.3s ease;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background: #f8f9fa;
+      color: #333;
+      border: 1px solid #e9ecef;
+      border-bottom-left-radius: 5px;
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 5px;
+      text-align: right;
+    }
+
+    .quick-buttons {
+      padding: 15px;
+      background: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .quick-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .quick-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      outline: none;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .chat-input input:focus {
+      border-color: #667eea;
+    }
+
+    .chat-input button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .typing-indicator {
+      align-self: flex-start;
+      background: #f8f9fa;
+      padding: 15px 20px;
+      border-radius: 20px;
+      color: #666;
+      display: none;
+    }
+
+    .typing-indicator span {
+      animation: typing 1.4s infinite;
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #666;
+      border-radius: 50%;
+      margin: 0 2px;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      color: white;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .feature-card i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .feature-card h4 {
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div class="loader">
+    <div class="loader-content">
+      <h1><i class="fas fa-robot"></i> Yordamchi AI</h1>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="container">
+      <header>
+        <h1><i class="fas fa-robot"></i> Yordamchi AI</h1>
+        <p>Savollaringizga tezda javob toping, 24/7 ishlaydigan aqlli yordamchimiz bilan</p>
+        
+        <div class="features-grid">
+          <div class="feature-card">
+            <i class="fas fa-bolt"></i>
+            <h4>Tez Javob</h4>
+            <p>10 soniya ichida javob</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-headset"></i>
+            <h4>24/7 Ishlaydi</h4>
+            <p>Dam olibmiz, lekin ishlamaymiz</p>
+          </div>
+          <div class="feature-card">
+            <i class="fas fa-comments"></i>
+            <h4>Oson Muloqot</h4>
+            <p>Tushunarli tilda</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-grid">
+        <div class="info-section">
+          <h2><i class="fas fa-info-circle"></i> Buyurtma Berish Haqida</h2>
+          <p><strong>AristokratShop</strong> orqali buyurtma berish juda oddiy:</p>
+          <ul>
+            <li>Mahsulot kartochkasidagi <strong>"Buyurtma qilish"</strong> tugmasini bosing</li>
+            <li>Sizga <strong>buyurtma raqami</strong> beriladi</li>
+            <li>Raqam Telegram orqali bizga yuboriladi</li>
+            <li>Operator siz bilan bog'lanib yetkazib berish ma'lumotlarini aniqlashtiradi</li>
+          </ul>
+          
+          <h3 style="margin-top: 20px; color: #764ba2;">Muhim!</h3>
+          <p><strong>Buyurtma raqami</strong> – bu sizning mahsulotingizni aniqlash uchun zarur kod. Ushbu raqamni yuborsangiz, buyurtmangiz tezroq qayta ishlanadi.</p>
+        </div>
+
+        <div class="chat-container">
+          <div class="chat-header">
+            <h3><i class="fas fa-comments"></i> Yordamchi AI</h3>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Savolingizni yozing yoki quyidagi tugmalardan foydalaning</p>
+          </div>
+          
+          <div class="chat-messages" id="messages">
+            <div class="message bot-message">
+              Salom! 🌟 Men Yordamchi AI man. Sizga qanday yordam berishim mumkin?
+              <div class="message-time">Hozir</div>
+            </div>
+          </div>
+          
+          <div class="typing-indicator" id="typing">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          
+          <div class="quick-buttons">
+            <button class="quick-btn" onclick="quickAsk('Buyurtma qanday beriladi?')">Buyurtma qanday beriladi?</button>
+            <button class="quick-btn" onclick="quickAsk('Buyurtma raqami nima uchun kerak?')">Buyurtma raqami?</button>
+            <button class="quick-btn" onclick="quickAsk('Aloqa qilish usullari')">Aloqa usullari</button>
+            <button class="quick-btn" onclick="quickAsk('Ish vaqtingiz qachon?')">Ish vaqtlari</button>
+            <button class="quick-btn" onclick="quickAsk('Yetkazib berish muddati qanday?')">Yetkazib berish</button>
+            <button class="quick-btn" onclick="quickAsk('Qaytarish qilish mumkinmi?')">Qaytarish</button>
+            <button class="quick-btn" onclick="quickAsk('To\'lov qilish usullari')">To'lov usullari</button>
+            <button class="quick-btn" onclick="quickAsk('Chegirmalar bor?')">Chegirmalar</button>
+          </div>
+          
+          <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Savolingizni yozing...">
+            <button onclick="sendMsg()"><i class="fas fa-paper-plane"></i> Yuborish</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-music" autoplay loop muted>
+    <source src="morgenshtern_-_aristocrat.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Loader animation
+    setTimeout(() => {
+      document.querySelector('.loader').style.display = 'none';
+      document.querySelector('.main').style.display = 'block';
+    }, 3000);
+
+    // Get current time
+    function getCurrentTime() {
+      const now = new Date();
+      return now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+    }
+
+    // Add message to chat
+    function addMessage(text, sender) {
+      const messages = document.getElementById('messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+      messageDiv.innerHTML = text;
+      
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = getCurrentTime();
+      
+      messageDiv.appendChild(timeDiv);
+      messages.appendChild(messageDiv);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTyping() {
+      document.getElementById('typing').style.display = 'block';
+      document.getElementById('typing').scrollIntoView();
+    }
+
+    // Hide typing indicator
+    function hideTyping() {
+      document.getElementById('typing').style.display = 'none';
+    }
+
+    // Send message
+    function sendMsg() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      
+      if (text) {
+        addMessage(text, 'user');
+        input.value = '';
+        
+        showTyping();
+        setTimeout(() => {
+          hideTyping();
+          botReply(text);
+        }, 1000);
+      }
+    }
+
+    // Quick ask
+    function quickAsk(text) {
+      addMessage(text, 'user');
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
+        botReply(text);
+      }, 1000);
+    }
+
+    // Bot replies
+    function botReply(text) {
+      text = text.toLowerCase();
+      let reply = "Kechirasiz, savolingizni tushunmadim. Iltimos, boshqacha so'robing.";
+
+      // General greetings
+      if (text.includes('salom') || text.includes('assalom') || text.includes('hi') || text.includes('hello')) {
+        reply = "Assalomu alaykum! 🌟 Qanday yordam berishim mumkin?";
+      } else if (text.includes('rahmat') || text.includes('rakhmat') || text.includes('tashakkur')) {
+        reply = "Arzimaydi! 😊 Yana savollar bo'lsa, xavotir olmang - men doim yordam berishga tayyorman!";
+      } else if (text.includes('yaxshimisan') || text.includes('qalesan') || text.includes('qalaysan')) {
+        reply = "Men doim yaxshiman! 😊 Siz qanday? Savollaringizni bermoqchinmi?";
+      } else if (text.includes('yomon') || text.includes('yomonman') || text.includes('yaxshi emasman')) {
+        reply = "Afsus! 😔 Sizga qanday yordam berishim mumkin? Ehtimol, savolingiz bor?";
+      } else if (text.includes('yaxshi') || text.includes('yaxshiman') || text.includes('zo\'r') || text.includes('albatta')) {
+        reply = "Ajoyib! 🎉 Sizga qanday yordam berishim mumkin?";
+      }
+
+      // Order related
+      else if (text.includes('buyurtma') && text.includes('qanday')) {
+        reply = "Buyurtma berish uchun mahsulot kartochkasidagi 'Buyurtma qilish' tugmasini bosing. Sizga buyurtma raqami beriladi va u Telegram orqali bizga yuboriladi.";
+      } else if (text.includes('raqam') && (text.includes('buyurtma') || text.includes('raqam'))) {
+        reply = "Buyurtma raqami - bu sizning mahsulotingizni aniqlash uchun zarur kod. Operator siz bilan bog'lanishda foydalanadi.";
+      } else if (text.includes('qachon') && text.includes('yetkaz')) {
+        reply = "Yetkazib berish odatda 1-3 ish kuni ichida amalga oshiriladi. Manzilingizga qarab vaqt farq qilishi mumkin.";
+      } else if (text.includes('qaytarish') || text.includes('qaytar')) {
+        reply = "Ha, 14 kun ichida mahsulotni qaytarishingiz mumkin. Batafsil ma'lumot uchun operatorlarimiz bilan bog'laning.";
+      } else if (text.includes('to\'lov') || text.includes('pul')) {
+        reply = "To'lov turli usullarda amalga oshiriladi: naqd, karta orqali, Click, Payme. Batafsil ma'lumot buyurtma vaqtida.";
+      }
+
+      // Contact and working hours
+      else if (text.includes('aloqa') || text.includes('bog\'lan') || text.includes('tel')) {
+        reply = "Biz bilan quyidagi usullarda bog'lanishingiz mumkin:\n- Telegram: @shohcore\n- Telefon: +998 90 123 45 67\n- Email: info@aristokratshop.uz";
+      } else if (text.includes('ish') && text.includes('vaqt')) {
+        reply = "Ish vaqtimiz: Har kuni 9:00 - 22:00 gacha. Dam olish kuni yo'q - doim sizga xizmat ko'rsatamiz!";
+      } else if (text.includes('manzil') || text.includes('qayerda')) {
+        reply = "Bosh ofisimiz Toshkent shahrida joylashgan. Ammo butun O'zbekiston bo'ylab yetkazib beramiz!";
+      }
+
+      // Discounts and promotions
+      else if (text.includes('chegirma') || text.includes('aktsiya') || text.includes('sovrin')) {
+        reply = "Doimiy mijozlarimiz uchun chegirmalar mavjud! Telegram kanalimizda obuna bo'ling - yangiliklardan xabardor bo'ling!";
+      } else if (text.includes('bonus') || text.includes('mukofot')) {
+        reply = "Doimiy mijozlar uchun bonus tizimi ishlaydi! Har bir xaridingiz uchun ballar to'playapsiz.";
+      }
+
+      // Personal info
+      else if (text.includes('shohjahon')) {
+        reply = "Shohjahon - bizning loyihaning asoschisi hamda eng katta geniy! Uning kreativ fikrlari hamda loyihalari bilan biz yana ham rivojlanamiz!";
+      } else if (text.includes('shaxzod')) {
+        reply = "Shaxzod - Shohjahonning sinfdoshi hamda ishonchli hamkasiri. Loyihalarda doim birga ishlaydigan ajoyib jamoadosh!";
+      } else if (text.includes('shukur')) {
+        reply = "Shukurullo - jamoamizning ajoyib a'zosi! Do'stona munosabatlari hamda ishtiysi bilan ajralib turadi!";
+      } else if (text.includes('donyor')) {
+        reply = "Donyor - yana bir kreativ g'olib! Loyihalarda doim yangi g'oyalarni taklif qiladi!";
+      } else if (text.includes('bexruz')) {
+        reply = "Bexruz - sportchi hamda kuchli jamoadosh! Ko'tlik bo'yicha ham, loyihalar bo'yicha ham kuchli!";
+      }
+
+      // General help
+      else if (text.includes('yordam') || text.includes('qanday') || text.includes('qo\'llanma')) {
+        reply = "Sizga qanday yordam berishimni xohlaysiz? Buyurtma, yetkazish, to'lov yoki boshqa savollar bo'lsa aytib bering!";
+      } else if (text.includes('muloqot') || text.includes('suhbat')) {
+        reply = "Men doim siz bilan muloqotda bo'lishga tayyorman! Har qanday savolga javob topishga harakat qilaman!";
+      } else if (text.includes('tezlik') || text.includes('tez')) {
+        reply = "Men juda tez javob beraman! O'rtacha javob vaqti - 10 soniya!";
+      } else if (text.includes('ish') || text.includes('qilmoq')) {
+        reply = "Men har doim ishlamoqdaman! 24/7 sizga xizmat ko'rsatishga tayyorman!";
+      } else if (text.includes('kim')) {
+        reply = "Men Yordamchi AI - sizga tez va aniq javob beruvchi aqlli yordamchisiz!";
+      } else if (text.includes('nima') || text.includes('nima uchun')) {
+        reply = "Sizning savolingizga aniq javob berishim uchun batafsil tushuntirib bering, shunda yordam berishim oson bo'ladi!";
+      }
+
+      addMessage(reply, 'bot');
+    }
+
+    // Enter key support
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMsg();
+      }
+    });
+
+    // Audio handling
+    window.addEventListener("load", () => {
+      const audio = document.getElementById("bg-music");
+      audio.muted = false;
+      audio.play().catch(() => {
+        document.body.addEventListener("click", () => {
+          audio.muted = false;
+          audio.play();
+        }, { once: true });
+      });
+    });
+  </script>
+</body>
+</html>
+
