@@ -377,19 +377,20 @@
 
       <div class="content-grid">
         <div class="info-section">
-          <h2><i class="fas fa-info-circle"></i> Buyurtma Berish Haqida</h2>
-          <p><strong>AristokratShop</strong> orqali buyurtma berish juda oddiy:</p>
+          <h2><i class="fas fa-info-circle"></i> Yordamchi ai Haqida</h2>
+          <p><strong>Yordamchi ai </strong>bilan suxbatlashish oson :</p>
           <ul>
-            <li>Mahsulot kartochkasidagi <strong>"Buyurtma qilish"</strong> tugmasini bosing</li>
-            <li>Sizga <strong>buyurtma raqami</strong> beriladi</li>
-            <li>Raqam Telegram orqali bizga yuboriladi</li>
-            <li>Operator siz bilan bog'lanib yetkazib berish ma'lumotlarini aniqlashtiradi</li>
+            
+            <li>Saytdagi yordamchi ai ga <strong>"tugmalar"</strong> bosing</li>
+            <li>Sizga <strong>yordamchi ai</strong> javob beriladi</li>
+            <li>Sizni gapingizni taxlil qilib sizga javob qaytaradi</li>
+            
           </ul>
           
           <h3 style="margin-top: 20px; color: #764ba2;">Muhim!</h3>
-          <p><strong>Buyurtma raqami</strong> – bu sizning mahsulotingizni aniqlash uchun zarur kod. Ushbu raqamni yuborsangiz, buyurtmangiz tezroq qayta ishlanadi.</p>
+          <p><strong>Yordamchi ai</strong> iltimos xurmatni saqlagan xolatda yaxshi mavzularda suxbatlashin ! Agar siz uni xaqorat qilsangiz sizni ustingizdan ichki ishlarga ariza topshiriladi! </p>
         </div>
-
+        
         <div class="chat-container">
           <div class="chat-header">
             <h3><i class="fas fa-comments"></i> Yordamchi AI</h3>
@@ -410,14 +411,11 @@
           </div>
           
           <div class="quick-buttons">
-            <button class="quick-btn" onclick="quickAsk('Buyurtma qanday beriladi?')">Buyurtma qanday beriladi?</button>
-            <button class="quick-btn" onclick="quickAsk('Buyurtma raqami nima uchun kerak?')">Buyurtma raqami?</button>
-            <button class="quick-btn" onclick="quickAsk('Aloqa qilish usullari')">Aloqa usullari</button>
+            <button class="quick-btn" onclick="quickAsk('Buyurtma qanday beriladi?')">salom</button>
+            <button class="quick-btn" onclick="quickAsk('Buyurtma raqami nima uchun kerak?')">qalesan</button>
+            <button class="quick-btn" onclick="quickAsk('Aloqa qilish usullari')"> qanday </button>
             <button class="quick-btn" onclick="quickAsk('Ish vaqtingiz qachon?')">Ish vaqtlari</button>
-            <button class="quick-btn" onclick="quickAsk('Yetkazib berish muddati qanday?')">Yetkazib berish</button>
-            <button class="quick-btn" onclick="quickAsk('Qaytarish qilish mumkinmi?')">Qaytarish</button>
-            <button class="quick-btn" onclick="quickAsk('To\'lov qilish usullari')">To'lov usullari</button>
-            <button class="quick-btn" onclick="quickAsk('Chegirmalar bor?')">Chegirmalar</button>
+          
           </div>
           
           <div class="chat-input">
@@ -506,7 +504,7 @@
       let reply = "Kechirasiz, savolingizni tushunmadim. Iltimos, boshqacha so'robing.";
 
       // General greetings
-      if (text.includes('salom') || text.includes('assalom') || text.includes('hi') || text.includes('hello')) {
+      if (text.includes('salom') || text.includes('Assalomu alaykum ') || text.includes('assalom') || text.includes('hii') || text.includes('helo') || text.includes('hi') || text.includes('hello')) {
         reply = "Assalomu alaykum! 🌟 Qanday yordam berishim mumkin?";
       } else if (text.includes('rahmat') || text.includes('rakhmat') || text.includes('tashakkur')) {
         reply = "Arzimaydi! 😊 Yana savollar bo'lsa, xavotir olmang - men doim yordam berishga tayyorman!";
