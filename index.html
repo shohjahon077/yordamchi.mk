@@ -23,14 +23,12 @@
             --ai-btn-bottom: 30px;
             --ai-btn-right: 30px;
         }
-
         /* THEMES */
         .theme-ocean { --primary-color: #1a535c; --accent-color: #4ecdc4; --dark-shadow: #4a5d73; }
         .theme-green { --primary-color: #4CAF50; --accent-color: #8BC34A; --dark-shadow: #90a4ae; }
         .theme-violet { --primary-color: #673AB7; --accent-color: #B39DDB; --dark-shadow: #9e8fb8; }
         .theme-dark-red { --primary-color: #7f1d1d; --accent-color: #fca5a5; --dark-shadow: #a39999; }
         .theme-soft { --primary-color: #5e6066; --accent-color: #b5c1d1; --dark-shadow: #b0b8c5; }
-
         /* DARK MODE */
         .dark-mode {
             --base-color: #2c2f33;
@@ -39,7 +37,6 @@
             --light-shadow: #3b3f45;
             --dark-shadow: #1e1e21;
         }
-
         /* ANIMATION REDUCTION (accessibility) */
         @media (prefers-reduced-motion: reduce) {
             * {
@@ -48,14 +45,12 @@
                 transition-duration: 0.01ms !important;
             }
         }
-
         /* ====== RESET & BASE STYLES ====== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Rubik', sans-serif;
             background-color: var(--base-color);
@@ -70,6 +65,38 @@
                 color var(--transition-speed);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+
+        /* ====== 3D PARTICLES BACKGROUND ====== */
+        #particles-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* ====== CSS GRADIENT BACKGROUND ====== */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(152, 193, 217, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(61, 90, 128, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: bgFloat 25s infinite alternate ease-in-out;
+        }
+
+        @keyframes bgFloat {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
         }
 
         /* ====== NEUMORPHISM CORE ====== */
@@ -81,13 +108,11 @@
                 -8px -8px 16px var(--light-shadow);
             transition: all var(--transition-speed) ease;
         }
-
         .neumorphic.pressed {
             box-shadow:
                 inset 6px 6px 12px var(--dark-shadow),
                 inset -6px -6px 12px var(--light-shadow);
         }
-
         /* ====== INTRO SCREEN ====== */
         #intro {
             position: fixed;
@@ -105,7 +130,6 @@
             pointer-events: all;
             transition: opacity 0.8s ease;
         }
-
         .intro-logo {
             font-size: clamp(2.8rem, 8vw, 5.5rem);
             font-weight: 800;
@@ -113,7 +137,6 @@
             text-shadow: 0 4px 12px rgba(0,0,0,0.4);
             animation: float 3.5s ease-in-out infinite, fadeIn 1s forwards;
         }
-
         .intro-sub {
             font-size: clamp(1rem, 3vw, 1.6rem);
             margin-top: 12px;
@@ -121,7 +144,6 @@
             max-width: 800px;
             opacity: 0.9;
         }
-
         .progress-bar {
             width: 80%;
             max-width: 500px;
@@ -131,7 +153,6 @@
             margin-top: 30px;
             overflow: hidden;
         }
-
         .progress-fill {
             height: 100%;
             width: 0%;
@@ -139,7 +160,6 @@
             border-radius: 3px;
             animation: progress 3s linear forwards;
         }
-
         .skip-btn {
             margin-top: 20px;
             padding: 10px 24px;
@@ -152,12 +172,10 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-
         .skip-btn:hover {
             background: rgba(255,255,255,0.25);
             transform: scale(1.05);
         }
-
         /* Animations */
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes float {
@@ -174,19 +192,16 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
         /* ====== MAIN CONTENT ====== */
         #main-content {
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.8s ease 0.2s;
         }
-
         #main-content.visible {
             opacity: 1;
             visibility: visible;
         }
-
         /* ====== NAVIGATION ====== */
         .menu-toggle {
             position: fixed;
@@ -208,7 +223,6 @@
                 -6px -6px 12px var(--light-shadow);
             transition: all 0.3s ease;
         }
-
         .menu-toggle:hover,
         .menu-toggle:focus {
             color: var(--accent-color);
@@ -216,12 +230,10 @@
                 inset 4px 4px 8px var(--dark-shadow),
                 inset -4px -4px 8px var(--light-shadow);
         }
-
         .menu-toggle:focus-visible {
             outline: 2px solid var(--accent-color);
             outline-offset: 4px;
         }
-
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -239,11 +251,9 @@
             box-shadow: -5px 0 20px rgba(0,0,0,0.12);
             overscroll-behavior: contain;
         }
-
         .mobile-menu.active {
             right: 0;
         }
-
         .mobile-link {
             display: block;
             padding: 14px 20px;
@@ -259,7 +269,6 @@
                 -5px -5px 10px var(--light-shadow);
             transition: all 0.25s ease;
         }
-
         .mobile-link:hover,
         .mobile-link:focus {
             color: var(--accent-color);
@@ -267,12 +276,10 @@
                 inset 4px 4px 8px var(--dark-shadow),
                 inset -4px -4px 8px var(--light-shadow);
         }
-
         .mobile-link:focus-visible {
             outline: 2px solid var(--accent-color);
             outline-offset: 4px;
         }
-
         .navbar {
             display: none;
             justify-content: center;
@@ -286,7 +293,6 @@
             max-width: 1200px;
             margin: 0 auto 20px;
         }
-
         .nav-link {
             padding: 10px 16px;
             font-weight: 600;
@@ -301,7 +307,6 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
         .nav-link:hover,
         .nav-link:focus {
             color: var(--accent-color);
@@ -309,12 +314,10 @@
                 inset 3px 3px 6px var(--dark-shadow),
                 inset -3px -3px 6px var(--light-shadow);
         }
-
         .nav-link:focus-visible {
             outline: 2px solid var(--accent-color);
             outline-offset: 3px;
         }
-
         /* ====== MAIN BUTTONS (3D POP-OUT) ====== */
         .main-buttons {
             display: grid;
@@ -324,13 +327,11 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .big-btn-container {
             display: block;
             text-decoration: none;
             perspective: 1000px;
         }
-
         .big-btn {
             width: 100%;
             min-height: var(--big-btn-height);
@@ -351,16 +352,15 @@
             box-shadow:
                 12px 12px 24px var(--dark-shadow),
                 -12px -12px 24px var(--light-shadow);
+            transform-style: preserve-3d;
         }
-
         .big-btn:hover {
-            transform: translateY(-8px) scale(1.04);
+            transform: translateY(-8px) scale(1.04) translateZ(20px);
             color: var(--accent-color);
             box-shadow:
                 18px 18px 36px var(--dark-shadow),
                 -18px -18px 36px var(--light-shadow);
         }
-
         .big-btn:active,
         .big-btn:focus.pressed {
             transform: translateY(0) scale(1);
@@ -368,13 +368,11 @@
                 inset 10px 10px 20px var(--dark-shadow),
                 inset -10px -10px 20px var(--light-shadow);
         }
-
         .big-btn:focus-visible {
             outline: 3px solid var(--accent-color);
             outline-offset: 6px;
             transform: translateY(-4px);
         }
-
         .big-btn span {
             display: block;
             font-size: 0.9rem;
@@ -383,18 +381,15 @@
             margin-top: 6px;
             transition: color 0.3s;
         }
-
         .dark-mode .big-btn span { color: #aaa; }
-
         /* ====== YORDAMCHI AI BUTTON ====== */
         .ai-btn-container {
             position: fixed;
             bottom: var(--ai-btn-bottom);
             right: var(--ai-btn-right);
             z-index: 1001;
-            animation: pulse 3s infinite;
+            animation: pulse 3s infinite, float 4s ease-in-out infinite;
         }
-
         .ai-btn {
             width: var(--ai-btn-size);
             height: var(--ai-btn-size);
@@ -413,7 +408,6 @@
             border: none;
             transition: all 0.3s ease;
         }
-
         .ai-btn:hover {
             transform: scale(1.1);
             background: var(--primary-color);
@@ -421,12 +415,10 @@
                 8px 8px 16px var(--dark-shadow),
                 -8px -8px 16px var(--light-shadow);
         }
-
         .ai-btn:focus {
             outline: 3px solid var(--accent-color);
             outline-offset: 4px;
         }
-
         /* ====== FOOTER ====== */
         .footer {
             text-align: center;
@@ -436,15 +428,12 @@
             font-size: 0.95rem;
             margin-top: 60px;
         }
-
         .footer a {
             color: var(--accent-color);
             text-decoration: none;
             font-weight: 600;
         }
-
         .footer a:hover { text-decoration: underline; }
-
         /* ====== SETTINGS MODAL ====== */
         .settings-modal {
             display: none;
@@ -458,7 +447,6 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-
         .settings-modal.active {
             display: flex;
             align-items: start;
@@ -466,7 +454,6 @@
             opacity: 1;
             pointer-events: all;
         }
-
         .settings-content {
             background: var(--base-color);
             width: 92%;
@@ -480,7 +467,6 @@
             max-height: 85vh;
             overflow-y: auto;
         }
-
         .close-btn {
             position: absolute;
             top: 20px;
@@ -499,9 +485,7 @@
             justify-content: center;
             transition: all 0.2s;
         }
-
         .close-btn:hover { color: var(--accent-color); }
-
         .settings-content h2 {
             text-align: center;
             color: var(--primary-color);
@@ -509,7 +493,6 @@
             font-weight: 700;
             font-size: 1.8rem;
         }
-
         .settings-group {
             margin-bottom: 26px;
             padding: 18px;
@@ -519,20 +502,17 @@
                 inset 3px 3px 7px var(--dark-shadow),
                 inset -3px -3px 7px var(--light-shadow);
         }
-
         .settings-group h3 {
             font-size: 1.25rem;
             margin-bottom: 16px;
             color: var(--primary-color);
             font-weight: 600;
         }
-
         .options-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-
         .setting-btn {
             flex: 1;
             min-width: 90px;
@@ -549,9 +529,7 @@
                 -4px -4px 8px var(--light-shadow);
             transition: all 0.2s;
         }
-
         .setting-btn:hover { color: var(--accent-color); }
-
         .setting-btn.active {
             color: var(--accent-color);
             font-weight: 700;
@@ -559,25 +537,37 @@
                 inset 4px 4px 8px var(--dark-shadow),
                 inset -4px -4px 8px var(--light-shadow);
         }
-
+        /* ====== ACCESSIBILITY: SKIP TO CONTENT ====== */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 10002;
+            transition: top 0.3s;
+        }
+        .skip-link:focus {
+            top: 6px;
+        }
         /* ====== MEDIA QUERIES ====== */
         @media (min-width: 769px) {
             .navbar { display: flex; }
             .menu-toggle { display: none; }
             .main-buttons { padding: 140px 20px 80px; }
         }
-
         @media (max-width: 768px) {
             :root { --big-btn-height: 100px; --ai-btn-size: 60px; --ai-btn-bottom: 20px; --ai-btn-right: 20px; }
             .main-buttons { padding: 100px 15px 60px; }
         }
-
         @media (max-width: 480px) {
             :root { --big-btn-height: 92px; --ai-btn-size: 56px; }
             .main-buttons { grid-template-columns: 1fr; }
             .options-container { flex-direction: column; }
         }
-
         /* ====== ACCESSIBILITY ====== */
         .visually-hidden {
             position: absolute;
@@ -593,6 +583,11 @@
     </style>
 </head>
 <body id="body" class="theme-default">
+    <!-- PARTICLES BACKGROUND -->
+    <canvas id="particles-bg"></canvas>
+
+    <!-- ACCESSIBILITY: SKIP TO CONTENT -->
+    <a href="#main-content" class="skip-link">Asosiy kontentga o'tish</a>
 
     <!-- INTRO SCREEN -->
     <div id="intro">
@@ -604,9 +599,7 @@
 
     <!-- MAIN CONTENT -->
     <div id="main-content">
-
         <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
-
         <nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
             <a href="sinf.html" class="mobile-link" data-key="lessons">📚 Darsliklar</a>
             <a href="testlarboshqarmasi.html" class="mobile-link" data-key="tests">📝 Testlar</a>
@@ -617,7 +610,6 @@
             <a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
             <a href="#" class="mobile-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
         </nav>
-
         <nav class="navbar neumorphic" aria-label="Desktop navigatsiya">
             <a href="sinf.html" class="nav-link" data-key="lessons">📚 Darsliklar</a>
             <a href="testlarboshqarmasi.html" class="nav-link" data-key="tests">📝 Testlar</a>
@@ -628,7 +620,6 @@
             <a href="aloqa.html" class="nav-link" data-key="contact">📞 Aloqa</a>
             <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
         </nav>
-
         <main class="main-buttons">
             <a href="sinf.html" class="big-btn-container">
                 <div class="big-btn" tabindex="0" data-key="lessons" data-sub-key="lessons_sub">
@@ -673,7 +664,6 @@
                 </div>
             </a>
         </main>
-
         <footer class="footer">
             <span data-key="footer_protected">🔒 Sayt himoyalangan</span> |
             © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
@@ -690,7 +680,6 @@
         <div class="settings-content">
             <button class="close-btn" id="closeSettings" aria-label="Sozlamalarni yopish">&times;</button>
             <h2 id="settingsModalTitle">⚙️ Sozlamalar</h2>
-
             <div class="settings-group">
                 <h3 id="languageTitle">🌐 Tilni tanlang:</h3>
                 <div class="options-container" id="language-options">
@@ -701,7 +690,6 @@
                     <button class="setting-btn" data-lang="zh">中文</button>
                 </div>
             </div>
-
             <div class="settings-group">
                 <h3 id="modeTitle">🌙 Rejim:</h3>
                 <div class="options-container" id="mode-options">
@@ -709,7 +697,6 @@
                     <button class="setting-btn" data-mode="dark">🌑 To‘q</button>
                 </div>
             </div>
-
             <div class="settings-group">
                 <h3 id="themeTitle">🎨 Mavzu:</h3>
                 <div class="options-container" id="theme-options">
@@ -721,7 +708,6 @@
                     <button class="setting-btn" data-theme="soft">Pastel</button>
                 </div>
             </div>
-
             <div class="settings-group">
                 <h3 id="accessibilityTitle">♿ Qulaylik:</h3>
                 <div class="options-container">
@@ -732,6 +718,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         // ======================
@@ -889,25 +878,21 @@
         // ======================
         function updateContent(lang) {
             if (!content[lang]) return;
-
             // Yangi matnlar
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
                 if (content[lang][key]) el.textContent = content[lang][key];
             });
-
             document.querySelectorAll('[data-sub-key]').forEach(el => {
                 const key = el.getAttribute('data-sub-key');
                 if (content[lang][key]) el.textContent = content[lang][key];
             });
-
             document.getElementById('introSubText').textContent = content[lang].introSubText;
             document.getElementById('settingsModalTitle').textContent = content[lang].settingsModalTitle;
             document.getElementById('languageTitle').textContent = content[lang].languageTitle;
             document.getElementById('modeTitle').textContent = content[lang].modeTitle;
             document.getElementById('themeTitle').textContent = content[lang].themeTitle;
             document.getElementById('accessibilityTitle').textContent = content[lang].accessibilityTitle;
-
             document.documentElement.lang = lang;
             document.documentElement.setAttribute('lang', lang);
         }
@@ -919,7 +904,6 @@
                 .filter(c => !c.startsWith('theme-') && c !== 'dark-mode' && c !== 'light-mode')
                 .join(' ')
                 .trim();
-
             if (theme !== 'default') body.classList.add(`theme-${theme}`);
             if (currentMode === 'dark') body.classList.add('dark-mode');
         }
@@ -996,17 +980,14 @@
             applyTheme(currentTheme);
             applyMode(currentMode);
             applyFontSize(fontSize);
-
             // Faol tugmalarni belgilash
             setActiveButton('language-options', currentLang, 'data-lang');
             setActiveButton('mode-options', currentMode, 'data-mode');
             setActiveButton('theme-options', currentTheme, 'data-theme');
-
             // Kirish ekranini boshqarish
             const intro = document.getElementById('intro');
             const mainContent = document.getElementById('main-content');
             const skipBtn = document.getElementById('skipIntro');
-
             const hideIntro = () => {
                 intro.style.opacity = '0';
                 intro.style.pointerEvents = 'none';
@@ -1015,32 +996,26 @@
                     mainContent.classList.add('visible');
                 }, 800);
             };
-
             setTimeout(hideIntro, 3000);
             skipBtn?.addEventListener('click', hideIntro);
-
             // Event listeners
             document.getElementById('menuToggle')?.addEventListener('click', () => toggleMobileMenu());
             document.getElementById('closeSettings')?.addEventListener('click', closeSettingsModal);
             document.getElementById('settingsModal')?.addEventListener('click', e => {
                 if (e.target === e.currentTarget) closeSettingsModal();
             });
-
             // Til tanlovi
             document.querySelectorAll('[data-lang]').forEach(btn => {
                 btn.addEventListener('click', e => setLanguage(e.target.dataset.lang));
             });
-
             // Rejim tanlovi
             document.querySelectorAll('[data-mode]').forEach(btn => {
                 btn.addEventListener('click', e => setMode(e.target.dataset.mode));
             });
-
             // Mavzu tanlovi
             document.querySelectorAll('[data-theme]').forEach(btn => {
                 btn.addEventListener('click', e => setTheme(e.target.dataset.theme));
             });
-
             // Font kattalik
             document.getElementById('increaseFont')?.addEventListener('click', () => {
                 fontSize = Math.min(fontSize + 2, 24);
@@ -1054,7 +1029,6 @@
                 fontSize = 16;
                 applyFontSize(fontSize);
             });
-
             // Tashqari bosishda menyu yopiladi
             document.addEventListener('click', e => {
                 const menu = document.getElementById('mobileMenu');
@@ -1063,7 +1037,6 @@
                     toggleMobileMenu(false);
                 }
             });
-
             // Keyboard navigation
             document.querySelectorAll('.big-btn').forEach(btn => {
                 btn.addEventListener('keydown', e => {
@@ -1096,14 +1069,57 @@
         // 🎬 SAYT YUKLANGANDA
         // ======================
         document.addEventListener('DOMContentLoaded', initApp);
-    </script>
 
-    <!-- Minimal Service Worker for Offline (optional, create sw.js file separately) -->
-    <script>
-        // Agar sw.js kerak bo'lsa — alohida fayl sifatida yaratiladi:
-        // — `self.addEventListener('install', ...)`
-        // — `self.addEventListener('fetch', ...)`
-        // — static assetlarni keshlash (index.html, CSS, JS, iconlar)
+        // ======================
+        // 🌌 3D PARTICLES BACKGROUND
+        // ======================
+        const canvas = document.getElementById('particles-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 20;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            color: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#98c1d9',
+            size: 0.05,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+
+        // Parallax scroll
+        window.addEventListener('scroll', () => {
+            const offset = window.scrollY * 0.3;
+            document.body.style.backgroundPositionY = `${offset}px`;
+        });
     </script>
 </body>
 </html>
