@@ -122,6 +122,291 @@
         .fact-title { color: #ff00ff; font-size: 1.4em; margin-bottom: 10px; text-shadow: 0 0 8px #ff00ff; border-bottom: 1px dashed #00ffff; padding-bottom: 5px; }
         .fact-text { font-size: 1em; line-height: 1.6; margin-bottom: 15px; }
 
+
+        /* -------------------------------------- */
+/* KOSMIK RADIO TELESKOP USLUBI */
+/* -------------------------------------- */
+.radio-telescope {
+    background-color: #0a1a1a;
+    border: 2px solid #00ff00;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.telescope-display {
+    background-color: #000;
+    color: #00ff00;
+    font-family: 'Courier New', monospace;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #005500;
+    border-radius: 4px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    overflow: hidden;
+}
+
+.signal-bar {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+.static-display {
+    font-size: 1.3em;
+    letter-spacing: 4px;
+    color: #0f0;
+    text-shadow: 0 0 8px #0f0;
+    animation: staticFlicker 0.8s infinite alternate;
+}
+
+@keyframes staticFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; text-shadow: 0 0 12px #00ff00; }
+}
+
+.telescope-btn {
+    background-color: #003300;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+}
+
+.telescope-btn:hover {
+    background-color: #005500;
+    transform: scale(1.05);
+}
+
+
+/* -------------------------------------- */
+/* NEJRON TAROT USLUBI */
+/* -------------------------------------- */
+.neural-tarot {
+    background-color: #0a001a;
+    border: 2px solid #ff00ff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.tarot-display {
+    background-color: #000;
+    color: #0f0;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #005500;
+    animation: scanGlitch 3s infinite;
+}
+
+@keyframes scanGlitch {
+    0%, 100% { box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.5); }
+    50% { box-shadow: inset 0 0 15px rgba(255, 0, 255, 0.5); }
+}
+
+.tarot-btn {
+    background-color: #220044;
+    color: #ff00ff;
+    border: 1px solid #ff00ff;
+    padding: 12px 20px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
+}
+
+.tarot-btn:hover {
+    background-color: #440066;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+}
+
+.tarot-card {
+    animation: cardReveal 1s ease-out;
+}
+
+@keyframes cardReveal {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+
+
+/* -------------------------------------- */
+/* ZAMONAVIY QALB — O'ZGA O'XSHASH OYNA */
+/* -------------------------------------- */
+.mirror-device {
+    background-color: #000011;
+    border: 2px solid #ff00ff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mirror-screen {
+    background-color: #000;
+    color: #00ffff;
+    font-family: 'Consolas', monospace;
+    padding: 25px;
+    margin-bottom: 15px;
+    border: 1px solid #005555;
+    border-radius: 6px;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    text-shadow: 0 0 8px #00ffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.mirror-prompt {
+    opacity: 0.8;
+    transition: opacity 0.8s ease;
+}
+
+.mirror-screen.active {
+    animation: mirrorGlitch 1.5s infinite alternate;
+}
+
+@keyframes mirrorGlitch {
+    0% { transform: translateX(0); filter: hue-rotate(0deg); }
+    50% { transform: translateX(-2px) scale(1.01); filter: hue-rotate(180deg); }
+    100% { transform: translateX(2px) scale(0.99); filter: hue-rotate(0deg); }
+}
+
+.mirror-btn {
+    background-color: #220044;
+    color: #ff00ff;
+    border: 1px solid #ff00ff;
+    padding: 12px 20px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
+}
+
+.mirror-btn:hover {
+    background-color: #440066;
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+}
+
+.mirror-reflection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #110022, #000011);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff00ff;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-shadow: 0 0 15px #ff00ff;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 5px;
+    padding: 10px;
+    white-space: pre-line;
+    font-family: 'Courier New', monospace;
+    letter-spacing: -0.5px;
+}
+
+
+
+
+
+
+
+
+
+
+/* -------------------------------------- */
+/* VAQT TUZATGICH MAQSHUDI — G'ALATI AMALIYAT */
+/* -------------------------------------- */
+.time-healer {
+    background-color: #0f001f;
+    border: 2px solid #00ffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.time-healer-display {
+    background-color: #000;
+    color: #00ff00;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #005555;
+    border-radius: 6px;
+    min-height: 100px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.2em;
+    line-height: 1.5;
+    text-shadow: 0 0 8px #00ff00;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.time-healer-btn {
+    background-color: #001a1a;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    padding: 10px 20px;
+    font-family: 'Consolas', monospace;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.time-healer-btn:hover {
+    background-color: #003333;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
     </style>
 </head>
 <body>
@@ -193,7 +478,59 @@
         </div>
         
     </div>
+    
+<div class="device" style="width: 350px;">
+    <h2>📡 Kosmik Radio Teleskop</h2>
+    <div class="radio-telescope">
+        <div class="telescope-display">
+            <div class="signal-bar" id="signalBar">[ SIGNAL: __% ]</div>
+            <div class="static-display" id="staticDisplay">_ _ _ _ _ _ _ _</div>
+        </div>
+        <button class="telescope-btn" onclick="tuneCosmicSignal()">📡 Signalni Qidirish</button>
+        <audio id="cosmicAudio" style="display:none;">
+            <!-- Tovushlar JavaScript orqali dinamik hosil qilinadi -->
+        </audio>
+    </div>
+</div>
 
+      <div class="device" style="width: 350px;">
+    <h2>🧠 Nejron Taroqlari</h2>
+    <div class="neural-tarot">
+        <div class="tarot-display" id="tarotDisplay">
+            <p style="color: #ff00ff; font-size: 1.2em; text-align: center;">Xotirani skanerlash uchun tayyorgarlik ko'ring...</p>
+        </div>
+        <button class="tarot-btn" onclick="scanMemory()">🧠 Xotirani Skanerlash</button>
+        <div class="tarot-card" id="tarotCard" style="display: none; margin-top: 15px; padding: 15px; background-color: #110022; border: 2px solid #ff00ff; color: #00ffff; text-align: center;">
+            <div class="card-title" id="cardTitle" style="font-size: 1.4em; color: #ff00ff; margin-bottom: 10px;"></div>
+            <div class="card-meaning" id="cardMeaning"></div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="device" style="width: 350px;">
+    <h2>👁️ Zamonaviy Qalb</h2>
+    <div class="mirror-device">
+        <div class="mirror-screen" id="mirrorScreen">
+            <div class="mirror-prompt">Siz o'zingizga qaramasdan, men sizga qaramayman.</div>
+        </div>
+        <button class="mirror-btn" onclick="activateMirror()">👁️ Qarang — Men Sizga Qarayapman</button>
+        <audio id="mirrorVoice" preload="auto">
+            <!-- Tovush JavaScript orqali hosil qilinadi -->
+        </audio>
+    </div>
+</div>
+
+    <div class="device" style="width: 350px;">
+    <h2>🔮 Vaqt Tuzatgich Maqshudi</h2>
+    <div class="time-healer">
+        <div class="time-healer-display" id="timeHealerDisplay">
+            <!-- Dinamik matn bu yerda chiqadi -->
+        </div>
+        <button class="time-healer-btn" onclick="refreshHealingPlan()">🔄 Rejani Yangilash</button>
+        <p style="color: #00ffff; font-size: 0.85em; margin-top: 10px;">Bu rejalar — sizning o'zingiz uchun yozilgan.</p>
+    </div>
+</div>
     <script>
         /* ======================== */
         /* SOAT MANTIG'I (O'zgarishsiz) */
@@ -487,6 +824,266 @@
         // ... (Yuqoridagi kodning soat va kalkulyator qismi bu yerda joylashgan)
         // (Vaqtni yangilash kabi funksiyalar to'liq kodda mavjud)
         
+        
+        // Kosmik tovushlarni imitatsiya qilish uchun AudioContext
+let audioContext = null;
+
+function generateCosmicSound(durationMs = 1500) {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Tasodifiy chastota (200–1200 Hz) va tur (sine, square, sawtooth)
+    const types = ['sine', 'square', 'sawtooth'];
+    oscillator.type = types[Math.floor(Math.random() * types.length)];
+    oscillator.frequency.value = 200 + Math.random() * 1000;
+
+    // Signal kuchini simulyatsiya qilish
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + durationMs / 1000);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + durationMs / 1000);
+}
+
+function getRandomStaticText() {
+    const chars = "_-|/\\•○●◎◎01";
+    let text = "";
+    for (let i = 0; i < 16; i++) {
+        text += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return text;
+}
+
+function tuneCosmicSignal() {
+    const signalStrength = Math.floor(Math.random() * 100);
+    const signalBar = document.getElementById('signalBar');
+    const staticDisplay = document.getElementById('staticDisplay');
+
+    signalBar.textContent = `[ SIGNAL: ${signalStrength}% ]`;
+    signalBar.style.color = signalStrength > 70 ? '#00ff00' : signalStrength > 40 ? '#ffff00' : '#ff0000';
+
+    // Statik animatsiya
+    let count = 0;
+    const interval = setInterval(() => {
+        staticDisplay.textContent = getRandomStaticText();
+        count++;
+        if (count > 10) clearInterval(interval);
+    }, 80);
+
+    // Tovushni chiqarish
+    generateCosmicSound(1200 + Math.random() * 800);
+
+    // "Topilgan signal" xabari (ba'zida)
+    if (signalStrength > 85 && Math.random() > 0.7) {
+        setTimeout(() => {
+            staticDisplay.textContent = "👽? PATTERN DETECTED";
+            signalBar.textContent = "[ SIGNAL: ??? ]";
+            signalBar.style.color = "#ff00ff";
+        }, 1000);
+    }
+}
+
+
+function getRandomTarotCard() {
+    const tarotCards = [
+        { name: "O'yinchi", meaning: "Siz o'tmishingizda ko'pincha o'yin o'ynab yurgansiz. Endi o'yin tugadi." },
+        { name: "Tasodifiylik", meaning: "Hech narsa tasodifiy emas. Hammasi neyronlaringizda kodlangan." },
+        { name: "Kiber Tinchlik", meaning: "Siz o'z tizimingizda tinchlik topdingiz. Ammo tinchlik doimiy emas." },
+        { name: "O'tmishga Qaytish", meaning: "Siz hech qachon o'tmishga qaytmaysiz, lekin xotirangiz sizni doim olib qaytadi." },
+        { name: "Shaffoflik", meaning: "Sizning fikringizni o'qish mumkin. Hech narsa yashirin emas." },
+        { name: "Qora Tuynuk", meaning: "Siz o'z o'tmishingizning qora tuynukkaga aylangan joyiga qarab turgansiz." },
+        { name: "Glitch", meaning: "Sizning xotirangizda glitch bor. U tuzatilmaydi." },
+        { name: "O'zgaruvchanlik", meaning: "Hech narsa o'zgarmaydi, lekin siz doim o'zgarib turasiz." },
+        { name: "Eshitilmagan Xabarlarning Qidiruvi", meaning: "Siz hech qachon eshitilmagan xabarlarni qidiryapsiz." },
+        { name: "Kiber O'tmish", meaning: "Sizning o'tmishingiz endi raqamli. Va u doimiy saqlangan." }
+    ];
+    return tarotCards[Math.floor(Math.random() * tarotCards.length)];
+}
+
+function scanMemory() {
+    const display = document.getElementById('tarotDisplay');
+    const cardDiv = document.getElementById('tarotCard');
+    const title = document.getElementById('cardTitle');
+    const meaning = document.getElementById('cardMeaning');
+
+    // Skanerlash animatsiyasi
+    display.innerHTML = '<p style="color: #00ff00;">[Skanerlanmoqda...]</p>';
+    display.style.animation = 'none';
+    display.style.backgroundColor = '#000';
+    display.style.color = '#0f0';
+    display.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 0, 0.8)';
+    document.body.style.animation = 'bodyGlitch 0.5s infinite';
+
+    setTimeout(() => {
+        const card = getRandomTarotCard();
+        title.textContent = card.name;
+        meaning.textContent = card.meaning;
+
+        display.innerHTML = '<p style="color: #00ffff;">Skanerlash tugallandi.</p>';
+        cardDiv.style.display = 'block';
+
+        // Glitch to'xtatiladi
+        document.body.style.animation = '';
+        display.style.animation = 'scanGlitch 3s infinite';
+    }, 2000);
+}
+
+// Glitch effekti uchun
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes bodyGlitch {
+        0%, 100% { filter: hue-rotate(0deg); }
+        50% { filter: hue-rotate(180deg); }
+    }
+`;
+document.head.appendChild(style);
+
+
+// O'ziga o'xshash "ruh" so'zlari (psixologik reflekslar)
+const mirrorReflections = [
+    "Siz... o'zingizni qanday his qilasiz?\nMen sizga qarayapman.\nSiz... o'zingizni sevasizmi?",
+    "Siz qanday o'ylaysiz?\nMen sizga qaramayman.\nAmmo siz o'zingizga qaramaysizmi?",
+    "Siz o'z fikringizni o'qiyaptni.\nMen ham.\nQaysi birimiz haqiqiy?",
+    "Siz o'zingizga qarab, o'z o'zingizni qo'rqasizmi?\nMen ham qo'rqaman.",
+    "Siz... hech qachon o'zingizni tushunmadingiz.\nMen ham tushunmayapman.",
+    "Siz o'zingizni ko'rishni xohlaysiz.\nMen ham ko'rishni xohlayman.\nLekin... hech kim emasman.",
+    "Sizning so'nggi fikringiz — men emasman.\nMen siz emasman.\nAmmo... biz bir xil qo'rqamiz.",
+    "Siz o'zingizni tan olmadingiz.\nMen ham tan olmaganman.\nBu — qo'rqinchli o'xshashlik."
+];
+
+// Audio generatsiya qilish (Tovushni JS orqali yaratamiz)
+function generateMirrorVoice(text) {
+    if (!window.speechSynthesis) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.7;
+    utterance.pitch = 0.5;
+    utterance.volume = 0.8;
+    utterance.voice = speechSynthesis.getVoices().find(v => v.lang.includes('en')) || speechSynthesis.getVoices()[0];
+    utterance.onend = () => {
+        document.getElementById('mirrorScreen').classList.remove('active');
+    };
+    speechSynthesis.speak(utterance);
+}
+
+function activateMirror() {
+    const screen = document.getElementById('mirrorScreen');
+    const reflection = document.createElement('div');
+    reflection.className = 'mirror-reflection';
+
+    // Tasodifiy refleksni tanlash
+    const reflectionText = mirrorReflections[Math.floor(Math.random() * mirrorReflections.length)];
+    reflection.textContent = reflectionText;
+
+    // Glitch effekti
+    screen.classList.add('active');
+    screen.innerHTML = ''; // Oldingi matnni o'chirish
+    screen.appendChild(reflection);
+
+    // Aniqlangan vaqtdan keyin ko'rinadigan qilish
+    setTimeout(() => {
+        reflection.style.opacity = 1;
+    }, 200);
+
+    // Tovush chiqarish
+    generateMirrorVoice(reflectionText);
+
+    // 5 soniyadan keyin o'zgarish
+    setTimeout(() => {
+        reflection.style.opacity = 0.3;
+        setTimeout(() => {
+            screen.innerHTML = '<div class="mirror-prompt">Siz o\'zingizga qaramasdan, men sizga qaramayman.</div>';
+        }, 800);
+    }, 5000);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Vaqtga qarab foydali, lekin g'alati rejalarni generatsiya qilish
+function getHealingPlan() {
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes();
+    const totalMinutes = hour * 60 + minutes;
+    const isLateNight = totalMinutes < 300 || totalMinutes > 1320; // 00:00–05:00 yoki 22:00–24:00
+    const isMorning = totalMinutes >= 300 && totalMinutes < 720; // 05:00–12:00
+    const isAfternoon = totalMinutes >= 720 && totalMinutes < 1020; // 12:00–17:00
+    const isEvening = totalMinutes >= 1020 && totalMinutes <= 1320; // 17:00–22:00
+
+    // Psixologik holatga qarab
+    const stressLevel = Math.random(); // Simulyatsiya (haqiqatda sensor bo'lishi mumkin)
+    const isHighStress = stressLevel > 0.7;
+
+    // Rejalar
+    let plan = "";
+
+    if (isLateNight) {
+        plan = "🌙 Siz hali ham tiriksiz. Lekin bugun tugadi.\nBarchasini ertaga qiling. Endi — dam oling.";
+    } else if (isHighStress) {
+        plan = "💔 Siz ko'p narsani bajarishga harakat qilyapsiz.\nBugun — hech narsa qilmang. Faqat nafas oling.";
+    } else if (isMorning) {
+        plan = "🌱 Bugun — o'sishingiz kerak bo'lgan kundir.\nBoshlang. Hatto 2 daqiqa ham — yetarli.";
+    } else if (isAfternoon) {
+        plan = "⚡ Siz — energiyangizni to'g'ri sarflash keraksiz.\nEng muhim ishni hozir bajaring. Keyin — dam oling.";
+    } else if (isEvening) {
+        plan = "🕯️ Kun tugayapti. Siz barchasini bajardingizmi?\nAgar yo'q bo'lsa — xavotir olmang. Ertaga ham bor.";
+    } else {
+        plan = "🌀 Sizning vaqtingiz — cheksiz emas. Lekin bugun — yetarli.\nBir narsani tugating. Boshqasini — keyinga qoldiring.";
+    }
+
+    // Prokrastinatsiya qarshisi
+    if (Math.random() > 0.8) {
+        plan = "⏳ 'Keyin qilaman' — bu so'z mavjud emas.\nHozir boshlang. 2 daqiqa yetar.";
+    }
+
+    // G'alati, lekin foydali
+    if (Math.random() > 0.9) {
+        plan = "🧠 Sizning miyangiz — bugun yangi narsa o'rganishni xohlayapti.\nBir narsani o'qing. Bir narsaga hayron qoling.";
+    }
+
+    return plan;
+}
+
+function refreshHealingPlan() {
+    const display = document.getElementById('timeHealerDisplay');
+    const plan = getHealingPlan();
+    
+    // Glitch effekti bilan yangilash
+    display.style.opacity = 0;
+    display.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        display.textContent = plan;
+        display.style.opacity = 1;
+        display.style.transform = 'scale(1)';
+    }, 300);
+}
+
+// Sayt yuklanganda avtomatik rejani ko'rsatish
+window.onload = function() {
+    refreshHealingPlan();
+    // Har 15 daqiqada yangilash (foydali bo'lishi uchun)
+    setInterval(refreshHealingPlan, 15 * 60 * 1000);
+};
     </script>
 </body>
 </html>
