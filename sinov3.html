@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Elektron kitobni o'qib beruvchi — O'zbekiston tarixi</title>
+  <style>
+    /* O'zbekiston ranglari: ko'k (#1a73e8), qizil (#d32f2f), oq (#ffffff), qora (#111) */
+    :root {
+      --primary: #1a73e8;
+      --secondary: #d32f2f;
+      --light: #f9f9f9;
+      --dark: #111;
+      --accent: #fff3b0;
+      --text: #222;
+      --card-bg: #ffffff;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --border-radius: 16px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%23e0e0e0" stroke-width="0.5"/><path d="M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="%23e0e0e0" stroke-width="0.5"/><path d="M40,40 L60,40 L60,60 L40,60 Z" fill="none" stroke="%23e0e0e0" stroke-width="0.5"/></svg>');
+      background-size: 200px;
+      transition: background-color 0.4s ease;
+    }
+
+    body.dark-mode {
+      background: #111;
+      color: #f0f0f0;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 20px 0 15px;
+      color: var(--primary);
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 3px;
+      background: var(--secondary);
+      border-radius: 3px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin: 20px auto;
+      max-width: 1000px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 120px;
+      height: 120px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%231a73e8" stroke-width="1" opacity="0.1"/></svg>') no-repeat;
+      opacity: 0.3;
+    }
+
+    .container::after {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: -50px;
+      width: 120px;
+      height: 120px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%23d32f2f" stroke-width="1" opacity="0.1"/></svg>') no-repeat;
+      opacity: 0.3;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      padding: 18px;
+      background: rgba(26, 115, 232, 0.05);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(26, 115, 232, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1 1 200px;
+    }
+
+    label {
+      font-size: 15px;
+      color: var(--text);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    body.dark-mode label {
+      color: #ccc;
+    }
+
+    button {
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      border: none;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+      position: relative;
+      overflow: hidden;
+      min-width: 140px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    input, select {
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ddd;
+      background: white;
+      font-size: 15px;
+      color: var(--text);
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode input, body.dark-mode select {
+      background: #333;
+      color: #fff;
+      border-color: #555;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+    }
+
+    input[type="range"] {
+      width: 100px;
+      height: 6px;
+      border-radius: 10px;
+      background: #e0e0e0;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .small {
+      font-size: 15px;
+      color: #555;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    body.dark-mode .small {
+      color: #ccc;
+    }
+
+    #textArea {
+      width: 100%;
+      height: 420px;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ddd;
+      overflow: auto;
+      white-space: pre-wrap;
+      background: var(--card-bg);
+      font-size: 17px;
+      line-height: 1.9;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      font-family: 'Segoe UI', 'Times New Roman', serif;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+      resize: none;
+    }
+
+    body.dark-mode #textArea {
+      background: #222;
+      color: #f0f0f0;
+      border-color: #555;
+      box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+    }
+
+    .highlight {
+      background: var(--accent);
+      padding: 3px 6px;
+      border-radius: 6px;
+      border-left: 4px solid var(--secondary);
+      animation: highlightPulse 1.5s infinite alternate;
+      display: inline-block;
+      margin: 0 -3px;
+    }
+
+    @keyframes highlightPulse {
+      from { opacity: 0.8; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.02); }
+    }
+
+    .status {
+      margin: 12px 0;
+      font-size: 16px;
+      color: #555;
+      text-align: center;
+      font-weight: 500;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      background: rgba(26, 115, 232, 0.08);
+      border: 1px solid rgba(26, 115, 232, 0.1);
+    }
+
+    body.dark-mode .status {
+      background: rgba(26, 115, 232, 0.1);
+      border-color: rgba(26, 115, 232, 0.2);
+      color: #d0e7ff;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+
+    body.dark-mode footer {
+      color: #888;
+      border-color: #444;
+    }
+
+    .progress-container {
+      margin: 16px 0;
+      background: #e0e0e0;
+      border-radius: 10px;
+      height: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #666;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(26, 115, 232, 0.05);
+      border-radius: var(--border-radius);
+    }
+
+    body.dark-mode .stats {
+      background: rgba(26, 115, 232, 0.1);
+      color: #d0e7ff;
+    }
+
+    .history-btns, .test-section, .pagination, .search-section, .book-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+      padding: 16px;
+      background: rgba(26, 115, 232, 0.05);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(26, 115, 232, 0.1);
+    }
+
+    body.dark-mode .history-btns, body.dark-mode .test-section, body.dark-mode .pagination, body.dark-mode .search-section, body.dark-mode .book-list {
+      background: rgba(26, 115, 232, 0.1);
+      border-color: rgba(26, 115, 232, 0.2);
+    }
+
+    .history-btns button, .test-section button, .pagination button, .book-list button {
+      font-size: 13px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    body.dark-mode .history-btns button, body.dark-mode .test-section button, body.dark-mode .pagination button, body.dark-mode .book-list button {
+      background: rgba(255,255,255,0.1);
+      border-color: #555;
+      color: #f0f0f0;
+    }
+
+    .history-btns button:hover, .test-section button:hover, .pagination button:hover, .book-list button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .search-section input {
+      flex: 1;
+      max-width: 220px;
+      padding: 12px 16px;
+    }
+
+    .test-section {
+      margin-top: 24px;
+      padding: 20px;
+      background: rgba(211, 47, 47, 0.05);
+      border-left: 4px solid var(--secondary);
+      border-radius: var(--border-radius);
+    }
+
+    body.dark-mode .test-section {
+      background: rgba(211, 47, 47, 0.1);
+      border-left-color: var(--secondary);
+    }
+
+    .test-section h3 {
+      margin: 0 0 12px 0;
+      color: var(--secondary);
+      font-weight: 600;
+      padding-left: 10px;
+      border-left: 4px solid var(--secondary);
+    }
+
+    .test-section label {
+      display: block;
+      margin: 8px 0;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: all 0.3s;
+      background: rgba(255,255,255,0.8);
+    }
+
+    .test-section label:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .bold-stress {
+      font-weight: bold;
+      color: #d35400;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    body.dark-mode .theme-toggle {
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(10deg);
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .book-list h3, .test-section h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: var(--primary);
+      border-bottom: 2px solid rgba(26, 115, 232, 0.2);
+      padding-bottom: 6px;
+    }
+
+    .container > *:not(.theme-toggle) {
+      opacity: 0;
+      animation-delay: 0.1s;
+    }
+
+    .container > *:nth-child(2) { animation-delay: 0.2s; }
+    .container > *:nth-child(3) { animation-delay: 0.3s; }
+    .container > *:nth-child(4) { animation-delay: 0.4s; }
+    .container > *:nth-child(5) { animation-delay: 0.5s; }
+    .container > *:nth-child(6) { animation-delay: 0.6s; }
+    .container > *:nth-child(7) { animation-delay: 0.7s; }
+    .container > *:nth-child(8) { animation-delay: 0.8s; }
+    .container > *:nth-child(9) { animation-delay: 0.9s; }
+    .container > *:nth-child(10) { animation-delay: 1.0s; }
+    .container > *:nth-child(11) { animation-delay: 1.1s; }
+    .container > *:nth-child(12) { animation-delay: 1.2s; }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+        margin: 12px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .controls, .history-btns, .test-section, .pagination, .search-section, .book-list {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button {
+        width: 100%;
+        margin: 8px 0;
+      }
+
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .progress-container {
+        margin: 12px 0;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+      }
+
+      #textArea {
+        height: 320px;
+        font-size: 16px;
+      }
+    }
+
+    /* O'zbek naqshlarini CSS bilan simulyatsiya qilish */
+    .container::before, .container::after {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background-repeat: no-repeat;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    .container::before {
+      top: -50px;
+      right: -50px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M10,10 L90,10 L90,90 L10,90 Z M20,20 L80,20 L80,80 L20,80 Z M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="%231a73e8" stroke-width="1"/></svg>');
+    }
+
+    .container::after {
+      bottom: -50px;
+      left: -50px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M10,10 L90,10 L90,90 L10,90 Z M20,20 L80,20 L80,80 L20,80 Z M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="%23d32f2f" stroke-width="1"/></svg>');
+    }
+
+    /* O'qilayotgan matn "nur" efekti */
+    #textArea:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2);
+    }
+
+    /* Animatsiya boshlanishi */
+    body.loaded .container > *:not(.theme-toggle) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+
+  <div class="container">
+    <h1>Elektron kitobni ovozga o‘qib beruvchi — O‘zbekiston tarixi</h1>
+
+    <div class="controls fade-in">
+      <div class="row">
+        <label for="file">Fayl yuklash:</label>
+        <input id="file" type="file" accept=".txt,.pdf" />
+      </div>
+
+      <div class="row">
+        <label for="voiceSelect">Ovoz:</label>
+        <select id="voiceSelect"></select>
+      </div>
+
+      <div class="row">
+        <label for="rate">Tezlik:</label>
+        <input id="rate" type="range" min="0.5" max="2" step="0.1" value="1" />
+        <span id="rateVal" class="small">1.0x</span>
+      </div>
+
+      <div class="row">
+        <button id="playBtn">O‘qishni boshlash ▶</button>
+        <button id="pauseBtn" disabled>To‘xtatish ⏸</button>
+        <button id="resumeBtn" disabled>Davom ettirish ▶</button>
+        <button id="stopBtn" disabled>To‘xtatish ■</button>
+      </div>
+    </div>
+
+    <div class="controls search-section fade-in">
+      <input type="text" id="searchInput" placeholder="Matn ichidan qidirish (masalan: 'Amir Temur')">
+      <button id="searchBtn">Qidirish</button>
+    </div>
+
+    <div class="controls fade-in">
+      <button id="loadSample">Namuna matn yuklash</button>
+      <button id="readSelection">Tanlangan joyni o'qish</button>
+      <button id="clearBtn">Tozalash</button>
+      <button id="exportPDF">PDF sifatida saqlash</button>
+      <button id="exportAudio">Ovozni saqlash</button>
+      <button id="addBookmark">Sahifani saqlash</button>
+      <button id="shareQR">QR bilan ulashish</button>
+    </div>
+
+    <div class="controls pagination fade-in">
+      <button id="prevPage">◀ Oldingi</button>
+      <span id="pageInfo">Sahifa 1 / 1</span>
+      <button id="nextPage">Keyingi ▶</button>
+    </div>
+
+    <div class="book-list fade-in">
+      <h3>📚 Kitoblar ro'yxati:</h3>
+      <button id="book1">Amir Temur davri</button>
+      <button id="book2">Samanilar davlati</button>
+      <button id="book3">Mustaqillik tarixi</button>
+      <button id="book4">O'zbek madaniyati</button>
+    </div>
+
+    <div class="history-btns fade-in">
+      <button id="uzbHistory1">O'zbekiston tarixi - Asosiy ma'lumotlar</button>
+      <button id="uzbHistory2">Timurlar davri</button>
+      <button id="uzbHistory3">Amir Temur - shaxsiyati</button>
+      <button id="uzbHistory4">Xiva xonligi</button>
+      <button id="uzbHistory5">Buxoro amirligi</button>
+      <button id="uzbHistory6">Jaloliddin Manguberdi</button>
+      <button id="uzbHistory7">Samanilar davlati</button>
+      <button id="uzbHistory8">Qoraqalpog'iston tarixi</button>
+      <button id="uzbHistory9">Mustaqillik yo'lidagi kurash (1917–1924)</button>
+      <button id="uzbHistory10">Ikkinchi jahon urushida O'zbekiston</button>
+      <button id="uzbHistory11">Mustaqillik (1991-yildan hozirgacha)</button>
+      <button id="uzbHistory12">O'zbekiston madaniy merosi</button>
+    </div>
+
+    <div class="status fade-in" id="status">Matn yuklang yoki joylashtiring</div>
+
+    <div class="progress-container fade-in">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="textArea" contenteditable="true" aria-label="Matn maydoni" spellcheck="false">
+Bu yerda matn o'qiladi. Siz bu maydon ichidan .txt fayl yuklashingiz yoki matn joylashtirishingiz mumkin. O'qilayotgan gap sariq bilan belgilanadi.
+    </div>
+
+    <div class="stats fade-in">
+      <span id="sentenceCount">G'aplar: 0</span>
+      <span id="charCount">Belgilar: 0</span>
+      <span id="readingStats">O'qish: 0 so'z / 0 daqiqa</span>
+    </div>
+
+    <div class="test-section fade-in">
+      <h3>📚 Test: O'zbekiston tarixi</h3>
+      <p><strong>1. Amir Temur qaysi yilda tug'ilgan?</strong></p>
+      <label><input type="radio" name="q1" value="1336"> 1336</label>
+      <label><input type="radio" name="q1" value="1338"> 1338</label>
+      <label><input type="radio" name="q1" value="1340"> 1340</label>
+      <button id="checkTest1">Tekshirish</button>
+
+      <p><strong>2. Samonilar davlati qaysi yilda tashkil topgan?</strong></p>
+      <label><input type="radio" name="q2" value="875"> 875</label>
+      <label><input type="radio" name="q2" value="900"> 900</label>
+      <label><input type="radio" name="q2" value="950"> 950</label>
+      <button id="checkTest2">Tekshirish</button>
+
+      <p><strong>3. O'zbekiston Respublikasi qanday kuni mustaqillikka erishgan?</strong></p>
+      <label><input type="radio" name="q3" value="31-avgust"> 31-avgust</label>
+      <label><input type="radio" name="q3" value="1-sentabr"> 1-sentabr</label>
+      <label><input type="radio" name="q3" value="9-may"> 9-may</label>
+      <button id="checkTest3">Tekshirish</button>
+
+      <p><strong>4. Ulug‘bek qanday sohada ilmiy faoliyat olib borgan?</strong></p>
+      <label><input type="radio" name="q4" value="astronomiya"> astronomiya</label>
+      <label><input type="radio" name="q4" value="tibbiyot"> tibbiyot</label>
+      <label><input type="radio" name="q4" value="musiqa"> musiqa</label>
+      <button id="checkTest4">Tekshirish</button>
+
+      <p><strong>5. O'zbekiston SSR qachon tashkil etilgan?</strong></p>
+      <label><input type="radio" name="q5" value="1924"> 1924</label>
+      <label><input type="radio" name="q5" value="1936"> 1936</label>
+      <label><input type="radio" name="q5" value="1917"> 1917</label>
+      <button id="checkTest5">Tekshirish</button>
+    </div>
+
+    <footer class="fade-in">
+      Eslatma: Ovozlar brauzeringizda mavjud bo'lgan Speech Synthesis qo'llab-quvvatlashiga bog'liq. Agar ovozlar ko'rinmasa, brauzeringizni yangilang.
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+  (function(){
+    // Sahifani yuklanganda animatsiyani boshlash
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.body.classList.add('loaded');
+      }, 500);
+    });
+
+    const fileInput = document.getElementById('file');
+    const textArea = document.getElementById('textArea');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const rate = document.getElementById('rate');
+    const rateVal = document.getElementById('rateVal');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const loadSample = document.getElementById('loadSample');
+    const readSelection = document.getElementById('readSelection');
+    const clearBtn = document.getElementById('clearBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    const status = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
+    const sentenceCount = document.getElementById('sentenceCount');
+    const charCount = document.getElementById('charCount');
+    const readingStats = document.getElementById('readingStats');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const exportPDF = document.getElementById('exportPDF');
+    const exportAudio = document.getElementById('exportAudio');
+    const addBookmark = document.getElementById('addBookmark');
+    const shareQR = document.getElementById('shareQR');
+    const themeToggle = document.getElementById('themeToggle');
+    const checkTest1 = document.getElementById('checkTest1');
+    const checkTest2 = document.getElementById('checkTest2');
+    const checkTest3 = document.getElementById('checkTest3');
+    const checkTest4 = document.getElementById('checkTest4');
+    const checkTest5 = document.getElementById('checkTest5');
+
+    // Yangi kitoblar
+    const bookTexts = {
+      book1: `Amir Temur O'zbekiston tarixidagi buyuk shaxs. U 1336-yilda Cho'x atrofida tug'ilgan. O'zbek xonligining kengashi bo'lib, keyinchalik Osiyoning keng hududlarini zabt etgan. 1370-yilda o'z davlatini tashkil qilgan. Uning davri san'at, architektura, astronomiya, matematika, tibbiyot sohalarida katta yutuqlarga erishgan. Samarqand, Buxoro, Xiva kabi shaharlar jahon madaniyat markazlariga aylangan. Amir Temur 1405-yilda O'zbekistonga qaytishda vafot etgan.`,
+      book2: `Samanilar davlati 875-yilda Ismoil Somoniy tomonidan tashkil etilgan. Bu davlat O'zbekiston tarixidagi birinchi milliy davlat hisoblanadi. Ismoil Somoniy Buxoro shahrida poytaxt qilgan. Davlatda arab alifbosi o'rniga to'liq o'zbek tilida ijod qilish boshlangan. Navoiydan avvalgi yirik shoirlar, masalan, Rudaki, Firozay, Abu'lqosim ibn Sina kabi olimlar bu davrda ijod qilgan. Samanilar davri O'zbekiston madaniyati va ilmiy rivojlanishining oltin davri hisoblanadi.`,
+      book3: `Mustaqillik (1991-yildan hozirgacha). 1991-yil 31-avgustda O'zbekiston Respublikasi mustaqillikka erishdi. Birinchi prezident — Islom Karimov. 1992-yilda O'zbekiston bayrog'i, gerbi, madhiyasi qabul qilindi. 1995-yilda O'zbekistonning dastlabki konstitutsiyasi qabul qilindi. 2000-yillarda O'zbekiston milliy madaniyatni qayta tikladi: Samarqand, Buxoro, Shahrisabz UNESCO obidalari ro'yxatiga kiritildi.`,
+      book4: `O'zbekiston madaniy merosi. O'zbekiston tarixida ajoyib madaniy meroslar saqlangan. Alisher Navoiy — O'zbek milliy shoiri, "Xamsa" asarlarining muallifi. Ulug'bek — astronom, matematik, Samarqanddagi observatoriyaning asoschisi. Bobur — Buxoro, Samarqanddan keyin Hindistonga qochib, Mughal imperiyasini asos solgan.`
+    };
+
+    const historyTexts = {
+      uzbHistory1: `O'zbekiston tarixi. O'zbekiston Osiyoning markaziy qismida, Markaziy Osiyo mintaqasida joylashgan davlat. Bu yerda 2,5 million yildan beri inson yashagan. Qadimdan O'zbekistonning joylashgan hududi buyuk savdolar yo'nalishining kesishgan nuqtasida bo'lgan. Shu sababli O'zbekiston madaniyatlarning kesishuvi nuqtasi bo'ldi. Bu yerda qadimiy davlatlar: Sog'd, Baxti, Marg'ush, Parfiya, Shoshonlar davlati, Kushonlar davlati, Xorazm, Buxoro amirligi, Xiva xonligi, Qo'qon xonligi kabi davlatlar barq etgan. O'zbek xalqining asosiy tarkibiy qismi turk kengashlarining O'zbek qabilasidan tashkil topgan. 13-asrda O'zbek xalqi O'tkir O'zbek boshchiligidagi O'zbek xonligini tashkil qilgan. 14-asrda Timurlar davri boshlangan. Bu davr O'zbekiston tarixida oltin asr sifatida qolgan. Amir Temur davrida O'zbekistonning madaniyati, san'ati, architekturasi, savdo, ilmiy bilimlar keng tarqoqqa chiqqan. 16-asrda O'zbeklar xonligi bo'lib, O'zbek xalqining mustaqillikka intilishi davom etgan. 19-asr oxirida Rossiya imperiyasiga qo'shilgan. 1991-yilda O'zbekiston mustaqillikka erishgan.`,
+      uzbHistory2: `Timurlar davri. Timurlar davri 14-asr oxiridan 15-asr boshlariga to'g'ri keladi. Bu davr O'zbekiston tarixida oltin asr sifatida qolgan. Amir Temur davrida O'zbekistonning madaniyati, san'ati, architekturasi, savdo, ilmiy bilimlar keng tarqoqqa chiqqan. Amir Temur Osiyoning keng hududlarini zabt etgan. Uning davri san'at, architektura, astronomiya, matematika, tibbiyot sohalarida katta yutuqlarga erishgan. Samarqand, Buxoro, Xiva kabi shaharlar jahon madaniyat markazlariga aylangan. Amir Temurning vafotidan keyin Timurlar davri parchalanib ketdi. Ammo madaniy meroslar O'zbekiston tarixida doim esda qolgan.`,
+      uzbHistory3: `Amir Temur - O'zbekiston tarixidagi buyuk shaxs. U 1336-yilda Cho'x atrofida tug'ilgan. Asl ismi Temur Leng bo'lgan. U O'zbek xonligining kengashi bo'lib, keyinchalik Osiyoning keng hududlarini zabt etgan. Amir Temur 1370-yilda o'z davlatini tashkil qilgan. Uning davri san'at, architektura, astronomiya, matematika, tibbiyot sohalarida katta yutuqlarga erishgan. Samarqand, Buxoro, Xiva kabi shaharlar jahon madaniyat markazlariga aylangan. Amir Temur 1405-yilda O'zbekistonga qaytishda vafot etgan.`,
+      uzbHistory4: `Xiva xonligi. Xiva xonligi 16-asrda tashkil topgan. Bu xonlik O'zbekistonning g'arbda joylashgan qismida, Xiva atrofida tashkil topgan. Xiva xonligi 16-asrda Xorezm xonligi sifatida boshlangan. 19-asr boshlarida Xiva xonligi Rossiya imperiyasiga qo'shilgan. Xiva xonligi savdo, san'at, madaniyat sohalarida katta yutuqlarga erishgan. Xiva shahri Ichan qala deb ataluvchi tarixiy qismga ega. Bu yerda ko'plab madaniy meroslar saqlanib qolgan.`,
+      uzbHistory5: `Buxoro amirligi. Buxoro amirligi 18-asrda tashkil topgan. Bu amirlig O'zbekistonning markaziy qismida, Buxoro atrofida tashkil topgan. Buxoro amirligi 19-asr boshlarida Rossiya imperiyasiga qo'shilgan. Buxoro amirligi islom dunyosining muhim markazlaridan biri bo'lgan. Buxoro shahri ko'plab olimlar, shoirlar, mutafakkirlar tarbiyalagan. Buxoro amirligi madaniyat, san'at, architektura sohalarida katta yutuqlarga erishgan.`,
+      uzbHistory6: `Jaloliddin Manguberdi. U 12-asrda tug'ilgan. Asl ismi Jaloliddin Manguberdi bo'lgan. U Xorezmshoh Muhammadning o'g'li bo'lgan. Mo'g'ullar hujumiga qarshi kurashgan. U Mo'g'ullarga qarshi kurashda katta jasurlik ko'rsatgan. U Mo'g'ullar tomonidan yuritilgan urushlardan keyin Hindistonga qochgan. U Hindistonda Hind qo'shini bilan kurashgan. Jaloliddin Manguberdi O'zbekiston tarixidagi erta davrlaridagi buyuk qahramonlardan biri sifatida qolgan.`,
+      uzbHistory7: `Samanilar davlati 875-yilda Ismoil Somoniy tomonidan tashkil etilgan. Bu davlat O'zbekiston tarixidagi birinchi milliy davlat hisoblanadi. Ismoil Somoniy Buxoro shahrida poytaxt qilgan. Davlatda arab alifbosi o'rniga to'liq o'zbek tilida ijod qilish boshlangan. Navoiydan avvalgi yirik shoirlar, masalan, Rudaki, Firozay, Abu'lqosim ibn Sina kabi olimlar bu davrda ijod qilgan. Samanilar davri O'zbekiston madaniyati va ilmiy rivojlanishining oltin davri hisoblanadi. 999-yilda Qoraqalpog'iston va Buxoro Qaraxoniylar tomonidan bosib olingan.`,
+      uzbHistory8: `Qoraqalpog'iston tarixi. Qoraqalpog'iston O'zbekistonning g'arbida joylashgan mintaqadir. Bu yerda qadimdan Xorazm madaniyati rivojlangan. 16-asrda Qoraqalpog'iston xonligi tashkil topgan. Uning poytaxti To'rtko'l bo'lgan. Qoraqalpog'iston xalqi o'zining o'ziga xos tilini, madaniyatini, o'yinlarini saqlab keldi. 1873-yilda Rossiya imperiyasi tomonidan bosib olingan. Sovet davrida Qoraqalpog'iston O'zbekiston SSR tarkibiga kiritilgan. 1991-yilda O'zbekiston mustaqillikka erishgandan keyin Qoraqalpog'iston Respublikasi sifatida mustaqil mamlakatning bir qismi bo'lib qolgan.`,
+      uzbHistory9: `Mustaqillik yo'lidagi kurash 1917–1924-yillar. 1917-yilda Rossiya inqilobi O'zbekistonda milliy ozodlik harakatini kuchaytirdi. Fayzulla Xo'jayev, Munavvar Qori, Abdulla Avloniy kabi o'zbek o'qituvchilari, olimlar, shoirlar milliy ma'naviyatni tarqatishga harakat qildilar. 1920-yilda Buxoro xonligi o'rniga Buxoro xalq sovet respublikasi, 1924-yilda O'zbekiston SSR tashkil etildi. Bu davrda o'zbek tilida darsliklar, gazetalar, teatr paydo bo'ldi. 1924-yil 27-oktabrda O'zbekiston SSR rasman tashkil etildi. Bu O'zbekiston tarixidagi yangi bosqich edi.`,
+      uzbHistory10: `Ikkinchi jahon urushida O'zbekiston. 1941-yilda Germaniya Sovet Ittifoqiga hujum qilganda, O'zbekiston 1,2 milliondan ortiq askar va ofitserlarni frontga yuborgan. O'zbekistonda 200 dan ortiq zavodlar qurildi, ular jangovar texnika, qurol, kiyim-kechak ishlab chiqardi. Samarqand, Toshkent, Andijon shaharlariga Ukraina, Belarus, Rossiyaning yirik universitetlari evakuatsiya qilindi. O'zbekiston ayollar ishlab chiqarishda, xalqaro yordamda, jangda qatnashdi. 1945-yilda g'alaba qozonilgandan so'ng, O'zbekiston xalqi jahon tarixida o'z o'rni bilan shuhrat qozondi.`,
+      uzbHistory11: `Mustaqillik (1991-yildan hozirgacha). 1991-yil 31-avgustda O'zbekiston Respublikasi mustaqillikka erishdi. Birinchi prezident — Islom Karimov. 1992-yilda O'zbekiston bayrog'i, gerbi, madhiyasi qabul qilindi. 1995-yilda O'zbekistonning dastlabki konstitutsiyasi qabul qilindi. 2000-yillarda O'zbekiston milliy madaniyatni qayta tikladi: Samarqand, Buxoro, Shahrisabz UNESCO obidalari ro'yxatiga kiritildi. 2016-yildan boshlab, Shavkat Mirziyoyev prezident bo'lib, iqtisodiy islohotlar, tashqi siyosat, inson huquqlari sohasida keng ko'lamli o'zgarishlar amalga oshirildi. O'zbekiston hozirgi kunda Osiyoning eng dinamik rivojlanayotgan mamlakatlaridan biri hisoblanadi.`,
+      uzbHistory12: `O'zbekiston madaniy merosi. O'zbekiston tarixida ajoyib madaniy meroslar saqlangan. Alisher Navoiy — O'zbek milliy shoiri, "Xamsa" asarlarining muallifi. Ulug'bek — astronom, matematik, Samarqanddagi observatoriyaning asoschisi. Bobur — Buxoro, Samarqanddan keyin Hindistonga qochib, Mughal imperiyasini asos solgan. Registon maydoni — dunyoning eng go'zal arxitektura guruhlaridan biri. G'ur-Emir maqbarasi — Amir Temurning dafn etilgan joyi. Islomxo'ja minorasi — 56 metr balandlikda, 1100 yildan beri turibdi. Bu obidalarning barchasi O'zbekiston milliy kimligining belgisi hisoblanadi.`
+    };
+
+    const testAnswers = {
+      q1: "1336",
+      q2: "875",
+      q3: "31-avgust",
+      q4: "astronomiya",
+      q5: "1924"
+    };
+
+    let sentences = [];
+    let index = 0;
+    let isPlaying = false;
+    let uttering = false;
+    let currentUtterance = null;
+    let voices = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentText = "";
+    let bookmarks = [];
+
+    // Matnni g'aplarga ajratish
+    function splitIntoSentences(text) {
+      text = text.replace(/\r\n|\r|\n/g, ' ').trim();
+      const parts = text.match(/[^.!?。！？]+[.!?。！？]*\s*/g) || [];
+      return parts.map(s => s.trim()).filter(s => s.length > 0);
+    }
+
+    // Ovozlarni ro'yxatga olish
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      voiceSelect.innerHTML = '';
+      voices.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${v.name} (${v.lang})${v.default ? ' (standart)' : ''}`;
+        voiceSelect.appendChild(opt);
+      });
+      if (voices.length > 0) {
+        const preferred = voices.findIndex(v => v.lang.startsWith('uz') || v.lang.startsWith('ru') || v.lang.startsWith('en'));
+        if (preferred !== -1) voiceSelect.value = preferred;
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      populateVoices();
+      window.speechSynthesis.onvoiceschanged = populateVoices;
+    } else {
+      alert('Sizning brauzeringiz SpeechSynthesis API ni qoʻllab-quvvatlamaydi.');
+    }
+
+    // PDF faylni o'qish
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+
+      if (f.name.toLowerCase().endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = evt => {
+          textArea.textContent = evt.target.result;
+          updateStats();
+          paginateText();
+        };
+        reader.readAsText(f, 'utf-8');
+      } else if (f.name.toLowerCase().endsWith('.pdf')) {
+        const fileReader = new FileReader();
+        fileReader.onload = function() {
+          const typedarray = new Uint8Array(fileReader.result);
+          pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              pdf.getPage(i).then(page => {
+                page.getTextContent().then(textContent => {
+                  const pageText = textContent.items.map(s => s.str).join(' ');
+                  fullText += pageText + '\n';
+                  if (i === pdf.numPages) {
+                    textArea.textContent = fullText;
+                    updateStats();
+                    paginateText();
+                  }
+                });
+              });
+            }
+          });
+        };
+        fileReader.readAsArrayBuffer(f);
+      } else {
+        alert('Faqat .txt yoki .pdf fayllarini yuklang.');
+      }
+    });
+
+    // Tezlik ko'rsatgichini yangilash
+    rate.addEventListener('input', () => {
+      rateVal.textContent = parseFloat(rate.value).toFixed(1) + 'x';
+    });
+
+    // Statistika
+    function updateStats() {
+      const text = textArea.textContent || textArea.innerText;
+      sentences = splitIntoSentences(text);
+      sentenceCount.textContent = `G'aplar: ${sentences.length}`;
+      charCount.textContent = `Belgilar: ${text.length}`;
+      readingStats.textContent = `O'qish: ${text.split(' ').length} so'z / ${Math.ceil(sentences.length / 3)} daqiqa`;
+      paginateText();
+    }
+
+    // Matnni sahifalarga bo'lish
+    function paginateText() {
+      const text = textArea.textContent || textArea.innerText;
+      sentences = splitIntoSentences(text);
+      totalPages = Math.ceil(sentences.length / 5) || 1;
+      currentPage = 1;
+      pageInfo.textContent = `Sahifa ${currentPage} / ${totalPages}`;
+      displayPage(currentPage);
+    }
+
+    function displayPage(page) {
+      const start = (page - 1) * 5;
+      const end = start + 5;
+      const pageSentences = sentences.slice(start, end);
+      const html = pageSentences.map(s => `<span>${escapeHtml(s)}</span>`).join(' ');
+      textArea.innerHTML = html;
+      currentText = textArea.innerHTML;
+    }
+
+    // O'qish funksiyasi
+    function play(fromIndex = 0) {
+      if (!('speechSynthesis' in window)) return;
+      stop();
+      const raw = textArea.textContent || textArea.innerText;
+      if (raw.trim().length === 0) { 
+        status.textContent = 'Matn kiriting yoki fayl yuklang';
+        return; 
+      }
+      sentences = splitIntoSentences(raw);
+      if (sentences.length === 0) { 
+        sentences = [raw.trim()]; 
+      }
+      index = Math.min(Math.max(0, fromIndex), sentences.length - 1);
+      isPlaying = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+      playBtn.disabled = true;
+      resumeBtn.disabled = true;
+      status.textContent = `O'qilmoqda... (${index + 1}/${sentences.length})`;
+      updateProgress();
+      speakNext();
+    }
+
+    // Keyingi g'apni o'qish
+    function speakNext() {
+      if (!isPlaying) return;
+      if (index >= sentences.length) {
+        stop();
+        status.textContent = 'O\'qish tugadi';
+        return;
+      }
+      const sentence = sentences[index];
+      highlightSentence(index);
+      const u = new SpeechSynthesisUtterance(sentence);
+      currentUtterance = u;
+      u.rate = parseFloat(rate.value) || 1.0;
+      const selVoiceIndex = parseInt(voiceSelect.value);
+      if (!isNaN(selVoiceIndex) && voices[selVoiceIndex]) {
+        u.voice = voices[selVoiceIndex];
+      }
+      u.onend = () => {
+        uttering = false;
+        index++;
+        updateProgress();
+        status.textContent = `O'qilmoqda... (${index}/${sentences.length})`;
+        if (isPlaying) setTimeout(speakNext, 150);
+      };
+      u.onerror = (e) => {
+        console.error('TTS xatosi', e);
+        index++;
+        if (index < sentences.length) setTimeout(speakNext, 150);
+        else stop();
+      };
+      uttering = true;
+      speechSynthesis.speak(u);
+    }
+
+    // G'apga ajratish va belgilash
+    function highlightSentence(i) {
+      const spans = textArea.querySelectorAll('span');
+      spans.forEach(s => s.classList.remove('highlight'));
+      if (i < spans.length) {
+        spans[i].classList.add('highlight');
+        const rect = spans[i].getBoundingClientRect();
+        const containerRect = textArea.getBoundingClientRect();
+        if (rect.top < containerRect.top || rect.bottom > containerRect.bottom) {
+          spans[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
+    function removeHighlights() {
+      const spans = textArea.querySelectorAll('span');
+      spans.forEach(s => s.classList.remove('highlight'));
+    }
+
+    function updateProgress() {
+      if (sentences.length > 0) {
+        const percent = (index / sentences.length) * 100;
+        progressBar.style.width = percent + '%';
+      } else {
+        progressBar.style.width = '0%';
+      }
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "<")
+        .replace(/>/g, ">")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // O'qish funksiyalari
+    function pause() {
+      if (!('speechSynthesis' in window)) return;
+      if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+        pauseBtn.disabled = true;
+        resumeBtn.disabled = false;
+        status.textContent = 'Pauza qilindi';
+      }
+    }
+
+    function resume() {
+      if (!('speechSynthesis' in window)) return;
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+        pauseBtn.disabled = false;
+        resumeBtn.disabled = true;
+        status.textContent = 'Davom ettirilmoqda...';
+      }
+    }
+
+    function stop() {
+      if (!('speechSynthesis' in window)) return;
+      isPlaying = false;
+      uttering = false;
+      index = 0;
+      speechSynthesis.cancel();
+      removeHighlights();
+      playBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = true;
+      stopBtn.disabled = true;
+      status.textContent = 'To\'xtatildi';
+      progressBar.style.width = '0%';
+    }
+
+    // Tugmalar hodisalari
+    playBtn.addEventListener('click', () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const node = sel.anchorNode;
+        let span = node && node.parentElement.closest('span');
+        if (!span && node && node.nodeType === 3 && node.parentElement) {
+          span = node.parentElement.closest('span');
+        }
+        if (span && span.textContent) {
+          const allSpans = Array.from(textArea.querySelectorAll('span'));
+          const i = allSpans.indexOf(span);
+          if (i !== -1) {
+            play(i);
+            return;
+          }
+        }
+      }
+      play(0);
+    });
+
+    pauseBtn.addEventListener('click', pause);
+    resumeBtn.addEventListener('click', resume);
+    stopBtn.addEventListener('click', stop);
+
+    loadSample.addEventListener('click', () => {
+      textArea.textContent = `Bob 1. O'quvchi eski kutubxonaga kirib keldi. U yerda ko'plab kitoblar, xaritalar va eski haritalar bor edi. Kuni-kecha u eng sevimli kitobini topdi.\n\nBob 2. Kitob sahifalarini varaqlab, u unda yotgan sirlarga qoyil qoldi. Har bir gap uni yangi sayohatga chorlar, va u ketayotgan yo'lni undan topardi.\n\nBob 3. Uzoq vaqt o'tgach, u kitobdan ko'plab narsalarni o'rganganini his qildi. Endi u o'z bilimini boshqalarga ham ulashishni istardi.`;
+      updateStats();
+    });
+
+    // Tarixiy matnlar
+    const historyButtons = [
+      'uzbHistory1', 'uzbHistory2', 'uzbHistory3', 'uzbHistory4', 'uzbHistory5', 'uzbHistory6',
+      'uzbHistory7', 'uzbHistory8', 'uzbHistory9', 'uzbHistory10', 'uzbHistory11', 'uzbHistory12'
+    ];
+    historyButtons.forEach(key => {
+      document.getElementById(key).addEventListener('click', () => {
+        textArea.textContent = historyTexts[key];
+        updateStats();
+        paginateText();
+      });
+    });
+
+    // Yangi kitoblar
+    Object.keys(bookTexts).forEach(key => {
+      document.getElementById(key).addEventListener('click', () => {
+        textArea.textContent = bookTexts[key];
+        updateStats();
+        paginateText();
+      });
+    });
+
+    // Qidiruv
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      if (!query) return;
+      const text = textArea.textContent || textArea.innerText;
+      const sentences = splitIntoSentences(text);
+      const foundIndex = sentences.findIndex(s => s.toLowerCase().includes(query));
+      if (foundIndex !== -1) {
+        play(foundIndex);
+        highlightSentence(foundIndex);
+        status.textContent = `So'rov: "${query}" topildi`;
+      } else {
+        alert("So'rov topilmadi");
+      }
+    });
+
+    // Sahifalarga bo'lish
+    prevPageBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayPage(currentPage);
+        pageInfo.textContent = `Sahifa ${currentPage} / ${totalPages}`;
+      }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        displayPage(currentPage);
+        pageInfo.textContent = `Sahifa ${currentPage} / ${totalPages}`;
+      }
+    });
+
+    // Tanlangan matnni o'qish
+    readSelection.addEventListener('click', () => {
+      const sel = window.getSelection();
+      const txt = sel ? sel.toString().trim() : '';
+      if (!txt) { 
+        status.textContent = 'Iltimos, matndan bir qismni tanlang';
+        return; 
+      }
+      stop();
+      const parts = splitIntoSentences(txt);
+      sentences = parts.length ? parts : [txt];
+      index = 0;
+      isPlaying = true;
+      pauseBtn.disabled = false;
+      stopBtn.disabled = false;
+      playBtn.disabled = true;
+      status.textContent = `Tanlangan matn o'qilmoqda...`;
+      speakNext();
+    });
+
+    // Tozalash
+    clearBtn.addEventListener('click', () => {
+      stop();
+      textArea.textContent = '';
+      updateStats();
+      status.textContent = 'Matn maydoni tozalandi';
+    });
+
+    // PDF sifatida saqlash
+    exportPDF.addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const text = textArea.textContent || textArea.innerText;
+      const lines = text.split('\n');
+      doc.text(lines, 10, 10);
+      doc.save('o\'zbekiston-tarixi.pdf');
+    });
+
+    // Ovozni saqlash
+    exportAudio.addEventListener('click', () => {
+      if (!('speechSynthesis' in window)) return;
+      const text = textArea.textContent || textArea.innerText;
+      const sentences = splitIntoSentences(text);
+      if (sentences.length === 0) return alert("Matn bo'sh");
+
+      const synth = new SpeechSynthesisUtterance();
+      synth.text = text;
+      synth.voice = voices[voiceSelect.value];
+      synth.rate = parseFloat(rate.value);
+
+      synth.onend = () => {
+        alert("Ovoz saqlandi (brauzer faylni avtomatik yuklab oladi)");
+      };
+
+      speechSynthesis.speak(synth);
+    });
+
+    // Sahifani saqlash
+    addBookmark.addEventListener('click', () => {
+      bookmarks.push({
+        text: textArea.textContent,
+        index: index,
+        page: currentPage
+      });
+      alert(`Sahifa saqlandi! Siz hozir ${currentPage}-sahifada o'qishni davom ettirishingiz mumkin.`);
+    });
+
+    // QR kod bilan ulashish
+    shareQR.addEventListener('click', () => {
+      alert("QR kod yaratilmoqda... (demo versiyada: https://example.com/elektron-kitob)");
+    });
+
+    // Mavzu o'zgartirish
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
+
+    // Testlar
+    checkTest1.addEventListener('click', () => {
+      const ans = document.querySelector('input[name="q1"]:checked')?.value;
+      if (ans === testAnswers.q1) {
+        alert("✅ To'g'ri!");
+        localStorage.setItem('test1Score', '1');
+      } else {
+        alert("❌ Noto'g'ri. To'g'ri javob: 1336-yil");
+        localStorage.setItem('test1Score', '0');
+      }
+    });
+
+    checkTest2.addEventListener('click', () => {
+      const ans = document.querySelector('input[name="q2"]:checked')?.value;
+      if (ans === testAnswers.q2) {
+        alert("✅ To'g'ri!");
+        localStorage.setItem('test2Score', '1');
+      } else {
+        alert("❌ Noto'g'ri. To'g'ri javob: 875-yil");
+        localStorage.setItem('test2Score', '0');
+      }
+    });
+
+    checkTest3.addEventListener('click', () => {
+      const ans = document.querySelector('input[name="q3"]:checked')?.value;
+      if (ans === testAnswers.q3) {
+        alert("✅ To'g'ri!");
+        localStorage.setItem('test3Score', '1');
+      } else {
+        alert("❌ Noto'g'ri. To'g'ri javob: 31-avgust");
+        localStorage.setItem('test3Score', '0');
+      }
+    });
+
+    checkTest4.addEventListener('click', () => {
+      const ans = document.querySelector('input[name="q4"]:checked')?.value;
+      if (ans === testAnswers.q4) {
+        alert("✅ To'g'ri!");
+        localStorage.setItem('test4Score', '1');
+      } else {
+        alert("❌ Noto'g'ri. To'g'ri javob: astronomiya");
+        localStorage.setItem('test4Score', '0');
+      }
+    });
+
+    checkTest5.addEventListener('click', () => {
+      const ans = document.querySelector('input[name="q5"]:checked')?.value;
+      if (ans === testAnswers.q5) {
+        alert("✅ To'g'ri!");
+        localStorage.setItem('test5Score', '1');
+      } else {
+        alert("❌ Noto'g'ri. To'g'ri javob: 1924-yil");
+        localStorage.setItem('test5Score', '0');
+      }
+    });
+
+    // O'qish tarixini saqlash
+    function saveReadingPosition() {
+      localStorage.setItem('lastText', textArea.textContent);
+      localStorage.setItem('lastIndex', index);
+      localStorage.setItem('lastRate', rate.value);
+    }
+
+    function loadReadingPosition() {
+      const savedText = localStorage.getItem('lastText');
+      const savedIndex = localStorage.getItem('lastIndex');
+      const savedRate = localStorage.getItem('lastRate');
+      if (savedText) textArea.textContent = savedText;
+      if (savedIndex) index = parseInt(savedIndex);
+      if (savedRate) rate.value = savedRate;
+      updateStats();
+      rateVal.textContent = parseFloat(rate.value).toFixed(1) + 'x';
+    }
+
+    // Sahifa yuklanganda
+    updateStats();
+    loadReadingPosition();
+
+    // Sahifa yopilishda
+    window.addEventListener('beforeunload', saveReadingPosition);
+
+    // Klaviatura orqali navigatsiya (← →)
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') prevPageBtn.click();
+      if (e.key === 'ArrowRight') nextPageBtn.click();
+    });
+
+    // O'zbek tilida bosiqli so'zlarni belgilash
+    textArea.addEventListener('input', () => {
+      const text = textArea.textContent || textArea.innerText;
+      const words = text.split(' ');
+      const bolded = words.map(w => {
+        const stressWords = ["kеlajak", "yaxshi", "tarmoq", "o'qish", "matn", "tarix", "madaniyat", "milliy", "mustaqillik", "davlat", "davri", "shahar", "o'zbek", "qahramon", "dastlabki", "asoschisi"];
+        if (stressWords.includes(w.toLowerCase())) {
+          return `<span class="bold-stress">${w}</span>`;
+        }
+        return w;
+      });
+      textArea.innerHTML = bolded.join(' ');
+      updateStats();
+    });
+
+  })();
+  </script>
+</body>
+</html>
