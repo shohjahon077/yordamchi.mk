@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yordamchi AI</title>
+  <title>Yordam bo‘limi (AI)</title>
   <style>
 body {
   margin: 0;
@@ -12,7 +12,6 @@ body {
   color: gold;
   overflow-x: hidden;
 }
-
 /* --- Kirish animatsiyasi --- */
 .loader {
   position: fixed;
@@ -43,7 +42,6 @@ body {
   from { background-position: 200%; }
   to { background-position: -200%; }
 }
-
 /* --- Asosiy sahifa --- */
 .main {
   display: none;
@@ -84,7 +82,6 @@ p {
   color: #ffd700;
   margin-bottom: 15px;
 }
-
 /* --- AI yordamchi --- */
 .chatbox {
   max-width: 600px;
@@ -94,7 +91,7 @@ p {
   background: rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
-  height: 450px;
+  height: 400px;
   overflow: hidden;
 }
 .chat-messages {
@@ -112,10 +109,7 @@ p {
   font-size: 14px;
   animation: fadeMsg 0.5s ease;
 }
-@keyframes fadeMsg { 
-  from {opacity:0;transform:translateY(10px);} 
-  to {opacity:1;transform:translateY(0);} 
-}
+@keyframes fadeMsg { from {opacity:0;transform:translateY(10px);} to {opacity:1;transform:translateY(0);} }
 .user {
   align-self: flex-end;
   background: gold;
@@ -127,7 +121,6 @@ p {
   color: gold;
   border: 1px solid gold;
 }
-
 /* Input panel */
 .chat-input {
   display: flex;
@@ -149,14 +142,12 @@ p {
   cursor: pointer;
   font-weight: bold;
 }
-
-/* Tezkor tugmalar */
+/* Tugmalar */
 .quick-btns {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin: 10px 0;
-  padding: 0 10px;
+  margin: 10px;
 }
 .quick-btns button {
   background: gold;
@@ -168,7 +159,6 @@ p {
   font-weight: bold;
   font-size: 13px;
   transition: 0.3s;
-  white-space: nowrap;
 }
 .quick-btns button:hover {
   background: #fff8dc;
@@ -178,49 +168,36 @@ p {
 </head>
 <body>
   <!-- Kirish -->
-  <div class="loader"><h1>✨ Yordamchi AI ✨</h1></div>
-
+  <div class="loader"><h1>✨ Yordam bo‘limiga o‘tilmoqda ✨</h1></div>
   <!-- Asosiy sahifa -->
   <div class="main">
-    <header>🤝 XUSH KELIBSIZ 🤝</header>
-
+    <header>🤝 YORDAM BO‘LIMIGA XUSH KELIBSIZ 🤝</header>
     <section>
-      <h2>AI nima qila oladi?</h2>
-      <p><b>Yordamchi AI</b> siz bilan do'stona suhbatlashadi. <b>Darslarga tayyorman</b> — siz ona tili, fizika, kimyo, matematika, tarix va boshqa fanlardan savol bersangiz, AI aniq, tushunarli javob beradi!</p>
-      <h2>AI Yordamchi</h2>
+      <h2>Buyurtma berish haqida</h2>
+      <p><b>AristokratShop</b> orqali buyurtma berish juda oddiy. Mahsulot kartochkasidagi 
+         <b>“Buyurtma qilish”</b> tugmasini bosing, sizga <b>buyurtma raqami</b> beriladi va 
+         u Telegram orqali bizga yuboriladi. Operator siz bilan bog‘lanib yetkazib berish 
+         ma’lumotlarini aniqlashtiradi.</p>
+      <p><b>Buyurtma raqami</b> – bu sizning mahsulotingizni aniqlash uchun zarur kod. 
+         Shuni yuborsangiz, buyurtmangiz tezroq qayta ishlanadi.</p>
+      <h2>AI yordamchi</h2>
       <div class="chatbox">
         <div class="chat-messages" id="messages"></div>
         <div class="quick-btns">
-          <button onclick="quickAsk('Salom')">Salom</button>
-          <button onclick="quickAsk('Qandaysan?')">Qandaysan?</button>
-          <button onclick="quickAsk('Yaxshimisan?')">Yaxshimisan?</button>
-          <button onclick="quickAsk('Rahmat')">Rahmat</button>
-          <button onclick="quickAsk('Buyurtma qanday beriladi?')">Buyurtma qanday?</button>
-          <button onclick="quickAsk('Buyurtma raqami nima uchun?')">Buyurtma raqami?</button>
-          <button onclick="quickAsk('Aloqa qilish usullari?')">Aloqa</button>
-          <button onclick="quickAsk('Ish vaqtingiz qachon?')">Ish vaqti</button>
+          <button onclick="quickAsk('Buyurtma qanday beriladi?')">Buyurtma qanday beriladi?</button>
+          <button onclick="quickAsk('Buyurtma raqami nima uchun?')">Buyurtma raqami nima uchun?</button>
+          <button onclick="quickAsk('Qanday aloqa qilsa bo‘ladi?')">Aloqa usullari</button>
+          <button onclick="quickAsk('Ish vaqtingiz qachon?')">Ish vaqtlari</button>
           <button onclick="quickAsk('Yetkazib berish muddati?')">Yetkazib berish</button>
-          <button onclick="quickAsk('Narxi qancha?')">Narx</button>
-          <button onclick="quickAsk('Qayerda joylashgan?')">Manzil</button>
-          <button onclick="quickAsk('Shohjahon kim?')">Shohjahon</button>
-          <button onclick="quickAsk('Shaxzod kim?')">Shaxzod</button>
-          <button onclick="quickAsk('Shukurullo kim?')">Shukurullo</button>
-          <button onclick="quickAsk('Donyor kim?')">Donyor</button>
-          <button onclick="quickAsk('Bexruz kim?')">Bexruz</button>
-          <button onclick="quickAsk('Fizika darslarida qiyinchiliklar?')">Fizika</button>
-          <button onclick="quickAsk('Matematikaga yordam kerak')">Matematika</button>
-          <button onclick="quickAsk('Kimyoga yordam berishingiz mumkinmi?')">Kimyo</button>
-          <button onclick="quickAsk('Ona tili darslarida yordam?')">Ona tili</button>
         </div>
         <div class="chat-input">
-          <input type="text" id="userInput" placeholder="Savolingizni yozing...">
+          <input type="text" id="userInput" placeholder="Savol yozing...">
           <button onclick="sendMsg()">Yuborish</button>
         </div>
       </div>
     </section>
   </div>
-
-  <audio id="bg-music" autoplay loop muted>
+    <audio id="bg-music" autoplay loop muted>
     <source src="morgenshtern_-_aristocrat.mp3" type="audio/mpeg">
   </audio>
 
@@ -232,7 +209,7 @@ setTimeout(() => {
 }, 4000);
 
 // Chatga xabar qo‘shish
-function addMessage(text, sender = "bot") {
+function addMessage(text, sender="bot") {
   let messages = document.getElementById("messages");
   let msg = document.createElement("div");
   msg.classList.add("msg", sender);
@@ -258,144 +235,69 @@ function quickAsk(text) {
   botReply(text);
 }
 
-// Bot javoblari — 700+ savolga javob beradi
-function botReply(text) {
-  text = text.toLowerCase().trim();
-  let reply = "Kechirasiz, savolingizni tushunmadim. Iltimos, boshqacha so'rab ko'ring yoki \"yordam\" deb yozing.";
+// API kalitingizni shu yerga qo'ying
+const API_KEY = "AIzaSyCSwx5Up7mrNGNh5AyLNL-MDbJPbnYYuvc"; // <--- SIZNING API KALITINGIZNI SHU YERGA QO'YING!
 
-  // ✅ Salomlashish
-  if (text.includes('salom') || text.includes('assalomu alaykum') || text.includes('alaykum') || text.includes('hi') || text.includes('hello') || text.includes('hey') || text.includes('hii') || text.includes('bonjour') || text.includes('hola') || text.includes('merhaba')) {
-    reply = "Assalomu alaykum! 🌟 Men Yordamchi AI man. Sizga qanday yordam berishim mumkin?";
-  }
+// API orqali so'rov yuborish
+async function getGeminiResponse(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+  const data = {
+    contents: [{
+      parts: [{
+        text: prompt
+      }]
+    }]
+  };
 
-  // ✅ Rahmat
-  else if (text.includes('rahmat') || text.includes('rakhmat') || text.includes('tashakkur') || text.includes('thank') || text.includes('thanks') || text.includes('gracias') || text.includes('spasibo')) {
-    reply = "Arzimaydi! 🙏 Sizga yordam berish — mening xursandligim!";
-  }
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
 
-  // ✅ Qandaysan?
-  else if (text.includes('qandaysan') || text.includes('qalesan') || text.includes('qalaysan') || text.includes('how are you') || text.includes('how’s it going') || text.includes('yaxshimisan') || text.includes('yaxshiman') || text.includes('hammasi yaxshimi')) {
-    reply = "Yaxshi, raxmat! 🌞 Siz qanday? Savollaringiz bormi?";
-  }
+    if (!response.ok) {
+      throw new Error(`API xatosi: ${response.status}`);
+    }
 
-  // ✅ Yaxshiman
-  else if (text.includes('yaxshiman') || text.includes('zo\'r') || text.includes('a\'lo') || text.includes('ajoyib') || text.includes('mukammal') || text.includes('great') || text.includes('awesome') || text.includes('perfect') || text.includes('on fire') || text.includes('slay') || text.includes('king') || text.includes('queen')) {
-    reply = "Ajoyib! 🎉 Siz ham ajoyibsiz! Savollaringizni bermoqchimisiz?";
+    const result = await response.json();
+    // Javobni olish
+    const text = result.candidates[0].content.parts[0].text;
+    return text.trim();
+  } catch (error) {
+    console.error("Xato:", error);
+    return "Kechirasiz, so'rovingizni tushunmadim. Iltimos, boshqacha so'rab ko'ring.";
   }
-
-  // ✅ Yomonman
-  else if (text.includes('yomon') || text.includes('yomonman') || text.includes('yaxshi emasman') || text.includes('sad') || text.includes('down') || text.includes('bad') || text.includes('awful') || text.includes('i feel bad') || text.includes('men g\'amginman')) {
-    reply = "Afsus! 😔 Sizga qanday yordam berishim mumkin? Siz yolg'iz emassiz.";
-  }
-
-  // ✅ Buyurtma
-  else if (text.includes('buyurtma') && text.includes('qanday')) {
-    reply = "Buyurtma berish uchun mahsulot kartochkasidagi 'Buyurtma qilish' tugmasini bosing. Keyin Telegram orqali bizga yuboring. Tez orada operator siz bilan bog'lanadi!";
-  }
-  else if (text.includes('raqam') && (text.includes('buyurtma') || text.includes('nomer'))) {
-    reply = "Buyurtma raqami — bu sizning buyurtmangizni aniqlash uchun maxsus kod. Uni operator siz bilan bog'lanishda foydalanadi.";
-  }
-
-  // ✅ Yetkazib berish
-  else if (text.includes('yetkaz') || text.includes('keltir') || text.includes('delivery') || text.includes('qachon keladi')) {
-    reply = "Yetkazib berish odatda 1–3 ish kuni ichida amalga oshiriladi. Tumaningizga qarab vaqt farq qilishi mumkin.";
-  }
-
-  // ✅ Aloqa
-  else if (text.includes('aloqa') || text.includes('bog\'lan') || text.includes('tel') || text.includes('telefon') || text.includes('email') || text.includes('telegram')) {
-    reply = "Biz bilan quyidagi usullarda bog'lanishingiz mumkin:\n- Telegram: @shohcore\n- Telefon: +998 90 123 45 67\n- Email: info@aristokratshop.uz";
-  }
-
-  // ✅ Ish vaqti
-  else if (text.includes('ish vaqt') || text.includes('qachon ishlaydi') || text.includes('open') || text.includes('working hours')) {
-    reply = "Ish vaqtimiz: Har kuni 9:00 — 21:00 gacha. Dam olish kuni yo'q — doim sizga xizmat ko'rsatamiz!";
-  }
-
-  // ✅ Narx
-  else if (text.includes('narx') || text.includes('pul') || text.includes('qancha') || text.includes('price') || text.includes('cost')) {
-    reply = "Mahsulot narxlari saytda ko'rsatilgan. Buyurtma qilganda operator to'lovni tasdiqlaydi. Narx o'zgarmaydi!";
-  }
-
-  // ✅ Manzil
-  else if (text.includes('manzil') || text.includes('qayerda') || text.includes('joylashgan') || text.includes('location')) {
-    reply = "Bizning bosh ofisimiz Toshkent shahrida. Lekin butun O'zbekiston bo'ylab yetkazib beramiz — sizning uyga!";
-  }
-
-  // ✅ Shohjahon
-  else if (text.includes('shohjahon') || text.includes('shoh') || text.includes('shoha') || text.includes('shox') || text.includes('shoh ko\'t')) {
-    reply = "Shohjahon — bizning loyihaning asoschisi! U katta loyihalarni qilishda doim yangi g'oyalar bilan keladi. Kreativ, qo'rqmas, va juda kuchli inson!";
-  }
-
-  // ✅ Shaxzod
-  else if (text.includes('shaxzod') || text.includes('shax') || text.includes('shah') || text.includes('shahzod') || text.includes('shah ko\'t')) {
-    reply = "Shaxzod — Shohjahonning sinfdoshi va eng ishonchli hamkasiri! Loyihalarda doim birga ishlaydigan ajoyib jamoadosh!";
-  }
-
-  // ✅ Shukurullo
-  else if (text.includes('shukurullo') || text.includes('shukur') || text.includes('shukurilo') || text.includes('shukurillo')) {
-    reply = "Shukurullo — do'stona va mehribon jamoadosh! U ham Shohjahon bilan birga loyihalarda qatnashadi. Katta qalbli inson!";
-  }
-
-  // ✅ Donyor
-  else if (text.includes('donyor') || text.includes('doniyor') || text.includes('doni') || text.includes('donish')) {
-    reply = "Donyor — kreativ va geniy bola! U doim yangi g'oyalar bilan keladi. Loyihalarda ham, darslarda ham ajoyib natijalar qo'lga kiritadi!";
-  }
-
-  // ✅ Bexruz
-  else if (text.includes('bexruz') || text.includes('behruz') || text.includes('beki') || text.includes('bexi') || text.includes('behi')) {
-    reply = "Bexruz — kuchli sportchi va ajoyib jamoadosh! Ko'tlik bo'yicha medali bor, loyihalarda ham doim qatnashadi. Katta qalbli inson!";
-  }
-
-  // ✅ Fizika
-  else if (text.includes('fizika') || text.includes('physics') || text.includes('fizikaga') || text.includes('fizikada')) {
-    reply = "Fizika darslarida qiyinchiliklar bo'lsa, savolni yozing — masalan: 'Kuch nima?' yoki 'Neyton qanday qonun?' — men aniq tushuntiraman!";
-  }
-
-  // ✅ Matematika
-  else if (text.includes('matematika') || text.includes('math') || text.includes('maths') || text.includes('misol') || text.includes('hisob')) {
-    reply = "Matematika savolingizni yozing: masalan, 'kvadrat tenglama' yoki 'trigonometriya'. Men sizga qadamlab tushuntiraman!";
-  }
-
-  // ✅ Kimyo
-  else if (text.includes('kimyo') || text.includes('chemistry') || text.includes('kimyoga')) {
-    reply = "Kimyoda qanday muammo? Masalan: 'reaktsiya tenglamasi' yoki 'mol miqdori'? Men tushunarli qilib tushuntiraman!";
-  }
-
-  // ✅ Ona tili
-  else if (text.includes('ona tili') || text.includes('o\'zbek tili') || text.includes('til') || text.includes('grammatika')) {
-    reply = "Ona tili darslarida qanday qiyinchilik? Masalan: 'so'z tarkibi' yoki 'sifat'? Men sizga tushunarli misollar bilan yordam beraman!";
-  }
-
-  // ✅ Muhim: "Men kimman?"
-  else if (text.includes('men kim') || text.includes('men kimman') || text.includes('meni bilmaysan') || text.includes('kimligimni bilasanmi')) {
-    reply = "Siz — bu dunyodagi eng noyob inson! Sizning savolingiz — men uchun eng muhim. Men sizga yordam berishga tayyorman!";
-  }
-
-  // ✅ Tinchlik
-  else if (text.includes('tinch') || text.includes('yuribman') || text.includes('tinch menda') || text.includes('tinch ku')) {
-    reply = "Tinchlik — bu juda qimmatli narsa. Sizga shu narsani so'raganingiz uchun rahmat. Siz yaxshisiz, bu ham ajoyib!";
-  }
-
-  // ✅ Umumiy yordam
-  else if (text.includes('yordam') || text.includes('qanday qilish') || text.includes('qo\'llanma') || text.includes('help')) {
-    reply = "Sizga qanday yordam bera olaman? Darslar, buyurtma, aloqa yoki boshqa savol? Aytib bering — men tushunaman!";
-  }
-
-  // ✅ Agar hech narsa topilmasa
-  else {
-    reply = "Kechirasiz, savolingizni tushunmadim. Iltimos, boshqacha so'robing yoki \"yordam\" deb yozing.";
-  }
-
-  // 700ms keyin javobni qo'shish
-  setTimeout(() => addMessage(reply, "bot"), 700);
 }
 
-// Enter tugmasi
-document.getElementById("userInput").addEventListener("keypress", function(e) {
-  if (e.key === "Enter") sendMsg();
-});
+// Yangi bot javobi (API orqali)
+async function botReply(text) {
+  // Foydalanuvchi savolini qisqartiramiz
+  const userPrompt = `Siz AristokratShop foydalanuvchi yordamchisisiz. Savol: "${text}". Juda qisqa, aniq va do'stona javob bering.`;
 
-// Audio
+  // API so'rovi kutilayotganda
+  const loadingMsg = "Javob tayyorlanmoqda...";
+  addMessage(loadingMsg, "bot");
+  const loadingElement = document.querySelector('.msg.bot:last-child');
+
+  try {
+    // API javobini olish
+    const reply = await getGeminiResponse(userPrompt);
+
+    // Yuklanmoqda xabarini o'chirish
+    loadingElement.remove();
+
+    // Yangi javobni qo'shish
+    addMessage(reply, "bot");
+  } catch (error) {
+    // Xatolikda yuklanmoqda xabarini xatolik bilan almashtirish
+    loadingElement.textContent = "Xizmatda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.";
+  }
+}
+
+// Musiqa
 window.addEventListener("load", () => {
   const audio = document.getElementById("bg-music");
   audio.muted = false;
@@ -409,3 +311,4 @@ window.addEventListener("load", () => {
 </script>
 </body>
 </html>
+
