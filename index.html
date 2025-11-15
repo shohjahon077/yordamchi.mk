@@ -424,7 +424,7 @@
             text-align: center;
             padding: 24px;
             background: var(--primary-color);
-            color: #ecf0f3;
+            color: #00000097;
             font-size: 0.95rem;
             margin-top: 60px;
         }
@@ -580,6 +580,30 @@
             white-space: nowrap;
             border: 0;
         }
+
+    
+
+    .online-box {
+      padding: 8px 18px;
+      background: #1a1f2b;
+      border: 1px solid #2b3243;
+      border-radius: 10px;
+      color: #4cff88;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      box-shadow: 0 0 12px rgba(76,255,136,0.2);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #4cff88;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #4cff88;
+    }
     </style>
 </head>
 <body id="body" class="theme-default">
@@ -595,6 +619,11 @@
         <div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
         <div class="progress-bar"><div class="progress-fill"></div></div>
         <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
+    </div>
+
+    <div class="online-box">
+       <div class="dot"></div>
+       <span id="onlineCount">10000</span> online
     </div>
 
     <!-- MAIN CONTENT -->
@@ -637,8 +666,8 @@
             </a>
             <a href="game.html" class="big-btn-container">
                 <div class="big-btn" tabindex="0" data-key="videos" data-sub-key="videos_sub">
-                    <span>🎥 Video Darslar</span>
-                    <span>Vizual tushuntirishlar</span>
+                    <span>🎥 O'yinlar</span>
+                    <span>Qiziqarli o'yinlar</span>
                 </div>
             </a>
             <a href="maslahat.html" class="big-btn-container">
@@ -650,7 +679,7 @@
             <a href="galati.html" class="big-btn-container">
                 <div class="big-btn" tabindex="0" data-key="teachers" data-sub-key="teachers_sub">
                     <span>👩‍🏫 G‘alati</span>
-                    <span>Mentorlar bilan tanishing</span>
+                    <span>G'alati bo'lim bilan tanishing</span>
                 </div>
             </a>
             <a href="biz.html" class="big-btn-container">
@@ -666,9 +695,9 @@
                 </div>
             </a>
              <a href="sinov3.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="contactt" data-sub-key="contact_sub">
+                <div class="big-btn" tabindex="0" data-key="contactt" data-sub-key="ichu_sub">
                     <span>ICHU bo'lim</span>
-                    <span>Murojaat uchun</span>
+                    <span>Imkoniyati cheklanganlar uchun</span>
                 </div>
             </a>
         </main>
@@ -731,6 +760,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
+        function updateOnline() {
+      const min = 9500;
+      const max = 10500;
+      const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+      document.getElementById("onlineCount").textContent = randomNum;
+    }
+
+    setInterval(updateOnline, 1000); // har 1 soniyada o'zgaradi
         // ======================
         // 🌍 TARJIMALAR
         // ======================
@@ -741,16 +778,17 @@
                 lessons_sub: "Barcha fanlar bo‘yicha",
                 tests: "📝 Testlar",
                 tests_sub: "Bilimingizni sinovdan o‘tkazing",
-                videos: "🎥 Video Darslar",
-                videos_sub: "Vizual tushuntirishlar",
+                videos: "🎥 O'yinlar",
+                videos_sub: "Qiziqarli o'yinlar",
                 advice: "💡 Maslahatlar",
                 advice_sub: "O‘qish sirlari",
                 teachers: "👩‍🏫 G‘alati",
-                teachers_sub: "Mentorlar bilan tanishing",
+                teachers_sub: "G'alati bo'limga tashrif buyuring",
                 aboutUs: "ℹ️ Biz Haqimizda",
                 aboutUs_sub: "Loyihaning maqsadi",
                 contact: "📞 Aloqa",
                 contactt: "ICHU bo'lim",
+                ichu: "ichu bo'limi",
                 contact_sub: "Murojaat uchun",
                 footer_protected: "🔒 Sayt himoyalangan",
                 footer_name: "Yordamchi Maktab",
@@ -768,16 +806,16 @@
                 lessons_sub: "По всем предметам",
                 tests: "📝 Тесты",
                 tests_sub: "Проверьте свои знания",
-                videos: "🎥 Видео Уроки",
-                videos_sub: "Визуальные объяснения",
+                videos: "🎥 игры",
+                videos_sub: "Веселые игры",
                 advice: "💡 Советы",
                 advice_sub: "Секреты обучения",
-                teachers: "👩‍🏫 Галати",
-                teachers_sub: "Познакомьтесь с менторами",
+                teachers: "👩‍🏫 аномальный",
+                teachers_sub: "Посетите странный раздел",
                 aboutUs: "ℹ️ О Нас",
                 aboutUs_sub: "Цель проекта",
                 contact: "📞 Контакты",
-                
+                ichu: "ichu bo'limi",
                 contact_sub: "Для обращений",
                 footer_protected: "🔒 Сайт защищён",
                 footer_name: "Yordamchi Maktab",
@@ -795,15 +833,15 @@
                 lessons_sub: "For all subjects",
                 tests: "📝 Tests",
                 tests_sub: "Test your knowledge",
-                videos: "🎥 Video Lessons",
-                videos_sub: "Visual explanations",
+                videos: "🎥 Games",
+                videos_sub: "Fun games",
                 advice: "💡 Advice",
                 advice_sub: "Secrets of learning",
-                teachers: "👩‍🏫 Galati",
-                teachers_sub: "Meet the mentors",
+                teachers: "👩‍🏫 unusual",
+                teachers_sub: "Visit the weird section",
                 aboutUs: "ℹ️ About Us",
                 aboutUs_sub: "Project goal",
-                
+                ichu: "ichu bo'limi",
                 contact: "ICHU bo'lim",
                 contact_sub: "For inquiries",
                 footer_protected: "🔒 Site protected",
@@ -822,16 +860,16 @@
                 lessons_sub: "모든 과목",
                 tests: "📝 시험",
                 tests_sub: "지식 테스트",
-                videos: "🎥 비디오 수업",
-                videos_sub: "시각적 설명",
+                videos: "🎥 계략",
+                videos_sub: "재미있는 게임",
                 advice: "💡 조언",
                 advice_sub: "학습 비법",
-                teachers: "👩‍🏫 갈라티",
-                teachers_sub: "멘토 만나기",
+                teachers: "👩‍🏫 특이한",
+                teachers_sub: "이상한 섹션을 방문하세요",
                 aboutUs: "ℹ️ 우리 소개",
                 aboutUs_sub: "프로젝트 목표",
                 contact: "📞 연락처",
-                
+                ichu: "ichu bo'limi",
                 contact_sub: "문의하기",
                 footer_protected: "🔒 사이트 보호됨",
                 footer_name: "Yordamchi Maktab",
@@ -849,16 +887,16 @@
                 lessons_sub: "所有科目",
                 tests: "📝 测验",
                 tests_sub: "测试你的知识",
-                videos: "🎥 视频课程",
-                videos_sub: "视觉讲解",
+                videos: "🎥 游戏",
+                videos_sub: "趣味游戏",
                 advice: "💡 建议",
                 advice_sub: "学习秘诀",
-                teachers: "👩‍🏫 加拉提",
-                teachers_sub: "认识导师",
+                teachers: "👩‍🏫 异常",
+                teachers_sub: "访问奇特区域",
                 aboutUs: "ℹ️ 关于我们",
                 aboutUs_sub: "项目目标",
                 contact: "📞 联系",
-                
+                ichu: "ichu bo'limi",
                 contact_sub: "查询",
                 footer_protected: "🔒 网站受保护",
                 footer_name: "Yordamchi Maktab",
