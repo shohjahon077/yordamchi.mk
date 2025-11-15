@@ -3,50 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Biz Haqimizda Sayti</title>
+    <title>ASCO — Yordamchi Maktab Yaratuvchilar Tashkiloti</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* ==================================== */
         /* 1. Umumiy va Mavzu Sozlamalari (Dark/Light) */
         /* ==================================== */
         :root {
-            --bg-light: #f4f4f9;
-            --text-light: #333;
-            --primary-light: #007bff;
-            --bg-dark: #1a1a2e;
-            --text-dark: #e8e8e8;
-            --primary-dark: #3a86ff;
+            --bg-light: #f8f9fa;
+            --text-light: #212529;
+            --primary-light: #3a86ff;
+            --accent-light: #ff006e;
+            --bg-dark: #121826;
+            --text-dark: #e0e0e0;
+            --primary-dark: #4a90e2;
+            --accent-dark: #ff52a0;
+            --card-bg: #ffffff;
+            --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 10px 40px rgba(0, 0, 0, 0.3);
             --main-bg: var(--bg-light);
             --main-text: var(--text-light);
             --main-primary: var(--primary-light);
+            --main-accent: var(--accent-light);
+            --card-bg: var(--card-bg);
+            --shadow-card: var(--shadow-light);
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             background-color: var(--main-bg);
             color: var(--main-text);
-            transition: background-color 0.5s, color 0.5s;
-            overflow-x: hidden; /* 3D effektlar uchun */
+            transition: all 0.6s ease;
+            overflow-x: hidden;
+            line-height: 1.7;
         }
 
-        /* Qora Mavzu aktiv bo'lganda */
         body.dark-mode {
             --main-bg: var(--bg-dark);
             --main-text: var(--text-dark);
             --main-primary: var(--primary-dark);
+            --main-accent: var(--accent-dark);
+            --card-bg: #1e273e;
+            --shadow-card: var(--shadow-dark);
         }
 
         /* ==================================== */
-        /* 2. Kirish Animatsiyasi (Fade-in) */
+        /* 2. Kirish Animatsiyasi */
         /* ==================================== */
         .page-content {
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            transition-delay: 0.5s;
+            transform: translateY(30px);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+            transition-delay: 0.4s;
         }
 
         .page-content.loaded {
@@ -58,35 +70,57 @@
         /* 3. 3D Efekt Konteyneri */
         /* ==================================== */
         .scene-3d {
-            perspective: 1500px; /* 3D chuqurlik berish */
+            perspective: 1800px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            padding: 20px;
+            min-height: 100vh;
+            padding: 30px;
+            background: radial-gradient(circle at center, rgba(58, 134, 255, 0.08) 0%, transparent 70%);
         }
 
         .about-card {
-            width: 80%;
-            max-width: 800px;
-            padding: 40px;
-            background: var(--main-bg);
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 950px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            padding: 50px;
             text-align: center;
-            
-            /* 3D Transformatsiya */
             transform-style: preserve-3d;
             transform: rotateY(0deg) scale(1);
-            transition: transform 1s ease-in-out, box-shadow 0.5s;
+            transition: transform 1s ease, box-shadow 0.6s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .about-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--main-primary), var(--main-accent), var(--main-primary));
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 26px;
+            animation: gradientBorder 4s ease infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .about-card:hover {
-            /* Hoverda 3D burilish effektini kuchaytirish */
-            transform: rotateY(5deg) scale(1.02); 
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: rotateY(2deg) scale(1.01);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
         }
-        
+
         /* ==================================== */
         /* 4. Sozlamalar va Chiqish Tugmasi */
         /* ==================================== */
@@ -94,35 +128,167 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             z-index: 1000;
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .settings-btn, .exit-btn, .lang-select {
-            padding: 8px 15px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
             background-color: var(--main-primary);
             color: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
         }
 
         .settings-btn:hover, .exit-btn:hover {
-            opacity: 0.8;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
-        
+
         .lang-select {
+            padding: 8px 12px;
             background-color: var(--main-primary);
             color: white;
-            padding: 8px;
-            border: none;
+            font-size: 0.9em;
+            min-width: 140px;
+        }
+
+        /* ==================================== */
+        /* 5. Matn Strukturasini Yaxshilash */
+        /* ==================================== */
+        h1 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--main-primary);
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .intro-section {
+            margin: 40px 0;
+            text-align: left;
+            font-size: 1.1em;
+            line-height: 1.9;
+            color: var(--main-text);
+            padding: 0 40px;
+            font-weight: 400;
+        }
+
+        .intro-section p {
+            margin-bottom: 28px;
+            text-align: justify;
+        }
+
+        .quote-box {
+            margin: 40px 0;
+            padding: 25px 30px;
+            border-left: 5px solid var(--main-accent);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            font-size: 1.2em;
+            font-weight: 500;
+            color: var(--main-accent);
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode .quote-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .quote-box::before {
+            content: """;
+            font-size: 4em;
+            color: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            font-family: Georgia, serif;
+        }
+
+        .core-values {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 50px 0;
+        }
+
+        .value-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            width: 280px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.4s;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .value-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .value-card h3 {
+            color: var(--main-primary);
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .value-card p {
+            color: var(--main-text);
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .founders {
+            margin-top: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--main-accent);
+            letter-spacing: 0.5px;
+            padding: 20px;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            margin-bottom: 30px;
+        }
+
+        /* ==================================== */
+        /* 6. Mobil Moslik */
+        /* ==================================== */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .intro-section { padding: 0 20px; font-size: 1em; }
+            .intro-section p { margin-bottom: 20px; }
+            .quote-box { font-size: 1.1em; padding: 20px 15px; }
+            .core-values { flex-direction: column; align-items: center; }
+            .value-card { width: 90%; }
+            .about-card { padding: 30px 20px; }
+            .settings-panel { flex-direction: column; align-items: center; }
+            .settings-btn, .exit-btn, .lang-select { width: 100%; max-width: 200px; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8em; }
+            .scene-3d { padding: 10px; }
+            .about-card { padding: 25px 15px; }
+            .intro-section { padding: 0 15px; }
+            .quote-box { font-size: 1em; }
         }
     </style>
 </head>
@@ -141,50 +307,78 @@
             <option value="chi">中文 (Chinese)</option>
         </select>
         
+       <a href="index.html">
         <button id="exit-btn" class="exit-btn" onclick="alert('Saytdan chiqish simulyatsiyasi...');">
             <i class="fas fa-sign-out-alt"></i> Chiqish
         </button>
+       </a> 
     </div>
 
     <div class="page-content">
         <div class="scene-3d">
-            <section id="about-section" class="about-card">
-                <h1 id="title-text">Biz Haqimizda</h1>
-                <p id="intro-text">Kompaniyamiz 20XX yilda tashkil etilgan. Biz doimiy innovatsiyalar va mijozlarga yo'naltirilgan xizmatlarni taqdim etishga intilamiz. Bizning asosiy ustunligimiz - bu sifat va ishonchlilik.</p>
-                <div class="features-3d">
-                    <div style="margin-top: 30px; display: flex; justify-content: space-around; transform: translateZ(20px);">
-                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(10deg);">Sifat</div>
-                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(-10deg);">Innovatsiya</div>
-                        <div style="background: var(--main-primary); color: white; padding: 10px; border-radius: 5px; transform: rotateX(5deg);">Jamoa</div>
+            <section class="about-card">
+                <h1 id="title-text">ASCO — Yordamchi Maktab Yaratuvchilar Tashkiloti</h1>
+                
+                <div class="intro-section" id="intro-text">
+                    ASCO — (Auxiliary School Creators Organization), o‘zbekcha nomi bilan “Yordamchi maktab yaratuvchilar tashkiloti”, 2025-yil 20-sentyabr sanasida uch nafar tashabbuskor yoshlar: Shohjahon Mahkamov, Donyor Abduroupov va Shaxzod Rustamov tomonidan asos solingan tashkilotdir. Ularning barchasini birlashtirgan yagona maqsad — zamonaviy texnologiyalar yordamida jamiyatga foyda keltirish, bilim olish jarayonini yengillashtirish va har bir insonning o‘z ustida ishlashiga ko‘mak berishdir.
+
+                    <br><br>
+
+                    ASCO loyihasi yaratilar ekan, tashkilotchilar nafaqat o‘quvchilar, balki barcha yoshdagi insonlar foydalanishi mumkin bo‘lgan qulay, sodda va samarali platforma yaratishni maqsad qildilar. Shuning uchun platformaning asosiy vazifasi — insonlar uchun kerakli bilimlarni yig‘ish, ularni to‘g‘ri yo‘naltirish, o‘rganishga ilhom berish va hayotiy muammolarni yengillashtiruvchi yordamchi vositalarni taqdim etishdir.
+                </div>
+
+                <div class="quote-box" id="quote1">
+                    ASCO jamoasi ishonadiki:
+                </div>
+
+                <div class="core-values">
+                    <div class="value-card">
+                        <h3>💡 Bilim — har qanday taraqqiyotning asosi</h3>
+                        <p>Bilim — faqat sinf xonasida emas, balki har bir kundalik qaror, har bir ijodiy g‘oya va har bir shaxsiy rivojlanishning asosidir. ASCO bilimni qulay, tushunarli va qo'lga kiritiladigan shaklda taqdim etadi.</p>
                     </div>
+                    <div class="value-card">
+                        <h3>🌟 Har bir inson o‘z salohiyatini rivojlantirishga loyiq</h3>
+                        <p>Har qanday yosh, qanday qobiliyatga ega bo'lsin, har bir odam o'zining unikal potentsialga ega. ASCO o'zining vositalari orqali bu potentsialni ochishga yordam beradi.</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>⚡ Texnologiya — bu jarayonni tezlashtirish uchun xizmat qiladi</h3>
+                        <p>Texnologiya — bu faqat qurilmalar emas, balki imkoniyatlar. ASCO zamonaviy vositalar orqali o'rganishni tez, qulay va qiziqarli qiladi.</p>
+                    </div>
+                </div>
+
+                <div class="intro-section" id="intro-text2">
+                    Shu maqsadda, loyiha doirasida yaratilgan yordamchi veb-sayt va xizmatlar, foydalanuvchilarga nafaqat o‘qishda, balki kundalik hayotda, ijodiy ishlarda, shaxsiy rivojlanishda va kasbiy o‘sishda qo‘llab-quvvatlashga qaratilgan.
+
+                    <br><br>
+
+                    ASCO – bu shunchaki loyiha emas. Bu kelajak uchun tashlangan qadam, ilmga bo‘lgan hurmat, vatanga qo‘shilgan hissadir.
+                </div>
+
+                <div class="quote-box" id="quote2">
+                    ASCO – bu shunchaki loyiha emas.<br>Bu kelajak uchun tashlangan qadam, ilmga bo‘lgan hurmat, vatanga qo‘shilgan hissadir.
+                </div>
+
+                <div class="founders" id="founders-text">
+                    Tashkilotchilar: Shohjahon Mahkamov, Donyor Abduroupov, Shaxzod Rustamov
                 </div>
             </section>
         </div>
     </div>
 
     <script>
-        // ====================================
-        // 1. Kirish Animatsiyasi (On Load)
-        // ====================================
         document.addEventListener('DOMContentLoaded', () => {
             const pageContent = document.querySelector('.page-content');
-            
-            // Sahifa yuklangach, animatsiya sinfini qo'shish
-            setTimeout(() => {
-                pageContent.classList.add('loaded');
-            }, 100); 
-            
-            // ====================================
-            // 2. Mavzu Almashtirish (JS)
-            // ====================================
+            setTimeout(() => pageContent.classList.add('loaded'), 100);
+
+            // Mavzu almashtirish
             const themeToggle = document.getElementById('theme-toggle');
             const body = document.body;
-            
+
             themeToggle.addEventListener('click', () => {
                 if (body.classList.contains('light-mode')) {
                     body.classList.remove('light-mode');
                     body.classList.add('dark-mode');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Yorqin'; // Ikonka va matnni o'zgartirish
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Yorqin';
                 } else {
                     body.classList.remove('dark-mode');
                     body.classList.add('light-mode');
@@ -192,19 +386,56 @@
                 }
             });
 
-            // ====================================
-            // 3. Til Almashtirish (JS - Minimal Tarjima)
-            // ====================================
+            // Til almashtirish
             const langSelect = document.getElementById('lang-select');
             const titleText = document.getElementById('title-text');
             const introText = document.getElementById('intro-text');
-            
+            const introText2 = document.getElementById('intro-text2');
+            const quote1 = document.getElementById('quote1');
+            const quote2 = document.getElementById('quote2');
+            const foundersText = document.getElementById('founders-text');
+
             const translations = {
-                uzb: { title: "Biz Haqimizda", intro: "Kompaniyamiz 20XX yilda tashkil etilgan. Biz doimiy innovatsiyalar va mijozlarga yo'naltirilgan xizmatlarni taqdim etishga intilamiz. Bizning asosiy ustunligimiz - bu sifat va ishonchlilik." },
-                kor: { title: "회사 소개 (Hoesa Sogae)", intro: "우리 회사는 20XX년에 설립되었습니다. 우리는 지속적인 혁신과 고객 중심 서비스를 제공하기 위해 노력합니다. 우리의 주요 강점은 품질과 신뢰성입니다." },
-                rus: { title: "О нас", intro: "Наша компания была основана в 20XX году. Мы стремимся предоставлять постоянные инновации и ориентированные на клиента услуги. Наше главное преимущество – это качество и надежность." },
-                eng: { title: "About Us", intro: "Our company was established in 20XX. We strive to provide continuous innovation and customer-centric services. Our main advantage is quality and reliability." },
-                chi: { title: "关于我们 (Guānyú Wǒmen)", intro: "我们公司成立于20XX年。我们致力于提供持续的创新和以客户为中心的服务。我们的主要优势是质量和可靠性。" }
+                uzb: {
+                    title: "ASCO — Yordamchi Maktab Yaratuvchilar Tashkiloti",
+                    intro: "ASCO — (Auxiliary School Creators Organization), o‘zbekcha nomi bilan “Yordamchi maktab yaratuvchilar tashkiloti”, 2025-yil 20-sentyabr sanasida uch nafar tashabbuskor yoshlar: Shohjahon Mahkamov, Donyor Abduroupov va Shaxzod Rustamov tomonidan asos solingan tashkilotdir. Ularning barchasini birlashtirgan yagona maqsad — zamonaviy texnologiyalar yordamida jamiyatga foyda keltirish, bilim olish jarayonini yengillashtirish va har bir insonning o‘z ustida ishlashiga ko‘mak berishdir.<br><br>ASCO loyihasi yaratilar ekan, tashkilotchilar nafaqat o‘quvchilar, balki barcha yoshdagi insonlar foydalanishi mumkin bo‘lgan qulay, sodda va samarali platforma yaratishni maqsad qildilar. Shuning uchun platformaning asosiy vazifasi — insonlar uchun kerakli bilimlarni yig‘ish, ularni to‘g‘ri yo‘naltirish, o‘rganishga ilhom berish va hayotiy muammolarni yengillashtiruvchi yordamchi vositalarni taqdim etishdir.",
+                    intro2: "Shu maqsadda, loyiha doirasida yaratilgan yordamchi veb-sayt va xizmatlar, foydalanuvchilarga nafaqat o‘qishda, balki kundalik hayotda, ijodiy ishlarda, shaxsiy rivojlanishda va kasbiy o‘sishda qo‘llab-quvvatlashga qaratilgan.<br><br>ASCO – bu shunchaki loyiha emas. Bu kelajak uchun tashlangan qadam, ilmga bo‘lgan hurmat, vatanga qo‘shilgan hissadir.",
+                    quote1: "ASCO jamoasi ishonadiki:",
+                    quote2: "ASCO – bu shunchaki loyiha emas.<br>Bu kelajak uchun tashlangan qadam, ilmga bo‘lgan hurmat, vatanga qo‘shilgan hissadir.",
+                    founders: "Tashkilotchilar: Shohjahon Mahkamov, Donyor Abduroupov, Shaxzod Rustamov"
+                },
+                kor: {
+                    title: "ASCO — 보조 학교 창조자 단체",
+                    intro: "ASCO는 (Auxiliary School Creators Organization), 한국어로는 '보조 학교 창조자 단체'라는 뜻으로, 2025년 9월 20일에 셰르자한 마흐카모프(Shohjahon Mahkamov), 도니요르 압두르오포프(Donyor Abduroupov), 샤흐조드 루스타모프(Shaxzod Rustamov)라는 3명의 젊은 창업자에 의해 설립된 단체입니다. 그들을 하나로 묶은 유일한 목적은 현대 기술을 통해 사회에 이익을 제공하고, 지식 습득 과정을 단순화하며, 모든 사람이 자기 계발을 할 수 있도록 돕는 것입니다.<br><br>ASCO 프로젝트가 개발될 때, 창립자들은 학생들뿐만 아니라 모든 연령대의 사람들이 사용할 수 있는 편리하고, 단순하며, 효과적인 플랫폼을 만드는 것을 목표로 했습니다. 따라서 플랫폼의 주요 임무는 사람들에게 필요한 지식을 수집하고, 이를 올바르게 안내하며, 학습에 대한 영감을 주고, 실생활 문제를 완화하는 데 도움이 되는 도구를 제공하는 것입니다.",
+                    intro2: "이러한 목적으로, 프로젝트 내에서 개발된 웹사이트 및 서비스는 사용자들이 학습뿐만 아니라 일상생활, 창의적 활동, 개인 발전, 직업적 성장에서 지원을 받을 수 있도록 설계되었습니다.<br><br>ASCO는 단순한 프로젝트가 아닙니다. 미래를 위한 발걸음이며, 지식에 대한 존중, 조국에 대한 기여입니다.",
+                    quote1: "ASCO 팀은 믿습니다:",
+                    quote2: "ASCO는 단순한 프로젝트가 아닙니다.<br>미래를 위한 발걸음이며, 지식에 대한 존중, 조국에 대한 기여입니다.",
+                    founders: "창립자: 셰르자한 마흐카모프, 도니요르 압두르오포프, 샤흐조드 루스타모프"
+                },
+                rus: {
+                    title: "ASCO — Организация Создателей Вспомогательных Школ",
+                    intro: "ASCO — (Auxiliary School Creators Organization), по-узбекски «Ёрдамчи мактаб яратувчилар ташкилоти», 20 сентября 2025 года была основана тремя инициативными молодыми людьми: Шохжахоном Махкамовым, Донёр Абдуроуповым и Шахзодом Рустамовым. Единственная цель, объединившая их всех — принести пользу обществу с помощью современных технологий, облегчить процесс получения знаний и помочь каждому человеку работать над собой.<br><br>При создании проекта ASCO основатели поставили перед собой цель создать удобную, простую и эффективную платформу, которой могут пользоваться не только учащиеся, но и люди всех возрастов. Поэтому основная задача платформы — собирать нужные знания для людей, правильно направлять их, вдохновлять на обучение и предоставлять вспомогательные инструменты, облегчающие жизненные проблемы.",
+                    intro2: "С этой целью в рамках проекта были созданы веб-сайты и сервисы, направленные на оказание поддержки пользователям как в обучении, так и в повседневной жизни, творчестве, личностном росте и профессиональном развитии.<br><br>ASCO — это не просто проект. Это шаг в будущее, уважение к знаниям, вклад в родину.",
+                    quote1: "Команда ASCO верит, что:",
+                    quote2: "ASCO — это не просто проект.<br>Это шаг в будущее, уважение к знаниям, вклад в родину.",
+                    founders: "Основатели: Шохжахон Махкамов, Донёр Абдуроупов, Шахзод Рустамов"
+                },
+                eng: {
+                    title: "ASCO — Auxiliary School Creators Organization",
+                    intro: "ASCO — (Auxiliary School Creators Organization), meaning 'Auxiliary School Creators Organization' in English, was founded on September 20, 2025, by three young initiators: Shohjahon Mahkamov, Donyor Abduroupov, and Shaxzod Rustamov. The single goal that united them all was to bring benefit to society through modern technologies, to facilitate the learning process, and to help every individual work on themselves.<br><br>When creating the ASCO project, the founders aimed to create a convenient, simple, and effective platform that could be used not only by students but by people of all ages. Therefore, the main task of the platform is to gather the necessary knowledge for people, guide them correctly, inspire learning, and provide auxiliary tools that alleviate life problems.",
+                    intro2: "With this goal in mind, the project has created websites and services aimed at supporting users not only in their studies, but also in daily life, creative work, personal development, and professional growth.<br><br>ASCO is not just a project. It is a step towards the future, respect for knowledge, a contribution to the Motherland.",
+                    quote1: "The ASCO team believes that:",
+                    quote2: "ASCO is not just a project.<br>It is a step towards the future, respect for knowledge, a contribution to the Motherland.",
+                    founders: "Founders: Shohjahon Mahkamov, Donyor Abduroupov, Shaxzod Rustamov"
+                },
+                chi: {
+                    title: "ASCO — 辅助学校创建者组织",
+                    intro: "ASCO — (Auxiliary School Creators Organization)，中文名为“辅助学校创建者组织”，于2025年9月20日由三位年轻发起人：舒贾洪·马赫卡莫夫(Shohjahon Mahkamov)、多尼约尔·阿卜杜罗波夫(Donyor Abduroupov)和沙赫佐德·鲁斯塔莫夫(Shaxzod Rustamov)共同创立。他们共同的唯一目标是——利用现代技术为社会带来益处，简化学习过程，并帮助每个人自我提升。<br><br>在创建ASCO项目时，创始人旨在创建一个方便、简单且有效的平台，不仅学生可以使用，所有年龄段的人都可以使用。因此，该平台的主要任务是——为人们收集必要的知识，正确引导他们，激励学习，并提供有助于缓解生活问题的辅助工具。",
+                    intro2: "本着这一目标，在项目范围内创建的辅助网站和服务，旨在支持用户不仅在学习上，而且在日常生活中、创造性工作、个人发展和职业成长方面。<br><br>ASCO不仅仅是一个项目。这是迈向未来的一步，是对知识的尊重，是对祖国的贡献。",
+                    quote1: "ASCO团队相信：",
+                    quote2: "ASCO不仅仅是一个项目。<br>这是迈向未来的一步，是对知识的尊重，是对祖国的贡献。",
+                    founders: "创始人: 舒贾洪·马赫卡莫夫, 多尼约尔·阿卜杜罗波夫, 沙赫佐德·鲁斯塔莫夫"
+                }
             };
 
             langSelect.addEventListener('change', (event) => {
@@ -212,10 +443,15 @@
                 const tr = translations[lang];
                 if (tr) {
                     titleText.textContent = tr.title;
-                    introText.textContent = tr.intro;
+                    introText.innerHTML = tr.intro;
+                    introText2.innerHTML = tr.intro2;
+                    quote1.innerHTML = tr.quote1;
+                    quote2.innerHTML = tr.quote2;
+                    foundersText.textContent = tr.founders;
                 }
             });
         });
     </script>
 </body>
 </html>
+
