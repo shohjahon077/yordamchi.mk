@@ -1,0 +1,335 @@
+VIP RUSTAMOV🗽, [15.11.2025 23:01]
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>So‘z Topish + Musiqa O‘yin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#222; color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh;}
+  #landing { position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, #6a11cb, #2575fc); display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:10;}
+  #landing::before { content:""; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(270deg, #ff6a00, #ee0979, #6a11cb, #2575fc); background-size: 800% 800%; animation: gradientBG 15s ease infinite; z-index:-1;}
+  .overlay { text-align:center; color:#fff; padding:40px; background: rgba(0,0,0,0.3); border-radius:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: fadeIn 2s ease;}
+  .overlay h1 { font-size:3em; margin-bottom:20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);}
+  .overlay p { font-size:1.3em; margin-bottom:30px;}
+  #startBtn { padding:15px 30px; font-size:1.3em; border:none; border-radius:15px; cursor:pointer; background:#ff6a00; color:#fff; transition:all 0.3s;}
+  #startBtn:hover { background:#ee0979; transform: scale(1.1);}
+  @keyframes gradientBG { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
+  @keyframes fadeIn { 0%{opacity:0; transform:translateY(-20px);}100%{opacity:1; transform:translateY(0);} }
+
+  /* O'yin dizayni */
+  #game { background: linear-gradient(145deg, #3a3a3a, #222); padding:40px 30px; border-radius:25px; box-shadow:0 10px 30px rgba(0,0,0,0.5); max-width:750px; width:90%; margin-top:30px; text-align:center; display:none;}
+  h1 { text-align:center; font-size:2.2em; margin-bottom:20px; text-shadow: 2px 2px 5px rgba(0,0,0,0.3);}
+  select, #restartBtn, #applySettingsBtn { margin:15px 0; padding:12px 20px; font-size:1em; border-radius:10px; border:none; cursor:pointer; }
+  #restartBtn, #applySettingsBtn { background:#ff6a00; color:#fff; transition:0.3s; }
+  #restartBtn:hover, #applySettingsBtn:hover { background:#ee0979; transform: scale(1.05);}
+  #wordDisplay { font-size:2.2em; letter-spacing:12px; margin:25px 0; padding:15px; background: rgba(255,255,255,0.1); border-radius:15px; min-height:60px; }
+  #lettersContainer { display:flex; flex-wrap:wrap; justify-content:center; margin-bottom:25px;}
+  #lettersContainer button { width:50px; height:50px; margin:6px; font-size:18px; font-weight:600; border:none; border-radius:10px; cursor:pointer; background: rgba(255,255,255,0.2); color:#fff; transition: all 0.3s ease; }
+  #lettersContainer button:hover { transform: scale(1.1); background: rgba(255,255,255,0.35);}
+  #lettersContainer button.correct { background:#4caf50; animation: correctAnim 0.3s;}
+  #lettersContainer button.wrong { background:#f44336; animation: wrongAnim 0.3s;}
+  @keyframes correctAnim { 0%{transform:scale(1);}50%{transform:scale(1.3);}100%{transform:scale(1);} }
+  @keyframes wrongAnim { 0%{transform:scale(1);}50%{transform:scale(0.8);}100%{transform:scale(1);} }
+  #lives, #score { font-weight:700; font-size:1.3em; margin-bottom:15px;}
+  #musicSection { margin-top:30px; background:rgba(0,0,0,0.3); padding:20px; border-radius:15px;}
+  #musicCarousel { display:flex; flex-wrap:wrap; justify-content:center; margin-top:15px;}
+  .carousel-item { background:rgba(255,255,255,0.1); padding:10px 15px; margin:5px; border-radius:10px; cursor:pointer; transition:0.3s; position:relative;}
+  .carousel-item.active { background:#ff6a00; }
+  .carousel-item button { position:absolute; top:2px; right:5px; background:none; border:none; color:#fff; cursor:pointer; font-size:14px; }
+
+
+#musicControls { margin-top:10px; }
+  #musicControls button { padding:10px 20px; margin:5px; border:none; border-radius:10px; cursor:pointer; }
+  @media(max-width:500px){ #lettersContainer button{width:40px;height:40px;font-size:16px;margin:4px;} #wordDisplay{font-size:1.8em;letter-spacing:8px;} }
+
+  /* Modal */
+  #modal { position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; display:none; z-index:20;}
+  #modalContent { background:#333; padding:30px; border-radius:20px; text-align:center; color:#fff; }
+  #modalContent h2 { margin-bottom:15px;}
+  #modalContent button { margin-top:20px; padding:10px 25px; font-size:1.2em; border:none; border-radius:12px; background:#ff6a00; color:#fff; cursor:pointer; transition:0.3s; }
+  #modalContent button:hover { background:#ee0979; }
+
+  /* Settings */
+  #settings { display:none; background: rgba(0,0,0,0.5); padding:30px; border-radius:20px; margin-top:20px; max-width:500px; width:90%; text-align:center; }
+  #settings h2 { margin-bottom:20px; }
+  #settings label { display:block; margin-top:15px; font-weight:600; }
+</style>
+</head>
+<body>
+
+<!-- Landing Page -->
+<div id="landing">
+  <div class="overlay">
+    <h1>Ko‘p tilli So‘z Topish O‘yini</h1>
+    <p>Tilni tanlang va o‘yin boshlang!</p>
+    <button id="startBtn">O‘yinni Boshlash</button>
+  </div>
+</div>
+
+<!-- Sozlamalar bo'limi -->
+<div id="settings">
+  <h2>O'yin Sozlamalari</h2>
+  <label for="languageSelect">Tilni tanlang:</label>
+  <select id="languageSelect">
+    <option value="uz">O‘zbekcha</option>
+    <option value="en">Inglizcha</option>
+    <option value="ru">Ruscha</option>
+  </select>
+
+  <label for="wordTypeSelect">So‘z turi:</label>
+  <select id="wordTypeSelect">
+    <option value="basic">Oddiy so‘zlar</option>
+    <option value="animals">Hayvonlar</option>
+    <option value="fruits">Mevalar</option>
+    <option value="famous">Mashhur so‘zlar</option>
+  </select>
+
+  <button id="applySettingsBtn">O‘yinni boshlash</button>
+</div>
+
+<!-- O'yin Bloki -->
+<div id="game">
+  <h1>So‘z Topish O‘yini</h1>
+
+  <div id="wordDisplay"></div>
+  <div id="lettersContainer"></div>
+  <div>Qolgan urinishlar: <span id="lives">6</span></div>
+  <div>Ball: <span id="score">0</span></div>
+  <button id="restartBtn">Yangi o‘yin</button>
+
+  <!-- Musiqa bo'limi -->
+  <div id="musicSection">
+    <h2>Musiqa Bo‘limi</h2>
+    <input type="file" id="musicInput" accept="audio/*" multiple>
+    <div id="musicControls">
+      <button id="toggleMusic">Musiqani O‘chirish</button>
+    </div>
+    <div id="musicCarousel"></div>
+    <audio id="bgMusic" controls style="width:100%; margin-top:10px;"></audio>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modalContent">
+    <h2 id="modalText"></h2>
+    <p id="modalScore"></p>
+    <button onclick="closeModal()">Yangi o‘yin</button>
+  </div>
+</div>
+
+<!-- Ovozlar -->
+<audio id="correctSound" src="https://freesound.org/data/previews/320/320181_5260876-lq.mp3"></audio>
+
+<script>
+// --- So'zlar ---
+const wordLists = {
+  uz: {
+    basic:["salom","dunyo","kitob","maktab","bola","ota","ona","uy","meva","do‘st"],
+    animals:["it","mushuk","quyon","sher","qush","delfin"],
+    fruits:["olma","anor","banan","olcha","nok"],
+    famous:["temur","navoiy","ulugbek","amir temur"]
+  },
+  en: {
+    basic:["hello","world","book","school","child","father","mother","home","fruit","friend"],
+    animals:["cat","dog","rabbit","lion","bird","dolphin"],
+    fruits:["apple","banana","cherry","pear","orange"],
+    famous:["shakespeare","einstein","newton","galileo"]
+  },
+  ru: {
+    basic:["привет","мир","книга","школа","ребенок","отец","мать","дом","фрукт","друг"],
+    animals:["кот","собака","кролик","лев","птица","дельфин"],
+    fruits:["яблоко","банан","вишня","груша","апельсин"],
+    famous:["пушкин","ленин","петр","галилей"]
+  }
+};
+
+let selectedWordType = "basic";
+let selectedWord = "";
+let guessedLetters = [];
+let lives = 6;
+let score = 0;
+
+
+// DOM
+const wordDisplay = document.getElementById("wordDisplay");
+const lettersContainer = document.getElementById("lettersContainer");
+const livesDisplay = document.getElementById("lives");
+const scoreDisplay = document.getElementById("score");
+const restartBtn = document.getElementById("restartBtn");
+const languageSelect = document.getElementById("languageSelect");
+const startBtn = document.getElementById("startBtn");
+const landing = document.getElementById("landing");
+const settings = document.getElementById("settings");
+const applySettingsBtn = document.getElementById("applySettingsBtn");
+const wordTypeSelect = document.getElementById("wordTypeSelect");
+const gameDiv = document.getElementById("game");
+const modal = document.getElementById("modal");
+const modalText = document.getElementById("modalText");
+const modalScore = document.getElementById("modalScore");
+const correctSound = document.getElementById("correctSound");
+
+// --- Musiqa ---
+const musicInput = document.getElementById("musicInput");
+const musicCarousel = document.getElementById("musicCarousel");
+const toggleMusic = document.getElementById("toggleMusic");
+const bgMusic = document.getElementById("bgMusic");
+let musicFiles = JSON.parse(localStorage.getItem("musicFiles")||"[]");
+let currentMusicIndex=0;
+
+// --- Kirish ---
+startBtn.addEventListener("click", () => {
+  landing.style.display="none";
+  settings.style.display="block";
+});
+
+applySettingsBtn.addEventListener("click", () => {
+  selectedWordType = wordTypeSelect.value;
+  landing.style.display="none";
+  settings.style.display="none";
+  gameDiv.style.display="block";
+  startGame();
+  loadMusicList();
+  if(musicFiles.length>0){
+    bgMusic.src = musicFiles[currentMusicIndex].url;
+    bgMusic.play();
+    toggleMusic.textContent="Musiqani O‘chirish";
+  }
+});
+
+// --- O'yin funksiyalari ---
+function startGame() {
+  guessedLetters=[]; lives=6; score=0;
+  livesDisplay.textContent=lives; scoreDisplay.textContent=score;
+  const lang=languageSelect.value;
+  const words=wordLists[lang][selectedWordType];
+  selectedWord=words[Math.floor(Math.random()*words.length)];
+  createLetterButtons(lang);
+  updateDisplay(lang);
+}
+
+function createLetterButtons(lang){
+  lettersContainer.innerHTML="";
+  let letters=[];
+  if(lang==="ru"){ letters = Array.from("абвгдеёжзийклмнопрстуфхцчшщъыьэюя"); }
+  else{ letters = Array.from("abcdefghijklmnopqrstuvwxyz"); }
+
+  letters.forEach(letter=>{
+    const btn=document.createElement("button");
+    btn.textContent=letter;
+    btn.onclick=()=> guessLetter(letter, btn, lang);
+    lettersContainer.appendChild(btn);
+  });
+}
+
+function guessLetter(letter, btn, lang){
+  if(guessedLetters.includes(letter)) return;
+  guessedLetters.push(letter);
+  if(selectedWord.includes(letter)){
+    btn.classList.add("correct"); 
+    score+=10; 
+    correctSound.play(); // ovoz chiqadi
+  }
+  else{ btn.classList.add("wrong"); lives--; }
+  btn.disabled=true; livesDisplay.textContent=lives; scoreDisplay.textContent=score;
+  updateDisplay(lang); checkGameOver(lang);
+}
+
+function updateDisplay(lang){
+  let display="";
+  for(let char of selectedWord){
+    if(guessedLetters.includes(char)){ display+=char+" "; }
+    else{ display+="_ "; }
+  }
+  wordDisplay.textContent=display.trim();
+}
+
+function checkGameOver(lang){
+  const isWin=selectedWord.split("").every(c=>guessedLetters.includes(c));
+  if(isWin) showModal("🎉 Tabriklaymiz! So‘z topildi!", score);
+  else if(lives<=0) showModal("😢 O‘yin tugadi! So‘z: "+selectedWord, score);
+}
+
+function showModal(message, finalScore){
+  modalText.textContent=message;
+  modalScore.textContent="Sizning ballingiz: "+finalScore;
+  modal.style.display="flex";
+}
+function closeModal(){ modal.style.display="none"; startGame(); }
+
+restartBtn.onclick=startGame;
+languageSelect.onchange=startGame;
+
+// --- Musiqa funksiyalari ---
+
+
+musicInput.addEventListener("change", (e)=>{
+  for(const file of e.target.files){
+    const url = URL.createObjectURL(file);
+    musicFiles.push({name:file.name,url});
+  }
+  localStorage.setItem("musicFiles",JSON.stringify(musicFiles));
+  loadMusicList();
+  if(bgMusic.paused && musicFiles.length>0){
+    currentMusicIndex=musicFiles.length-1;
+    bgMusic.src=musicFiles[currentMusicIndex].url;
+    bgMusic.play();
+    toggleMusic.textContent="Musiqani O‘chirish";
+  }
+});
+
+toggleMusic.addEventListener("click", ()=>{
+  if(bgMusic.paused){ bgMusic.play(); toggleMusic.textContent="Musiqani O‘chirish"; }
+  else{ bgMusic.pause(); toggleMusic.textContent="Musiqani Yoqish"; }
+});
+
+function loadMusicList(){
+  musicCarousel.innerHTML="";
+  musicFiles.forEach((m,i)=>{
+    const div=document.createElement("div");
+    div.classList.add("carousel-item");
+    if(i===currentMusicIndex) div.classList.add("active");
+    div.textContent=m.name;
+
+    div.onclick=()=>{
+      currentMusicIndex=i;
+      bgMusic.src=m.url;
+      bgMusic.play();
+      toggleMusic.textContent="Musiqani O‘chirish";
+      updateCarouselActive();
+    }
+
+    const deleteBtn=document.createElement("button");
+    deleteBtn.textContent="❌";
+    deleteBtn.onclick=(e)=>{
+      e.stopPropagation();
+      if(bgMusic.src===m.url) bgMusic.pause();
+      musicFiles.splice(i,1);
+      localStorage.setItem("musicFiles",JSON.stringify(musicFiles));
+      loadMusicList();
+    }
+    div.appendChild(deleteBtn);
+    musicCarousel.appendChild(div);
+  });
+}
+
+function updateCarouselActive(){
+  document.querySelectorAll(".carousel-item").forEach((c,i)=>{
+    c.classList.remove("active");
+    if(i===currentMusicIndex) c.classList.add("active");
+  });
+}
+
+bgMusic.onended=()=>{
+  if(musicFiles.length===0) return;
+  currentMusicIndex++;
+  if(currentMusicIndex>=musicFiles.length) currentMusicIndex=0;
+  bgMusic.src=musicFiles[currentMusicIndex].url;
+  bgMusic.play();
+  updateCarouselActive();
+}
+</script>
+</body>
+</html>
