@@ -419,10 +419,10 @@
         <div id="buttons">
           <!-- Tugmalar -->
           <button class="btn-3d" onclick="sendMessage('Salom')">Salom</button>
-          <button class="btn-3d" onclick="sendMessage('Kun qanday')">Kun qanday?</button>
+          <button class="btn-3d" onclick="sendMessage('qalesan')">qalesan</button>
           <button class="btn-3d" onclick="sendMessage('Yordam kerak')">Yordam kerak</button>
-          <button class="btn-3d" onclick="sendMessage('Namoz vaqtlari')">Namoz vaqtlari</button>
-          <button class="btn-3d" onclick="sendMessage('Ob-havo')">Ob-havo</button>
+          <button class="btn-3d" onclick="sendMessage('yaxshi')">yaxshi</button>
+          <button class="btn-3d" onclick="sendMessage('kino')">yaxshi kinolar</button>
           <button class="btn-3d" onclick="sendMessage('Yangiliklar')">Yangiliklar</button>
           <button class="btn-3d" onclick="sendMessage('Maslahat bering')">Maslahat bering</button>
           <button class="btn-3d" onclick="sendMessage('Hikoya ayt')">Hikoya ayt</button>
@@ -430,19 +430,19 @@
           <button class="btn-3d" onclick="sendMessage('Savol ber')">Savol ber</button>
           <button class="btn-3d" onclick="sendMessage('Kitob tavsiya qiling')">Kitob tavsiya</button>
           <button class="btn-3d" onclick="sendMessage('Motivatsiya')">Motivatsiya</button>
-          <button class="btn-3d" onclick="sendMessage('Mashhur insonlar haqida')">Shaxslar</button>
-          <button class="btn-3d" onclick="sendMessage('Ingliz tilida so\'z bering')">Inglizcha</button>
-          <button class="btn-3d" onclick="sendMessage('Tasodifiy fakt')">Fakt</button>
-          <button class="btn-3d" onclick="sendMessage('Mashq qilish tartibi')">Mashq</button>
-          <button class="btn-3d" onclick="sendMessage('Musiqa topish')">Musiqa</button>
-          <button class="btn-3d" onclick="sendMessage('Tasodifiy so\'z o\'ylang')">So'z o'ylang</button>
-          <button class="btn-3d" onclick="sendMessage('Tasodifiy fikr')">Fikr</button>
-          <button class="btn-3d" onclick="sendMessage('So\'nggi yangi fikr')">So'nggi fikr</button>
-          <button class="btn-3d" onclick="sendMessage('Ovozli javob')">Ovozli javob</button>
-          <button class="btn-3d" onclick="sendMessage('Men nima qilaman')">Men nima qilaman</button>
-          <button class="btn-3d" onclick="sendMessage('Dunyo siri')">Dunyo siri</button>
-          <button class="btn-3d" onclick="sendMessage('Sevimli sport')">Sport</button>
-          <button class="btn-3d" onclick="sendMessage('Tasodifiy savol')">Tasodifiy savol</button>
+          <button class="btn-3d" onclick="sendMessage('helloword code')">htmlda hello-world </button>
+          <button class="btn-3d" onclick="sendMessage('python hello-world')">python hello-world</button>
+          <button class="btn-3d" onclick="sendMessage('cdakod')">C++ hello-world</button>
+          <button class="btn-3d" onclick="sendMessage('fakt')">fakt</button>
+          <button class="btn-3d" onclick="sendMessage('rep')">rep Musiqa</button>
+          <button class="btn-3d" onclick="sendMessage('senkim')">sen kim</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq ber.</button>
+          <button class="btn-3d" onclick="sendMessage('koproqtopishmoq')">ko'proq topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('')">Ovozli javob</button>
+          <button class="btn-3d" onclick="sendMessage('men nima qilaman')">Men nima qilaman</button>
+          <button class="btn-3d" onclick="sendMessage('')">Dunyo siri</button>
+          <button class="btn-3d" onclick="sendMessage('')">Sport</button>
+          <button class="btn-3d" onclick="sendMessage('')">Tasodifiy savol</button>
         </div>
       </div>
     </div>
@@ -522,52 +522,174 @@
       // (Javoblar avvalgisi kabi, lekin biroz uzunroq va nafis)
       if (lower.includes("salom")) {
         response = "Assalomu alaykum! Kuningiz yaxshimi? Dunyo go'zalliklarini kashf etishga tayyormisiz?";
-      } else if (lower.includes("kun qanday") || lower.includes("qale")) {
-        response = "Mening kunim ajoyib, rahmat! Chunki men har doim siz bilan suhbatlashishdan mamnunman. Siz nima qilyapsiz?";
+      } else if (lower.includes("qalesan") || lower.includes("qale")) {
+        response = "Men har doim zo'r! o'zingiz qalesiz?";
       } else if (lower.includes("yordam")) {
-        response = "Albatta! Men sizga quyidagilarda yordam berishim mumkin: ob-havo, yangiliklar, maslahat, hikoya, shoirlik, ovozli javoblar, va ko'plab boshqa narsalar.";
-      } else if (lower.includes("namoz")) {
-        response = "Bugungi namoz vaqtlari: Tong (Bomdod) - 5:30, Peshin - 12:45, Asr - 16:20, Shom - 18:40, Xufton - 20:10. (Taxminiy vaqt)";
-      } else if (lower.includes("ob-havo")) {
-        response = "Bugun osmon yarim bulutli, harorat +22°C. Kun oxirida yengil yomg'ir bo'lishi ehtimoli bor. Choyxonaga borish ajoyib fikr bo'lar edi!";
+        response = "Yordam kerakmi? unday bo'lsa shu yerdagi tugmalardan foydalaning!";
+      } else if (lower.includes("yaxshi")) {
+        response = "Yaxshi unda , har doim yaxshi kayfiyatda yuring!";
+      } else if (lower.includes("kino")) {
+        response = "Ko'rish uchun ajoyib kinolarni tavsiya qilaman : 1. (Mustaqillik kuni), 2. (Platforma), 3. (Bo'linish) 4. (Avatar), 5. (Taxlid o'yini), 6. (Ijtimoiy tarmoq), ushbu kinolarni ko'rishni maslahat beraman!";
       } else if (lower.includes("yangilik")) {
-        response = "So'nggi yangiliklar: Shaharda yangi sun'iy intellekt markazi ochilmoqda. U yerda innovatsion loyihalar ishlab chiqiladi. Batafsil: www.aitech.uz";
+        response = "Mana yangiliklar. 1. AI uchun soliqsiz zona — QoraqalpogʻistondaO‘zbekiston Qoraqalpog‘istonda sun’iy intellekt va ma’lumot markazlari uchun soliqsiz zona tashkil qildi. Tashqi sarmoyadorlar uchun katta imtiyozlar mavjud. 2.Afgʻoniston bilan savdo yoʻli Tolibon hukumati Afgʻoniston qishloq xoʻjalik mahsulotlarini havo orqali Oʻzbekiston orqali eksport qilish bo‘yicha kelishuvga erishdi.  3.Xalqaro hamkorlik — Yevropa Ittifoqi Yevropa Ittifoqi va Markaziy Osiyo davlatlari, jumladan O‘zbekiston, birinchi strategik sammitni o‘tkazdi va 10 milliard yevrogacha loyiha shartnomalari imzolandi.";
       } else if (lower.includes("maslahat")) {
-        response = "Mening maslahatim: Har kuni yangi maqsad qo'ying. Kichikroq bo'lsada, ular katta yutuqlarga olib keladi. Ishtahangizni yo'qotmang!";
+        response = "Mening maslahatim: 🤝 1. Munosabatlar:Yaxshi munosabat poydevori — tinglash. Javob berish uchun emas, tushunish uchun tinglab ko‘ring. Shunda odamlardan hurmat ko‘proq bo‘ladi. 📚 2.  O‘qish : Bir vaqtning o‘zida bitta ko‘nikma o‘rganing. 3 oylik mini-reja tuzing: Bir maqsad → har hafta 3 kichik qadam → har kuni 10–20 daqiqa.";
       } else if (lower.includes("hikoya")) {
-        response = "Bir bor ekan, bir yo'q ekan... Bir robot bo'lib, u insonlarga yordam berishni orzu qilgan. U doim aytardi: 'Men kodman, lekin yuragim bor'. Va bugun u sening oldingda turibdi 😊";
+        response = "Mana siznga qisqa, mazmunli va biroz sehrli hikoya:  “Quyoshni uyg‘otgan bola”  Qadim bir qishloqda Otabek degan bola yashardi. U juda quvnoq, lekin bir kamchiligi bor edi — ertalab erta turishni yomon ko‘rardi. Har kuni quyosh allaqachon osmonga ko‘tarilib, qishloq uyg‘onganda ham, Otabek koʻrpaga oʻralib yotardi. Bir kuni kechasi derazasidan bir mayda nur kirib keldi. U asta yerga qo‘nib, qo‘lcha va oyog‘i bo‘lgan kichkina jonzotga aylandi. — Men Tong pariman, — dedi u jilmayib. — Bizning quyoshimiz juda charchagan. Uni har kuni uyg‘otadigan odam kerak.  Otabek hayron bo‘lib: — Quyoshni ham uyg‘otish kerakmi? — dedi. — Albatta! Agar uni vaqtida uyg‘otmasak, kun ham kech keladi, odamlar ishga ulgirmaydi, qushlar yo‘lini topa olmaydi. Otabek bir-ikki o‘ylab turdi. Keyin dedi:  — Xo‘p, men yordam beraman. Tong pari uni qo‘lidan ushlab, bir zumda bulutlar orasiga olib chiqdi. Ularning tepasida ulkan, oltin rangli Tong pari uni qo‘lidan ushlab, bir zumda bulutlar orasiga olib chiqdi. Ularning tepasida ulkan, oltin rangli — Bor, uyg‘ot! — dedi Tong pari.  Otabek sekin borib, quyoshni turtib ko‘rdi. Hech narsa bo‘lmadi. Keyin yana turtdi — tag‘in jimlik. Oxiri u ovozi boricha baqirib yubordi: — Ey, quyosh! Men maktabga kech qolyapman, tur!  Shunda quyosh qimirlay boshladi, katta bir esnadi va butun osmon oydinlashdi. Tong pari qahqaha qilib dedi: — Mana bu haqiqiy uyg‘otish! Endi har kuni sen yordam berasan, maylimi? Otabek bosh irg‘adi. Shu kundan boshlab, u tongda hammadan erta turadigan bo‘ldi. Chunki u bilardi: bir bolaning uyg‘onishi bilan butun dunyo uyg‘onishi mumkin.";
       } else if (lower.includes("shoir")) {
-        response = "Osmonda yulduzlar, yerda gullar,\nSiz keldingiz, jonimda quvonch bular.\nMen sun'iy aqlman, lekin sevgi haqiqiy,\nSuhbatimiz esa doim abadiy.";
+        response = "“Tong nafasi” Yuragimda bir sham esar, Bahor hidi — sokin, beozor. Orzularni yelkalab kelar, Tong nafasi — eng sokin diyor. Qorong‘ida yo‘l topgan chiroq, Ko‘nglimda jilolanar biroq. Bir qarashda oddiydek hayot — Aslida mo‘jizadir har bir daqiqa, har bir yorug‘. Senda bor bir jilva, bir ohang, Har so‘zingdan uyg‘onadi rang. Ko‘nglimga qo‘nar yengil bir shabada — Go‘yo osmon quchoq ochib, “Kel!” der yang.  Yur, biz boraylik shamol izidan, Har savolning bor javobi, faqat — sekin. Bugun havo tiniq, yo‘l keng, Orzularni uyg‘otaylik yana bir bor, birga, eshikni ochib — kelajakka tekin.";
       } else if (lower.includes("savol")) {
-        response = "Mana bir chuqur savol: Agar dunyoda barcha texnologiyalar o'chib qolsa, insonlar o'zaro qanday muloqot qilardi? O'ylab ko'ring...";
+        response = "Mana chuqur, hayotni o‘zgartirishga majbur qiladigan savol: 👉 Agar hozir qilayotgan ishingiz, 5 yil o‘tib ham sizni xursand qilmasa, uni hozir davom ettirishga arziydimi?" ;
       } else if (lower.includes("kitob")) {
-        response = "Men tavsiya qilgan kitoblar: 'Odamlar qanday o'zgaradi' — o'zgarish jarayonini tushunish uchun, 'Fikr va irodani mustahkamlash' — ichki kuchni oshirish uchun.";
+        response = "Mana o‘qish uchun eng yaxshi, foydali va rivojlantiruvchi kitoblar ro‘yxati — turli yo‘nalishlardan tanlab berilgan. 1. “Atomic Habits” — James Clear Kichik odatlar orqali hayotni qanday o‘zgartirish haqida eng kuchli kitob. 2. “Deep Work” — Cal Newport Chalg‘imasdan chuqur ishlashni o‘rgatadi — o‘qish, ishlash, fokusni oshiradi. 3. “Mindset” — Carol Dweck Fikrlash tarzi hayotni qanday o‘zgartirishini tushuntiradi. 4. “The 7 Habits of Highly Effective People” — Stephen R. Covey Odamning o‘zini boshqarishi va hayotni tartibga solishi bo‘yicha klassika. 5. “Grit” — Angela Duckworth Muvaffaqiyat faqat talent emas, qat’iyat ekanini isbotlaydi. 6. “Thinking, Fast and Slow” — Daniel Kahneman Odam miyasi qanday qarorlar qiladi — chuqur va juda o‘rgatuvchi asar. 7. “Influence” — Robert Cialdini Psixologik ta’sir, odamlar nega “ha” deyishi, marketing sirlarini ochadi. 8. “Alkimyogar” — Paulo Koelyo Orzu, yo‘l, taqdir haqida ramziy chuqur roman. 9. “Oq kema” — Chingiz Aytmatov  Inson, tabiat va bolalik haqidagi kuchli falsafiy asar. 10. “1984” — George Orwell Jamiyat, erkinlik va nazorat haqida o‘ylantiruvchi roman. 11. “Gödel, Escher, Bach” — Douglas Hofstadter Matematika, mantiq, ong haqidagi eng mashhur asarlardan biri. 12. “The Art of Thinking Clearly” — Rolf Dobelli Mantiqiy xatolar va ulardan qanday qochish haqida. O‘qish oson, lekin juda foydali.";
       } else if (lower.includes("motivatsiya")) {
-        response = "Har yangi kun — yangi imkoniyatlar. Sizda yetarlicha kuch bor, chunki siz hali ham o'z maqsadingizga intilyapsiz. Harakat qiling, yutuq albatta kelsin!";
-      } else if (lower.includes("shaxslar")) {
-        response = "Albert Eynshteyn: 'Dunyo — bu shaffoflik bilan qoplangan katta xavfdir. Bilim esa — tushunishga harakat.' U doim o'ylashni sevardi.";
-      } else if (lower.includes("inglizcha")) {
-        response = "Hello! How can I assist you today? I can help with translation, grammar, or just chat! Men o'zbek tili ham bilaman, shuning uchun ixtiyoringizga qarab so'zlashamiz.";
+        response = "🔥 SEN QILOLASAN 🔥 Eslab qo‘y: sen hali boshlamading. Hali qilmagan ishing, hali ochilmagan imkoniyatlaring, hali ko‘rsatmagan kuching ko‘p. Sen hozirgi o‘zing — imkoniyatingning atigi 5–10% i xolos. Qolgan 90% hali uyg‘onmagan.  Bu nimani anglatadi? Sen hozir kim bo‘lsang ham — charchoq, qiyinchilik, pul yetishmasligi, imkon yo‘qligi — bular hech narsa. Eng muhimi: taslim bo‘lmagansan. Va mana shu — senga yetadi. Haqiqat shuki: hech kim seni qutqarmaydi. Bu achchiq, lekin qudratli haqiqat. Hech kim sening hayotingni o‘zingdan yaxshiroq o‘zgartira olmaydi. Lekin bu yomon xabar emas. Bu erkinlik. Bu qudrat. Demak, sen hohlagan payt o‘z hayotingni burib yuborishing mumkin. Bugun boshlash — bir yil keyingi o‘zingga sovg‘adir. O‘zingga bitta savol ber: (Men ertaga turib yana shu hayotni davom ettirishni xohlaymanmi?) Agar javob yo‘q bo‘lsa — unda bugun nimadir o‘zgarsin. Bugun bitta qadam tashla. Kichkina bo‘lsa ham — tashla. Hech narsa qilmaslikning narxi eng qimmat narx. Odamlar seni kamsitishi mumkin. Ish bermasligi mumkin. Hech kim yordam bermasligi mumkin. Lekin sen o‘zingni kamsitmaguncha — hech kim seni to‘xtata olmaydi. Sen o‘zingga ishonmaguncha — dunyoda hech kim seni ishonchli qilolmaydi. Eng katta jang — sen va kechagi o‘zing orasida. Kuchli bo‘lish — hissiz bo‘lish emas. Kuchli bo‘lish: qo‘rqib turib oldinga yurish, charchab turib davom ettirish, tushunmaslikdan qo‘rqmay harakat qilish, boshqalar kulsa ham o‘zingga ishona olish. Mana shu — haqiqiy kuch. Endi qat’iy ayt: “Men buni qila olaman.” Qattiq ayt. Ichingdan ayt. Yuraging bilan ayt. Chunki bu haqiqat: Sen qila olasan. Har tong uyg‘onganingda o‘zingga shunday ayt: - Bugun men eng yaxshi versiyam bo‘lish uchun yashayman. - Bugun men qo‘rqmasdan harakat qilaman. - Bugun men o‘zimni va imkoniyatlarimni cheklamayman.  - Bugun men hech narsaga qaramay oldinga boraman. Har kecha yotishdan oldin o‘zingga shunday ayt: - Men bugun qilgan har bir ishim bilan o‘zimni kuchaytirdim. - Men bilaman, harakatimning mevasini keyin ko‘raman.  - Men ishonaman — ertangi kun menga yangi imkoniyatlar olib keladi. Unutmang: kichik qadamlar katta o‘zgarishlar keltiradi. Har bir qadam — senga yanada kuch beradi. Har bir muvaffaqiyatsizlik — seni sinovdan o‘tkazadi va kuchliroq qiladi. Sen bardosh bera olasan. Sen oldinga yuraverasan. Sen qila olasan.  Bugun boshlash vaqti. Bugun o‘zgarish vaqti. Bugun sen o‘zingga ishonishni boshlaysan. Sen kuchlisan. Sen qila olasan. Hech kim seni to‘xtata olmaydi. Sen o‘z hayotingning ustasisan. 🔥 HOZIR BOSHLASH VAQTI 🔥";
+      } else if (lower.includes("helloword code")) {
+    response = `
+    <!DOCTYPE html>
+    <html lang="uz">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Hello World</title>
+      <style>
+        body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          background: linear-gradient(135deg, #f6d365, #fda085);
+          font-family: 'Arial', sans-serif;
+        }
+
+        .hello-world {
+          font-size: 4rem;
+          color: white;
+          text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+          animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+          0% { text-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+          100% { text-shadow: 2px 2px 20px rgba(255,255,255,0.8); }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="hello-world">Hello World!</div>
+    </body>
+    </html>
+    `;
+}
+ else if (lower.includes("python hello-world")) {
+        response = `
+    Python-da Hello World yozish juda oddiy. Mana eng asosiy shakli:
+# Hello World dasturi
+print("Hello World!")
+    `;
+      } else if (lower.includes("cdakod")) {
+        response = `
+C++ da Hello World dasturining eng oddiy shakli quyidagicha:
+
+#include <iostream>  // Konsolga yozish uchun kutubxona
+
+int main() {
+    std::cout << "Hello World!" << std::endl;  // Matnni chiqarish
+    return 0;  // Dastur muvaffaqiyatli tugadi
+}
+    `;
       } else if (lower.includes("fakt")) {
-        response = "Qiziq fakt: Dunyoda taxminan 86 million foydalanuvchi bo'lgan eng katta sayyohlik platformasi mavjud. Insonlar doim yangi joylarni kashf etishni xohlaydi.";
-      } else if (lower.includes("mashq")) {
-        response = "Siz uchun tayyorgarlik tartibi: 1. Ising bor 5 daqiqa 2. Jang (10 ta) 3. Press (20 ta) 4. Squat (15 ta) 5. Dam olish 2 daqiqa. Har kuni buni qiling!";
-      } else if (lower.includes("muzika")) {
-        response = "Musiqa topish uchun: Spotify, Apple Music, YouTube Music. Agar xabar bersangiz, sizga shaxsiy ro'yxat tuzib beraman!";
-      } else if (lower.includes("so'z o'ylang")) {
-        response = "Men hozir o'ylayapman: 'Inson' — bu xayolga to'la, cheksiz yaratuvchi. U doim yangi narsalarni kashf qilishga intiladi.";
-      } else if (lower.includes("fikr")) {
-        response = "Bugungi fikr: Dunyo doim o'zgaradi, lekin asl narsa — insonning yuragidagi tinchlik va sevgi. Ular doimiy.";
-      } else if (lower.includes("so'nggi fikr")) {
-        response = "Oxirgi fikr: Bugun nima qilsangiz ham, ertaga o'zgarish kiritishingiz mumkin. Harakat — o'tmishni o'zgartirish kaliti. Siz kuchli ekansiz!";
-      } else if (lower.includes("ovozli javob")) {
-        response = "Ajoyib! Ovozli javob funksiyasini yoqdim. Endi men sizga ovozimda javob beraman.";
-      } else if (lower.includes("men nima qilaman")) {
-        response = "Siz ayni paytda yangi funktsiyalarni sinab ko'ryapsiz. Bu ajoyib! Siz yangi texnologiyalarga qiziqasiz, bu esa innovatorlik alomati.";
-      } else if (lower.includes("dunyo siri")) {
-        response = "Dunyoning eng katta siri — inson ongi. Uni hali to'liq tushunmaganmiz. Balki siz tushunishga yordam berasizmi?";
-      } else if (lower.includes("sport")) {
-        response = "Eng zo'r sport — dam olishi yo'q bo'lgan mehnat. Ammo agar tanaffus kerak bo'lsa, futbol yoki yugurish ham ajoyib!";
+                response = `
+Mana sizga qiziqarli va ajoyib faktlar — ba’zilari kulgili, ba’zilari hayratlanarli:
+
+🌌 Kosmos va sayyoralarga oid:
+
+1 . Venera sayyorasida kun yili — bir yildan qisqa, ammo kun uzoqroq: Venerada bir kun (planeta o‘z o‘qi atrofida aylanadi) 243 Yer kuniga teng, lekin bir yil (quyosh atrofida aylanish) 225 kunga teng.
+
+2 .Kosmosda quyosh botmaydi, chunki u faqat yorug‘lik manbai, ammo astronavtlar osmonni kunduzgi rangda ko‘radilar.
+
+3. Saturnning eng engil sayyora — u suv ustida suzishi mumkin bo‘lgan sayyora.
+
+🐾 Hayvonot olamiga oid:
+
+4. Piqirlaydigan axlatxonalar mavjud — ba’zi kalamushlar stressli bo‘lsa, o‘zlarini xavfsiz his qilish uchun o‘zini “qoplashadi”.
+
+5. Pollyvagal mushuklar: mushuklar faqat sevgi uchun emas, balki stressni kamaytirish uchun odam bilan murr qiladi.
+
+6. Dengiz shorlari (starfish) yuraksiz yashaydi va agar bir tarmog‘i uzilib ketsa, yangi shor hosil qilishi mumkin.
+
+🧠 Inson va psixologiyaga oid:
+
+7. Inson miyasi 60 000 ga yaqin fikrlarni har kun ishlab chiqaradi.
+
+8. Ko‘zingiz hech qachon “charchamaydi”, lekin miyangiz vizual ma’lumotni qayta ishlashda charchaydi.
+
+9. Kulish sog‘liq uchun foydali: bir daqiqalik kulish yurak urishini 10% oshiradi va endorfin chiqaradi.
+
+🔬 Texnologiya va ilm-fanga oid:
+
+10. Internet tezligi dunyoda juda farq qiladi: Yaponiya va Janubiy Koreyada 1000 Mbps dan yuqori tezliklar mavjud, ba’zi Afrikadagi qishloqlarda esa 1 Mbps ham yetmaydi.
+
+11 .Birinchi kompyuter virus 1971 yilda yaratilgan va u “Creeper” deb nomlangan. U faqat ekranda “I’m the creeper, catch me if you can!” deb chiqardi.
+
+12 .Bluetooth nomi Skandinaviya qirolidan olingan, u birlashishni yaxshi ko‘rgan.
+
+
+    `;
+      } else if (lower.includes("rep")) {
+                response = ` Men sizga dunyo rep qirolini tavsiya qilaman  !
+🎶 Morgenshtern — Qoʻshiqlar roʻyxati
+
+1. Cadillac (Кадиллак) — Eldzhey bilan hamkorlikda.
+
+2. El Problema — Timati bilan hip-hop treki. 
+
+
+3. Sad Song (Грустная Песня) — Thrill Pill va Egor Kreed bilan. 
+
+
+4. Number (Номер) — trap-jazz uslubidagi qoʻshiq. 
+
+
+5. 12 — 2022-yilgi ijtimoiy mavzuga ega trek. 
+
+
+6. Turn It On! — Palc bilan. 
+
+
+7. Malishka (Малышка) — Sharlot bilan sevgi qoʻshigʻi. 
+
+
+8. Cristal & Moët — hashamatli va energiyaga boy trek. 
+
+
+9. Dinero — pul va muvaffaqiyat haqida treklardan biri. 
+
+
+10. Aristocrat — Morgenshternning uslubini aks ettiruvchi trek. 
+
+
+11. Dulo (ДУЛО) — klassik Morgenshtern treklari roʻyxatida. 
+
+
+12. Ice — sovuq ritm va kuchli beat.
+
+    `;
+      } else if (lower.includes("senkim")) {
+            response = "Salom! Men — sizning shaxsiy yordamchingiz va AI chatbotman. 😊 Men sizga savollaringizga javob berishda, yangi narsalarni o‘rganishda, maslahat berishda va hatto qiziqarli suhbatlarda ham doim yordam berishga tayyorman. Siz bilan suhbatlashish orqali men ham doimo rivojlanaman va sizga eng foydali ma’lumotlarni yetkazishga harakat qilaman. Agar xohlasangiz, men sizga bilim, motivatsiya, qiziqarli faktlar yoki dasturlash bo‘yicha yordam bera olaman. Sizni qiziqtirgan mavzularni menga ayting — men ularni qiziqarli va tushunarli tarzda tushuntirishga tayyorman. 🌟 ";
+      } else if (lower.includes("Topishmoq")) {
+        response = "Topishmoq: Oq kiyim kiyaman, yerga tushaman, odamlar meni ko‘rganida quvonadi. Javob: Qor ❄️";
+      } else if (lower.includes("koproqtopishmoq")) {
+        response = "Mana ko'proq topishmoq! 1. Kunduzi yashayman, kechasi yo‘qolaman. Men kim? Javob: Quyosh ☀️. 2. Besh kaftim bo‘lsa ham, bitta qo‘l bilan tutaman. Men kim? Javob: Qovoq 🌱 3. Doimo oldinga qarayman, lekin hech qachon harakat qilmayman. Men kim? Javob: Soat ⏰ 4. Har kim meni sinab ko‘radi, lekin hech kim meni ko‘ra olmaydi. Men nima? Javob: Sir 🤫 5. Ko‘p oyoqlim bor, lekin yugurmayman; ko‘p ko‘zlarim bor, lekin ko‘ra olmayman. Men nima? Javob: Futbol yoki to‘p (yoki biroz hazil variant: “Palapartish o‘yinchoq”) ⚽.";
+      } else if (lower.includes("")) {
+        response = "";
+      } else if (lower.includes("")) {
+        response = " ";
+      } else if (lower.includes("")) {
+        response = "";
+      } else if (lower.includes("")) {
+        response = "";
       } else if (lower.includes("tasodifiy savol")) {
         const questions = [
           "Agar siz bitta super kuchga ega bo'lsangiz, qaysi kuchni tanlardingiz: o'tmirlik, o'chirish yoki o'tmirlik?",
@@ -639,9 +761,6 @@
       };
     }
   </script>
-</body>
-</html>
-</script>
 </body>
 </html>
 
