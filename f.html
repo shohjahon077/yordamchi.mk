@@ -1,0 +1,3015 @@
+<!DOCTYPE html>
+<html lang="uz" id="html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">🌍 Dunyodagi Barcha 197 Ta Mamlakat Bayroqlari</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .language-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .language-selector button {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .language-selector button:hover {
+            background-color: #45a049;
+        }
+        .flag-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .flag-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .flag-item img {
+            width: 100%;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+        }
+        .flag-item span {
+            display: block;
+            margin-top: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+        @media (max-width: 600px) {
+            .flag-container {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        /* Modal oynasi */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="main-title">🌍 Dunyodagi Barcha 197 Ta Mamlakat Bayroqlari</h1>
+
+    <div class="language-selector">
+        <button onclick="setLanguage('uz')">🇺🇿 O'zbek</button>
+        <button onclick="setLanguage('en')">🇺🇸 Ingliz</button>
+        <button onclick="setLanguage('ru')">🇷🇺 Rus</button>
+        <button onclick="setLanguage('zh')">🇨🇳 Xitoy</button>
+        <button onclick="setLanguage('ko')">🇰🇷 Kore</button>
+    </div>
+
+    <div class="flag-container" id="flag-container">
+        <!-- 1 -->
+        <div class="flag-item" onclick="showInfo('af')">
+            <img src="https://flagcdn.com/w320/af.png" alt="Afg'oniston bayrog'i">
+            <span data-name="uz">Afg'oniston</span>
+            <span data-name="en" style="display:none;">Afghanistan</span>
+            <span data-name="ru" style="display:none;">Афганистан</span>
+            <span data-name="zh" style="display:none;">阿富汗</span>
+            <span data-name="ko" style="display:none;">아프가니스탄</span>
+        </div>
+
+        <!-- 2 -->
+        <div class="flag-item" onclick="showInfo('al')">
+            <img src="https://flagcdn.com/w320/al.png" alt="Albaniya bayrog'i">
+            <span data-name="uz">Albaniya</span>
+            <span data-name="en" style="display:none;">Albania</span>
+            <span data-name="ru" style="display:none;">Албания</span>
+            <span data-name="zh" style="display:none;">阿尔巴尼亚</span>
+            <span data-name="ko" style="display:none;">알바니아</span>
+        </div>
+
+        <!-- 3 -->
+        <div class="flag-item" onclick="showInfo('dz')">
+            <img src="https://flagcdn.com/w320/dz.png" alt="Jazoir bayrog'i">
+            <span data-name="uz">Jazoir</span>
+            <span data-name="en" style="display:none;">Algeria</span>
+            <span data-name="ru" style="display:none;">Алжир</span>
+            <span data-name="zh" style="display:none;">阿尔及利亚</span>
+            <span data-name="ko" style="display:none;">알제리</span>
+        </div>
+
+        <!-- 4 -->
+        <div class="flag-item" onclick="showInfo('as')">
+            <img src="https://flagcdn.com/w320/as.png" alt="Amerika Samoasi bayrog'i">
+            <span data-name="uz">Amerika Samoasi</span>
+            <span data-name="en" style="display:none;">American Samoa</span>
+            <span data-name="ru" style="display:none;">Американское Самоа</span>
+            <span data-name="zh" style="display:none;">美属萨摩亚</span>
+            <span data-name="ko" style="display:none;">아메리칸 사모아</span>
+        </div>
+
+        <!-- 5 -->
+        <div class="flag-item" onclick="showInfo('ad')">
+            <img src="https://flagcdn.com/w320/ad.png" alt="Andorra bayrog'i">
+            <span data-name="uz">Andorra</span>
+            <span data-name="en" style="display:none;">Andorra</span>
+            <span data-name="ru" style="display:none;">Андорра</span>
+            <span data-name="zh" style="display:none;">安道尔</span>
+            <span data-name="ko" style="display:none;">안도라</span>
+        </div>
+
+        <!-- 6 -->
+        <div class="flag-item" onclick="showInfo('ao')">
+            <img src="https://flagcdn.com/w320/ao.png" alt="Angola bayrog'i">
+            <span data-name="uz">Angola</span>
+            <span data-name="en" style="display:none;">Angola</span>
+            <span data-name="ru" style="display:none;">Ангола</span>
+            <span data-name="zh" style="display:none;">安哥拉</span>
+            <span data-name="ko" style="display:none;">앙골라</span>
+        </div>
+
+        <!-- 7 -->
+        <div class="flag-item" onclick="showInfo('ai')">
+            <img src="https://flagcdn.com/w320/ai.png" alt="Anguilla bayrog'i">
+            <span data-name="uz">Anguilla</span>
+            <span data-name="en" style="display:none;">Anguilla</span>
+            <span data-name="ru" style="display:none;">Ангилья</span>
+            <span data-name="zh" style="display:none;">安圭拉</span>
+            <span data-name="ko" style="display:none;">앵귈라</span>
+        </div>
+
+        <!-- 8 -->
+        <div class="flag-item" onclick="showInfo('aq')">
+            <img src="https://flagcdn.com/w320/aq.png" alt="Antarktida bayrog'i">
+            <span data-name="uz">Antarktida</span>
+            <span data-name="en" style="display:none;">Antarctica</span>
+            <span data-name="ru" style="display:none;">Антарктида</span>
+            <span data-name="zh" style="display:none;">南极洲</span>
+            <span data-name="ko" style="display:none;">남극 대륙</span>
+        </div>
+
+        <!-- 9 -->
+        <div class="flag-item" onclick="showInfo('ag')">
+            <img src="https://flagcdn.com/w320/ag.png" alt="Antigua va Barbuda bayrog'i">
+            <span data-name="uz">Antigua va Barbuda</span>
+            <span data-name="en" style="display:none;">Antigua and Barbuda</span>
+            <span data-name="ru" style="display:none;">Антигуа и Барбуда</span>
+            <span data-name="zh" style="display:none;">安提瓜和巴布达</span>
+            <span data-name="ko" style="display:none;">앤티가 바부다</span>
+        </div>
+
+        <!-- 10 -->
+        <div class="flag-item" onclick="showInfo('ar')">
+            <img src="https://flagcdn.com/w320/ar.png" alt="Argentina bayrog'i">
+            <span data-name="uz">Argentina</span>
+            <span data-name="en" style="display:none;">Argentina</span>
+            <span data-name="ru" style="display:none;">Аргентина</span>
+            <span data-name="zh" style="display:none;">阿根廷</span>
+            <span data-name="ko" style="display:none;">아르헨티나</span>
+        </div>
+
+        <!-- 11 -->
+        <div class="flag-item" onclick="showInfo('am')">
+            <img src="https://flagcdn.com/w320/am.png" alt="Armaniston bayrog'i">
+            <span data-name="uz">Armaniston</span>
+            <span data-name="en" style="display:none;">Armenia</span>
+            <span data-name="ru" style="display:none;">Армения</span>
+            <span data-name="zh" style="display:none;">亚美尼亚</span>
+            <span data-name="ko" style="display:none;">아르메니아</span>
+        </div>
+
+        <!-- 12 -->
+        <div class="flag-item" onclick="showInfo('aw')">
+            <img src="https://flagcdn.com/w320/aw.png" alt="Aruba bayrog'i">
+            <span data-name="uz">Aruba</span>
+            <span data-name="en" style="display:none;">Aruba</span>
+            <span data-name="ru" style="display:none;">Аруба</span>
+            <span data-name="zh" style="display:none;">阿鲁巴</span>
+            <span data-name="ko" style="display:none;">아루바</span>
+        </div>
+
+        <!-- 13 -->
+        <div class="flag-item" onclick="showInfo('au')">
+            <img src="https://flagcdn.com/w320/au.png" alt="Avstraliya bayrog'i">
+            <span data-name="uz">Avstraliya</span>
+            <span data-name="en" style="display:none;">Australia</span>
+            <span data-name="ru" style="display:none;">Австралия</span>
+            <span data-name="zh" style="display:none;">澳大利亚</span>
+            <span data-name="ko" style="display:none;">오스트레일리아</span>
+        </div>
+
+        <!-- 14 -->
+        <div class="flag-item" onclick="showInfo('at')">
+            <img src="https://flagcdn.com/w320/at.png" alt="Avstriya bayrog'i">
+            <span data-name="uz">Avstriya</span>
+            <span data-name="en" style="display:none;">Austria</span>
+            <span data-name="ru" style="display:none;">Австрия</span>
+            <span data-name="zh" style="display:none;">奥地利</span>
+            <span data-name="ko" style="display:none;">오스트리아</span>
+        </div>
+
+        <!-- 15 -->
+        <div class="flag-item" onclick="showInfo('az')">
+            <img src="https://flagcdn.com/w320/az.png" alt="Ozarbayjon bayrog'i">
+            <span data-name="uz">Ozarbayjon</span>
+            <span data-name="en" style="display:none;">Azerbaijan</span>
+            <span data-name="ru" style="display:none;">Азербайджан</span>
+            <span data-name="zh" style="display:none;">阿塞拜疆</span>
+            <span data-name="ko" style="display:none;">아제르바이잔</span>
+        </div>
+
+        <!-- 16 -->
+        <div class="flag-item" onclick="showInfo('bs')">
+            <img src="https://flagcdn.com/w320/bs.png" alt="Bahama orollari bayrog'i">
+            <span data-name="uz">Bahama orollari</span>
+            <span data-name="en" style="display:none;">Bahamas</span>
+            <span data-name="ru" style="display:none;">Багамские острова</span>
+            <span data-name="zh" style="display:none;">巴哈马</span>
+            <span data-name="ko" style="display:none;">바하마</span>
+        </div>
+
+        <!-- 17 -->
+        <div class="flag-item" onclick="showInfo('bh')">
+            <img src="https://flagcdn.com/w320/bh.png" alt="Bahrain bayrog'i">
+            <span data-name="uz">Bahrain</span>
+            <span data-name="en" style="display:none;">Bahrain</span>
+            <span data-name="ru" style="display:none;">Бахрейн</span>
+            <span data-name="zh" style="display:none;">巴林</span>
+            <span data-name="ko" style="display:none;">바레인</span>
+        </div>
+
+        <!-- 18 -->
+        <div class="flag-item" onclick="showInfo('bd')">
+            <img src="https://flagcdn.com/w320/bd.png" alt="Bangladesh bayrog'i">
+            <span data-name="uz">Bangladesh</span>
+            <span data-name="en" style="display:none;">Bangladesh</span>
+            <span data-name="ru" style="display:none;">Бангладеш</span>
+            <span data-name="zh" style="display:none;">孟加拉国</span>
+            <span data-name="ko" style="display:none;">방글라데시</span>
+        </div>
+
+        <!-- 19 -->
+        <div class="flag-item" onclick="showInfo('bb')">
+            <img src="https://flagcdn.com/w320/bb.png" alt="Barbados bayrog'i">
+            <span data-name="uz">Barbados</span>
+            <span data-name="en" style="display:none;">Barbados</span>
+            <span data-name="ru" style="display:none;">Барбадос</span>
+            <span data-name="zh" style="display:none;">巴巴多斯</span>
+            <span data-name="ko" style="display:none;">바베이도스</span>
+        </div>
+
+        <!-- 20 -->
+        <div class="flag-item" onclick="showInfo('by')">
+            <img src="https://flagcdn.com/w320/by.png" alt="Belarus bayrog'i">
+            <span data-name="uz">Belarus</span>
+            <span data-name="en" style="display:none;">Belarus</span>
+            <span data-name="ru" style="display:none;">Беларусь</span>
+            <span data-name="zh" style="display:none;">白俄罗斯</span>
+            <span data-name="ko" style="display:none;">벨라루스</span>
+        </div>
+
+        <!-- 21 -->
+        <div class="flag-item" onclick="showInfo('be')">
+            <img src="https://flagcdn.com/w320/be.png" alt="Belgiya bayrog'i">
+            <span data-name="uz">Belgiya</span>
+            <span data-name="en" style="display:none;">Belgium</span>
+            <span data-name="ru" style="display:none;">Бельгия</span>
+            <span data-name="zh" style="display:none;">比利时</span>
+            <span data-name="ko" style="display:none;">벨기에</span>
+        </div>
+
+        <!-- 22 -->
+        <div class="flag-item" onclick="showInfo('bz')">
+            <img src="https://flagcdn.com/w320/bz.png" alt="Beliz bayrog'i">
+            <span data-name="uz">Beliz</span>
+            <span data-name="en" style="display:none;">Belize</span>
+            <span data-name="ru" style="display:none;">Белиз</span>
+            <span data-name="zh" style="display:none;">伯利兹</span>
+            <span data-name="ko" style="display:none;">벨리즈</span>
+        </div>
+
+        <!-- 23 -->
+        <div class="flag-item" onclick="showInfo('bj')">
+            <img src="https://flagcdn.com/w320/bj.png" alt="Benin bayrog'i">
+            <span data-name="uz">Benin</span>
+            <span data-name="en" style="display:none;">Benin</span>
+            <span data-name="ru" style="display:none;">Бенин</span>
+            <span data-name="zh" style="display:none;">贝宁</span>
+            <span data-name="ko" style="display:none;">베냉</span>
+        </div>
+
+        <!-- 24 -->
+        <div class="flag-item" onclick="showInfo('bm')">
+            <img src="https://flagcdn.com/w320/bm.png" alt="Bermuda bayrog'i">
+            <span data-name="uz">Bermuda</span>
+            <span data-name="en" style="display:none;">Bermuda</span>
+            <span data-name="ru" style="display:none;">Бермудские острова</span>
+            <span data-name="zh" style="display:none;">百慕大</span>
+            <span data-name="ko" style="display:none;">버뮤다</span>
+        </div>
+
+        <!-- 25 -->
+        <div class="flag-item" onclick="showInfo('bt')">
+            <img src="https://flagcdn.com/w320/bt.png" alt="Butan bayrog'i">
+            <span data-name="uz">Butan</span>
+            <span data-name="en" style="display:none;">Bhutan</span>
+            <span data-name="ru" style="display:none;">Бутан</span>
+            <span data-name="zh" style="display:none;">不丹</span>
+            <span data-name="ko" style="display:none;">부탄</span>
+        </div>
+
+        <!-- 26 -->
+        <div class="flag-item" onclick="showInfo('bo')">
+            <img src="https://flagcdn.com/w320/bo.png" alt="Boliviya bayrog'i">
+            <span data-name="uz">Boliviya</span>
+            <span data-name="en" style="display:none;">Bolivia</span>
+            <span data-name="ru" style="display:none;">Боливия</span>
+            <span data-name="zh" style="display:none;">玻利维亚</span>
+            <span data-name="ko" style="display:none;">볼리비아</span>
+        </div>
+
+        <!-- 27 -->
+        <div class="flag-item" onclick="showInfo('ba')">
+            <img src="https://flagcdn.com/w320/ba.png" alt="Bosniya va Gersegovina bayrog'i">
+            <span data-name="uz">Bosniya va Gersegovina</span>
+            <span data-name="en" style="display:none;">Bosnia and Herzegovina</span>
+            <span data-name="ru" style="display:none;">Босния и Герцеговина</span>
+            <span data-name="zh" style="display:none;">波黑</span>
+            <span data-name="ko" style="display:none;">보스니아 헤르체고비나</span>
+        </div>
+
+        <!-- 28 -->
+        <div class="flag-item" onclick="showInfo('bw')">
+            <img src="https://flagcdn.com/w320/bw.png" alt="Botsvana bayrog'i">
+            <span data-name="uz">Botsvana</span>
+            <span data-name="en" style="display:none;">Botswana</span>
+            <span data-name="ru" style="display:none;">Ботсвана</span>
+            <span data-name="zh" style="display:none;">博茨瓦纳</span>
+            <span data-name="ko" style="display:none;">보츠와나</span>
+        </div>
+
+        <!-- 29 -->
+        <div class="flag-item" onclick="showInfo('bv')">
+            <img src="https://flagcdn.com/w320/bv.png" alt="Bouvet oroli bayrog'i">
+            <span data-name="uz">Bouvet oroli</span>
+            <span data-name="en" style="display:none;">Bouvet Island</span>
+            <span data-name="ru" style="display:none;">Остров Буве</span>
+            <span data-name="zh" style="display:none;">布韦岛</span>
+            <span data-name="ko" style="display:none;">부베 섬</span>
+        </div>
+
+        <!-- 30 -->
+        <div class="flag-item" onclick="showInfo('br')">
+            <img src="https://flagcdn.com/w320/br.png" alt="Braziliya bayrog'i">
+            <span data-name="uz">Braziliya</span>
+            <span data-name="en" style="display:none;">Brazil</span>
+            <span data-name="ru" style="display:none;">Бразилия</span>
+            <span data-name="zh" style="display:none;">巴西</span>
+            <span data-name="ko" style="display:none;">브라질</span>
+        </div>
+
+        <!-- 31 -->
+        <div class="flag-item" onclick="showInfo('io')">
+            <img src="https://flagcdn.com/w320/io.png" alt="Britaniya Hind okeani qirg'og'i bayrog'i">
+            <span data-name="uz">Britaniya Hind okeani qirg'og'i</span>
+            <span data-name="en" style="display:none;">British Indian Ocean Territory</span>
+            <span data-name="ru" style="display:none;">Британская территория в Индийском океане</span>
+            <span data-name="zh" style="display:none;">英属印度洋领地</span>
+            <span data-name="ko" style="display:none;">영국령 인도양 지역</span>
+        </div>
+
+        <!-- 32 -->
+        <div class="flag-item" onclick="showInfo('bn')">
+            <img src="https://flagcdn.com/w320/bn.png" alt="Bruney bayrog'i">
+            <span data-name="uz">Bruney</span>
+            <span data-name="en" style="display:none;">Brunei</span>
+            <span data-name="ru" style="display:none;">Бруней</span>
+            <span data-name="zh" style="display:none;">文莱</span>
+            <span data-name="ko" style="display:none;">브루나이</span>
+        </div>
+
+        <!-- 33 -->
+        <div class="flag-item" onclick="showInfo('bg')">
+            <img src="https://flagcdn.com/w320/bg.png" alt="Bolgariya bayrog'i">
+            <span data-name="uz">Bolgariya</span>
+            <span data-name="en" style="display:none;">Bulgaria</span>
+            <span data-name="ru" style="display:none;">Болгария</span>
+            <span data-name="zh" style="display:none;">保加利亚</span>
+            <span data-name="ko" style="display:none;">불가리아</span>
+        </div>
+
+        <!-- 34 -->
+        <div class="flag-item" onclick="showInfo('bf')">
+            <img src="https://flagcdn.com/w320/bf.png" alt="Burkina Faso bayrog'i">
+            <span data-name="uz">Burkina Faso</span>
+            <span data-name="en" style="display:none;">Burkina Faso</span>
+            <span data-name="ru" style="display:none;">Буркина-Фасо</span>
+            <span data-name="zh" style="display:none;">布基纳法索</span>
+            <span data-name="ko" style="display:none;">부르키나 파소</span>
+        </div>
+
+        <!-- 35 -->
+        <div class="flag-item" onclick="showInfo('bi')">
+            <img src="https://flagcdn.com/w320/bi.png" alt="Burundi bayrog'i">
+            <span data-name="uz">Burundi</span>
+            <span data-name="en" style="display:none;">Burundi</span>
+            <span data-name="ru" style="display:none;">Бурунди</span>
+            <span data-name="zh" style="display:none;">布隆迪</span>
+            <span data-name="ko" style="display:none;">부룬디</span>
+        </div>
+
+        <!-- 36 -->
+        <div class="flag-item" onclick="showInfo('cv')">
+            <img src="https://flagcdn.com/w320/cv.png" alt="Kabo Verde bayrog'i">
+            <span data-name="uz">Kabo Verde</span>
+            <span data-name="en" style="display:none;">Cape Verde</span>
+            <span data-name="ru" style="display:none;">Кабо-Верде</span>
+            <span data-name="zh" style="display:none;">佛得角</span>
+            <span data-name="ko" style="display:none;">카보 베르데</span>
+        </div>
+
+        <!-- 37 -->
+        <div class="flag-item" onclick="showInfo('kh')">
+            <img src="https://flagcdn.com/w320/kh.png" alt="Kambodja bayrog'i">
+            <span data-name="uz">Kambodja</span>
+            <span data-name="en" style="display:none;">Cambodia</span>
+            <span data-name="ru" style="display:none;">Камбоджа</span>
+            <span data-name="zh" style="display:none;">柬埔寨</span>
+            <span data-name="ko" style="display:none;">캄보디아</span>
+        </div>
+
+        <!-- 38 -->
+        <div class="flag-item" onclick="showInfo('cm')">
+            <img src="https://flagcdn.com/w320/cm.png" alt="Kamerun bayrog'i">
+            <span data-name="uz">Kamerun</span>
+            <span data-name="en" style="display:none;">Cameroon</span>
+            <span data-name="ru" style="display:none;">Камерун</span>
+            <span data-name="zh" style="display:none;">喀麦隆</span>
+            <span data-name="ko" style="display:none;">카메룬</span>
+        </div>
+
+        <!-- 39 -->
+        <div class="flag-item" onclick="showInfo('ca')">
+            <img src="https://flagcdn.com/w320/ca.png" alt="Kanada bayrog'i">
+            <span data-name="uz">Kanada</span>
+            <span data-name="en" style="display:none;">Canada</span>
+            <span data-name="ru" style="display:none;">Канада</span>
+            <span data-name="zh" style="display:none;">加拿大</span>
+            <span data-name="ko" style="display:none;">캐나다</span>
+        </div>
+
+        <!-- 40 -->
+        <div class="flag-item" onclick="showInfo('ky')">
+            <img src="https://flagcdn.com/w320/ky.png" alt="Kayman orollari bayrog'i">
+            <span data-name="uz">Kayman orollari</span>
+            <span data-name="en" style="display:none;">Cayman Islands</span>
+            <span data-name="ru" style="display:none;">Каймановы острова</span>
+            <span data-name="zh" style="display:none;">开曼群岛</span>
+            <span data-name="ko" style="display:none;">케이맨 제도</span>
+        </div>
+
+        <!-- 41 -->
+        <div class="flag-item" onclick="showInfo('cf')">
+            <img src="https://flagcdn.com/w320/cf.png" alt="Markaziy Afrika Respublikasi bayrog'i">
+            <span data-name="uz">Markaziy Afrika Respublikasi</span>
+            <span data-name="en" style="display:none;">Central African Republic</span>
+            <span data-name="ru" style="display:none;">Центральноафриканская Республика</span>
+            <span data-name="zh" style="display:none;">中非共和国</span>
+            <span data-name="ko" style="display:none;">중앙 아프리카 공화국</span>
+        </div>
+
+        <!-- 42 -->
+        <div class="flag-item" onclick="showInfo('td')">
+            <img src="https://flagcdn.com/w320/td.png" alt="Chad bayrog'i">
+            <span data-name="uz">Chad</span>
+            <span data-name="en" style="display:none;">Chad</span>
+            <span data-name="ru" style="display:none;">Чад</span>
+            <span data-name="zh" style="display:none;">乍得</span>
+            <span data-name="ko" style="display:none;">차드</span>
+        </div>
+
+        <!-- 43 -->
+        <div class="flag-item" onclick="showInfo('cl')">
+            <img src="https://flagcdn.com/w320/cl.png" alt="Chili bayrog'i">
+            <span data-name="uz">Chili</span>
+            <span data-name="en" style="display:none;">Chile</span>
+            <span data-name="ru" style="display:none;">Чили</span>
+            <span data-name="zh" style="display:none;">智利</span>
+            <span data-name="ko" style="display:none;">칠레</span>
+        </div>
+
+        <!-- 44 -->
+        <div class="flag-item" onclick="showInfo('cn')">
+            <img src="https://flagcdn.com/w320/cn.png" alt="Xitoy bayrog'i">
+            <span data-name="uz">Xitoy</span>
+            <span data-name="en" style="display:none;">China</span>
+            <span data-name="ru" style="display:none;">Китай</span>
+            <span data-name="zh" style="display:none;">中国</span>
+            <span data-name="ko" style="display:none;">중국</span>
+        </div>
+
+        <!-- 45 -->
+        <div class="flag-item" onclick="showInfo('co')">
+            <img src="https://flagcdn.com/w320/co.png" alt="Kolumbiya bayrog'i">
+            <span data-name="uz">Kolumbiya</span>
+            <span data-name="en" style="display:none;">Colombia</span>
+            <span data-name="ru" style="display:none;">Колумбия</span>
+            <span data-name="zh" style="display:none;">哥伦比亚</span>
+            <span data-name="ko" style="display:none;">콜롬비아</span>
+        </div>
+
+        <!-- 46 -->
+        <div class="flag-item" onclick="showInfo('km')">
+            <img src="https://flagcdn.com/w320/km.png" alt="Komor orollari bayrog'i">
+            <span data-name="uz">Komor orollari</span>
+            <span data-name="en" style="display:none;">Comoros</span>
+            <span data-name="ru" style="display:none;">Коморы</span>
+            <span data-name="zh" style="display:none;">科摩罗</span>
+            <span data-name="ko" style="display:none;">코모로</span>
+        </div>
+
+        <!-- 47 -->
+        <div class="flag-item" onclick="showInfo('cg')">
+            <img src="https://flagcdn.com/w320/cg.png" alt="Kongo Respublikasi bayrog'i">
+            <span data-name="uz">Kongo Respublikasi</span>
+            <span data-name="en" style="display:none;">Congo</span>
+            <span data-name="ru" style="display:none;">Конго</span>
+            <span data-name="zh" style="display:none;">刚果共和国</span>
+            <span data-name="ko" style="display:none;">콩고</span>
+        </div>
+
+        <!-- 48 -->
+        <div class="flag-item" onclick="showInfo('cd')">
+            <img src="https://flagcdn.com/w320/cd.png" alt="Kongo Demokratik Respublikasi bayrog'i">
+            <span data-name="uz">Kongo Demokratik Respublikasi</span>
+            <span data-name="en" style="display:none;">Democratic Republic of the Congo</span>
+            <span data-name="ru" style="display:none;">Демократическая Республика Конго</span>
+            <span data-name="zh" style="display:none;">刚果民主共和国</span>
+            <span data-name="ko" style="display:none;">콩고 민주 공화국</span>
+        </div>
+
+        <!-- 49 -->
+        <div class="flag-item" onclick="showInfo('ck')">
+            <img src="https://flagcdn.com/w320/ck.png" alt="Kuk orollari bayrog'i">
+            <span data-name="uz">Kuk orollari</span>
+            <span data-name="en" style="display:none;">Cook Islands</span>
+            <span data-name="ru" style="display:none;">Острова Кука</span>
+            <span data-name="zh" style="display:none;">库克群岛</span>
+            <span data-name="ko" style="display:none;">쿡 제도</span>
+        </div>
+
+        <!-- 50 -->
+        <div class="flag-item" onclick="showInfo('cr')">
+            <img src="https://flagcdn.com/w320/cr.png" alt="Kosta Rika bayrog'i">
+            <span data-name="uz">Kosta Rika</span>
+            <span data-name="en" style="display:none;">Costa Rica</span>
+            <span data-name="ru" style="display:none;">Коста-Рика</span>
+            <span data-name="zh" style="display:none;">哥斯达黎加</span>
+            <span data-name="ko" style="display:none;">코스타리카</span>
+        </div>
+
+        <!-- 51 -->
+        <div class="flag-item" onclick="showInfo('hr')">
+            <img src="https://flagcdn.com/w320/hr.png" alt="Xorvatiya bayrog'i">
+            <span data-name="uz">Xorvatiya</span>
+            <span data-name="en" style="display:none;">Croatia</span>
+            <span data-name="ru" style="display:none;">Хорватия</span>
+            <span data-name="zh" style="display:none;">克罗地亚</span>
+            <span data-name="ko" style="display:none;">크로아티아</span>
+        </div>
+
+        <!-- 52 -->
+        <div class="flag-item" onclick="showInfo('cu')">
+            <img src="https://flagcdn.com/w320/cu.png" alt="Kuba bayrog'i">
+            <span data-name="uz">Kuba</span>
+            <span data-name="en" style="display:none;">Cuba</span>
+            <span data-name="ru" style="display:none;">Куба</span>
+            <span data-name="zh" style="display:none;">古巴</span>
+            <span data-name="ko" style="display:none;">쿠바</span>
+        </div>
+
+        <!-- 53 -->
+        <div class="flag-item" onclick="showInfo('cy')">
+            <img src="https://flagcdn.com/w320/cy.png" alt="Kipr bayrog'i">
+            <span data-name="uz">Kipr</span>
+            <span data-name="en" style="display:none;">Cyprus</span>
+            <span data-name="ru" style="display:none;">Кипр</span>
+            <span data-name="zh" style="display:none;">塞浦路斯</span>
+            <span data-name="ko" style="display:none;">키프로스</span>
+        </div>
+
+        <!-- 54 -->
+        <div class="flag-item" onclick="showInfo('cz')">
+            <img src="https://flagcdn.com/w320/cz.png" alt="Chexiya bayrog'i">
+            <span data-name="uz">Chexiya</span>
+            <span data-name="en" style="display:none;">Czech Republic</span>
+            <span data-name="ru" style="display:none;">Чехия</span>
+            <span data-name="zh" style="display:none;">捷克共和国</span>
+            <span data-name="ko" style="display:none;">체코</span>
+        </div>
+
+        <!-- 55 -->
+        <div class="flag-item" onclick="showInfo('dk')">
+            <img src="https://flagcdn.com/w320/dk.png" alt="Daniya bayrog'i">
+            <span data-name="uz">Daniya</span>
+            <span data-name="en" style="display:none;">Denmark</span>
+            <span data-name="ru" style="display:none;">Дания</span>
+            <span data-name="zh" style="display:none;">丹麦</span>
+            <span data-name="ko" style="display:none;">덴마크</span>
+        </div>
+
+        <!-- 56 -->
+        <div class="flag-item" onclick="showInfo('dj')">
+            <img src="https://flagcdn.com/w320/dj.png" alt="Djibuti bayrog'i">
+            <span data-name="uz">Djibuti</span>
+            <span data-name="en" style="display:none;">Djibouti</span>
+            <span data-name="ru" style="display:none;">Джибути</span>
+            <span data-name="zh" style="display:none;">吉布提</span>
+            <span data-name="ko" style="display:none;">지부티</span>
+        </div>
+
+        <!-- 57 -->
+        <div class="flag-item" onclick="showInfo('dm')">
+            <img src="https://flagcdn.com/w320/dm.png" alt="Dominika bayrog'i">
+            <span data-name="uz">Dominika</span>
+            <span data-name="en" style="display:none;">Dominica</span>
+            <span data-name="ru" style="display:none;">Доминика</span>
+            <span data-name="zh" style="display:none;">多米尼克</span>
+            <span data-name="ko" style="display:none;">도미니카</span>
+        </div>
+
+        <!-- 58 -->
+        <div class="flag-item" onclick="showInfo('do')">
+            <img src="https://flagcdn.com/w320/do.png" alt="Dominikan Respublikasi bayrog'i">
+            <span data-name="uz">Dominikan Respublikasi</span>
+            <span data-name="en" style="display:none;">Dominican Republic</span>
+            <span data-name="ru" style="display:none;">Доминиканская Республика</span>
+            <span data-name="zh" style="display:none;">多米尼加共和国</span>
+            <span data-name="ko" style="display:none;">도미니카 공화국</span>
+        </div>
+
+        <!-- 59 -->
+        <div class="flag-item" onclick="showInfo('ec')">
+            <img src="https://flagcdn.com/w320/ec.png" alt="Ekvador bayrog'i">
+            <span data-name="uz">Ekvador</span>
+            <span data-name="en" style="display:none;">Ecuador</span>
+            <span data-name="ru" style="display:none;">Эквадор</span>
+            <span data-name="zh" style="display:none;">厄瓜多尔</span>
+            <span data-name="ko" style="display:none;">에콰도르</span>
+        </div>
+
+        <!-- 60 -->
+        <div class="flag-item" onclick="showInfo('eg')">
+            <img src="https://flagcdn.com/w320/eg.png" alt="Misr bayrog'i">
+            <span data-name="uz">Misr</span>
+            <span data-name="en" style="display:none;">Egypt</span>
+            <span data-name="ru" style="display:none;">Египет</span>
+            <span data-name="zh" style="display:none;">埃及</span>
+            <span data-name="ko" style="display:none;">이집트</span>
+        </div>
+
+        <!-- 61 -->
+        <div class="flag-item" onclick="showInfo('sv')">
+            <img src="https://flagcdn.com/w320/sv.png" alt="El Salvador bayrog'i">
+            <span data-name="uz">El Salvador</span>
+            <span data-name="en" style="display:none;">El Salvador</span>
+            <span data-name="ru" style="display:none;">Сальвадор</span>
+            <span data-name="zh" style="display:none;">萨尔瓦多</span>
+            <span data-name="ko" style="display:none;">엘살바도르</span>
+        </div>
+
+        <!-- 62 -->
+        <div class="flag-item" onclick="showInfo('gq')">
+            <img src="https://flagcdn.com/w320/gq.png" alt="Ekvatorial Gvineya bayrog'i">
+            <span data-name="uz">Ekvatorial Gvineya</span>
+            <span data-name="en" style="display:none;">Equatorial Guinea</span>
+            <span data-name="ru" style="display:none;">Экваториальная Гвинея</span>
+            <span data-name="zh" style="display:none;">赤道几内亚</span>
+            <span data-name="ko" style="display:none;">적도 기니</span>
+        </div>
+
+        <!-- 63 -->
+        <div class="flag-item" onclick="showInfo('er')">
+            <img src="https://flagcdn.com/w320/er.png" alt="Eritreya bayrog'i">
+            <span data-name="uz">Eritreya</span>
+            <span data-name="en" style="display:none;">Eritrea</span>
+            <span data-name="ru" style="display:none;">Эритрея</span>
+            <span data-name="zh" style="display:none;">厄立特里亚</span>
+            <span data-name="ko" style="display:none;">에리트레아</span>
+        </div>
+
+        <!-- 64 -->
+        <div class="flag-item" onclick="showInfo('ee')">
+            <img src="https://flagcdn.com/w320/ee.png" alt="Estoniya bayrog'i">
+            <span data-name="uz">Estoniya</span>
+            <span data-name="en" style="display:none;">Estonia</span>
+            <span data-name="ru" style="display:none;">Эстония</span>
+            <span data-name="zh" style="display:none;">爱沙尼亚</span>
+            <span data-name="ko" style="display:none;">에스토니아</span>
+        </div>
+
+        <!-- 65 -->
+        <div class="flag-item" onclick="showInfo('sz')">
+            <img src="https://flagcdn.com/w320/sz.png" alt="Esvatini bayrog'i">
+            <span data-name="uz">Esvatini</span>
+            <span data-name="en" style="display:none;">Eswatini</span>
+            <span data-name="ru" style="display:none;">Эсватини</span>
+            <span data-name="zh" style="display:none;">斯威士兰</span>
+            <span data-name="ko" style="display:none;">에스와티니</span>
+        </div>
+
+        <!-- 66 -->
+        <div class="flag-item" onclick="showInfo('et')">
+            <img src="https://flagcdn.com/w320/et.png" alt="Efiopiya bayrog'i">
+            <span data-name="uz">Efiopiya</span>
+            <span data-name="en" style="display:none;">Ethiopia</span>
+            <span data-name="ru" style="display:none;">Эфиопия</span>
+            <span data-name="zh" style="display:none;">埃塞俄比亚</span>
+            <span data-name="ko" style="display:none;">에티오피아</span>
+        </div>
+
+        <!-- 67 -->
+        <div class="flag-item" onclick="showInfo('fk')">
+            <img src="https://flagcdn.com/w320/fk.png" alt="Folklend orollari bayrog'i">
+            <span data-name="uz">Folklend orollari</span>
+            <span data-name="en" style="display:none;">Falkland Islands</span>
+            <span data-name="ru" style="display:none;">Фолклендские острова</span>
+            <span data-name="zh" style="display:none;">福克兰群岛</span>
+            <span data-name="ko" style="display:none;">포클랜드 제도</span>
+        </div>
+
+        <!-- 68 -->
+        <div class="flag-item" onclick="showInfo('fo')">
+            <img src="https://flagcdn.com/w320/fo.png" alt="Farer orollari bayrog'i">
+            <span data-name="uz">Farer orollari</span>
+            <span data-name="en" style="display:none;">Faroe Islands</span>
+            <span data-name="ru" style="display:none;">Фарерские острова</span>
+            <span data-name="zh" style="display:none;">法罗群岛</span>
+            <span data-name="ko" style="display:none;">페로 제도</span>
+        </div>
+
+        <!-- 69 -->
+        <div class="flag-item" onclick="showInfo('fj')">
+            <img src="https://flagcdn.com/w320/fj.png" alt="Fiji bayrog'i">
+            <span data-name="uz">Fiji</span>
+            <span data-name="en" style="display:none;">Fiji</span>
+            <span data-name="ru" style="display:none;">Фиджи</span>
+            <span data-name="zh" style="display:none;">斐济</span>
+            <span data-name="ko" style="display:none;">피지</span>
+        </div>
+
+        <!-- 70 -->
+        <div class="flag-item" onclick="showInfo('fi')">
+            <img src="https://flagcdn.com/w320/fi.png" alt="Finlandiya bayrog'i">
+            <span data-name="uz">Finlandiya</span>
+            <span data-name="en" style="display:none;">Finland</span>
+            <span data-name="ru" style="display:none;">Финляндия</span>
+            <span data-name="zh" style="display:none;">芬兰</span>
+            <span data-name="ko" style="display:none;">핀란드</span>
+        </div>
+
+        <!-- 71 -->
+        <div class="flag-item" onclick="showInfo('fr')">
+            <img src="https://flagcdn.com/w320/fr.png" alt="Fransiya bayrog'i">
+            <span data-name="uz">Fransiya</span>
+            <span data-name="en" style="display:none;">France</span>
+            <span data-name="ru" style="display:none;">Франция</span>
+            <span data-name="zh" style="display:none;">法国</span>
+            <span data-name="ko" style="display:none;">프랑스</span>
+        </div>
+
+        <!-- 72 -->
+        <div class="flag-item" onclick="showInfo('gf')">
+            <img src="https://flagcdn.com/w320/gf.png" alt="Fransuz Gvineyasi bayrog'i">
+            <span data-name="uz">Fransuz Gvineyasi</span>
+            <span data-name="en" style="display:none;">French Guiana</span>
+            <span data-name="ru" style="display:none;">Французская Гвиана</span>
+            <span data-name="zh" style="display:none;">法属圭亚那</span>
+            <span data-name="ko" style="display:none;">프랑스령 기아나</span>
+        </div>
+
+        <!-- 73 -->
+        <div class="flag-item" onclick="showInfo('pf')">
+            <img src="https://flagcdn.com/w320/pf.png" alt="Fransuz Polineziyasi bayrog'i">
+            <span data-name="uz">Fransuz Polineziyasi</span>
+            <span data-name="en" style="display:none;">French Polynesia</span>
+            <span data-name="ru" style="display:none;">Французская Полинезия</span>
+            <span data-name="zh" style="display:none;">法属波利尼西亚</span>
+            <span data-name="ko" style="display:none;">프랑스령 폴리네시아</span>
+        </div>
+
+        <!-- 74 -->
+        <div class="flag-item" onclick="showInfo('tf')">
+            <img src="https://flagcdn.com/w320/tf.png" alt="Fransuz janubiy hududlari bayrog'i">
+            <span data-name="uz">Fransuz janubiy hududlari</span>
+            <span data-name="en" style="display:none;">French Southern Territories</span>
+            <span data-name="ru" style="display:none;">Французские Южные и Антарктические территории</span>
+            <span data-name="zh" style="display:none;">法属南部和南极领地</span>
+            <span data-name="ko" style="display:none;">프랑스령 남부 및 남극 지역</span>
+        </div>
+
+        <!-- 75 -->
+        <div class="flag-item" onclick="showInfo('ga')">
+            <img src="https://flagcdn.com/w320/ga.png" alt="Gabon bayrog'i">
+            <span data-name="uz">Gabon</span>
+            <span data-name="en" style="display:none;">Gabon</span>
+            <span data-name="ru" style="display:none;">Габон</span>
+            <span data-name="zh" style="display:none;">加蓬</span>
+            <span data-name="ko" style="display:none;">가봉</span>
+        </div>
+
+        <!-- 76 -->
+        <div class="flag-item" onclick="showInfo('gm')">
+            <img src="https://flagcdn.com/w320/gm.png" alt="Gambiya bayrog'i">
+            <span data-name="uz">Gambiya</span>
+            <span data-name="en" style="display:none;">Gambia</span>
+            <span data-name="ru" style="display:none;">Гамбия</span>
+            <span data-name="zh" style="display:none;">冈比亚</span>
+            <span data-name="ko" style="display:none;">감비아</span>
+        </div>
+
+        <!-- 77 -->
+        <div class="flag-item" onclick="showInfo('ge')">
+            <img src="https://flagcdn.com/w320/ge.png" alt="Gruziya bayrog'i">
+            <span data-name="uz">Gruziya</span>
+            <span data-name="en" style="display:none;">Georgia</span>
+            <span data-name="ru" style="display:none;">Грузия</span>
+            <span data-name="zh" style="display:none;">格鲁吉亚</span>
+            <span data-name="ko" style="display:none;">조지아</span>
+        </div>
+
+        <!-- 78 -->
+        <div class="flag-item" onclick="showInfo('de')">
+            <img src="https://flagcdn.com/w320/de.png" alt="Germaniya bayrog'i">
+            <span data-name="uz">Germaniya</span>
+            <span data-name="en" style="display:none;">Germany</span>
+            <span data-name="ru" style="display:none;">Германия</span>
+            <span data-name="zh" style="display:none;">德国</span>
+            <span data-name="ko" style="display:none;">독일</span>
+        </div>
+
+        <!-- 79 -->
+        <div class="flag-item" onclick="showInfo('gh')">
+            <img src="https://flagcdn.com/w320/gh.png" alt="Gana bayrog'i">
+            <span data-name="uz">Gana</span>
+            <span data-name="en" style="display:none;">Ghana</span>
+            <span data-name="ru" style="display:none;">Гана</span>
+            <span data-name="zh" style="display:none;">加纳</span>
+            <span data-name="ko" style="display:none;">가나</span>
+        </div>
+
+        <!-- 80 -->
+        <div class="flag-item" onclick="showInfo('gi')">
+            <img src="https://flagcdn.com/w320/gi.png" alt="Gibraltar bayrog'i">
+            <span data-name="uz">Gibraltar</span>
+            <span data-name="en" style="display:none;">Gibraltar</span>
+            <span data-name="ru" style="display:none;">Гибралтар</span>
+            <span data-name="zh" style="display:none;">直布罗陀</span>
+            <span data-name="ko" style="display:none;">지브롤터</span>
+        </div>
+
+        <!-- 81 -->
+        <div class="flag-item" onclick="showInfo('gr')">
+            <img src="https://flagcdn.com/w320/gr.png" alt="Gretsiya bayrog'i">
+            <span data-name="uz">Gretsiya</span>
+            <span data-name="en" style="display:none;">Greece</span>
+            <span data-name="ru" style="display:none;">Греция</span>
+            <span data-name="zh" style="display:none;">希腊</span>
+            <span data-name="ko" style="display:none;">그리스</span>
+        </div>
+
+        <!-- 82 -->
+        <div class="flag-item" onclick="showInfo('gl')">
+            <img src="https://flagcdn.com/w320/gl.png" alt="Grenlandiya bayrog'i">
+            <span data-name="uz">Grenlandiya</span>
+            <span data-name="en" style="display:none;">Greenland</span>
+            <span data-name="ru" style="display:none;">Гренландия</span>
+            <span data-name="zh" style="display:none;">格陵兰</span>
+            <span data-name="ko" style="display:none;">그린란드</span>
+        </div>
+
+        <!-- 83 -->
+        <div class="flag-item" onclick="showInfo('gd')">
+            <img src="https://flagcdn.com/w320/gd.png" alt="Grenada bayrog'i">
+            <span data-name="uz">Grenada</span>
+            <span data-name="en" style="display:none;">Grenada</span>
+            <span data-name="ru" style="display:none;">Гренада</span>
+            <span data-name="zh" style="display:none;">格林纳达</span>
+            <span data-name="ko" style="display:none;">그레나다</span>
+        </div>
+
+        <!-- 84 -->
+        <div class="flag-item" onclick="showInfo('gp')">
+            <img src="https://flagcdn.com/w320/gp.png" alt="Gvadalupe bayrog'i">
+            <span data-name="uz">Gvadalupe</span>
+            <span data-name="en" style="display:none;">Guadeloupe</span>
+            <span data-name="ru" style="display:none;">Гваделупа</span>
+            <span data-name="zh" style="display:none;">瓜德罗普</span>
+            <span data-name="ko" style="display:none;">과들루프</span>
+        </div>
+
+        <!-- 85 -->
+        <div class="flag-item" onclick="showInfo('gu')">
+            <img src="https://flagcdn.com/w320/gu.png" alt="Guam bayrog'i">
+            <span data-name="uz">Guam</span>
+            <span data-name="en" style="display:none;">Guam</span>
+            <span data-name="ru" style="display:none;">Гуам</span>
+            <span data-name="zh" style="display:none;">关岛</span>
+            <span data-name="ko" style="display:none;">괌</span>
+        </div>
+
+        <!-- 86 -->
+        <div class="flag-item" onclick="showInfo('gt')">
+            <img src="https://flagcdn.com/w320/gt.png" alt="Gvatemala bayrog'i">
+            <span data-name="uz">Gvatemala</span>
+            <span data-name="en" style="display:none;">Guatemala</span>
+            <span data-name="ru" style="display:none;">Гватемала</span>
+            <span data-name="zh" style="display:none;">危地马拉</span>
+            <span data-name="ko" style="display:none;">과테말라</span>
+        </div>
+
+        <!-- 87 -->
+        <div class="flag-item" onclick="showInfo('gg')">
+            <img src="https://flagcdn.com/w320/gg.png" alt="Gernsi bayrog'i">
+            <span data-name="uz">Gernsi</span>
+            <span data-name="en" style="display:none;">Guernsey</span>
+            <span data-name="ru" style="display:none;">Гернси</span>
+            <span data-name="zh" style="display:none;">根西岛</span>
+            <span data-name="ko" style="display:none;">건지</span>
+        </div>
+
+        <!-- 88 -->
+        <div class="flag-item" onclick="showInfo('gn')">
+            <img src="https://flagcdn.com/w320/gn.png" alt="Gvineya bayrog'i">
+            <span data-name="uz">Gvineya</span>
+            <span data-name="en" style="display:none;">Guinea</span>
+            <span data-name="ru" style="display:none;">Гвинея</span>
+            <span data-name="zh" style="display:none;">几内亚</span>
+            <span data-name="ko" style="display:none;">기니</span>
+        </div>
+
+        <!-- 89 -->
+        <div class="flag-item" onclick="showInfo('gw')">
+            <img src="https://flagcdn.com/w320/gw.png" alt="Gvineya-Bisau bayrog'i">
+            <span data-name="uz">Gvineya-Bisau</span>
+            <span data-name="en" style="display:none;">Guinea-Bissau</span>
+            <span data-name="ru" style="display:none;">Гвинея-Бисау</span>
+            <span data-name="zh" style="display:none;">几内亚比绍</span>
+            <span data-name="ko" style="display:none;">기니비사우</span>
+        </div>
+
+        <!-- 90 -->
+        <div class="flag-item" onclick="showInfo('gy')">
+            <img src="https://flagcdn.com/w320/gy.png" alt="Gvayana bayrog'i">
+            <span data-name="uz">Gvayana</span>
+            <span data-name="en" style="display:none;">Guyana</span>
+            <span data-name="ru" style="display:none;">Гайана</span>
+            <span data-name="zh" style="display:none;">圭亚那</span>
+            <span data-name="ko" style="display:none;">가이아나</span>
+        </div>
+
+        <!-- 91 -->
+        <div class="flag-item" onclick="showInfo('ht')">
+            <img src="https://flagcdn.com/w320/ht.png" alt="Gaiti bayrog'i">
+            <span data-name="uz">Gaiti</span>
+            <span data-name="en" style="display:none;">Haiti</span>
+            <span data-name="ru" style="display:none;">Гаити</span>
+            <span data-name="zh" style="display:none;">海地</span>
+            <span data-name="ko" style="display:none;">아이티</span>
+        </div>
+
+        <!-- 92 -->
+        <div class="flag-item" onclick="showInfo('hm')">
+            <img src="https://flagcdn.com/w320/hm.png" alt="Xerd va Makdonald orollari bayrog'i">
+            <span data-name="uz">Xerd va Makdonald orollari</span>
+            <span data-name="en" style="display:none;">Heard Island and McDonald Islands</span>
+            <span data-name="ru" style="display:none;">Остров Херд и острова Макдональд</span>
+            <span data-name="zh" style="display:none;">赫德岛和麦克唐纳群岛</span>
+            <span data-name="ko" style="display:none;">허드 맥도널드 제도</span>
+        </div>
+
+        <!-- 93 -->
+        <div class="flag-item" onclick="showInfo('hn')">
+            <img src="https://flagcdn.com/w320/hn.png" alt="Gonduras bayrog'i">
+            <span data-name="uz">Gonduras</span>
+            <span data-name="en" style="display:none;">Honduras</span>
+            <span data-name="ru" style="display:none;">Гондурас</span>
+            <span data-name="zh" style="display:none;">洪都拉斯</span>
+            <span data-name="ko" style="display:none;">온두라스</span>
+        </div>
+
+        <!-- 94 -->
+        <div class="flag-item" onclick="showInfo('hk')">
+            <img src="https://flagcdn.com/w320/hk.png" alt="Gonkong bayrog'i">
+            <span data-name="uz">Gonkong</span>
+            <span data-name="en" style="display:none;">Hong Kong</span>
+            <span data-name="ru" style="display:none;">Гонконг</span>
+            <span data-name="zh" style="display:none;">香港</span>
+            <span data-name="ko" style="display:none;">홍콩</span>
+        </div>
+
+        <!-- 95 -->
+        <div class="flag-item" onclick="showInfo('hu')">
+            <img src="https://flagcdn.com/w320/hu.png" alt="Vengriya bayrog'i">
+            <span data-name="uz">Vengriya</span>
+            <span data-name="en" style="display:none;">Hungary</span>
+            <span data-name="ru" style="display:none;">Венгрия</span>
+            <span data-name="zh" style="display:none;">匈牙利</span>
+            <span data-name="ko" style="display:none;">헝가리</span>
+        </div>
+
+        <!-- 96 -->
+        <div class="flag-item" onclick="showInfo('is')">
+            <img src="https://flagcdn.com/w320/is.png" alt="Islandiya bayrog'i">
+            <span data-name="uz">Islandiya</span>
+            <span data-name="en" style="display:none;">Iceland</span>
+            <span data-name="ru" style="display:none;">Исландия</span>
+            <span data-name="zh" style="display:none;">冰岛</span>
+            <span data-name="ko" style="display:none;">아이슬란드</span>
+        </div>
+
+        <!-- 97 -->
+        <div class="flag-item" onclick="showInfo('in')">
+            <img src="https://flagcdn.com/w320/in.png" alt="Hindiston bayrog'i">
+            <span data-name="uz">Hindiston</span>
+            <span data-name="en" style="display:none;">India</span>
+            <span data-name="ru" style="display:none;">Индия</span>
+            <span data-name="zh" style="display:none;">印度</span>
+            <span data-name="ko" style="display:none;">인도</span>
+        </div>
+
+        <!-- 98 -->
+        <div class="flag-item" onclick="showInfo('id')">
+            <img src="https://flagcdn.com/w320/id.png" alt="Indoneziya bayrog'i">
+            <span data-name="uz">Indoneziya</span>
+            <span data-name="en" style="display:none;">Indonesia</span>
+            <span data-name="ru" style="display:none;">Индонезия</span>
+            <span data-name="zh" style="display:none;">印度尼西亚</span>
+            <span data-name="ko" style="display:none;">인도네시아</span>
+        </div>
+
+        <!-- 99 -->
+        <div class="flag-item" onclick="showInfo('ir')">
+            <img src="https://flagcdn.com/w320/ir.png" alt="Eron bayrog'i">
+            <span data-name="uz">Eron</span>
+            <span data-name="en" style="display:none;">Iran</span>
+            <span data-name="ru" style="display:none;">Иран</span>
+            <span data-name="zh" style="display:none;">伊朗</span>
+            <span data-name="ko" style="display:none;">이란</span>
+        </div>
+
+        <!-- 100 -->
+        <div class="flag-item" onclick="showInfo('iq')">
+            <img src="https://flagcdn.com/w320/iq.png" alt="Iroq bayrog'i">
+            <span data-name="uz">Iroq</span>
+            <span data-name="en" style="display:none;">Iraq</span>
+            <span data-name="ru" style="display:none;">Ирак</span>
+            <span data-name="zh" style="display:none;">伊拉克</span>
+            <span data-name="ko" style="display:none;">이라크</span>
+        </div>
+
+        <!-- 101 -->
+        <div class="flag-item" onclick="showInfo('ie')">
+            <img src="https://flagcdn.com/w320/ie.png" alt="Irlantiya bayrog'i">
+            <span data-name="uz">Irlantiya</span>
+            <span data-name="en" style="display:none;">Ireland</span>
+            <span data-name="ru" style="display:none;">Ирландия</span>
+            <span data-name="zh" style="display:none;">爱尔兰</span>
+            <span data-name="ko" style="display:none;">아일랜드</span>
+        </div>
+
+        <!-- 102 -->
+        <div class="flag-item" onclick="showInfo('im')">
+            <img src="https://flagcdn.com/w320/im.png" alt="Man oroli bayrog'i">
+            <span data-name="uz">Man oroli</span>
+            <span data-name="en" style="display:none;">Isle of Man</span>
+            <span data-name="ru" style="display:none;">Остров Мэн</span>
+            <span data-name="zh" style="display:none;">马恩岛</span>
+            <span data-name="ko" style="display:none;">맨 섬</span>
+        </div>
+
+        <!-- 103 -->
+        <div class="flag-item" onclick="showInfo('il')">
+            <img src="https://flagcdn.com/w320/il.png" alt="Isroil bayrog'i">
+            <span data-name="uz">Isroil</span>
+            <span data-name="en" style="display:none;">Israel</span>
+            <span data-name="ru" style="display:none;">Израиль</span>
+            <span data-name="zh" style="display:none;">以色列</span>
+            <span data-name="ko" style="display:none;">이스라엘</span>
+        </div>
+
+        <!-- 104 -->
+        <div class="flag-item" onclick="showInfo('it')">
+            <img src="https://flagcdn.com/w320/it.png" alt="Italiya bayrog'i">
+            <span data-name="uz">Italiya</span>
+            <span data-name="en" style="display:none;">Italy</span>
+            <span data-name="ru" style="display:none;">Италия</span>
+            <span data-name="zh" style="display:none;">意大利</span>
+            <span data-name="ko" style="display:none;">이탈리아</span>
+        </div>
+
+        <!-- 105 -->
+        <div class="flag-item" onclick="showInfo('jm')">
+            <img src="https://flagcdn.com/w320/jm.png" alt="Yamayka bayrog'i">
+            <span data-name="uz">Yamayka</span>
+            <span data-name="en" style="display:none;">Jamaica</span>
+            <span data-name="ru" style="display:none;">Ямайка</span>
+            <span data-name="zh" style="display:none;">牙买加</span>
+            <span data-name="ko" style="display:none;">자메이카</span>
+        </div>
+
+        <!-- 106 -->
+        <div class="flag-item" onclick="showInfo('jp')">
+            <img src="https://flagcdn.com/w320/jp.png" alt="Yaponiya bayrog'i">
+            <span data-name="uz">Yaponiya</span>
+            <span data-name="en" style="display:none;">Japan</span>
+            <span data-name="ru" style="display:none;">Япония</span>
+            <span data-name="zh" style="display:none;">日本</span>
+            <span data-name="ko" style="display:none;">일본</span>
+        </div>
+
+        <!-- 107 -->
+        <div class="flag-item" onclick="showInfo('je')">
+            <img src="https://flagcdn.com/w320/je.png" alt="Djersi bayrog'i">
+            <span data-name="uz">Djersi</span>
+            <span data-name="en" style="display:none;">Jersey</span>
+            <span data-name="ru" style="display:none;">Джерси</span>
+            <span data-name="zh" style="display:none;">泽西岛</span>
+            <span data-name="ko" style="display:none;">저지</span>
+        </div>
+
+        <!-- 108 -->
+        <div class="flag-item" onclick="showInfo('jo')">
+            <img src="https://flagcdn.com/w320/jo.png" alt="Iordaniya bayrog'i">
+            <span data-name="uz">Iordaniya</span>
+            <span data-name="en" style="display:none;">Jordan</span>
+            <span data-name="ru" style="display:none;">Иордания</span>
+            <span data-name="zh" style="display:none;">约旦</span>
+            <span data-name="ko" style="display:none;">요르단</span>
+        </div>
+
+        <!-- 109 -->
+        <div class="flag-item" onclick="showInfo('kz')">
+            <img src="https://flagcdn.com/w320/kz.png" alt="Qozog'iston bayrog'i">
+            <span data-name="uz">Qozog'iston</span>
+            <span data-name="en" style="display:none;">Kazakhstan</span>
+            <span data-name="ru" style="display:none;">Казахстан</span>
+            <span data-name="zh" style="display:none;">哈萨克斯坦</span>
+            <span data-name="ko" style="display:none;">카자흐스탄</span>
+        </div>
+
+        <!-- 110 -->
+        <div class="flag-item" onclick="showInfo('ke')">
+            <img src="https://flagcdn.com/w320/ke.png" alt="Keniya bayrog'i">
+            <span data-name="uz">Keniya</span>
+            <span data-name="en" style="display:none;">Kenya</span>
+            <span data-name="ru" style="display:none;">Кения</span>
+            <span data-name="zh" style="display:none;">肯尼亚</span>
+            <span data-name="ko" style="display:none;">케냐</span>
+        </div>
+
+        <!-- 111 -->
+        <div class="flag-item" onclick="showInfo('ki')">
+            <img src="https://flagcdn.com/w320/ki.png" alt="Kiribati bayrog'i">
+            <span data-name="uz">Kiribati</span>
+            <span data-name="en" style="display:none;">Kiribati</span>
+            <span data-name="ru" style="display:none;">Кирибати</span>
+            <span data-name="zh" style="display:none;">基里巴斯</span>
+            <span data-name="ko" style="display:none;">키리바시</span>
+        </div>
+
+        <!-- 112 -->
+        <div class="flag-item" onclick="showInfo('kp')">
+            <img src="https://flagcdn.com/w320/kp.png" alt="Shimoliy Koreya bayrog'i">
+            <span data-name="uz">Shimoliy Koreya</span>
+            <span data-name="en" style="display:none;">North Korea</span>
+            <span data-name="ru" style="display:none;">Северная Корея</span>
+            <span data-name="zh" style="display:none;">朝鲜</span>
+            <span data-name="ko" style="display:none;">북한</span>
+        </div>
+
+        <!-- 113 -->
+        <div class="flag-item" onclick="showInfo('kr')">
+            <img src="https://flagcdn.com/w320/kr.png" alt="Janubiy Koreya bayrog'i">
+            <span data-name="uz">Janubiy Koreya</span>
+            <span data-name="en" style="display:none;">South Korea</span>
+            <span data-name="ru" style="display:none;">Южная Корея</span>
+            <span data-name="zh" style="display:none;">韩国</span>
+            <span data-name="ko" style="display:none;">대한민국</span>
+        </div>
+
+        <!-- 114 -->
+        <div class="flag-item" onclick="showInfo('kw')">
+            <img src="https://flagcdn.com/w320/kw.png" alt="Quvayt bayrog'i">
+            <span data-name="uz">Quvayt</span>
+            <span data-name="en" style="display:none;">Kuwait</span>
+            <span data-name="ru" style="display:none;">Кувейт</span>
+            <span data-name="zh" style="display:none;">科威特</span>
+            <span data-name="ko" style="display:none;">쿠웨이트</span>
+        </div>
+
+        <!-- 115 -->
+        <div class="flag-item" onclick="showInfo('kg')">
+            <img src="https://flagcdn.com/w320/kg.png" alt="Qirg'iziston bayrog'i">
+            <span data-name="uz">Qirg'iziston</span>
+            <span data-name="en" style="display:none;">Kyrgyzstan</span>
+            <span data-name="ru" style="display:none;">Киргизия</span>
+            <span data-name="zh" style="display:none;">吉尔吉斯斯坦</span>
+            <span data-name="ko" style="display:none;">키르기스스탄</span>
+        </div>
+
+        <!-- 116 -->
+        <div class="flag-item" onclick="showInfo('la')">
+            <img src="https://flagcdn.com/w320/la.png" alt="Laos bayrog'i">
+            <span data-name="uz">Laos</span>
+            <span data-name="en" style="display:none;">Laos</span>
+            <span data-name="ru" style="display:none;">Лаос</span>
+            <span data-name="zh" style="display:none;">老挝</span>
+            <span data-name="ko" style="display:none;">라오스</span>
+        </div>
+
+        <!-- 117 -->
+        <div class="flag-item" onclick="showInfo('lv')">
+            <img src="https://flagcdn.com/w320/lv.png" alt="Latviya bayrog'i">
+            <span data-name="uz">Latviya</span>
+            <span data-name="en" style="display:none;">Latvia</span>
+            <span data-name="ru" style="display:none;">Латвия</span>
+            <span data-name="zh" style="display:none;">拉脱维亚</span>
+            <span data-name="ko" style="display:none;">라트비아</span>
+        </div>
+
+        <!-- 118 -->
+        <div class="flag-item" onclick="showInfo('lb')">
+            <img src="https://flagcdn.com/w320/lb.png" alt="Livan bayrog'i">
+            <span data-name="uz">Livan</span>
+            <span data-name="en" style="display:none;">Lebanon</span>
+            <span data-name="ru" style="display:none;">Ливан</span>
+            <span data-name="zh" style="display:none;">黎巴嫩</span>
+            <span data-name="ko" style="display:none;">레바논</span>
+        </div>
+
+        <!-- 119 -->
+        <div class="flag-item" onclick="showInfo('ls')">
+            <img src="https://flagcdn.com/w320/ls.png" alt="Lesoto bayrog'i">
+            <span data-name="uz">Lesoto</span>
+            <span data-name="en" style="display:none;">Lesotho</span>
+            <span data-name="ru" style="display:none;">Лесото</span>
+            <span data-name="zh" style="display:none;">莱索托</span>
+            <span data-name="ko" style="display:none;">레소토</span>
+        </div>
+
+        <!-- 120 -->
+        <div class="flag-item" onclick="showInfo('lr')">
+            <img src="https://flagcdn.com/w320/lr.png" alt="Liberiya bayrog'i">
+            <span data-name="uz">Liberiya</span>
+            <span data-name="en" style="display:none;">Liberia</span>
+            <span data-name="ru" style="display:none;">Либерия</span>
+            <span data-name="zh" style="display:none;">利比里亚</span>
+            <span data-name="ko" style="display:none;">라이베리아</span>
+        </div>
+
+        <!-- 121 -->
+        <div class="flag-item" onclick="showInfo('ly')">
+            <img src="https://flagcdn.com/w320/ly.png" alt="Liviya bayrog'i">
+            <span data-name="uz">Liviya</span>
+            <span data-name="en" style="display:none;">Libya</span>
+            <span data-name="ru" style="display:none;">Ливия</span>
+            <span data-name="zh" style="display:none;">利比亚</span>
+            <span data-name="ko" style="display:none;">리비아</span>
+        </div>
+
+        <!-- 122 -->
+        <div class="flag-item" onclick="showInfo('li')">
+            <img src="https://flagcdn.com/w320/li.png" alt="Lixtenšteyn bayrog'i">
+            <span data-name="uz">Lixtenšteyn</span>
+            <span data-name="en" style="display:none;">Liechtenstein</span>
+            <span data-name="ru" style="display:none;">Лихтенштейн</span>
+            <span data-name="zh" style="display:none;">列支敦士登</span>
+            <span data-name="ko" style="display:none;">리히텐슈타인</span>
+        </div>
+
+        <!-- 123 -->
+        <div class="flag-item" onclick="showInfo('lt')">
+            <img src="https://flagcdn.com/w320/lt.png" alt="Litva bayrog'i">
+            <span data-name="uz">Litva</span>
+            <span data-name="en" style="display:none;">Lithuania</span>
+            <span data-name="ru" style="display:none;">Литва</span>
+            <span data-name="zh" style="display:none;">立陶宛</span>
+            <span data-name="ko" style="display:none;">리투아니아</span>
+        </div>
+
+        <!-- 124 -->
+        <div class="flag-item" onclick="showInfo('lu')">
+            <img src="https://flagcdn.com/w320/lu.png" alt="Lyuksemburg bayrog'i">
+            <span data-name="uz">Lyuksemburg</span>
+            <span data-name="en" style="display:none;">Luxembourg</span>
+            <span data-name="ru" style="display:none;">Люксембург</span>
+            <span data-name="zh" style="display:none;">卢森堡</span>
+            <span data-name="ko" style="display:none;">룩셈부르크</span>
+        </div>
+
+        <!-- 125 -->
+        <div class="flag-item" onclick="showInfo('mo')">
+            <img src="https://flagcdn.com/w320/mo.png" alt="Makao bayrog'i">
+            <span data-name="uz">Makao</span>
+            <span data-name="en" style="display:none;">Macao</span>
+            <span data-name="ru" style="display:none;">Макао</span>
+            <span data-name="zh" style="display:none;">澳门</span>
+            <span data-name="ko" style="display:none;">마카오</span>
+        </div>
+
+        <!-- 126 -->
+        <div class="flag-item" onclick="showInfo('mg')">
+            <img src="https://flagcdn.com/w320/mg.png" alt="Madagaskar bayrog'i">
+            <span data-name="uz">Madagaskar</span>
+            <span data-name="en" style="display:none;">Madagascar</span>
+            <span data-name="ru" style="display:none;">Мадагаскар</span>
+            <span data-name="zh" style="display:none;">马达加斯加</span>
+            <span data-name="ko" style="display:none;">마다가스카르</span>
+        </div>
+
+        <!-- 127 -->
+        <div class="flag-item" onclick="showInfo('mw')">
+            <img src="https://flagcdn.com/w320/mw.png" alt="Malavi bayrog'i">
+            <span data-name="uz">Malavi</span>
+            <span data-name="en" style="display:none;">Malawi</span>
+            <span data-name="ru" style="display:none;">Малави</span>
+            <span data-name="zh" style="display:none;">马拉维</span>
+            <span data-name="ko" style="display:none;">말라위</span>
+        </div>
+
+        <!-- 128 -->
+        <div class="flag-item" onclick="showInfo('my')">
+            <img src="https://flagcdn.com/w320/my.png" alt="Malayziya bayrog'i">
+            <span data-name="uz">Malayziya</span>
+            <span data-name="en" style="display:none;">Malaysia</span>
+            <span data-name="ru" style="display:none;">Малайзия</span>
+            <span data-name="zh" style="display:none;">马来西亚</span>
+            <span data-name="ko" style="display:none;">말레이시아</span>
+        </div>
+
+        <!-- 129 -->
+        <div class="flag-item" onclick="showInfo('mv')">
+            <img src="https://flagcdn.com/w320/mv.png" alt="Maldiv orollari bayrog'i">
+            <span data-name="uz">Maldiv orollari</span>
+            <span data-name="en" style="display:none;">Maldives</span>
+            <span data-name="ru" style="display:none;">Мальдивы</span>
+            <span data-name="zh" style="display:none;">马尔代夫</span>
+            <span data-name="ko" style="display:none;">몰디브</span>
+        </div>
+
+        <!-- 130 -->
+        <div class="flag-item" onclick="showInfo('ml')">
+            <img src="https://flagcdn.com/w320/ml.png" alt="Mali bayrog'i">
+            <span data-name="uz">Mali</span>
+            <span data-name="en" style="display:none;">Mali</span>
+            <span data-name="ru" style="display:none;">Мали</span>
+            <span data-name="zh" style="display:none;">马里</span>
+            <span data-name="ko" style="display:none;">말리</span>
+        </div>
+
+        <!-- 131 -->
+        <div class="flag-item" onclick="showInfo('mt')">
+            <img src="https://flagcdn.com/w320/mt.png" alt="Malta bayrog'i">
+            <span data-name="uz">Malta</span>
+            <span data-name="en" style="display:none;">Malta</span>
+            <span data-name="ru" style="display:none;">Мальта</span>
+            <span data-name="zh" style="display:none;">马耳他</span>
+            <span data-name="ko" style="display:none;">몰타</span>
+        </div>
+
+        <!-- 132 -->
+        <div class="flag-item" onclick="showInfo('mh')">
+            <img src="https://flagcdn.com/w320/mh.png" alt="Marshall orollari bayrog'i">
+            <span data-name="uz">Marshall orollari</span>
+            <span data-name="en" style="display:none;">Marshall Islands</span>
+            <span data-name="ru" style="display:none;">Маршалловы Острова</span>
+            <span data-name="zh" style="display:none;">马绍尔群岛</span>
+            <span data-name="ko" style="display:none;">마셜 제도</span>
+        </div>
+
+        <!-- 133 -->
+        <div class="flag-item" onclick="showInfo('mq')">
+            <img src="https://flagcdn.com/w320/mq.png" alt="Martinika bayrog'i">
+            <span data-name="uz">Martinika</span>
+            <span data-name="en" style="display:none;">Martinique</span>
+            <span data-name="ru" style="display:none;">Мартиника</span>
+            <span data-name="zh" style="display:none;">马提尼克</span>
+            <span data-name="ko" style="display:none;">마르티니크</span>
+        </div>
+
+        <!-- 134 -->
+        <div class="flag-item" onclick="showInfo('mr')">
+            <img src="https://flagcdn.com/w320/mr.png" alt="Mavritaniya bayrog'i">
+            <span data-name="uz">Mavritaniya</span>
+            <span data-name="en" style="display:none;">Mauritania</span>
+            <span data-name="ru" style="display:none;">Мавритания</span>
+            <span data-name="zh" style="display:none;">毛里塔尼亚</span>
+            <span data-name="ko" style="display:none;">모리타니</span>
+        </div>
+
+        <!-- 135 -->
+        <div class="flag-item" onclick="showInfo('mu')">
+            <img src="https://flagcdn.com/w320/mu.png" alt="Mavrikiy bayrog'i">
+            <span data-name="uz">Mavrikiy</span>
+            <span data-name="en" style="display:none;">Mauritius</span>
+            <span data-name="ru" style="display:none;">Маврикий</span>
+            <span data-name="zh" style="display:none;">毛里求斯</span>
+            <span data-name="ko" style="display:none;">모리셔스</span>
+        </div>
+
+        <!-- 136 -->
+        <div class="flag-item" onclick="showInfo('yt')">
+            <img src="https://flagcdn.com/w320/yt.png" alt="Mayotta bayrog'i">
+            <span data-name="uz">Mayotta</span>
+            <span data-name="en" style="display:none;">Mayotte</span>
+            <span data-name="ru" style="display:none;">Майотта</span>
+            <span data-name="zh" style="display:none;">马约特</span>
+            <span data-name="ko" style="display:none;">마요트</span>
+        </div>
+
+        <!-- 137 -->
+        <div class="flag-item" onclick="showInfo('mx')">
+            <img src="https://flagcdn.com/w320/mx.png" alt="Meksika bayrog'i">
+            <span data-name="uz">Meksika</span>
+            <span data-name="en" style="display:none;">Mexico</span>
+            <span data-name="ru" style="display:none;">Мексика</span>
+            <span data-name="zh" style="display:none;">墨西哥</span>
+            <span data-name="ko" style="display:none;">멕시코</span>
+        </div>
+
+        <!-- 138 -->
+        <div class="flag-item" onclick="showInfo('fm')">
+            <img src="https://flagcdn.com/w320/fm.png" alt="Mikroneziya bayrog'i">
+            <span data-name="uz">Mikroneziya</span>
+            <span data-name="en" style="display:none;">Micronesia</span>
+            <span data-name="ru" style="display:none;">Микронезия</span>
+            <span data-name="zh" style="display:none;">密克罗尼西亚</span>
+            <span data-name="ko" style="display:none;">미크로네시아</span>
+        </div>
+
+        <!-- 139 -->
+        <div class="flag-item" onclick="showInfo('md')">
+            <img src="https://flagcdn.com/w320/md.png" alt="Moldova bayrog'i">
+            <span data-name="uz">Moldova</span>
+            <span data-name="en" style="display:none;">Moldova</span>
+            <span data-name="ru" style="display:none;">Молдова</span>
+            <span data-name="zh" style="display:none;">摩尔多瓦</span>
+            <span data-name="ko" style="display:none;">몰도바</span>
+        </div>
+
+        <!-- 140 -->
+        <div class="flag-item" onclick="showInfo('mc')">
+            <img src="https://flagcdn.com/w320/mc.png" alt="Monako bayrog'i">
+            <span data-name="uz">Monako</span>
+            <span data-name="en" style="display:none;">Monaco</span>
+            <span data-name="ru" style="display:none;">Монако</span>
+            <span data-name="zh" style="display:none;">摩纳哥</span>
+            <span data-name="ko" style="display:none;">모나코</span>
+        </div>
+
+        <!-- 141 -->
+        <div class="flag-item" onclick="showInfo('mn')">
+            <img src="https://flagcdn.com/w320/mn.png" alt="Mongoliya bayrog'i">
+            <span data-name="uz">Mongoliya</span>
+            <span data-name="en" style="display:none;">Mongolia</span>
+            <span data-name="ru" style="display:none;">Монголия</span>
+            <span data-name="zh" style="display:none;">蒙古</span>
+            <span data-name="ko" style="display:none;">몽골</span>
+        </div>
+
+        <!-- 142 -->
+        <div class="flag-item" onclick="showInfo('me')">
+            <img src="https://flagcdn.com/w320/me.png" alt="Chernogoriya bayrog'i">
+            <span data-name="uz">Chernogoriya</span>
+            <span data-name="en" style="display:none;">Montenegro</span>
+            <span data-name="ru" style="display:none;">Черногория</span>
+            <span data-name="zh" style="display:none;">黑山</span>
+            <span data-name="ko" style="display:none;">몬테네그로</span>
+        </div>
+
+        <!-- 143 -->
+        <div class="flag-item" onclick="showInfo('ms')">
+            <img src="https://flagcdn.com/w320/ms.png" alt="Montserrat bayrog'i">
+            <span data-name="uz">Montserrat</span>
+            <span data-name="en" style="display:none;">Montserrat</span>
+            <span data-name="ru" style="display:none;">Монтсеррат</span>
+            <span data-name="zh" style="display:none;">蒙特塞拉特</span>
+            <span data-name="ko" style="display:none;">몬트세랫</span>
+        </div>
+
+        <!-- 144 -->
+        <div class="flag-item" onclick="showInfo('ma')">
+            <img src="https://flagcdn.com/w320/ma.png" alt="Marokash bayrog'i">
+            <span data-name="uz">Marokash</span>
+            <span data-name="en" style="display:none;">Morocco</span>
+            <span data-name="ru" style="display:none;">Марокко</span>
+            <span data-name="zh" style="display:none;">摩洛哥</span>
+            <span data-name="ko" style="display:none;">모로코</span>
+        </div>
+
+        <!-- 145 -->
+        <div class="flag-item" onclick="showInfo('mz')">
+            <img src="https://flagcdn.com/w320/mz.png" alt="Mozambik bayrog'i">
+            <span data-name="uz">Mozambik</span>
+            <span data-name="en" style="display:none;">Mozambique</span>
+            <span data-name="ru" style="display:none;">Мозамбик</span>
+            <span data-name="zh" style="display:none;">莫桑比克</span>
+            <span data-name="ko" style="display:none;">모잠비크</span>
+        </div>
+
+        <!-- 146 -->
+        <div class="flag-item" onclick="showInfo('mm')">
+            <img src="https://flagcdn.com/w320/mm.png" alt="Myanma bayrog'i">
+            <span data-name="uz">Myanma</span>
+            <span data-name="en" style="display:none;">Myanmar</span>
+            <span data-name="ru" style="display:none;">Мьянма</span>
+            <span data-name="zh" style="display:none;">缅甸</span>
+            <span data-name="ko" style="display:none;">미얀마</span>
+        </div>
+
+        <!-- 147 -->
+        <div class="flag-item" onclick="showInfo('na')">
+            <img src="https://flagcdn.com/w320/na.png" alt="Namibiya bayrog'i">
+            <span data-name="uz">Namibiya</span>
+            <span data-name="en" style="display:none;">Namibia</span>
+            <span data-name="ru" style="display:none;">Намибия</span>
+            <span data-name="zh" style="display:none;">纳米比亚</span>
+            <span data-name="ko" style="display:none;">나미비아</span>
+        </div>
+
+        <!-- 148 -->
+        <div class="flag-item" onclick="showInfo('nr')">
+            <img src="https://flagcdn.com/w320/nr.png" alt="Nauru bayrog'i">
+            <span data-name="uz">Nauru</span>
+            <span data-name="en" style="display:none;">Nauru</span>
+            <span data-name="ru" style="display:none;">Науру</span>
+            <span data-name="zh" style="display:none;">瑙鲁</span>
+            <span data-name="ko" style="display:none;">나우루</span>
+        </div>
+
+        <!-- 149 -->
+        <div class="flag-item" onclick="showInfo('np')">
+            <img src="https://flagcdn.com/w320/np.png" alt="Nepal bayrog'i">
+            <span data-name="uz">Nepal</span>
+            <span data-name="en" style="display:none;">Nepal</span>
+            <span data-name="ru" style="display:none;">Непал</span>
+            <span data-name="zh" style="display:none;">尼泊尔</span>
+            <span data-name="ko" style="display:none;">네팔</span>
+        </div>
+
+        <!-- 150 -->
+        <div class="flag-item" onclick="showInfo('nl')">
+            <img src="https://flagcdn.com/w320/nl.png" alt="Niderlandiya bayrog'i">
+            <span data-name="uz">Niderlandiya</span>
+            <span data-name="en" style="display:none;">Netherlands</span>
+            <span data-name="ru" style="display:none;">Нидерланды</span>
+            <span data-name="zh" style="display:none;">荷兰</span>
+            <span data-name="ko" style="display:none;">네덜란드</span>
+        </div>
+
+        <!-- 151 -->
+        <div class="flag-item" onclick="showInfo('nc')">
+            <img src="https://flagcdn.com/w320/nc.png" alt="Yangi Kaledoniya bayrog'i">
+            <span data-name="uz">Yangi Kaledoniya</span>
+            <span data-name="en" style="display:none;">New Caledonia</span>
+            <span data-name="ru" style="display:none;">Новая Каледония</span>
+            <span data-name="zh" style="display:none;">新喀里多尼亚</span>
+            <span data-name="ko" style="display:none;">뉴칼레도니아</span>
+        </div>
+
+        <!-- 152 -->
+        <div class="flag-item" onclick="showInfo('nz')">
+            <img src="https://flagcdn.com/w320/nz.png" alt="Yangi Zelandiya bayrog'i">
+            <span data-name="uz">Yangi Zelandiya</span>
+            <span data-name="en" style="display:none;">New Zealand</span>
+            <span data-name="ru" style="display:none;">Новая Зеландия</span>
+            <span data-name="zh" style="display:none;">新西兰</span>
+            <span data-name="ko" style="display:none;">뉴질랜드</span>
+        </div>
+
+        <!-- 153 -->
+        <div class="flag-item" onclick="showInfo('ni')">
+            <img src="https://flagcdn.com/w320/ni.png" alt="Nikaragua bayrog'i">
+            <span data-name="uz">Nikaragua</span>
+            <span data-name="en" style="display:none;">Nicaragua</span>
+            <span data-name="ru" style="display:none;">Никарагуа</span>
+            <span data-name="zh" style="display:none;">尼加拉瓜</span>
+            <span data-name="ko" style="display:none;">니카라과</span>
+        </div>
+
+        <!-- 154 -->
+        <div class="flag-item" onclick="showInfo('ne')">
+            <img src="https://flagcdn.com/w320/ne.png" alt="Niger bayrog'i">
+            <span data-name="uz">Niger</span>
+            <span data-name="en" style="display:none;">Niger</span>
+            <span data-name="ru" style="display:none;">Нигер</span>
+            <span data-name="zh" style="display:none;">尼日尔</span>
+            <span data-name="ko" style="display:none;">니제르</span>
+        </div>
+
+        <!-- 155 -->
+        <div class="flag-item" onclick="showInfo('ng')">
+            <img src="https://flagcdn.com/w320/ng.png" alt="Nigeriya bayrog'i">
+            <span data-name="uz">Nigeriya</span>
+            <span data-name="en" style="display:none;">Nigeria</span>
+            <span data-name="ru" style="display:none;">Нигерия</span>
+            <span data-name="zh" style="display:none;">尼日利亚</span>
+            <span data-name="ko" style="display:none;">나이지리아</span>
+        </div>
+
+        <!-- 156 -->
+        <div class="flag-item" onclick="showInfo('nu')">
+            <img src="https://flagcdn.com/w320/nu.png" alt="Niue bayrog'i">
+            <span data-name="uz">Niue</span>
+            <span data-name="en" style="display:none;">Niue</span>
+            <span data-name="ru" style="display:none;">Ниуэ</span>
+            <span data-name="zh" style="display:none;">纽埃</span>
+            <span data-name="ko" style="display:none;">니우에</span>
+        </div>
+
+        <!-- 157 -->
+        <div class="flag-item" onclick="showInfo('nf')">
+            <img src="https://flagcdn.com/w320/nf.png" alt="Norfolk oroli bayrog'i">
+            <span data-name="uz">Norfolk oroli</span>
+            <span data-name="en" style="display:none;">Norfolk Island</span>
+            <span data-name="ru" style="display:none;">Остров Норфолк</span>
+            <span data-name="zh" style="display:none;">诺福克岛</span>
+            <span data-name="ko" style="display:none;">노퍽 섬</span>
+        </div>
+
+        <!-- 158 -->
+        <div class="flag-item" onclick="showInfo('mk')">
+            <img src="https://flagcdn.com/w320/mk.png" alt="Shimoliy Makedoniya bayrog'i">
+            <span data-name="uz">Shimoliy Makedoniya</span>
+            <span data-name="en" style="display:none;">North Macedonia</span>
+            <span data-name="ru" style="display:none;">Северная Македония</span>
+            <span data-name="zh" style="display:none;">北马其顿</span>
+            <span data-name="ko" style="display:none;">북마케도니아</span>
+        </div>
+
+        <!-- 159 -->
+        <div class="flag-item" onclick="showInfo('mp')">
+            <img src="https://flagcdn.com/w320/mp.png" alt="Shimoliy Mariana orollari bayrog'i">
+            <span data-name="uz">Shimoliy Mariana orollari</span>
+            <span data-name="en" style="display:none;">Northern Mariana Islands</span>
+            <span data-name="ru" style="display:none;">Северные Марианские острова</span>
+            <span data-name="zh" style="display:none;">北马里亚纳群岛</span>
+            <span data-name="ko" style="display:none;">북마리아나 제도</span>
+        </div>
+
+        <!-- 160 -->
+        <div class="flag-item" onclick="showInfo('no')">
+            <img src="https://flagcdn.com/w320/no.png" alt="Norvegiya bayrog'i">
+            <span data-name="uz">Norvegiya</span>
+            <span data-name="en" style="display:none;">Norway</span>
+            <span data-name="ru" style="display:none;">Норвегия</span>
+            <span data-name="zh" style="display:none;">挪威</span>
+            <span data-name="ko" style="display:none;">노르웨이</span>
+        </div>
+
+        <!-- 161 -->
+        <div class="flag-item" onclick="showInfo('om')">
+            <img src="https://flagcdn.com/w320/om.png" alt="Oman bayrog'i">
+            <span data-name="uz">Oman</span>
+            <span data-name="en" style="display:none;">Oman</span>
+            <span data-name="ru" style="display:none;">Оман</span>
+            <span data-name="zh" style="display:none;">阿曼</span>
+            <span data-name="ko" style="display:none;">오만</span>
+        </div>
+
+        <!-- 162 -->
+        <div class="flag-item" onclick="showInfo('pk')">
+            <img src="https://flagcdn.com/w320/pk.png" alt="Pokiston bayrog'i">
+            <span data-name="uz">Pokiston</span>
+            <span data-name="en" style="display:none;">Pakistan</span>
+            <span data-name="ru" style="display:none;">Пакистан</span>
+            <span data-name="zh" style="display:none;">巴基斯坦</span>
+            <span data-name="ko" style="display:none;">파키스탄</span>
+        </div>
+
+        <!-- 163 -->
+        <div class="flag-item" onclick="showInfo('pw')">
+            <img src="https://flagcdn.com/w320/pw.png" alt="Palau bayrog'i">
+            <span data-name="uz">Palau</span>
+            <span data-name="en" style="display:none;">Palau</span>
+            <span data-name="ru" style="display:none;">Палау</span>
+            <span data-name="zh" style="display:none;">帕劳</span>
+            <span data-name="ko" style="display:none;">팔라우</span>
+        </div>
+
+        <!-- 164 -->
+        <div class="flag-item" onclick="showInfo('ps')">
+            <img src="https://flagcdn.com/w320/ps.png" alt="Palestina bayrog'i">
+            <span data-name="uz">Palestina</span>
+            <span data-name="en" style="display:none;">Palestine</span>
+            <span data-name="ru" style="display:none;">Палестина</span>
+            <span data-name="zh" style="display:none;">巴勒斯坦</span>
+            <span data-name="ko" style="display:none;">팔레스타인</span>
+        </div>
+
+        <!-- 165 -->
+        <div class="flag-item" onclick="showInfo('pa')">
+            <img src="https://flagcdn.com/w320/pa.png" alt="Panama bayrog'i">
+            <span data-name="uz">Panama</span>
+            <span data-name="en" style="display:none;">Panama</span>
+            <span data-name="ru" style="display:none;">Панама</span>
+            <span data-name="zh" style="display:none;">巴拿马</span>
+            <span data-name="ko" style="display:none;">파나마</span>
+        </div>
+
+        <!-- 166 -->
+        <div class="flag-item" onclick="showInfo('pg')">
+            <img src="https://flagcdn.com/w320/pg.png" alt="Papua Yangi Gvineya bayrog'i">
+            <span data-name="uz">Papua Yangi Gvineya</span>
+            <span data-name="en" style="display:none;">Papua New Guinea</span>
+            <span data-name="ru" style="display:none;">Папуа — Новая Гвинея</span>
+            <span data-name="zh" style="display:none;">巴布亚新几内亚</span>
+            <span data-name="ko" style="display:none;">파푸아 뉴기니</span>
+        </div>
+
+        <!-- 167 -->
+        <div class="flag-item" onclick="showInfo('py')">
+            <img src="https://flagcdn.com/w320/py.png" alt="Paragvay bayrog'i">
+            <span data-name="uz">Paragvay</span>
+            <span data-name="en" style="display:none;">Paraguay</span>
+            <span data-name="ru" style="display:none;">Парагвай</span>
+            <span data-name="zh" style="display:none;">巴拉圭</span>
+            <span data-name="ko" style="display:none;">파라과이</span>
+        </div>
+
+        <!-- 168 -->
+        <div class="flag-item" onclick="showInfo('pe')">
+            <img src="https://flagcdn.com/w320/pe.png" alt="Peru bayrog'i">
+            <span data-name="uz">Peru</span>
+            <span data-name="en" style="display:none;">Peru</span>
+            <span data-name="ru" style="display:none;">Перу</span>
+            <span data-name="zh" style="display:none;">秘鲁</span>
+            <span data-name="ko" style="display:none;">페루</span>
+        </div>
+
+        <!-- 169 -->
+        <div class="flag-item" onclick="showInfo('ph')">
+            <img src="https://flagcdn.com/w320/ph.png" alt="Filippin bayrog'i">
+            <span data-name="uz">Filippin</span>
+            <span data-name="en" style="display:none;">Philippines</span>
+            <span data-name="ru" style="display:none;">Филиппины</span>
+            <span data-name="zh" style="display:none;">菲律宾</span>
+            <span data-name="ko" style="display:none;">필리핀</span>
+        </div>
+
+        <!-- 170 -->
+        <div class="flag-item" onclick="showInfo('pn')">
+            <img src="https://flagcdn.com/w320/pn.png" alt="Pitkern orollari bayrog'i">
+            <span data-name="uz">Pitkern orollari</span>
+            <span data-name="en" style="display:none;">Pitcairn Islands</span>
+            <span data-name="ru" style="display:none;">Острова Питкэрн</span>
+            <span data-name="zh" style="display:none;">皮特凯恩群岛</span>
+            <span data-name="ko" style="display:none;">핏케언 제도</span>
+        </div>
+
+        <!-- 171 -->
+        <div class="flag-item" onclick="showInfo('pl')">
+            <img src="https://flagcdn.com/w320/pl.png" alt="Polsha bayrog'i">
+            <span data-name="uz">Polsha</span>
+            <span data-name="en" style="display:none;">Poland</span>
+            <span data-name="ru" style="display:none;">Польша</span>
+            <span data-name="zh" style="display:none;">波兰</span>
+            <span data-name="ko" style="display:none;">폴란드</span>
+        </div>
+
+        <!-- 172 -->
+        <div class="flag-item" onclick="showInfo('pt')">
+            <img src="https://flagcdn.com/w320/pt.png" alt="Portugaliya bayrog'i">
+            <span data-name="uz">Portugaliya</span>
+            <span data-name="en" style="display:none;">Portugal</span>
+            <span data-name="ru" style="display:none;">Португалия</span>
+            <span data-name="zh" style="display:none;">葡萄牙</span>
+            <span data-name="ko" style="display:none;">포르투갈</span>
+        </div>
+
+        <!-- 173 -->
+        <div class="flag-item" onclick="showInfo('pr')">
+            <img src="https://flagcdn.com/w320/pr.png" alt="Porto Riko bayrog'i">
+            <span data-name="uz">Porto Riko</span>
+            <span data-name="en" style="display:none;">Puerto Rico</span>
+            <span data-name="ru" style="display:none;">Пуэрто-Рико</span>
+            <span data-name="zh" style="display:none;">波多黎各</span>
+            <span data-name="ko" style="display:none;">푸에르토리코</span>
+        </div>
+
+        <!-- 174 -->
+        <div class="flag-item" onclick="showInfo('qa')">
+            <img src="https://flagcdn.com/w320/qa.png" alt="Qatar bayrog'i">
+            <span data-name="uz">Qatar</span>
+            <span data-name="en" style="display:none;">Qatar</span>
+            <span data-name="ru" style="display:none;">Катар</span>
+            <span data-name="zh" style="display:none;">卡塔尔</span>
+            <span data-name="ko" style="display:none;">카타르</span>
+        </div>
+
+        <!-- 175 -->
+        <div class="flag-item" onclick="showInfo('re')">
+            <img src="https://flagcdn.com/w320/re.png" alt="Reyunion bayrog'i">
+            <span data-name="uz">Reyunion</span>
+            <span data-name="en" style="display:none;">Réunion</span>
+            <span data-name="ru" style="display:none;">Реюньон</span>
+            <span data-name="zh" style="display:none;">留尼汪</span>
+            <span data-name="ko" style="display:none;">레위니옹</span>
+        </div>
+
+        <!-- 176 -->
+        <div class="flag-item" onclick="showInfo('ro')">
+            <img src="https://flagcdn.com/w320/ro.png" alt="Ruminiya bayrog'i">
+            <span data-name="uz">Ruminiya</span>
+            <span data-name="en" style="display:none;">Romania</span>
+            <span data-name="ru" style="display:none;">Румыния</span>
+            <span data-name="zh" style="display:none;">罗马尼亚</span>
+            <span data-name="ko" style="display:none;">루마니아</span>
+        </div>
+
+        <!-- 177 -->
+        <div class="flag-item" onclick="showInfo('ru')">
+            <img src="https://flagcdn.com/w320/ru.png" alt="Rossiya bayrog'i">
+            <span data-name="uz">Rossiya</span>
+            <span data-name="en" style="display:none;">Russia</span>
+            <span data-name="ru" style="display:none;">Россия</span>
+            <span data-name="zh" style="display:none;">俄罗斯</span>
+            <span data-name="ko" style="display:none;">러시아</span>
+        </div>
+
+        <!-- 178 -->
+        <div class="flag-item" onclick="showInfo('rw')">
+            <img src="https://flagcdn.com/w320/rw.png" alt="Ruanda bayrog'i">
+            <span data-name="uz">Ruanda</span>
+            <span data-name="en" style="display:none;">Rwanda</span>
+            <span data-name="ru" style="display:none;">Руанда</span>
+            <span data-name="zh" style="display:none;">卢旺达</span>
+            <span data-name="ko" style="display:none;">르완다</span>
+        </div>
+
+        <!-- 179 -->
+        <div class="flag-item" onclick="showInfo('bl')">
+            <img src="https://flagcdn.com/w320/bl.png" alt="Sen-Bartelemi bayrog'i">
+            <span data-name="uz">Sen-Bartelemi</span>
+            <span data-name="en" style="display:none;">Saint Barthélemy</span>
+            <span data-name="ru" style="display:none;">Сен-Бартелеми</span>
+            <span data-name="zh" style="display:none;">圣巴泰勒米</span>
+            <span data-name="ko" style="display:none;">생 바르텔레미</span>
+        </div>
+
+        <!-- 180 -->
+        <div class="flag-item" onclick="showInfo('sh')">
+            <img src="https://flagcdn.com/w320/sh.png" alt="Svet-Yelena oroli bayrog'i">
+            <span data-name="uz">Svet-Yelena oroli</span>
+            <span data-name="en" style="display:none;">Saint Helena</span>
+            <span data-name="ru" style="display:none;">Остров Святой Елены</span>
+            <span data-name="zh" style="display:none;">圣赫勒拿</span>
+            <span data-name="ko" style="display:none;">세인트 헬레나</span>
+        </div>
+
+        <!-- 181 -->
+        <div class="flag-item" onclick="showInfo('kn')">
+            <img src="https://flagcdn.com/w320/kn.png" alt="Saint Kitts va Nevis bayrog'i">
+            <span data-name="uz">Saint Kitts va Nevis</span>
+            <span data-name="en" style="display:none;">Saint Kitts and Nevis</span>
+            <span data-name="ru" style="display:none;">Сент-Китс и Невис</span>
+            <span data-name="zh" style="display:none;">圣基茨和尼维斯</span>
+            <span data-name="ko" style="display:none;">세인트 키츠 네비스</span>
+        </div>
+
+        <!-- 182 -->
+        <div class="flag-item" onclick="showInfo('lc')">
+            <img src="https://flagcdn.com/w320/lc.png" alt="Saint-Lyusiya bayrog'i">
+            <span data-name="uz">Saint-Lyusiya</span>
+            <span data-name="en" style="display:none;">Saint Lucia</span>
+            <span data-name="ru" style="display:none;">Сент-Люсия</span>
+            <span data-name="zh" style="display:none;">圣卢西亚</span>
+            <span data-name="ko" style="display:none;">세인트 루시아</span>
+        </div>
+
+        <!-- 183 -->
+        <div class="flag-item" onclick="showInfo('mf')">
+            <img src="https://flagcdn.com/w320/mf.png" alt="Saint-Martin bayrog'i">
+            <span data-name="uz">Saint-Martin</span>
+            <span data-name="en" style="display:none;">Saint Martin</span>
+            <span data-name="ru" style="display:none;">Сен-Мартен</span>
+            <span data-name="zh" style="display:none;">法属圣马丁</span>
+            <span data-name="ko" style="display:none;">생 마르탱</span>
+        </div>
+
+        <!-- 184 -->
+        <div class="flag-item" onclick="showInfo('pm')">
+            <img src="https://flagcdn.com/w320/pm.png" alt="Saint-Pyer va Mikelon bayrog'i">
+            <span data-name="uz">Saint-Pyer va Mikelon</span>
+            <span data-name="en" style="display:none;">Saint Pierre and Miquelon</span>
+            <span data-name="ru" style="display:none;">Сен-Пьер и Микелон</span>
+            <span data-name="zh" style="display:none;">圣皮埃尔和密克隆</span>
+            <span data-name="ko" style="display:none;">생피에르 미클롱</span>
+        </div>
+
+        <!-- 185 -->
+        <div class="flag-item" onclick="showInfo('vc')">
+            <img src="https://flagcdn.com/w320/vc.png" alt="Saint-Vinsent va Grenadinlar bayrog'i">
+            <span data-name="uz">Saint-Vinsent va Grenadinlar</span>
+            <span data-name="en" style="display:none;">Saint Vincent and the Grenadines</span>
+            <span data-name="ru" style="display:none;">Сент-Винсент и Гренадины</span>
+            <span data-name="zh" style="display:none;">圣文森特和格林纳丁斯</span>
+            <span data-name="ko" style="display:none;">세인트 빈센트 그레나딘</span>
+        </div>
+
+        <!-- 186 -->
+        <div class="flag-item" onclick="showInfo('ws')">
+            <img src="https://flagcdn.com/w320/ws.png" alt="Samoa bayrog'i">
+            <span data-name="uz">Samoa</span>
+            <span data-name="en" style="display:none;">Samoa</span>
+            <span data-name="ru" style="display:none;">Самоа</span>
+            <span data-name="zh" style="display:none;">萨摩亚</span>
+            <span data-name="ko" style="display:none;">사모아</span>
+        </div>
+
+        <!-- 187 -->
+        <div class="flag-item" onclick="showInfo('sm')">
+            <img src="https://flagcdn.com/w320/sm.png" alt="San-Marino bayrog'i">
+            <span data-name="uz">San-Marino</span>
+            <span data-name="en" style="display:none;">San Marino</span>
+            <span data-name="ru" style="display:none;">Сан-Марино</span>
+            <span data-name="zh" style="display:none;">圣马力诺</span>
+            <span data-name="ko" style="display:none;">산마리노</span>
+        </div>
+
+        <!-- 188 -->
+        <div class="flag-item" onclick="showInfo('st')">
+            <img src="https://flagcdn.com/w320/st.png" alt="San-Tome va Prinsipi bayrog'i">
+            <span data-name="uz">San-Tome va Prinsipi</span>
+            <span data-name="en" style="display:none;">São Tomé and Príncipe</span>
+            <span data-name="ru" style="display:none;">Сан-Томе и Принсипи</span>
+            <span data-name="zh" style="display:none;">圣多美和普林西比</span>
+            <span data-name="ko" style="display:none;">상투메 프린시페</span>
+        </div>
+
+        <!-- 189 -->
+        <div class="flag-item" onclick="showInfo('sa')">
+            <img src="https://flagcdn.com/w320/sa.png" alt="Saudiya Arabistoni bayrog'i">
+            <span data-name="uz">Saudiya Arabistoni</span>
+            <span data-name="en" style="display:none;">Saudi Arabia</span>
+            <span data-name="ru" style="display:none;">Саудовская Аравия</span>
+            <span data-name="zh" style="display:none;">沙特阿拉伯</span>
+            <span data-name="ko" style="display:none;">사우디아라비아</span>
+        </div>
+
+        <!-- 190 -->
+        <div class="flag-item" onclick="showInfo('sn')">
+            <img src="https://flagcdn.com/w320/sn.png" alt="Senegal bayrog'i">
+            <span data-name="uz">Senegal</span>
+            <span data-name="en" style="display:none;">Senegal</span>
+            <span data-name="ru" style="display:none;">Сенегал</span>
+            <span data-name="zh" style="display:none;">塞内加尔</span>
+            <span data-name="ko" style="display:none;">세네갈</span>
+        </div>
+
+        <!-- 191 -->
+        <div class="flag-item" onclick="showInfo('rs')">
+            <img src="https://flagcdn.com/w320/rs.png" alt="Serbiya bayrog'i">
+            <span data-name="uz">Serbiya</span>
+            <span data-name="en" style="display:none;">Serbia</span>
+            <span data-name="ru" style="display:none;">Сербия</span>
+            <span data-name="zh" style="display:none;">塞尔维亚</span>
+            <span data-name="ko" style="display:none;">세르비아</span>
+        </div>
+
+        <!-- 192 -->
+        <div class="flag-item" onclick="showInfo('sc')">
+            <img src="https://flagcdn.com/w320/sc.png" alt="Seyshel orollari bayrog'i">
+            <span data-name="uz">Seyshel orollari</span>
+            <span data-name="en" style="display:none;">Seychelles</span>
+            <span data-name="ru" style="display:none;">Сейшельские Острова</span>
+            <span data-name="zh" style="display:none;">塞舌尔</span>
+            <span data-name="ko" style="display:none;">세이셸</span>
+        </div>
+
+        <!-- 193 -->
+        <div class="flag-item" onclick="showInfo('sl')">
+            <img src="https://flagcdn.com/w320/sl.png" alt="Syerra-Leone bayrog'i">
+            <span data-name="uz">Syerra-Leone</span>
+            <span data-name="en" style="display:none;">Sierra Leone</span>
+            <span data-name="ru" style="display:none;">Сьерра-Леоне</span>
+            <span data-name="zh" style="display:none;">塞拉利昂</span>
+            <span data-name="ko" style="display:none;">시에라리온</span>
+        </div>
+
+        <!-- 194 -->
+        <div class="flag-item" onclick="showInfo('sg')">
+            <img src="https://flagcdn.com/w320/sg.png" alt="Singapur bayrog'i">
+            <span data-name="uz">Singapur</span>
+            <span data-name="en" style="display:none;">Singapore</span>
+            <span data-name="ru" style="display:none;">Сингапур</span>
+            <span data-name="zh" style="display:none;">新加坡</span>
+            <span data-name="ko" style="display:none;">싱가포르</span>
+        </div>
+
+        <!-- 195 -->
+        <div class="flag-item" onclick="showInfo('sx')">
+            <img src="https://flagcdn.com/w320/sx.png" alt="Sint-Marten bayrog'i">
+            <span data-name="uz">Sint-Marten</span>
+            <span data-name="en" style="display:none;">Sint Maarten</span>
+            <span data-name="ru" style="display:none;">Синт-Мартен</span>
+            <span data-name="zh" style="display:none;">荷属圣马丁</span>
+            <span data-name="ko" style="display:none;">신트마르턴</span>
+        </div>
+
+        <!-- 196 -->
+        <div class="flag-item" onclick="showInfo('sk')">
+            <img src="https://flagcdn.com/w320/sk.png" alt="Slovakiya bayrog'i">
+            <span data-name="uz">Slovakiya</span>
+            <span data-name="en" style="display:none;">Slovakia</span>
+            <span data-name="ru" style="display:none;">Словакия</span>
+            <span data-name="zh" style="display:none;">斯洛伐克</span>
+            <span data-name="ko" style="display:none;">슬로바키아</span>
+        </div>
+
+        <!-- 197 -->
+        <div class="flag-item" onclick="showInfo('si')">
+            <img src="https://flagcdn.com/w320/si.png" alt="Sloveniya bayrog'i">
+            <span data-name="uz">Sloveniya</span>
+            <span data-name="en" style="display:none;">Slovenia</span>
+            <span data-name="ru" style="display:none;">Словения</span>
+            <span data-name="zh" style="display:none;">斯洛文尼亚</span>
+            <span data-name="ko" style="display:none;">슬로베니아</span>
+        </div>
+
+        <!-- 198 -->
+        <div class="flag-item" onclick="showInfo('sb')">
+            <img src="https://flagcdn.com/w320/sb.png" alt="Solomon orollari bayrog'i">
+            <span data-name="uz">Solomon orollari</span>
+            <span data-name="en" style="display:none;">Solomon Islands</span>
+            <span data-name="ru" style="display:none;">Соломоновы Острова</span>
+            <span data-name="zh" style="display:none;">所罗门群岛</span>
+            <span data-name="ko" style="display:none;">솔로몬 제도</span>
+        </div>
+
+        <!-- 199 -->
+        <div class="flag-item" onclick="showInfo('so')">
+            <img src="https://flagcdn.com/w320/so.png" alt="Somali bayrog'i">
+            <span data-name="uz">Somali</span>
+            <span data-name="en" style="display:none;">Somalia</span>
+            <span data-name="ru" style="display:none;">Сомали</span>
+            <span data-name="zh" style="display:none;">索马里</span>
+            <span data-name="ko" style="display:none;">소말리아</span>
+        </div>
+
+        <!-- 200 -->
+        <div class="flag-item" onclick="showInfo('za')">
+            <img src="https://flagcdn.com/w320/za.png" alt="Janubiy Afrika bayrog'i">
+            <span data-name="uz">Janubiy Afrika</span>
+            <span data-name="en" style="display:none;">South Africa</span>
+            <span data-name="ru" style="display:none;">ЮАР</span>
+            <span data-name="zh" style="display:none;">南非</span>
+            <span data-name="ko" style="display:none;">남아프리카</span>
+        </div>
+
+        <!-- 201 -->
+        <div class="flag-item" onclick="showInfo('gs')">
+            <img src="https://flagcdn.com/w320/gs.png" alt="Janubiy Georgiya va Janubiy Sendvich orollari bayrog'i">
+            <span data-name="uz">Janubiy Georgiya va Janubiy Sendvich orollari</span>
+            <span data-name="en" style="display:none;">South Georgia and the South Sandwich Islands</span>
+            <span data-name="ru" style="display:none;">Южная Георгия и Южные Сандвичевы острова</span>
+            <span data-name="zh" style="display:none;">南乔治亚和南桑威奇群岛</span>
+            <span data-name="ko" style="display:none;">사우스조지아 사우스샌드위치 제도</span>
+        </div>
+
+        <!-- 202 -->
+        <div class="flag-item" onclick="showInfo('ss')">
+            <img src="https://flagcdn.com/w320/ss.png" alt="Janubiy Sudan bayrog'i">
+            <span data-name="uz">Janubiy Sudan</span>
+            <span data-name="en" style="display:none;">South Sudan</span>
+            <span data-name="ru" style="display:none;">Южный Судан</span>
+            <span data-name="zh" style="display:none;">南苏丹</span>
+            <span data-name="ko" style="display:none;">남수단</span>
+        </div>
+
+        <!-- 203 -->
+        <div class="flag-item" onclick="showInfo('es')">
+            <img src="https://flagcdn.com/w320/es.png" alt="Ispaniya bayrog'i">
+            <span data-name="uz">Ispaniya</span>
+            <span data-name="en" style="display:none;">Spain</span>
+            <span data-name="ru" style="display:none;">Испания</span>
+            <span data-name="zh" style="display:none;">西班牙</span>
+            <span data-name="ko" style="display:none;">스페인</span>
+        </div>
+
+        <!-- 204 -->
+        <div class="flag-item" onclick="showInfo('lk')">
+            <img src="https://flagcdn.com/w320/lk.png" alt="Shri-Lanka bayrog'i">
+            <span data-name="uz">Shri-Lanka</span>
+            <span data-name="en" style="display:none;">Sri Lanka</span>
+            <span data-name="ru" style="display:none;">Шри-Ланка</span>
+            <span data-name="zh" style="display:none;">斯里兰卡</span>
+            <span data-name="ko" style="display:none;">스리랑카</span>
+        </div>
+
+        <!-- 205 -->
+        <div class="flag-item" onclick="showInfo('sd')">
+            <img src="https://flagcdn.com/w320/sd.png" alt="Sudan bayrog'i">
+            <span data-name="uz">Sudan</span>
+            <span data-name="en" style="display:none;">Sudan</span>
+            <span data-name="ru" style="display:none;">Судан</span>
+            <span data-name="zh" style="display:none;">苏丹</span>
+            <span data-name="ko" style="display:none;">수단</span>
+        </div>
+
+        <!-- 206 -->
+        <div class="flag-item" onclick="showInfo('sr')">
+            <img src="https://flagcdn.com/w320/sr.png" alt="Surinam bayrog'i">
+            <span data-name="uz">Surinam</span>
+            <span data-name="en" style="display:none;">Suriname</span>
+            <span data-name="ru" style="display:none;">Суринам</span>
+            <span data-name="zh" style="display:none;">苏里南</span>
+            <span data-name="ko" style="display:none;">수리남</span>
+        </div>
+
+        <!-- 207 -->
+        <div class="flag-item" onclick="showInfo('sj')">
+            <img src="https://flagcdn.com/w320/sj.png" alt="Svalbard va Jan Mayen bayrog'i">
+            <span data-name="uz">Svalbard va Jan Mayen</span>
+            <span data-name="en" style="display:none;">Svalbard and Jan Mayen</span>
+            <span data-name="ru" style="display:none;">Шпицберген и Ян-Майен</span>
+            <span data-name="zh" style="display:none;">斯瓦尔巴和扬马延</span>
+            <span data-name="ko" style="display:none;">스발바르 얀마옌</span>
+        </div>
+
+        <!-- 208 -->
+        <div class="flag-item" onclick="showInfo('sz')">
+            <img src="https://flagcdn.com/w320/sz.png" alt="Esvatini bayrog'i">
+            <span data-name="uz">Esvatini</span>
+            <span data-name="en" style="display:none;">Eswatini</span>
+            <span data-name="ru" style="display:none;">Эсватини</span>
+            <span data-name="zh" style="display:none;">斯威士兰</span>
+            <span data-name="ko" style="display:none;">에스와티니</span>
+        </div>
+
+        <!-- 209 -->
+        <div class="flag-item" onclick="showInfo('se')">
+            <img src="https://flagcdn.com/w320/se.png" alt="Shvetsiya bayrog'i">
+            <span data-name="uz">Shvetsiya</span>
+            <span data-name="en" style="display:none;">Sweden</span>
+            <span data-name="ru" style="display:none;">Швеция</span>
+            <span data-name="zh" style="display:none;">瑞典</span>
+            <span data-name="ko" style="display:none;">스웨덴</span>
+        </div>
+
+        <!-- 210 -->
+        <div class="flag-item" onclick="showInfo('ch')">
+            <img src="https://flagcdn.com/w320/ch.png" alt="Shveytsariya bayrog'i">
+            <span data-name="uz">Shveytsariya</span>
+            <span data-name="en" style="display:none;">Switzerland</span>
+            <span data-name="ru" style="display:none;">Швейцария</span>
+            <span data-name="zh" style="display:none;">瑞士</span>
+            <span data-name="ko" style="display:none;">스위스</span>
+        </div>
+
+        <!-- 211 -->
+        <div class="flag-item" onclick="showInfo('sy')">
+            <img src="https://flagcdn.com/w320/sy.png" alt="Suriya bayrog'i">
+            <span data-name="uz">Suriya</span>
+            <span data-name="en" style="display:none;">Syria</span>
+            <span data-name="ru" style="display:none;">Сирия</span>
+            <span data-name="zh" style="display:none;">叙利亚</span>
+            <span data-name="ko" style="display:none;">시리아</span>
+        </div>
+
+        <!-- 212 -->
+        <div class="flag-item" onclick="showInfo('tw')">
+            <img src="https://flagcdn.com/w320/tw.png" alt="Tayvan bayrog'i">
+            <span data-name="uz">Tayvan</span>
+            <span data-name="en" style="display:none;">Taiwan</span>
+            <span data-name="ru" style="display:none;">Тайвань</span>
+            <span data-name="zh" style="display:none;">台湾</span>
+            <span data-name="ko" style="display:none;">대만</span>
+        </div>
+
+        <!-- 213 -->
+        <div class="flag-item" onclick="showInfo('tj')">
+            <img src="https://flagcdn.com/w320/tj.png" alt="Tojikiston bayrog'i">
+            <span data-name="uz">Tojikiston</span>
+            <span data-name="en" style="display:none;">Tajikistan</span>
+            <span data-name="ru" style="display:none;">Таджикистан</span>
+            <span data-name="zh" style="display:none;">塔吉克斯坦</span>
+            <span data-name="ko" style="display:none;">타지키스탄</span>
+        </div>
+
+        <!-- 214 -->
+        <div class="flag-item" onclick="showInfo('tz')">
+            <img src="https://flagcdn.com/w320/tz.png" alt="Tanzaniya bayrog'i">
+            <span data-name="uz">Tanzaniya</span>
+            <span data-name="en" style="display:none;">Tanzania</span>
+            <span data-name="ru" style="display:none;">Танзания</span>
+            <span data-name="zh" style="display:none;">坦桑尼亚</span>
+            <span data-name="ko" style="display:none;">탄자니아</span>
+        </div>
+
+        <!-- 215 -->
+        <div class="flag-item" onclick="showInfo('th')">
+            <img src="https://flagcdn.com/w320/th.png" alt="Tayland bayrog'i">
+            <span data-name="uz">Tayland</span>
+            <span data-name="en" style="display:none;">Thailand</span>
+            <span data-name="ru" style="display:none;">Таиланд</span>
+            <span data-name="zh" style="display:none;">泰国</span>
+            <span data-name="ko" style="display:none;">태국</span>
+        </div>
+
+        <!-- 216 -->
+        <div class="flag-item" onclick="showInfo('tl')">
+            <img src="https://flagcdn.com/w320/tl.png" alt="Sharqiy Timor bayrog'i">
+            <span data-name="uz">Sharqiy Timor</span>
+            <span data-name="en" style="display:none;">Timor-Leste</span>
+            <span data-name="ru" style="display:none;">Восточный Тимор</span>
+            <span data-name="zh" style="display:none;">东帝汶</span>
+            <span data-name="ko" style="display:none;">동티모르</span>
+        </div>
+
+        <!-- 217 -->
+        <div class="flag-item" onclick="showInfo('tg')">
+            <img src="https://flagcdn.com/w320/tg.png" alt="Togo bayrog'i">
+            <span data-name="uz">Togo</span>
+            <span data-name="en" style="display:none;">Togo</span>
+            <span data-name="ru" style="display:none;">Того</span>
+            <span data-name="zh" style="display:none;">多哥</span>
+            <span data-name="ko" style="display:none;">토고</span>
+        </div>
+
+        <!-- 218 -->
+        <div class="flag-item" onclick="showInfo('tk')">
+            <img src="https://flagcdn.com/w320/tk.png" alt="Tokelau bayrog'i">
+            <span data-name="uz">Tokelau</span>
+            <span data-name="en" style="display:none;">Tokelau</span>
+            <span data-name="ru" style="display:none;">Токелау</span>
+            <span data-name="zh" style="display:none;">托克劳</span>
+            <span data-name="ko" style="display:none;">토켈라우</span>
+        </div>
+
+        <!-- 219 -->
+        <div class="flag-item" onclick="showInfo('to')">
+            <img src="https://flagcdn.com/w320/to.png" alt="Tonga bayrog'i">
+            <span data-name="uz">Tonga</span>
+            <span data-name="en" style="display:none;">Tonga</span>
+            <span data-name="ru" style="display:none;">Тонга</span>
+            <span data-name="zh" style="display:none;">汤加</span>
+            <span data-name="ko" style="display:none;">통가</span>
+        </div>
+
+        <!-- 220 -->
+        <div class="flag-item" onclick="showInfo('tt')">
+            <img src="https://flagcdn.com/w320/tt.png" alt="Trinidad va Tobago bayrog'i">
+            <span data-name="uz">Trinidad va Tobago</span>
+            <span data-name="en" style="display:none;">Trinidad and Tobago</span>
+            <span data-name="ru" style="display:none;">Тринидад и Тобаго</span>
+            <span data-name="zh" style="display:none;">特立尼达和多巴哥</span>
+            <span data-name="ko" style="display:none;">트리니다드 토바고</span>
+        </div>
+
+        <!-- 221 -->
+        <div class="flag-item" onclick="showInfo('tn')">
+            <img src="https://flagcdn.com/w320/tn.png" alt="Tunis bayrog'i">
+            <span data-name="uz">Tunis</span>
+            <span data-name="en" style="display:none;">Tunisia</span>
+            <span data-name="ru" style="display:none;">Тунис</span>
+            <span data-name="zh" style="display:none;">突尼斯</span>
+            <span data-name="ko" style="display:none;">튀니지</span>
+        </div>
+
+        <!-- 222 -->
+        <div class="flag-item" onclick="showInfo('tr')">
+            <img src="https://flagcdn.com/w320/tr.png" alt="Turkiya bayrog'i">
+            <span data-name="uz">Turkiya</span>
+            <span data-name="en" style="display:none;">Turkey</span>
+            <span data-name="ru" style="display:none;">Турция</span>
+            <span data-name="zh" style="display:none;">土耳其</span>
+            <span data-name="ko" style="display:none;">터키</span>
+        </div>
+
+        <!-- 223 -->
+        <div class="flag-item" onclick="showInfo('tm')">
+            <img src="https://flagcdn.com/w320/tm.png" alt="Turkmaniston bayrog'i">
+            <span data-name="uz">Turkmaniston</span>
+            <span data-name="en" style="display:none;">Turkmenistan</span>
+            <span data-name="ru" style="display:none;">Туркменистан</span>
+            <span data-name="zh" style="display:none;">土库曼斯坦</span>
+            <span data-name="ko" style="display:none;">투르크메니스탄</span>
+        </div>
+
+        <!-- 224 -->
+        <div class="flag-item" onclick="showInfo('tc')">
+            <img src="https://flagcdn.com/w320/tc.png" alt="Turks va Kaykos orollari bayrog'i">
+            <span data-name="uz">Turks va Kaykos orollari</span>
+            <span data-name="en" style="display:none;">Turks and Caicos Islands</span>
+            <span data-name="ru" style="display:none;">Теркс и Кайкос</span>
+            <span data-name="zh" style="display:none;">特克斯和凯科斯群岛</span>
+            <span data-name="ko" style="display:none;">터크스 케이커스 제도</span>
+        </div>
+
+        <!-- 225 -->
+        <div class="flag-item" onclick="showInfo('tv')">
+            <img src="https://flagcdn.com/w320/tv.png" alt="Tuvalu bayrog'i">
+            <span data-name="uz">Tuvalu</span>
+            <span data-name="en" style="display:none;">Tuvalu</span>
+            <span data-name="ru" style="display:none;">Тувалу</span>
+            <span data-name="zh" style="display:none;">图瓦卢</span>
+            <span data-name="ko" style="display:none;">투발루</span>
+        </div>
+
+        <!-- 226 -->
+        <div class="flag-item" onclick="showInfo('ug')">
+            <img src="https://flagcdn.com/w320/ug.png" alt="Uganda bayrog'i">
+            <span data-name="uz">Uganda</span>
+            <span data-name="en" style="display:none;">Uganda</span>
+            <span data-name="ru" style="display:none;">Уганда</span>
+            <span data-name="zh" style="display:none;">乌干达</span>
+            <span data-name="ko" style="display:none;">우간다</span>
+        </div>
+
+        <!-- 227 -->
+        <div class="flag-item" onclick="showInfo('ua')">
+            <img src="https://flagcdn.com/w320/ua.png" alt="Ukraina bayrog'i">
+            <span data-name="uz">Ukraina</span>
+            <span data-name="en" style="display:none;">Ukraine</span>
+            <span data-name="ru" style="display:none;">Украина</span>
+            <span data-name="zh" style="display:none;">乌克兰</span>
+            <span data-name="ko" style="display:none;">우크라이나</span>
+        </div>
+
+        <!-- 228 -->
+        <div class="flag-item" onclick="showInfo('ae')">
+            <img src="https://flagcdn.com/w320/ae.png" alt="Birlashgan Arab Amirliklari bayrog'i">
+            <span data-name="uz">Birlashgan Arab Amirliklari</span>
+            <span data-name="en" style="display:none;">United Arab Emirates</span>
+            <span data-name="ru" style="display:none;">ОАЭ</span>
+            <span data-name="zh" style="display:none;">阿联酋</span>
+            <span data-name="ko" style="display:none;">아랍에미리트</span>
+        </div>
+
+        <!-- 229 -->
+        <div class="flag-item" onclick="showInfo('gb')">
+            <img src="https://flagcdn.com/w320/gb.png" alt="Birlashgan Qirollik bayrog'i">
+            <span data-name="uz">Birlashgan Qirollik</span>
+            <span data-name="en" style="display:none;">United Kingdom</span>
+            <span data-name="ru" style="display:none;">Великобритания</span>
+            <span data-name="zh" style="display:none;">英国</span>
+            <span data-name="ko" style="display:none;">영국</span>
+        </div>
+
+        <!-- 230 -->
+        <div class="flag-item" onclick="showInfo('us')">
+            <img src="https://flagcdn.com/w320/us.png" alt="Amerika Qo'shma Shtatlari bayrog'i">
+            <span data-name="uz">Amerika Qo'shma Shtatlari</span>
+            <span data-name="en" style="display:none;">United States</span>
+            <span data-name="ru" style="display:none;">США</span>
+            <span data-name="zh" style="display:none;">美国</span>
+            <span data-name="ko" style="display:none;">미국</span>
+        </div>
+
+        <!-- 231 -->
+        <div class="flag-item" onclick="showInfo('uy')">
+            <img src="https://flagcdn.com/w320/uy.png" alt="Urugvay bayrog'i">
+            <span data-name="uz">Urugvay</span>
+            <span data-name="en" style="display:none;">Uruguay</span>
+            <span data-name="ru" style="display:none;">Уругвай</span>
+            <span data-name="zh" style="display:none;">乌拉圭</span>
+            <span data-name="ko" style="display:none;">우루과이</span>
+        </div>
+
+        <!-- 232 -->
+        <div class="flag-item" onclick="showInfo('uz')">
+            <img src="https://flagcdn.com/w320/uz.png" alt="O'zbekiston bayrog'i">
+            <span data-name="uz">O'zbekiston</span>
+            <span data-name="en" style="display:none;">Uzbekistan</span>
+            <span data-name="ru" style="display:none;">Узбекистан</span>
+            <span data-name="zh" style="display:none;">乌兹别克斯坦</span>
+            <span data-name="ko" style="display:none;">우즈베키스탄</span>
+        </div>
+
+        <!-- 233 -->
+        <div class="flag-item" onclick="showInfo('vu')">
+            <img src="https://flagcdn.com/w320/vu.png" alt="Vanuatu bayrog'i">
+            <span data-name="uz">Vanuatu</span>
+            <span data-name="en" style="display:none;">Vanuatu</span>
+            <span data-name="ru" style="display:none;">Вануату</span>
+            <span data-name="zh" style="display:none;">瓦努阿图</span>
+            <span data-name="ko" style="display:none;">바누아투</span>
+        </div>
+
+        <!-- 234 -->
+        <div class="flag-item" onclick="showInfo('ve')">
+            <img src="https://flagcdn.com/w320/ve.png" alt="Venesuela bayrog'i">
+            <span data-name="uz">Venesuela</span>
+            <span data-name="en" style="display:none;">Venezuela</span>
+            <span data-name="ru" style="display:none;">Венесуэла</span>
+            <span data-name="zh" style="display:none;">委内瑞拉</span>
+            <span data-name="ko" style="display:none;">베네수엘라</span>
+        </div>
+
+        <!-- 235 -->
+        <div class="flag-item" onclick="showInfo('vn')">
+            <img src="https://flagcdn.com/w320/vn.png" alt="Vetnam bayrog'i">
+            <span data-name="uz">Vetnam</span>
+            <span data-name="en" style="display:none;">Vietnam</span>
+            <span data-name="ru" style="display:none;">Вьетнам</span>
+            <span data-name="zh" style="display:none;">越南</span>
+            <span data-name="ko" style="display:none;">베트남</span>
+        </div>
+
+        <!-- 236 -->
+        <div class="flag-item" onclick="showInfo('vg')">
+            <img src="https://flagcdn.com/w320/vg.png" alt="Britaniya Virgin orollari bayrog'i">
+            <span data-name="uz">Britaniya Virgin orollari</span>
+            <span data-name="en" style="display:none;">British Virgin Islands</span>
+            <span data-name="ru" style="display:none;">Британские Виргинские острова</span>
+            <span data-name="zh" style="display:none;">英属维尔京群岛</span>
+            <span data-name="ko" style="display:none;">영국령 버진아일랜드</span>
+        </div>
+
+        <!-- 237 -->
+        <div class="flag-item" onclick="showInfo('vi')">
+            <img src="https://flagcdn.com/w320/vi.png" alt="AQSH Virgin orollari bayrog'i">
+            <span data-name="uz">AQSH Virgin orollari</span>
+            <span data-name="en" style="display:none;">U.S. Virgin Islands</span>
+            <span data-name="ru" style="display:none;">Американские Виргинские острова</span>
+            <span data-name="zh" style="display:none;">美属维尔京群岛</span>
+            <span data-name="ko" style="display:none;">미국령 버진아일랜드</span>
+        </div>
+
+        <!-- 238 -->
+        <div class="flag-item" onclick="showInfo('wf')">
+            <img src="https://flagcdn.com/w320/wf.png" alt="Volis va Futuna bayrog'i">
+            <span data-name="uz">Volis va Futuna</span>
+            <span data-name="en" style="display:none;">Wallis and Futuna</span>
+            <span data-name="ru" style="display:none;">Уоллис и Футуна</span>
+            <span data-name="zh" style="display:none;">瓦利斯和富图纳</span>
+            <span data-name="ko" style="display:none;">왈리스 푸투나</span>
+        </div>
+
+        <!-- 239 -->
+        <div class="flag-item" onclick="showInfo('eh')">
+            <img src="https://flagcdn.com/w320/eh.png" alt="G'arbiy Sahro bayrog'i">
+            <span data-name="uz">G'arbiy Sahro</span>
+            <span data-name="en" style="display:none;">Western Sahara</span>
+            <span data-name="ru" style="display:none;">Западная Сахара</span>
+            <span data-name="zh" style="display:none;">西撒哈拉</span>
+            <span data-name="ko" style="display:none;">서사하라</span>
+        </div>
+
+        <!-- 240 -->
+        <div class="flag-item" onclick="showInfo('ye')">
+            <img src="https://flagcdn.com/w320/ye.png" alt="Yaman bayrog'i">
+            <span data-name="uz">Yaman</span>
+            <span data-name="en" style="display:none;">Yemen</span>
+            <span data-name="ru" style="display:none;">Йемен</span>
+            <span data-name="zh" style="display:none;">也门</span>
+            <span data-name="ko" style="display:none;">예멘</span>
+        </div>
+
+        <!-- 241 -->
+        <div class="flag-item" onclick="showInfo('zm')">
+            <img src="https://flagcdn.com/w320/zm.png" alt="Zambiya bayrog'i">
+            <span data-name="uz">Zambiya</span>
+            <span data-name="en" style="display:none;">Zambia</span>
+            <span data-name="ru" style="display:none;">Замбия</span>
+            <span data-name="zh" style="display:none;">赞比亚</span>
+            <span data-name="ko" style="display:none;">잠비아</span>
+        </div>
+
+        <!-- 242 -->
+        <div class="flag-item" onclick="showInfo('zw')">
+            <img src="https://flagcdn.com/w320/zw.png" alt="Zimbabve bayrog'i">
+            <span data-name="uz">Zimbabve</span>
+            <span data-name="en" style="display:none;">Zimbabwe</span>
+            <span data-name="ru" style="display:none;">Зимбабве</span>
+            <span data-name="zh" style="display:none;">津巴布韦</span>
+            <span data-name="ko" style="display:none;">짐바브웨</span>
+        </div>
+
+        <!-- 243 -->
+        <div class="flag-item" onclick="showInfo('ax')">
+            <img src="https://flagcdn.com/w320/ax.png" alt="Aland orollari bayrog'i">
+            <span data-name="uz">Aland orollari</span>
+            <span data-name="en" style="display:none;">Åland Islands</span>
+            <span data-name="ru" style="display:none;">Аландские острова</span>
+            <span data-name="zh" style="display:none;">奥兰群岛</span>
+            <span data-name="ko" style="display:none;">올란드 제도</span>
+        </div>
+
+        <!-- 244 -->
+        <div class="flag-item" onclick="showInfo('cc')">
+            <img src="https://flagcdn.com/w320/cc.png" alt="Kokos (Kiling) orollari bayrog'i">
+            <span data-name="uz">Kokos (Kiling) orollari</span>
+            <span data-name="en" style="display:none;">Cocos (Keeling) Islands</span>
+            <span data-name="ru" style="display:none;">Кокосовые (Килинг) острова</span>
+            <span data-name="zh" style="display:none;">科科斯（基林）群岛</span>
+            <span data-name="ko" style="display:none;">코코스 제도</span>
+        </div>
+
+        <!-- 245 -->
+        <div class="flag-item" onclick="showInfo('ck')">
+            <img src="https://flagcdn.com/w320/ck.png" alt="Kuk orollari bayrog'i">
+            <span data-name="uz">Kuk orollari</span>
+            <span data-name="en" style="display:none;">Cook Islands</span>
+            <span data-name="ru" style="display:none;">Острова Кука</span>
+            <span data-name="zh" style="display:none;">库克群岛</span>
+            <span data-name="ko" style="display:none;">쿡 제도</span>
+        </div>
+
+        <!-- 246 -->
+        <div class="flag-item" onclick="showInfo('cx')">
+            <img src="https://flagcdn.com/w320/cx.png" alt="Rojdestvo oroli bayrog'i">
+            <span data-name="uz">Rojdestvo oroli</span>
+            <span data-name="en" style="display:none;">Christmas Island</span>
+            <span data-name="ru" style="display:none;">Остров Рождества</span>
+            <span data-name="zh" style="display:none;">圣诞岛</span>
+            <span data-name="ko" style="display:none;">크리스마스섬</span>
+        </div>
+
+        <!-- 247 -->
+        <div class="flag-item" onclick="showInfo('gg')">
+            <img src="https://flagcdn.com/w320/gg.png" alt="Gernsi bayrog'i">
+            <span data-name="uz">Gernsi</span>
+            <span data-name="en" style="display:none;">Guernsey</span>
+            <span data-name="ru" style="display:none;">Гернси</span>
+            <span data-name="zh" style="display:none;">根西岛</span>
+            <span data-name="ko" style="display:none;">건지</span>
+        </div>
+
+        <!-- 248 -->
+        <div class="flag-item" onclick="showInfo('im')">
+            <img src="https://flagcdn.com/w320/im.png" alt="Man oroli bayrog'i">
+            <span data-name="uz">Man oroli</span>
+            <span data-name="en" style="display:none;">Isle of Man</span>
+            <span data-name="ru" style="display:none;">Остров Мэн</span>
+            <span data-name="zh" style="display:none;">马恩岛</span>
+            <span data-name="ko" style="display:none;">맨 섬</span>
+        </div>
+
+        <!-- 249 -->
+        <div class="flag-item" onclick="showInfo('je')">
+            <img src="https://flagcdn.com/w320/je.png" alt="Djersi bayrog'i">
+            <span data-name="uz">Djersi</span>
+            <span data-name="en" style="display:none;">Jersey</span>
+            <span data-name="ru" style="display:none;">Джерси</span>
+            <span data-name="zh" style="display:none;">泽西岛</span>
+            <span data-name="ko" style="display:none;">저지</span>
+        </div>
+
+        <!-- 250 -->
+        <div class="flag-item" onclick="showInfo('nf')">
+            <img src="https://flagcdn.com/w320/nf.png" alt="Norfolk oroli bayrog'i">
+            <span data-name="uz">Norfolk oroli</span>
+            <span data-name="en" style="display:none;">Norfolk Island</span>
+            <span data-name="ru" style="display:none;">Остров Норфолк</span>
+            <span data-name="zh" style="display:none;">诺福克岛</span>
+            <span data-name="ko" style="display:none;">노퍽 섬</span>
+        </div>
+
+        <!-- 251 -->
+        <div class="flag-item" onclick="showInfo('pn')">
+            <img src="https://flagcdn.com/w320/pn.png" alt="Pitkern orollari bayrog'i">
+            <span data-name="uz">Pitkern orollari</span>
+            <span data-name="en" style="display:none;">Pitcairn Islands</span>
+            <span data-name="ru" style="display:none;">Острова Питкэрн</span>
+            <span data-name="zh" style="display:none;">皮特凯恩群岛</span>
+            <span data-name="ko" style="display:none;">핏케언 제도</span>
+        </div>
+
+        <!-- 252 -->
+        <div class="flag-item" onclick="showInfo('gs')">
+            <img src="https://flagcdn.com/w320/gs.png" alt="Janubiy Georgiya va Janubiy Sendvich orollari bayrog'i">
+            <span data-name="uz">Janubiy Georgiya va Janubiy Sendvich orollari</span>
+            <span data-name="en" style="display:none;">South Georgia and the South Sandwich Islands</span>
+            <span data-name="ru" style="display:none;">Южная Георгия и Южные Сандвичевы острова</span>
+            <span data-name="zh" style="display:none;">南乔治亚和南桑威奇群岛</span>
+            <span data-name="ko" style="display:none;">사우스조지아 사우스샌드위치 제도</span>
+        </div>
+
+        <!-- 253 -->
+        <div class="flag-item" onclick="showInfo('tk')">
+            <img src="https://flagcdn.com/w320/tk.png" alt="Tokelau bayrog'i">
+            <span data-name="uz">Tokelau</span>
+            <span data-name="en" style="display:none;">Tokelau</span>
+            <span data-name="ru" style="display:none;">Токелау</span>
+            <span data-name="zh" style="display:none;">托克劳</span>
+            <span data-name="ko" style="display:none;">토켈라우</span>
+        </div>
+
+        <!-- 254 -->
+        <div class="flag-item" onclick="showInfo('bv')">
+            <img src="https://flagcdn.com/w320/bv.png" alt="Bouvet oroli bayrog'i">
+            <span data-name="uz">Bouvet oroli</span>
+            <span data-name="en" style="display:none;">Bouvet Island</span>
+            <span data-name="ru" style="display:none;">Остров Буве</span>
+            <span data-name="zh" style="display:none;">布韦岛</span>
+            <span data-name="ko" style="display:none;">부베 섬</span>
+        </div>
+
+        <!-- 255 -->
+        <div class="flag-item" onclick="showInfo('hm')">
+            <img src="https://flagcdn.com/w320/hm.png" alt="Xerd va Makdonald orollari bayrog'i">
+            <span data-name="uz">Xerd va Makdonald orollari</span>
+            <span data-name="en" style="display:none;">Heard Island and McDonald Islands</span>
+            <span data-name="ru" style="display:none;">Остров Херд и острова Макдональд</span>
+            <span data-name="zh" style="display:none;">赫德岛和麦克唐纳群岛</span>
+            <span data-name="ko" style="display:none;">허드 맥도널드 제도</span>
+        </div>
+
+        <!-- 256 -->
+        <div class="flag-item" onclick="showInfo('sj')">
+            <img src="https://flagcdn.com/w320/sj.png" alt="Svalbard va Jan Mayen bayrog'i">
+            <span data-name="uz">Svalbard va Jan Mayen</span>
+            <span data-name="en" style="display:none;">Svalbard and Jan Mayen</span>
+            <span data-name="ru" style="display:none;">Шпицберген и Ян-Майен</span>
+            <span data-name="zh" style="display:none;">斯瓦尔巴和扬马延</span>
+            <span data-name="ko" style="display:none;">스발바르 얀마옌</span>
+        </div>
+
+        <!-- 257 -->
+        <div class="flag-item" onclick="showInfo('um')">
+            <img src="https://flagcdn.com/w320/um.png" alt="AQSH yondosh orollari bayrog'i">
+            <span data-name="uz">AQSH yondosh orollari</span>
+            <span data-name="en" style="display:none;">United States Minor Outlying Islands</span>
+            <span data-name="ru" style="display:none;">Внешние малые острова США</span>
+            <span data-name="zh" style="display:none;">美国本土外小岛屿</span>
+            <span data-name="ko" style="display:none;">미국령 군소 제도</span>
+        </div>
+
+        <!-- 258 -->
+        <div class="flag-item" onclick="showInfo('va')">
+            <img src="https://flagcdn.com/w320/va.png" alt="Vatikan bayrog'i">
+            <span data-name="uz">Vatikan</span>
+            <span data-name="en" style="display:none;">Vatican City</span>
+            <span data-name="ru" style="display:none;">Ватикан</span>
+            <span data-name="zh" style="display:none;">梵蒂冈</span>
+            <span data-name="ko" style="display:none;">바티칸</span>
+        </div>
+
+    </div>
+
+    <!-- Modal oynasi -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Ma'lumot</h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // Ma'lumotlar obyekti (faqat 3 ta mamlakat uchun namuna)
+        const countryInfo = {
+            af: {
+                uz: {
+                    name: "Afg'oniston",
+                    capital: "Kobul",
+                    climate: "Quruq, cho'llik",
+                    language: "Pushtu, dari",
+                    currency: "Afg'oni",
+                    nationalAnimal: "Bor",
+                    nationalBird: "Tulki",
+                    nationalPlant: "Gul",
+                    area: "652,864 km²",
+                    population: "38,041,754",
+                    governmentType: "Islom respublikasi",
+                    headOfState: "Amir Haibatulloh Oqson",
+                    timezone: "UTC+4:30"
+                },
+                en: {
+                    name: "Afghanistan",
+                    capital: "Kabul",
+                    climate: "Arid, desert",
+                    language: "Pashto, Dari",
+                    currency: "Afghani",
+                    nationalAnimal: "Markhor",
+                    nationalBird: "Golden Eagle",
+                    nationalPlant: "Rose",
+                    area: "652,864 km²",
+                    population: "38,041,754",
+                    governmentType: "Islamic Republic",
+                    headOfState: "Amir Haibatullah Akhundzada",
+                    timezone: "UTC+4:30"
+                },
+                ru: {
+                    name: "Афганистан",
+                    capital: "Кабул",
+                    climate: "Сухой, пустынный",
+                    language: "Пушту, дари",
+                    currency: "Афгани",
+                    nationalAnimal: "Маркоор",
+                    nationalBird: "Беркут",
+                    nationalPlant: "Роза",
+                    area: "652 864 км²",
+                    population: "38 041 754",
+                    governmentType: "Исламская республика",
+                    headOfState: "Амир Хайбатулла Ахундзада",
+                    timezone: "UTC+4:30"
+                },
+                zh: {
+                    name: "阿富汗",
+                    capital: "喀布尔",
+                    climate: "干旱、沙漠",
+                    language: "普什图语、达里语",
+                    currency: "阿富汗尼",
+                    nationalAnimal: "捻角山羊",
+                    nationalBird: "金雕",
+                    nationalPlant: "玫瑰",
+                    area: "652,864 平方公里",
+                    population: "38,041,754",
+                    governmentType: "伊斯兰共和国",
+                    headOfState: "阿米尔·海巴图拉·阿洪扎达",
+                    timezone: "UTC+4:30"
+                },
+                ko: {
+                    name: "아프가니스탄",
+                    capital: "카불",
+                    climate: "건조, 사막",
+                    language: "파슈토어, 다리어",
+                    currency: "아프가니",
+                    nationalAnimal: "마르코르",
+                    nationalBird: "황금수리",
+                    nationalPlant: "장미",
+                    area: "652,864 km²",
+                    population: "38,041,754",
+                    governmentType: "이슬람 공화국",
+                    headOfState: "아미르 하이바툴라 아쿤자다",
+                    timezone: "UTC+4:30"
+                }
+            },
+            uz: {
+                uz: {
+                    name: "O'zbekiston",
+                    capital: "Toshkent",
+                    climate: "Quruq, kontinental",
+                    language: "O'zbek",
+                    currency: "So'm",
+                    nationalAnimal: "Bars",
+                    nationalBird: "Tulki",
+                    nationalPlant: "Gul",
+                    area: "448,978 km²",
+                    population: "34,232,050",
+                    governmentType: "Respublika",
+                    headOfState: "Shavkat Mirziyoyev",
+                    timezone: "UTC+5"
+                },
+                en: {
+                    name: "Uzbekistan",
+                    capital: "Tashkent",
+                    climate: "Arid, continental",
+                    language: "Uzbek",
+                    currency: "Uzbekistani som",
+                    nationalAnimal: "Snow leopard",
+                    nationalBird: "Chukar partridge",
+                    nationalPlant: "Rose",
+                    area: "448,978 km²",
+                    population: "34,232,050",
+                    governmentType: "Republic",
+                    headOfState: "Shavkat Mirziyoyev",
+                    timezone: "UTC+5"
+                },
+                ru: {
+                    name: "Узбекистан",
+                    capital: "Ташкент",
+                    climate: "Сухой, континентальный",
+                    language: "Узбекский",
+                    currency: "Сум",
+                    nationalAnimal: "Барс",
+                    nationalBird: "Куропатка",
+                    nationalPlant: "Роза",
+                    area: "448 978 км²",
+                    population: "34 232 050",
+                    governmentType: "Республика",
+                    headOfState: "Шавкат Мирзиёев",
+                    timezone: "UTC+5"
+                },
+                zh: {
+                    name: "乌兹别克斯坦",
+                    capital: "塔什干",
+                    climate: "干旱、大陆性",
+                    language: "乌兹别克语",
+                    currency: "索姆",
+                    nationalAnimal: "雪豹",
+                    nationalBird: "石鸡",
+                    nationalPlant: "玫瑰",
+                    area: "448,978 平方公里",
+                    population: "34,232,050",
+                    governmentType: "共和国",
+                    headOfState: "沙夫卡特·米尔济约耶夫",
+                    timezone: "UTC+5"
+                },
+                ko: {
+                    name: "우즈베키스탄",
+                    capital: "타슈켄트",
+                    climate: "건조, 대륙성",
+                    language: "우즈베크어",
+                    currency: "솜",
+                    nationalAnimal: "눈표범",
+                    nationalBird: "멧비둘기",
+                    nationalPlant: "장미",
+                    area: "448,978 km²",
+                    population: "34,232,050",
+                    governmentType: "공화국",
+                    headOfState: "샤브카트 미르зиё예프",
+                    timezone: "UTC+5"
+                }
+            },
+            us: {
+                uz: {
+                    name: "Amerika Qo'shma Shtatlari",
+                    capital: "Vashington",
+                    climate: "Kontinental",
+                    language: "Ingliz",
+                    currency: "AQSH dollari",
+                    nationalAnimal: "Amerika bizoni",
+                    nationalBird: "Bald eagl",
+                    nationalPlant: "Gul",
+                    area: "9,833,517 km²",
+                    population: "331,002,651",
+                    governmentType: "Federal Respublika",
+                    headOfState: "Joe Biden",
+                    timezone: "UTC-5 to -10"
+                },
+                en: {
+                    name: "United States",
+                    capital: "Washington, D.C.",
+                    climate: "Continental",
+                    language: "English",
+                    currency: "US Dollar",
+                    nationalAnimal: "American Bison",
+                    nationalBird: "Bald Eagle",
+                    nationalPlant: "Rose",
+                    area: "9,833,517 km²",
+                    population: "331,002,651",
+                    governmentType: "Federal Republic",
+                    headOfState: "Joe Biden",
+                    timezone: "UTC-5 to -10"
+                },
+                ru: {
+                    name: "США",
+                    capital: "Вашингтон",
+                    climate: "Континентальный",
+                    language: "Английский",
+                    currency: "Доллар США",
+                    nationalAnimal: "Американский бизон",
+                    nationalBird: "Белоголовый орлан",
+                    nationalPlant: "Роза",
+                    area: "9 833 517 км²",
+                    population: "331 002 651",
+                    governmentType: "Федеративная республика",
+                    headOfState: "Джо Байден",
+                    timezone: "UTC-5 до -10"
+                },
+                zh: {
+                    name: "美国",
+                    capital: "华盛顿特区",
+                    climate: "大陆性",
+                    language: "英语",
+                    currency: "美元",
+                    nationalAnimal: "美洲野牛",
+                    nationalBird: "白头海雕",
+                    nationalPlant: "玫瑰",
+                    area: "9,833,517 平方公里",
+                    population: "331,002,651",
+                    governmentType: "联邦共和国",
+                    headOfState: "乔·拜登",
+                    timezone: "UTC-5 至 -10"
+                },
+                ko: {
+                    name: "미국",
+                    capital: "워싱턴 D.C.",
+                    climate: "대륙성",
+                    language: "영어",
+                    currency: "미국 달러",
+                    nationalAnimal: "아메리카들소",
+                    nationalBird: "흰머리수리",
+                    nationalPlant: "장미",
+                    area: "9,833,517 km²",
+                    population: "331,002,651",
+                    governmentType: "연방 공화국",
+                    headOfState: "조 바이든",
+                    timezone: "UTC-5 to -10"
+                }
+            }
+        };
+
+        // Tarjimalar
+        const translations = {
+            uz: {
+                title: "🌍 Dunyodagi Barcha 197 Ta Mamlakat Bayroqlari",
+            },
+            en: {
+                title: "🌍 All 197 Country Flags of the World",
+            },
+            ru: {
+                title: "🌍 Все 197 флагов стран мира",
+            },
+            zh: {
+                title: "🌍 世界所有 197 个国家的国旗",
+            },
+            ko: {
+                title: "🌍 전 세계 197개국 국기",
+            }
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.getElementById("title").textContent = translations[lang].title;
+            document.getElementById("main-title").textContent = translations[lang].title;
+
+            const spans = document.querySelectorAll(".flag-item span");
+            spans.forEach(span => {
+                if (span.getAttribute("data-name") === lang) {
+                    span.style.display = "block";
+                } else {
+                    span.style.display = "none";
+                }
+            });
+        }
+
+        function showInfo(code) {
+            const lang = document.documentElement.lang || 'uz';
+            const info = countryInfo[code][lang];
+            if (!info) {
+                alert("Ushbu til uchun ma'lumot topilmadi.");
+                return;
+            }
+
+            document.getElementById("modal-title").textContent = info.name;
+            const body = document.getElementById("modal-body");
+            body.innerHTML = `
+                <p><strong>Poytaxt:</strong> ${info.capital}</p>
+                <p><strong>Iqlim:</strong> ${info.climate}</p>
+                <p><strong>Til:</strong> ${info.language}</p>
+                <p><strong>Valyuta:</strong> ${info.currency}</p>
+                <p><strong>Milliy hayvon:</strong> ${info.nationalAnimal}</p>
+                <p><strong>Milliy qush:</strong> ${info.nationalBird}</p>
+                <p><strong>Milliy o'simlik:</strong> ${info.nationalPlant}</p>
+                <p><strong>Maydoni:</strong> ${info.area}</p>
+                <p><strong>Aholi:</strong> ${info.population}</p>
+                <p><strong>Davlat boshlig'i:</strong> ${info.headOfState}</p>
+                <p><strong>Davlat tuzumi:</strong> ${info.governmentType}</p>
+                <p><strong>Soat mintaqasi:</strong> ${info.timezone}</p>
+            `;
+
+            document.getElementById("infoModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("infoModal").style.display = "none";
+        }
+
+        // Modalni yopish
+        window.onclick = function(event) {
+            const modal = document.getElementById("infoModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
