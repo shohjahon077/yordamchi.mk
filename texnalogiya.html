@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texnologiya AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #5d4037, #795548, #8d6e63);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #d7ccc8;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23d7ccc8"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #d7ccc8;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #bcaaa4;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(215, 204, 200, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #d7ccc8;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(215, 204, 200, 0.3);
+            text-shadow: 0 0 10px rgba(215, 204, 200, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #5d4037, #795548);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #6d4c41, #d7ccc8);
+            color: #3e2723;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #d7ccc8;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(215, 204, 200, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #d7ccc8 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #d7ccc8;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(90, 60, 50, 0.4);
+            color: #d7ccc8;
+            border: 1px solid rgba(215, 204, 200, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(215, 204, 200, 0.2);
+            border-color: #d7ccc8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(215, 204, 200, 0.2);
+        }
+
+        /* MEHNAT KALKULYATORI */
+        .tech-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #d7ccc8;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(215, 204, 200, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #d7ccc8;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #bcaaa4;
+            border: 1px solid #d7ccc8;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #bcaaa4;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #795548;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(109, 76, 65, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(109, 76, 65, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .tech-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Texnologiya AI Bot</div>
+        <div class="splash-subtext">7-sinf "Mehnat ta'limi" fanidan 100+ savol va amaliy hisob-kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">🛠️ 7-sinf Texnologiya AI Bot</div>
+
+        <!-- MEHNAT KALKULYATORI -->
+        <div class="tech-calculator">
+            <div class="calc-title">Mehnat Kalkulyatori</div>
+            <select class="calc-select" id="tech-formula">
+                <option value="fabric">Matoning narxini hisoblash</option>
+                <option value="wood">Taxtaning og'irligini hisoblash</option>
+                <option value="metal">Metall plastinkaning hajmi</option>
+                <option value="area">Hovuz yoki xona yuzi</option>
+                <option value="time">Ish vaqtini hisoblash</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateTech()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Mehnat kalkulyatori
+        const formulaSelect = document.getElementById('tech-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "fabric": [
+                { label: "Uzunlik (metr):", id: "length", placeholder: "2.5" },
+                { label: "Narx (so'm/m²):", id: "pricePerMeter", placeholder: "15000" }
+            ],
+            "wood": [
+                { label: "Uzunlik (sm):", id: "wLength", placeholder: "100" },
+                { label: "Kenglik (sm):", id: "wWidth", placeholder: "20" },
+                { label: "Qalinligi (sm):", id: "wHeight", placeholder: "5" },
+                { label: "Zichlik (g/sm³):", id: "density", placeholder: "0.8" }
+            ],
+            "metal": [
+                { label: "Uzunlik (mm):", id: "mLength", placeholder: "500" },
+                { label: "Kenglik (mm):", id: "mWidth", placeholder: "300" },
+                { label: "Qalinligi (mm):", id: "mThickness", placeholder: "2" }
+            ],
+            "area": [
+                { label: "Bo'yi (m):", id: "roomL", placeholder: "5" },
+                { label: "Eni (m):", id: "roomW", placeholder: "4" }
+            ],
+            "time": [
+                { label: "Bajarilgan ishlar:", id: "tasks", placeholder: "5" },
+                { label: "O'rtacha vaqt (min):", id: "avgTime", placeholder: "30" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateTech() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num) || num <= 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "fabric") {
+                    const length = parseFloatSafe("length");
+                    const price = parseFloatSafe("pricePerMeter");
+                    const total = length * price;
+                    result = `Umumiy narx: ${total.toLocaleString()} so'm`;
+                }
+                else if (formula === "wood") {
+                    const l = parseFloatSafe("wLength") / 100; // metrga
+                    const w = parseFloatSafe("wWidth") / 100;
+                    const h = parseFloatSafe("wHeight") / 100;
+                    const density = parseFloatSafe("density"); // g/sm³
+                    const volume = l * w * h; // m³
+                    const mass = volume * density * 1000; // kg ga aylantirish
+                    result = `Hajmi: ${(volume).toFixed(3)} m³\nMassasi: ${mass.toFixed(2)} kg`;
+                }
+                else if (formula === "metal") {
+                    const l = parseFloatSafe("mLength") / 1000;
+                    const w = parseFloatSafe("mWidth") / 1000;
+                    const t = parseFloatSafe("mThickness") / 1000;
+                    const area = l * w;
+                    const volume = area * t;
+                    result = `Hajmi: ${(volume * 1000000).toFixed(2)} sm³ (${volume.toFixed(6)} m³)`;
+                }
+                else if (formula === "area") {
+                    const l = parseFloatSafe("roomL");
+                    const w = parseFloatSafe("roomW");
+                    const area = l * w;
+                    const perimeter = 2 * (l + w);
+                    result = `Yuzi: ${area} m²\nPerimetri: ${perimeter} m`;
+                }
+                else if (formula === "time") {
+                    const tasks = parseFloatSafe("tasks");
+                    const avgTime = parseFloatSafe("avgTime");
+                    const totalMin = tasks * avgTime;
+                    const hours = Math.floor(totalMin / 60);
+                    const minutes = totalMin % 60;
+                    result = `${tasks} ta ish ≈ ${hours} soat ${minutes} daqiqa`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ texnologiya savollari (7-sinf darsligi asosida)
+        const questions = [
+            "Texnologiya nima?", "Nima uchun texnologiyani o'rganamiz?", "Mehnat ta’limi nima?",
+            "Kasb tanlash nima?", "Tarmoqlar nima?", "Dizayn nima?", "Model nima?",
+            "Chizma nima?", "Detal nima?", "Konstruksiya nima?",
+            "Materiallar nima?", "Suniy materiallar nima?", "Tabiiy materiallar nima?",
+            "Toza mehnat nima?", "Ijtimoiy mehnat nima?", "Amaliyot nima?",
+            "Loiha nima?", "Loiha turlari", "Loiha bosqichlari",
+            "Tushuncha loyihasi", "Chizma loyihasi", "Namuna loyihasi",
+            "Ish rejasini tuzish", "Kerakli jihozlarni aniqlash", "Xavfsizlik qoidaları",
+            "Elektr xavfsizligi", "Teri kesishdan saqlanish", "Quvurishda xavfsizlik",
+            "Metall bilan ishlash xavfsizligi", "Yog'och bilan ishlash xavfsizligi",
+            "Kiyim tikish bosqichlari", "Kiyim modelini tanlash", "O'lchov olish",
+            "Chizma tuzish", "Modelni qirqish", "Tikuv mashinasini sozlash",
+            "Ip tanlash", "Tikuv usullari", "Tikuvda xatolar",
+            "Tikuv mashinasi tuzilishi", "Tikuvda simmetriya", "Tikuvda kombinatsiya",
+            "Kiyim ranglarini moslashtirish", "Kiyim stilini belgilash", "Kiyimga buyruq berish",
+            "Mevalar qaymoqlash turlari", "Non pishirish", "Shirinlik tayyorlash",
+            "Mevali tort tayyorlash", "Sharbat tayyorlash", "Gazak tayyorlash",
+            "Salat tayyorlash", "Go'sht bilan ishlash", "Sabzavotlarni tozalash",
+            "Oshxonada xavfsizlik", "Osh tayyorlashning sanitariya qoidalari",
+            "Oshxonani tartibga solish", "Idishlarni tozalash", "Soch qirqish",
+            "Parda tikish", "Kukla tikish", "O'yinchoq yasash",
+            "Kartondan buyumlar yasash", "Quymoqdan buyumlar yasash", "Plastikdan modellar yasash",
+            "Kiyimni tiklanishdan keyin tekshirish", "Kiyimni do'konlarda sotish",
+            "Kiyimni internetda sotish", "Oziq-ovqat mahsulotlarini sotish",
+            "Klemlar nima?", "Kley tanlash", "Kley bilan ishlash qoidalari",
+            "Qaychi bilan ishlash", "Pichoq bilan ishlash", "Hammer bilan ishlash",
+            "Screwdriver nima?", "Metall qirqish", "Yog'ochni kesish",
+            "Metallni burilish", "Yog'ochni burilish", "Metallni payvandlash",
+            "Metallni siqish", "Yog'ochni siqish", "Metallni egish",
+            "Yog'ochni egish", "Detallarni birlashtirish", "Bolt-burama nima?",
+            "Vint nima?", "G'altak nima?", "Shinalar nima?",
+            "Detalni markirovka qilish", "Metallni polirovka qilish", "Yog'ochni laqillatish",
+            "Metallni korroziyasini oldini olish", "Yog'ochni namlikdan himoya qilish",
+            "Uy arxitekturasini loyihalash", "Xonalar joylashuvi", "Yorug'likni o'tkazish",
+            "Issiqlikni saqlash", "Ovoz izolyatsiyasi", "Hovuz qurilishi",
+            "Tom qurilishi", "Deraza turlari", "Eshik turlari",
+            "Pol qoplamalari", "Devor qoplamalari", "Shlyapa tikish",
+            "Ruchka tikish", "Belbog' tikish", "Tikuvda sinxronlik",
+            "Tikuvda anaviylik", "Tikuvda yangilik", "Tikuvda funksionallik",
+            "Kiyimda qulaylik", "Kiyimda barqarorlik", "Kiyimda arzonlik",
+            "Kiyimda qimmatlik", "Kiyimda sifat", "Kiyimda moda",
+            "Kiyimda iqtisodiylik", "Kiyimda estetika", "Kiyimda foyda",
+            "Kiyimda umumiy tahlil", "Kiyimda test rejasi", "Kiyimda baholash",
+            "Kiyimda kamchiliklar", "Kiyimda takomillashtirish", "Kiyimda ekspluatatsiya",
+            "Kiyimda saqlash", "Kiyimda tozalash", "Kiyimda tiklanish",
+            "Kiyimda qayta ishlatish", "Kiyimda uzatish", "Kiyimda almashtirish",
+            "Kiyimda sotish", "Kiyimda arxivlash", "Kiyimda rasmlash",
+            "Kiyimda video suratga olish", "Kiyimda marketing", "Kiyimda brend",
+            "Kiyimda logotip", "Kiyimda etiketka", "Kiyimda o'lchov jadvali",
+            "Kiyimda sifat nishoni", "Kiyimda raqamli belgi", "Kiyimda QR kod",
+            "Kiyimda bar kod", "Kiyimda ma'lumot", "Kiyimda tavsif",
+            "Kiyimda iste'mol", "Kiyimda mijoz", "Kiyimda talab",
+            "Kiyimda taklif", "Kiyimda narx", "Kiyimda daromad",
+            "Kiyimda xarajat", "Kiyimda foyda", "Kiyimda so'rov",
+            "Kiyimda analitika", "Kiyimda monitoring", "Kiyimda natijaviylik",
+            "Kiyimda strategiya", "Kiyimda reja", "Kiyimda boshqaruv",
+            "Kiyimda innovatsiya", "Kiyimda avtomatlashtirish", "Kiyimda robototexnika",
+            "Kiyimda sun'iy intellekt", "Kiyimda IoT", "Kiyimda 3D pechat",
+            "Kiyimda nanotexnologiyalar", "Kiyimda biotexnologiyalar", "Kiyimda ekologiklik",
+            "Kiyimda barqaror rivojlanish", "Kiyimda iqtisodiy samaradorlik",
+            "Kiyimda ijtimoiy mas'uliyat", "Kiyimda axloqiy tamoyillar", "Kiyimda madaniy sezgirlar",
+            "Kiyimda global standartlar", "Kiyimda milliy an'analar", "Kiyimda tarixiy elementlar",
+            "Kiyimda zamonaviylik", "Kiyimda kelajak", "Kiyimda dizaynerlik"
+        ];
+
+        // ✅ Javoblar — 7-sinf texnologiya darsligi asosida
+        const responses = {
+            "Texnologiya nima?": "Texnologiya — inson ehtiyojlarini qondirish uchun vositalar, usullar, jarayonlar yaratish hamda qo'llash san'ati va fan. Bu — ilm-fan, muhandislik, hunarmandchilikning birlashishi.",
+            "Nima uchun texnologiyani o'rganamiz?": "Texnologiyani o'rganish orqali mehnat qilish malakasini oshiramiz, kasbga yo'naltiramiz, ijodkorlikni rivojlantiramiz, hayotda mustaqil bo'lish imkonini yaratamiz.",
+            "Mehnat ta’limi nima?": "Mehnat ta’limi — maktabda amaliy ko'nikmalar, hunarlar, mehnat jarayonlari, dizayn, loyihalashtirishni o'rgatuvchi fan.",
+            "Kasb tanlash nima?": "Kasb tanlash — shaxsning qobiliyatiga, qiziqishiga, iqtisodiy ehtiyojiga mos keladigan kelajakdagi faoliyat turini belgilash jarayoni.",
+            "Tarmoqlar nima?": "Tarmoqlar — iqtisodiyotning alohida sohalari: qishloq xo'jaligi, sanoat, transport, savdo, ta'lim, sog'liqni saqlash, IT, mehnat.",
+            "Dizayn nima?": "Dizayn — ma'lum maqsadga erishish uchun mahsulotning tashqi ko'rinishi, tuzilishi, foydalanish qulayligini loyihalash jarayoni.",
+            "Model nima?": "Model — kelajakdagi mahsulotning taxminiy namunasi. U dastlabki namuna, chizma yoki 3D shakl bo'lishi mumkin.",
+            "Chizma nima?": "Chizma — buyumning tuzilishi, o'lchamlari, qismlari haqida aniq axborot beruvchi tasvir.",
+            "Detal nima?": "Detal — biror buyumni tashkil qiluvchi alohida qism. Masalan: stulning oyoqlari, parvaning qanoti.",
+            "Konstruksiya nima?": "Konstruksiya — buyumlarning mexanik qurilishi, ulangan qismlari, harakatlanuvchi qismlari tizimi.",
+            "Materiallar nima?": "Materiallar — buyum tayyorlashda ishlatiladigan asosiy resurslar: yog'och, metall, plastik, mato, ip, go'za.",
+            "Suniy materiallar nima?": "Suniy materiallar — tabiatda emas, inson tomonidan yaratilgan materiallar: plastik, sintetik ip, sun'iy teri, rezina.",
+            "Tabiiy materiallar nima?": "Tabiiy materiallar — tabiatdan olinadigan materiallar: yog'och, paxta, jun, go'za, kulrang, po'lat.",
+            "Toza mehnat nima?": "Toza mehnat — atrof-muhitni ifloslamaydigan, ekologik xavfsiz, barqaror rivojlanish tamoyillariga mos keladigan mehnat turi.",
+            "Ijtimoiy mehnat nima?": "Ijtimoiy mehnat — jamoatchilik foydasiga qilingan mehnat: daraxt ekish, kechikkanlarga yordam, toza havo uchun kurash.",
+            "Amaliyot nima?": "Amaliyot — nazariy bilimlarni amaliy ravishda qo'llash jarayoni. Misol: chizma asosida detallarni yasash.",
+            "Loiha nima?": "Loiha — amaliy vazifani hal qilish uchun tayyorlangan barcha ishlar majmu'i: tahlil, chizma, ish rejası, natija, hisobot.",
+            "Loiha turlari": "Loiha turlari: 1) Ijtimoiy, 2) Amaliy, 3) Ilmiy-texnik, 4) Ekologik, 5) Ijodiy.",
+            "Loiha bosqichlari": "1) Muammo aniqlash, 2) Ma'lumot to'plash, 3) Chizma tuzish, 4) Ish rejası, 5) Amalga oshirish, 6) Natija, 7) Hisobot.",
+            "Tushuncha loyihasi": "Tushuncha loyihasi — dastlabki g'oya, skitsalar, rasmlar, tushunchalar to'plami. Hali amalga oshirilmagan.",
+            "Chizma loyihasi": "Chizma loyihasi — buyumning aniq o'lchamlari, materiallari, tuzilishi ko'rsatilgan rasmlar to'plami.",
+            "Namuna loyihasi": "Namuna loyihasi — dastlabki prototip, namuna yasash orqali loyihani amalga oshirish.",
+            "Ish rejasini tuzish": "Ish rejasini tuzish — kerakli materiallar, jihozlar, vaqt, ketma-ketlik, xavfsizlik choralarini belgilash.",
+            "Kerakli jihozlarni aniqlash": "Jihozlarni aniqlash — ishni bajarish uchun zarur bo'lgan barcha asbob-uskunalarni ro'yxatga olish.",
+            "Xavfsizlik qoidaları": "Xavfsizlik qoidaları — mehnat jarayonida jarohat, portlash, elektr tokidan himoyalash qoidalari.",
+            "Elektr xavfsizligi": "Elektr xavfsizligi — elektr jihozlari bilan ishlashda: quruq qo'l, izolyatsiyalangan parda, to'g'ri ulanish.",
+            "Teri kesishdan saqlanish": "Teri kesishdan saqlanish — qattiq qo'loq, to'g'ri qaychi, diqqatli ishlash, ish maydonini tozalash.",
+            "Quvurishda xavfsizlik": "Quvurishda xavfsizlik — qo'l quvurilmasin, termoplastikdan foydalanish, qizdirish temperaturasini nazorat qilish.",
+            "Metall bilan ishlash xavfsizligi": "Metall bilan ishlashda: maska, qo'loq, ochiq olovdan saqlash, qaychi va mengene bilan ehtimotli ishlash.",
+            "Yog'och bilan ishlash xavfsizligi": "Yog'och bilan ishlashda: changdan himoya, ko'z maskasi, quloq qopqog'i, kesuvchi asboblar bilan ehtimot.",
+            "Kiyim tikish bosqichlari": "1) Model tanlash, 2) O'lchov olish, 3) Chizma tuzish, 4) Mato qirqish, 5) Tikuv mashinasida tikish, 6) Yakuniy ishlar.",
+            "Kiyim modelini tanlash": "Model tanlash — mijozning ehtiyoji, moda, foydalanish sharoiti, moliyaviy imkoniyatlar asosida amalga oshiriladi.",
+            "O'lchov olish": "O'lchov olish — tananing asosiy qismlarini o'lchash: bo'y, gavda, qolda, bel, son, qarindosh. Aniqlik juda muhim.",
+            "Chizma tuzish": "Chizma tuzish — o'lchovlar asosida kiyimning qirqimini qog'ozga tushirish. Proporsiyalar, simmetriya saqlanadi.",
+            "Modelni qirqish": "Modelni qirqish — chizma bo'yicha mato qirqish. Qirqish chizig'iga qarama-qarshi qoldiriladi (poyezd).",
+            "Tikuv mashinasini sozlash": "Tikuv mashinasini sozlash — ipni to'g'ri o'rash, igna tanlash, tikuv tezligini sozlash.",
+            "Ip tanlash": "Ip tanlash — matoga mos, mustahkam, uzilmas, rangi mos keladigan ip tanlanadi. PAXTA, sintetik, aralash ip turlari bor.",
+            "Tikuv usullari": "Asosiy tikuv usullari: tikish, tikish, burmalash, bintlash, tikuv bosish. Har biri maqsadga qarab tanlanadi.",
+            "Tikuvda xatolar": "Tikuvda xatolar: notekis tikuv, uzilgan ip, noto'g'ri o'lchov, qirqishda xato, mato burmalanishi.",
+            "Tikuv mashinasi tuzilishi": "Tikuv mashinasi asosiy qismlari: igna, ip bobini, pedal, igna platosi, qo'pol, tikuv platofasi.",
+            "Tikuvda simmetriya": "Simmetriya — ikki tomonning bir-biriga o'zgarish darajasida o'xshashligi. Ayniqsa kiyimda muhim.",
+            "Tikuvda kombinatsiya": "Kombinatsiya — turli matolar, ranglar, naqshlar, usullarni birlashtirish. Estetik ko'rinishni yaxshilaydi.",
+            "Kiyim ranglarini moslashtirish": "Ranglarni moslashtirishda komplementar (qarama-qarshi), analog (bir xil oiladan) ranglar ishlatiladi.",
+            "Kiyim stilini belgilash": "Stil — kiyimning tashqi ko'rinishi: klassik, sport, moda, dam olish, ish, bayram.",
+            "Kiyimga buyruq berish": "Buyruq berish — mijoz kiyim haqida o'z talablarini, model, o'lchov, mato, narx haqida aytadi.",
+            "Mevalar qaymoqlash turlari": "Qaymoqlash turlari: cho'tka, parda, tanga, gul, geometrik. Qaymoqlash estetikani oshiradi.",
+            "Non pishirish": "Non pishirish — xamir aralashtirish, un, suv, xamir, maya, tuz, shakar qo'shish, pishirish.",
+            "Shirinlik tayyorlash": "Shirinlik tayyorlash — ovqatlanish madaniyatining bir qismi. Bola mehnatini rivojlantiradi.",
+            "Mevali tort tayyorlash": "Mevali tort tayyorlash: xamir, meva, krem, shakar, vanil, limon sharbati. Sanoat miqyosida ham qilinadi.",
+            "Sharbat tayyorlash": "Sharbat tayyorlash: shakar, suv, meva, likyor, limon. Steril hosil qilish kerak.",
+            "Gazak tayyorlash": "Gazak tayyorlash — kartoshka, piyoz, go'sht, sabzavotlar, souslar bilan. Xushbo'ylikni oshiradi.",
+            "Salat tayyorlash": "Salat tayyorlash — sabzavotlar, go'sht, souslar, mevalar, granola. Ovqatlanish farovonligi uchun muhim.",
+            "Go'sht bilan ishlash": "Go'sht bilan ishlash: tozalash, qirqish, marinadlash, pishirish. Gistaminli mahsulotlar ehtimotli.",
+            "Sabzavotlarni tozalash": "Sabzavotlarni tozalash: yuvish, qovurish, qirqish, namlangan joylardan tozalash.",
+            "Oshxonada xavfsizlik": "Oshxonada xavfsizlik: qo'l yuvish, alohida parda, chinni idish, toza ish maydoni.",
+            "Osh tayyorlashning sanitariya qoidalari": "Sanitariya qoidalari: toza qo'l, idish, xom ashyo, ish joyi, xavfsiz saqlash.",
+            "Oshxonani tartibga solish": "Tartibga solish — barcha jihozlar, idishlar, mahsulotlar aniq joylashtiriladi. Ish osongina o'tadi.",
+            "Idishlarni tozalash": "Idishlarni tozalash — ishdan keyin darhol yuvish, dezinfektsiya qilish, qurgatish.",
+            "Soch qirqish": "Soch qirqish — maxsus qaychilar, pincet, pardoq, quloq qopqog'i bilan amalga oshiriladi.",
+            "Parda tikish": "Parda tikish — o'lchov olish, mato tanlash, chizma tuzish, tikish, bintlash.",
+            "Kukla tikish": "Kukla tikish — bosh, tan, oyoq, qo'l, kiyim, soch, ko'zlar ayrimdan tayyorlanadi.",
+            "O'yinchoq yasash": "O'yinchoq yasash — karton, plastik, yog'och, ip, ipakdan. Rangli, jo'nori, funktsional bo'lishi kerak.",
+            "Kartondan buyumlar yasash": "Kartondan: qutilar, domlar, mebellar, o'yinchoqlar yasash. Kesish, buklash, yelimlash.",
+            "Quymoqdan buyumlar yasash": "Quymoqdan — qozon, tarelka, idishlar. Quymoq aralashtiriladi, shaklga solinadi, quritiladi.",
+            "Plastikdan modellar yasash": "Plastikdan — termoplastik, polimer, 3D printer. Buyumlar sifatli, funksional, chiroyli.",
+            "Kiyimni tiklanishdan keyin tekshirish": "Tekshirish — tikuv sifati, ip uzilishi, simmetriya, o'lchov, poyezdlar, yelim izlari.",
+            "Kiyimni do'konlarda sotish": "Do'konlarda — vitrina, reklama, narx, xizmat ko'rsatish, sifat, tozalik muhim.",
+            "Kiyimni internetda sotish": "Onlayn sotish — veb-sayt, Instagram, Telegram, reklama, yetkazib berish, mijoz xizmati.",
+            "Oziq-ovqat mahsulotlarini sotish": "Mahsulotlarni sotish — do'kon, onlayn, savdo nuqtalari. Sifat, narx, reklama, taqdimot muhim.",
+            "Klemlar nima?": "Klem — detallarni birlashtirish uchun mo'ljallangan maxsus uskuna. Mengena, kles, klamp kiradi.",
+            "Kley tanlash": "Kley tanlash — materialga qarab: yog'och uchun PVA, plastik uchun epoksid, metall uchun universal.",
+            "Kley bilan ishlash qoidalari": "Kley bilan ishlashda: oz miqdorda, tekis tarqatish, birlashtirish, 10–30 daqiqa siqish.",
+            "Qaychi bilan ishlash": "Qaychi bilan ishlash — to'g'ri tutish, qirqish yo'nalishi, ishdan keyin tozalash.",
+            "Pichoq bilan ishlash": "Pichoq bilan ishlash — kesuvchi qism old qarab, barmoq ostiga qo'ymaslik, sekin ishlash.",
+            "Hammer bilan ishlash": "Hammer bilan ishlash — tegishli kuchi, teginadigan joy, himoya vositalari bilan.",
+            "Screwdriver nima?": "Screwdriver (shurupchilik) — vintlarni aylantirish uchun ishlatiladigan maxsus asbob.",
+            "Metall qirqish": "Metall qirqish — mengenaga mahkamlangan metallni qaychi yoki diskli qirqich bilan qirqish.",
+            "Yog'ochni kesish": "Yog'ochni kesish — qaychi, bulg'ar, testere, laser yordamida amalga oshiriladi.",
+            "Metallni burilish": "Metallni burilish — maxsus burg'ichi bilan. Burilish tezligi, bosim, sovutilish nazorat qilinadi.",
+            "Yog'ochni burilish": "Yog'ochni burilish — oddiy burg'ich bilan ham, lekin mengena bilan aniqroq.",
+            "Metallni payvandlash": "Payvandlash — metall detallarni elektr yoki gaz yordamida qizdirib birlashtirish.",
+            "Metallni siqish": "Metallni siqish — pressda siqish orqali shakl berish. Avtomobil, qutilar uchun.",
+            "Yog'ochni siqish": "Yog'ochni siqish — maxsus pressda, kleslar bilan. Mebellar, qutilar uchun.",
+            "Metallni egish": "Metallni egish — maxsus pressta, mengena bilan. Egish burchagi aniq bo'lishi kerak.",
+            "Yog'ochni egish": "Yog'ochni egish — issiqlik yoki namlik ta'sirida yumshatiladi, so'ng egiladi.",
+            "Detallarni birlashtirish": "Detallarni birlashtirish: bolt, vint, payvand, yelim, tikan, kley, qovoq, shponka.",
+            "Bolt-burama nima?": "Bolt — metall sterjen, burama bilan. Burama — ichki teshikdagi spiral. Birgalikda birlashtiradi.",
+            "Vint nima?": "Vint — o'ziga buriluvchi metall tirnaq. Yog'och, plastik, metallga aylanma bilan kiradi.",
+            "G'altak nima?": "G'altak — detallarni siqish, birlashtirishda ishlatiladigan metall silindr.",
+            "Shinalar nima?": "Shinalar — vint, bolt tagiga qo'yiladigan metall plastinka. Siqish kuchini taqsimlaydi.",
+            "Detalni markirovka qilish": "Markirovka — detalga o'lchov, kesish, burilish, teshik joyini belgilash.",
+            "Metallni polirovka qilish": "Polirovka — metall sirtini silliq, yaltiroq qilish. Past, pasta, disk yordamida.",
+            "Yog'ochni laqillatish": "Laklash — yog'och sirtini himoya qilish, rang berish, yaltiroq qilish. Sik, lak, moy bilan.",
+            "Metallni korroziyasini oldini olish": "Korroziyani oldini olish: bo'yoq, xrom, nikel, sink, plastik qoplamalar bilan qoplash.",
+            "Yog'ochni namlikdan himoya qilish": "Yog'ochni himoya qilish: moy, lak, antiseptik, gidroizolyatsiya bilan qoplash.",
+            "Uy arxitekturasini loyihalash": "Uy loyihasi — o'lcham, xonalar joylashuvi, yorug'lik, ventilyatsiya, issiqlik, ovoz izolyatsiyasi.",
+            "Xonalar joylashuvi": "Xonalar joylashuvi — oshxona, hammom, yotoqxona, ish xonasi, kir yuvish joyi mantiqiy joylashtiriladi.",
+            "Yorug'likni o'tkazish": "Yorug'likni o'tkazish — derazalar, lyustra, lampochka, reflektorlar, optik tolalar orqali.",
+            "Issiqlikni saqlash": "Issiqlikni saqlash — devorlarni izolyatsiya qilish, dubl qo'pol, plastik deraza, yaxshi eshik.",
+            "Ovoz izolyatsiyasi": "Ovoz izolyatsiyasi — devor, shift, plyonka, pana, matolar orqali ovozni pasaytirish.",
+            "Hovuz qurilishi": "Hovuz qurilishi — beton, plastik, metall ramka, suv filtri, nasos, chiroq, tepa qopqoq.",
+            "Tom qurilishi": "Tom qurilishi — g'isht, shifer, metal, keramika, profil list. Og'irlik, ob-havo, uzun muddatli bo'lishi kerak.",
+            "Deraza turlari": "Deraza turlari: oddiy, dubl qo'pol, plastik, ochiladigan, aylanadigan. Har biri o'z vazifasini bajaradi.",
+            "Eshik turlari": "Eshik turlari: oddiy, avtomatik, shifrlangan, o'raluvchi. Material: yog'och, metall, plastik.",
+            "Pol qoplamalari": "Pol qoplamalari: laminat, parket, linoleum, gres, plyonka, gilam. Funksiyaga qarab tanlanadi.",
+            "Devor qoplamalari": "Devor qoplamalari: bo'yoq, oqma, gipsokarton, panel, keramika, dekorativ gips.",
+            "Shlyapa tikish": "Shlyapa tikish — qog'oz, karton, mato, ip, quymoq asosida. Shablon, qirqish, tikish, bezash.",
+            "Ruchka tikish": "Ruchka tikish — mato, ip, qo'l, kles, igna. Simmetriya, mustahkamlik, estetika muhim.",
+            "Belbog' tikish": "Belbog' tikish — kengligi, uzunligi, materiali, tikuv, boshlovchi, qulaylikka e'tibor beriladi.",
+            "Tikuvda sinxronlik": "Sinxronlik — tikuvning uzluksiz, tekis, bir xil masofada davom etishi.",
+            "Tikuvda anaviylik": "Anaviylik — tikuv chizig'ining to'g'riligi, to'xtamay ishlash, boshlovchisiz boshlanishi.",
+            "Tikuvda yangilik": "Yangilik — yangi usullar, materiallar, naqshlar, kombinatsiyalar ishlatilishi.",
+            "Tikuvda funksionallik": "Funksionallik — kiyim qulay, amaliy, ehtiyojni qondiruvchi bo'lishi.",
+            "Kiyimda qulaylik": "Qulaylik — kiyim erkin harakat qilish, nafas olish, isish, sovish, uzilmaslik.",
+            "Kiyimda barqarorlik": "Barqarorlik — kiyim ko'p marta kir yuvish, kiyishdan so'ng ham sifatini saqlashi.",
+            "Kiyimda arzonlik": "Arzonlik — kichik xarajat, lekin sifatli bo'lishi. Aralash materiallar, optimal ishlab chiqarish.",
+            "Kiyimda qimmatlik": "Qimmatlik — sifatli mato, import ip, qo'lda tikilgan, brend, moda uy tomonidan yaratilgan.",
+            "Kiyimda sifat": "Sifat — mustahkam tikuv, to'g'ri chizma, to'g'ri o'lchov, toza bajarilgan ish.",
+            "Kiyimda moda": "Moda — hozirgi zamonda kiyilayotgan, trendga mos keladigan kiyimlar.",
+            "Kiyimda iqtisodiylik": "Iqtisodiylik — kam xarajat, kop foydalanish, uzun muddatli kiyish.",
+            "Kiyimda estetika": "Estetika — go'zallik, ranglar, naqshlar, proporsiya, kombinatsiya jihatlaridan iborat.",
+            "Kiyimda foyda": "Foyda — kiyim qulay, arzon, chiroyli, sifatli, qishda issiq, yozda nafas olish.",
+            "Kiyimda umumiy tahlil": "Umumiy tahlil — barcha jihatlarni (sifat, narx, foyda, estetika) baholash.",
+            "Kiyimda test rejasi": "Test rejasi — kiyimni 1, 3, 7 kun kiyish orqali sifatini tekshirish.",
+            "Kiyimda baholash": "Baholash — sifat, qulaylik, estetika, narx, foydalanish muddati asosida.",
+            "Kiyimda kamchiliklar": "Kamchiliklar — notekis tikuv, uziladigan ip, noto'g'ri o'lchov, o'zgaruvchan rang.",
+            "Kiyimda takomillashtirish": "Takomillashtirish — kamchiliklarni bartaraf etish, yangi funksiyalar qo'shish.",
+            "Kiyimda ekspluatatsiya": "Ekspluatatsiya — kiyimni qanday kiyish, qancha vaqt foydalanish, qanday parvarish qilish.",
+            "Kiyimda saqlash": "Saqlash — quruq, havasiz, hashoratdan himoyalangan joyda, qoplangan holda.",
+            "Kiyimda tozalash": "Tozalash — kir yuvish, quritish, duddan tozalash, kemirish. Har bir kiyimda boshqacha.",
+            "Kiyimda tiklanish": "Tiklanish — yirtilgan joylarni tikish, tugmachalarni almashtirish, uzunligini o'zgartirish.",
+            "Kiyimda qayta ishlatish": "Qayta ishlatish — eski kiyimdan yangi narsa yasash: quticha, o'yinchoq, art-loyiha.",
+            "Kiyimda uzatish": "Uzatish — eski kiyimni bepul, arzon, iymonli fondlarga, do'stlarga berish.",
+            "Kiyimda almashtirish": "Almashtirish — kiyimlarni boshqalar bilan almashtirish, savdo do'konlari orqali.",
+            "Kiyimda sotish": "Sotish — Internet, bozor, do'kon orqali. Reklama, sifat, narx muhim.",
+            "Kiyimda arxivlash": "Arxivlash — ajoyib kiyimlarni, eski kiyimlarni maxsus quti, qadoqlarda saqlash.",
+            "Kiyimda rasmlash": "Rasmlash — kiyimning turli burchaklardan fotosuratini olish, sifatli fon, yorug'lik.",
+            "Kiyimda video suratga olish": "Video — kiyim qanday qiyilishini, harakatda qanday ko'rinishini ko'rsatish.",
+            "Kiyimda marketing": "Marketing — mijozlarga kiyim haqida ma'lumot berish, reklama, taqdimot, aktsiyalar.",
+            "Kiyimda brend": "Brend — kiyim brendi, logo, nomi, tarixi, sifati bilan bog'liq.",
+            "Kiyimda logotip": "Logotip — brendni ifodalovchi belgi. Ko'pincha kiyimning ko'krak qismida joylashadi.",
+            "Kiyimda etiketka": "Etiketka — kiyim tarkibi, o'lchovi, kir yuvish qoidalari, ishlab chiqaruvchi haqida.",
+            "Kiyimda o'lchov jadvali": "O'lchov jadvali — bel, qolda, son, bo'y, eni bo'yicha o'lchovlar jadvali.",
+            "Kiyimda sifat nishoni": "Sifat nishoni — mahsulot sifatini dalolatlovchi belgi. ISO, GOST, O'zbekiston belgisi.",
+            "Kiyimda raqamli belgi": "Raqamli belgi — kiyimning modeli, partiyasi, kodi.",
+            "Kiyimda QR kod": "QR kod — telefon bilan skanerlab, kiyim haqida batafsil ma'lumot olish.",
+            "Kiyimda bar kod": "Bar kod — savdo nuqtasida avtomatik tarzda narxni aniqlash uchun.",
+            "Kiyimda ma'lumot": "Ma'lumot — brend, model, tarkib, yuvish qoidalari, mamlakat, sertifikat.",
+            "Kiyimda tavsif": "Tavsif — kiyim qayerda, qachon, kim uchun, qanday ishlatilishi haqida.",
+            "Kiyimda iste'mol": "Iste'mol — kiyimni sotib olish, kiyish, foydalanish jarayoni.",
+            "Kiyimda mijoz": "Mijoz — kiyimni sotib oluvchi, foydalanuvchi. Ularga e'tibor qaratish kerak.",
+            "Kiyimda talab": "Talab — mijozlarning ma'lum kiyim turi, model, o'lcham, sifat bo'yicha ehtiyoji.",
+            "Kiyimda taklif": "Taklif — ishlab chiqaruvchilarning mavjud kiyim turlari, narxlari, sifati.",
+            "Kiyimda narx": "Narx — kiyim uchun to'lanadigan summa. Xarajat, foyda, talab, brendga bog'liq.",
+            "Kiyimda daromad": "Daromad — sotilgan kiyimlardan olingan pul. Narx – xarajat = foyda.",
+            "Kiyimda xarajat": "Xarajat — mato, ish haqi, transport, reklama, jihozlar uchun sarflangan pul.",
+            "Kiyimda foyda": "Foyda — daromaddan xarajatni ayirish. Biznesda muhim ko'rsatkich.",
+            "Kiyimda so'rov": "So'rov — kiyim haqida mijozlarning fikrlari, sharhlar, baholari.",
+            "Kiyimda analitika": "Analitika — sotuvlar, so'rovlar, mijozlar haqida statistik ma'lumotlar.",
+            "Kiyimda monitoring": "Monitoring — kiyim sotilishi, foydalanish, mijoz fikri doim nazorat qilinadi.",
+            "Kiyimda natijaviylik": "Natijaviylik — kiyim qancha tez sotilayotgani, mijozlar qoniqishi.",
+            "Kiyimda strategiya": "Strategiya — kiyim ishlab chiqarish, sotish, rivojlantirish rejası.",
+            "Kiyimda reja": "Reja — qachon, qanday, qancha kiyim ishlab chiqarish, qayerga sotish.",
+            "Kiyimda boshqaruv": "Boshqaruv — barcha jarayonlarni nazorat qilish: ishlab chiqarish, sotish, marketing.",
+            "Kiyimda innovatsiya": "Innovatsiya — yangi materiallar, dizayn, texnologiyalar, ishlab chiqarish usullari.",
+            "Kiyimda avtomatlashtirish": "Avtomatlashtirish — tikuv, kesish, chizish, birlashtirish jarayonlarini mashinalar bajarishi.",
+            "Kiyimda robototexnika": "Robototexnika — kiyim ishlab chiqarishda robotlar ishlatiladi. Tezkor, aniq, arzon.",
+            "Kiyimda sun'iy intellekt": "Sun'iy intellekt — mijozlarga tavsiya, dizayn yaratish, sotuvni bashorat qilish.",
+            "Kiyimda IoT": "IoT (Internet of Things) — aqlli kiyimlar, sensorli kiyimlar, o'zini sozlash.",
+            "Kiyimda 3D pechat": "3D pechat — kiyim, aksesuarlar, detallar 3D printerda bosib chiqariladi.",
+            "Kiyimda nanotexnologiyalar": "Nanotexnologiyalar — kiyimga kirish, namlikni o'tkazmaydigan, antimikrob qoplama.",
+            "Kiyimda biotexnologiyalar": "Biotexnologiyalar — organik materiallar, bakteriyalar yordamida rang berish.",
+            "Kiyimda ekologiklik": "Ekologiklik — atrof-muhitni ifloslamaydigan, qayta ishlatiladigan materiallar.",
+            "Kiyimda barqaror rivojlanish": "Barqaror rivojlanish — kelajak avlodlarga ham toza dunyo qoldirish maqsadida.",
+            "Kiyimda iqtisodiy samaradorlik": "Iqtisodiy samaradorlik — kam xarajat, ko'p daromad, kam chiqindi.",
+            "Kiyimda ijtimoiy mas'uliyat": "Ijtimoiy mas'uliyat — ishchilarga adolatli ish haqi, ish sharoiti, mehnat huquqlari.",
+            "Kiyimda axloqiy tamoyillar": "Axloqiy tamoyillar — haqiqat, adolat, mehnat, mehnat sevgisi.",
+            "Kiyimda madaniy sezgirlar": "Madaniy sezgirlar — milliy libos, an'anaviy naqshlar, tarixiy elementlar.",
+            "Kiyimda global standartlar": "Global standartlar — ISO, CE, OEKO-TEX, GOTS — sifat, xavfsizlik, ekologiklik.",
+            "Kiyimda milliy an'analar": "Milliy an'analar — o'zbek, qoraqalpoq, tojik, qirg'iz kiyimlari, naqshlari.",
+            "Kiyimda tarixiy elementlar": "Tarixiy elementlar — sher, gul, temuriy, navoiy, amalakorlikdagi naqshlar.",
+            "Kiyimda zamonaviylik": "Zamonaviylik — yangi dizayn, kombinatsiya, funktsionallik, texnologiya.",
+            "Kiyimda kelajak": "Kelajak — aqlli kiyimlar, 3D pechat, ekologik materiallar, robotlar, AI.",
+            "Kiyimda dizaynerlik": "Dizaynerlik — kiyim, aksesuar, moda, ranglar, naqshlar, siluetni yaratish san'ati."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf Texnologiya (Mehnat ta’limi) darsligi bo'yicha AI yordamchiman. Savollarga batafsil javob beraman va mehnat hisob-kitoblarini amalga oshiraman! 🛠️", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
