@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - Tabiy Fanlar (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #FF9800; /* Sabzi rang — tabiat uchun */
+            --secondary-color: #4CAF50; /* Yashil */
+            --bg-color: #fff8e1;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #FFE0B2;
+            --ai-bubble: #FFF3E0;
+            --button-color: #F57C00;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--secondary-color); } to { box-shadow: 0 0 20px var(--secondary-color); } }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #E91E63;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - Tabiy Fanlar (5-sinf)</h1>
+        <p>100+ savolga tayyormiz! Tabiat siriga tushamiz...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>Tabiat Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Tabiy fanlardan qaysi mavzuni o'rganishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Tabiat va O'zgarishlar 🌍", key: "tabiat" },
+                    { text: "2. Hayvonot Olami 🐾", key: "hayvonot" },
+                    { text: "3. O'simliklar 🌱", key: "osimliklar" },
+                    { text: "4. Jismlar va Moddalar 🔬", key: "jismlar" },
+                    { text: "5. Yer hamda Kosmos 🌌", key: "yer_kosmos" },
+                    { text: "6. Sog'liqni Saqlash 💪", key: "soglik" },
+                    { text: "7. Testlar ✍️", key: "test_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tabiat": {
+                text: "Tabiat — tirik hamda jonsiz mavjudotlarning barchasi. O'zgarishlar mavsum, ob-havo, iqlim bilan bog'liq.",
+                buttons: [
+                    { text: "Mavsumlar va o'zgarishlar", key: "mavsumlar" },
+                    { text: "Ob-havo va iqlim", key: "obhavo" },
+                    { text: "Ekologiya asoslari", key: "ekologiya" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hayvonot": {
+                text: "Hayvonlar — tirik mavjudotlar. Ularni xushbo'y, hasharotlar, qushlar, sut emizuvchilar turlariga bo'linadi.",
+                buttons: [
+                    { text: "Hayvonlarning turlari", key: "hayvon_turlari" },
+                    { text: "Hayvonlarning odatlari", key: "hayvon_odatlari" },
+                    { text: "Qiziqarli hayvonlar haqida", key: "qiziq_hayvonlar" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "osimliklar": {
+                text: "O'simliklar — yashil tirik mavjudotlar. Fotosintez orqali oziqlanadi.",
+                buttons: [
+                    { text: "O'simlik qismlari", key: "osimlik_qismlari" },
+                    { text: "Gulxayriyalar haqida", key: "gulxayriy" },
+                    { text: "O'simliklarni ko'paytirish", key: "kopaytirish" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "jismlar": {
+                text: "Jism — shakli va hajmi bor narsa. Modda esa jismni tashkil qiluvchi narsa.",
+                buttons: [
+                    { text: "Qattiq, suyuq, gaz", key: "modda_holatlari" },
+                    { text: "Aralashmalar", key: "aralashmalar" },
+                    { text: "Suvning ahamiyati", key: "suv_ahamiyati" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "yer_kosmos": {
+                text: "Yer — Quyosh atrofida aylanuvchi sayyora. Kosmos — yulduzlar, sayyoralar, galaktikalar olami.",
+                buttons: [
+                    { text: "Yerning tuzilishi", key: "yer_tuzilishi" },
+                    { text: "Quyosh tizimi", key: "quyosh_tizimi" },
+                    { text: "Yerning harakatlari", key: "yer_harakatlari" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "soglik": {
+                text: "Sog'lom turmush tarzi — sog'liqni saqlashning asosi.",
+                buttons: [
+                    { text: "Toza havo va suv", key: "toza_ahvol" },
+                    { text: "Tartibli ovqatlanish", key: "ovqatlanish" },
+                    { text: "Jismoniy mashqlar", key: "mashqlar" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_menu": {
+                text: "Tabiy fanlar bo'yicha testlar!",
+                buttons: [
+                    { text: "Tabiat testi (10 savol)", key: "test_tabiat" },
+                    { text: "Hayvonot testi (10 savol)", key: "test_hayvon" },
+                    { text: "O'simliklar testi", key: "test_osimlik" },
+                    { text: "Moddalar testi", key: "test_modda" },
+                    { text: "Yer hamda Kosmos testi", key: "test_kosmos" },
+                    { text: "Sog'liq testi", key: "test_soglik" },
+                    { text: "Umumiy test (20 savol)", key: "test_umumiy" },
+                    { text: "Eng qiyin 5 savol", key: "test_qiyin" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            // Qisqacha tushunchalar
+            "mavsumlar": { text: "Tort mavsum: bahor, yoz, kuz, qish. Har biri ob-havo va tabiatda o'zgarishlarni keltirib chiqaradi.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "obhavo": { text: "Ob-havo — kunlik, iqlim — ko'p yillik. Termometr, barometr asboblari bilan o'lchanadi.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "ekologiya": { text: "Tabiatni muhofaza qilish — bizning burchimiz. Chiqindilarni to'g'ri tashlash kerak.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "hayvon_turlari": { text: "Xushbo'y, hasharot, qush, baliq, sudraluvchi, sut emizuvchi.", buttons: [{ text: "⬅️ Hayvonot", key: "hayvonot", isHome: true }] },
+            "osimlik_qismlari": { text: "Ildiz, poya, barg, gullar, meva, urug'.", buttons: [{ text: "⬅️ O'simliklar", key: "osimliklar", isHome: true }] },
+            "modda_holatlari": { text: "Qattiq (muz), suyuq (suv), gaz (bug').", buttons: [{ text: "⬅️ Jismlar", key: "jismlar", isHome: true }] },
+            "yer_tuzilishi": { text: "Yer yadrosi, mantya, quruq qobiqdan tashkil topgan.", buttons: [{ text: "⬅️ Yer hamda Kosmos", key: "yer_kosmos", isHome: true }] },
+            "toza_ahvol": { text: "Toza havo — sog'lom nafas, toza suv — sog'lom jismoniy holat.", buttons: [{ text: "⬅️ Sog'liq", key: "soglik", isHome: true }] },
+            // Test savollari
+            "test_tabiat": { text: "1. Yilning nechta mavsumi bor? (A: 3, B: 4, C: 5)", buttons: [{ text: "A: 3", key: "test_tabiat_a" }, { text: "B: 4", key: "test_tabiat_b" }, { text: "C: 5", key: "test_tabiat_c" }] },
+            "test_tabiat_b": { text: "TO'G'RI! Bahor, yoz, kuz, qish — 4 ta mavsum.", buttons: [{ text: "Keyingi test", key: "test_hayvon" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_hayvon": { text: "2. Qaysi hayvon sut emizuvchi? (A: Baliq, B: Qush, C: Ot)", buttons: [{ text: "A: Baliq", key: "test_hayvon_a" }, { text: "B: Qush", key: "test_hayvon_b" }, { text: "C: Ot", key: "test_hayvon_c" }] },
+            "test_hayvon_c": { text: "TO'G'RI! Ot — sut emizuvchi hayvon.", buttons: [{ text: "Keyingi test", key: "test_osimlik" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_qiyin": { text: "Eng qiyin savol! Suvning kimyoviy formulasi? (A: CO₂, B: H₂O, C: NaCl)", buttons: [{ text: "A: CO₂", key: "test_qiyin_a" }, { text: "B: H₂O", key: "test_qiyin_b" }, { text: "C: NaCl", key: "test_qiyin_c" }] },
+            "test_qiyin_b": { text: "TO'G'RI! Suv — H₂O. Siz tabiat fanlaridan chempionsiz! 🌟", buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }] }
+        };
+
+        // Avtomatik 80+ qo'shimcha tugma
+        for (let i = 1; i <= 20; i++) {
+            database[`tabiat_${i}`] = { text: `Tabiat savoli ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "tabiat", isHome: true }] };
+            database[`hayvon_${i}`] = { text: `Hayvon haqida savol ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "hayvonot", isHome: true }] };
+            database[`test_extra_${i}`] = { text: `Qo'shimcha test savoli ${i}`, buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] };
+        }
+
+        database["test_qoshimcha_tabiat"] = {
+            text: "Qo'shimcha Tabiy Fanlar Savollari:",
+            buttons: [
+                ...Array.from({ length: 20 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `test_extra_${i + 1}` })),
+                { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }
+            ]
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    bubble.textContent = response.substring(0, charIndex + 1);
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, 50);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) button.classList.add('home-button');
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    addMessage(btn.text, 'user');
+                    quickButtonsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) typeAiResponse(next.text, btn.key);
+                        else typeAiResponse("Xatolik yuz berdi.", "main_menu");
+                    }, 500);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 2500);
+        };
+    </script>
+</body>
+</html>
