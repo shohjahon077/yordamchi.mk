@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informatika AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #00695c, #00897b, #26a69a);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #a7ffeb;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23a7ffeb"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #a7ffeb;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #b2dfdb;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(167, 255, 235, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #a7ffeb;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(167, 255, 235, 0.3);
+            text-shadow: 0 0 10px rgba(167, 255, 235, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #00897b, #26a69a);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #00695c, #a7ffeb);
+            color: #004d40;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #a7ffeb;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(167, 255, 235, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #a7ffeb transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #a7ffeb;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 120, 120, 0.4);
+            color: #a7ffeb;
+            border: 1px solid rgba(167, 255, 235, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(167, 255, 235, 0.2);
+            border-color: #a7ffeb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(167, 255, 235, 0.2);
+        }
+
+        /* RAQAMLI KALKULYATOR */
+        .it-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #a7ffeb;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(167, 255, 235, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #a7ffeb;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #b2dfdb;
+            border: 1px solid #a7ffeb;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b2dfdb;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #26a69a;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(38, 166, 154, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(38, 166, 154, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .it-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Informatika AI Bot</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ informatika savoli va raqamli hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">💻 7-sinf Informatika AI Bot</div>
+
+        <!-- RAQAMLI KALKULYATOR -->
+        <div class="it-calculator">
+            <div class="calc-title">Raqamli Kalkulyator</div>
+            <select class="calc-select" id="it-formula">
+                <option value="binary">10-likdan 2-likka</option>
+                <option value="decimal">2-likdan 10-likka</option>
+                <option value="memory">Xotira hajmini hisoblash</option>
+                <option value="file">Fayl hajmini hisoblash</option>
+                <option value="speed">Ma'lumot tezligini hisoblash</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateIT()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Raqamli kalkulyator
+        const formulaSelect = document.getElementById('it-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "binary": [
+                { label: "10-lik son:", id: "dec", placeholder: "10" }
+            ],
+            "decimal": [
+                { label: "2-lik son:", id: "bin", placeholder: "1010" }
+            ],
+            "memory": [
+                { label: "Bir xotira hajmi (MB):", id: "size", placeholder: "512" },
+                { label: "Soni:", id: "count", placeholder: "4" }
+            ],
+            "file": [
+                { label: "Matn uzunligi (belgi):", id: "chars", placeholder: "1000" }
+            ],
+            "speed": [
+                { label: "Ma'lumot hajmi (MB):", id: "dataSize", placeholder: "100" },
+                { label: "Vaqt (sekund):", id: "time", placeholder: "10" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateIT() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseIntSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseInt(val);
+                    if (isNaN(num) || num < 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num) || num < 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "binary") {
+                    const dec = parseIntSafe("dec");
+                    const bin = dec.toString(2);
+                    result = `${dec} (10-lik) = ${bin} (2-lik)`;
+                }
+                else if (formula === "decimal") {
+                    const binStr = document.getElementById("bin").value;
+                    if (!/^[01]+$/.test(binStr)) throw new Error("Faqat 0 va 1 bo'lishi kerak");
+                    const dec = parseInt(binStr, 2);
+                    result = `${binStr} (2-lik) = ${dec} (10-lik)`;
+                }
+                else if (formula === "memory") {
+                    const size = parseFloatSafe("size");
+                    const count = parseIntSafe("count");
+                    const total = size * count;
+                    result = `Jami xotira: ${total} MB`;
+                }
+                else if (formula === "file") {
+                    const chars = parseIntSafe("chars");
+                    const bytes = chars; // 1 belgi ≈ 1 bayt (ASCII)
+                    const kb = (bytes / 1024).toFixed(2);
+                    result = `Fayl hajmi: ${bytes} bayt ≈ ${kb} KB`;
+                }
+                else if (formula === "speed") {
+                    const data = parseFloatSafe("dataSize");
+                    const time = parseFloatSafe("time");
+                    if (time === 0) throw new Error("Vaqt 0 bo'lishi mumkin emas");
+                    const speed = data / time;
+                    result = `Tezlik: ${speed.toFixed(2)} MB/s`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ informatika savollari (7-sinf darsligi asosida)
+        const questions = [
+            "Informatika nima?", "Nima uchun informatikani o'rganamiz?", "Axborot nima?",
+            "Axborot turlari", "Analog axborot", "Raqamli axborot", "Bit nima?", "Bayt nima?",
+            "Kilobayt nima?", "Megabayt nima?", "Gigabayt nima?", "Terabayt nima?",
+            "Sanoq tizimlari nima?", "Ikkilik sanoq tizimi", "O'nlik sanoq tizimi",
+            "O'n oltilik sanoq tizimi", "Kompyuter nima?", "Shaxsiy kompyuter turlari",
+            "Laptop nima?", "Planshet nima?", "Smartfon nima?", "Server nima?",
+            "Tarmoq nima?", "Internet nima?", "Intranet nima?", "Browser nima?",
+            "Fayl nima?", "Papka nima?", "Dastur nima?", "Tizim dasturlari",
+            "Foydalanuvchi dasturlari", "Operatsion tizim nima?", "Windows nima?",
+            "Linux nima?", "macOS nima?", "Algoritm nima?", "Algoritm xossalari",
+            "Algoritm turlari", "Algoritm jadvali", "Algoritm blok-sxemasi",
+            "Dasturlash nima?", "Dasturlash tili nima?", "Python nima?",
+            "QBasic nima?", "Scratch nima?", "Kiberxavfsizlik nima?",
+            "Parol xavfsizligi", "Virus nima?", "Antivirus nima?", "Fishing hujumi",
+            "Ma'lumotlar bazasi nima?", "Elektron pochta nima?", "Xavfsizlik sozlamalari",
+            "Cloud xotira nima?", "USB xotira nima?", "SSD nima?", "HDD nima?",
+            "Operativ xotira nima?", "Video xotira nima?", "Protsessor nima?",
+            "Monitor nima?", "Klaviatura nima?", "Sichqoncha nima?", "Printer nima?",
+            "Skanner nima?", "Modem nima?", "Router nima?", "Wi-Fi nima?",
+            "Bluetooth nima?", "QR kod nima?", "Bar kod nima?", "Ma'lumotlarni saqlash",
+            "Ma'lumotlarni arxivlash", "ZIP nima?", "RAR nima?", "Ma'lumotlarni qayta tiklash",
+            "Ma'lumotlarni nusxalash", "Ma'lumotlarni o'tkazish", "Ma'lumotlarni qidirish",
+            "Ma'lumotlarni tashkillashtirish", "Ma'lumotlarni tahlil qilish", "Big data nima?",
+            "Sun'iy intellekt nima?", "Robototexnika nima?", "Kiberjahon nima?",
+            "Kiberhujum nima?", "Kiberqonuniyat nima?", "Axborot xavfsizligi",
+            "Shaxsiy ma'lumotlarni himoya qilish", "Onlayn obro'ni saqlash",
+            "Ijtimoiy tarmoqlarda xavfsizlik", "Foydalanuvchi shartnomasi",
+            "Mualliflik huquqi", "Elektron tijorat nima?", "Onlayn to'lov xavfsizligi",
+            "Kriptografiya nima?", "Ochiq kalitli shifrlash", "Yopiq kalitli shifrlash",
+            "Axborotni kodlash", "Axborotni dekodlash", "Axborotni siqish",
+            "Axborotni tiklash", "Ma'lumotlar buzilishining sabablari", "Ma'lumotlarni qanday himoya qilish kerak?",
+            "Kiberetika nima?", "Axborot jamiyati nima?", "Axborot texnologiyalari nima?",
+            "Axborot resurslari", "Axborot infratuzilmasi", "Axborot madaniyati",
+            "Digital savodxonlik", "Informatika fani rivojlanish tarixi", "Birinchi kompyuterlar",
+            "Zamonaviy kompyuterlar", "Superkompyuterlar nima?", "Mikrokompyuterlar nima?",
+            "Minikompyuterlar nima?", "Ma'lumotlarni kirish vositalari", "Ma'lumotlarni chiqarish vositalari",
+            "Ma'lumotlarni saqlash vositalari", "Ma'lumotlarni uzatish vositalari",
+            "Axborot resurslarini foydalanish me'yori", "Axborotlarni qayta ishlash",
+            "Ma'lumotlarni tashkillashtirish usullari", "Ma'lumotlar tuzilmasi",
+            "Algoritm muhiti nima?", "Algoritm tilini tanlash", "Algoritmning samaradorligi",
+            "Dasturlash vositalari", "Dasturlash muhiti nima?", "Kompilyator nima?",
+            "Interpretator nima?", "Dastur kodini tuzatish", "Xatolarni aniqlash",
+            "Dastur natijasini tekshirish", "Dasturlashda qanday xatolar bo'ladi?",
+            "Sintaktik xatolar", "Mantiqiy xatolar", "Ijro etish xatolari",
+            "Dasturlashda qanday qoidalar bor?", "Dastur tuzish bosqichlari",
+            "Masalani tahlil qilish", "Algoritm tuzish", "Dastur yozish", "Dasturni tekshirish",
+            "Natija olish", "Dasturni qayta ishlash", "Dasturlashda qanday yordamchi vositalar bor?",
+            "Onlayn dasturlash vositalari", "Dasturlashni o'rganish manbalari",
+            "Informatikada qanday karyeralar bor?", "Dasturchi nima ish qiladi?",
+            "Testlovchi nima ish qiladi?", "Tarmoq muhandisi nima ish qiladi?",
+            "Ma'lumotlar bazasi administratori", "Kiberxavfsizlik mutaxassisi",
+            "Sun'iy intellekt mutaxassisi", "Robototexnik mutaxassisi",
+            "Informatika fanining kelajagi", "Informatika va boshqa fanlar",
+            "Informatika va matematika", "Informatika va fizika", "Informatika va biologiya",
+            "Informatika va kimyo", "Informatika va tarix", "Informatika va adabiyot",
+            "Informatika va iqtisodiyot", "Informatika va san'at", "Informatika va tibbiyot",
+            "Informatika va qishloq xo'jaligi", "Informatika va transport",
+            "Informatika va energiya", "Informatika va ekologiya",
+            "Informatika va ta'lim", "Informatika va sport", "Informatika va madaniyat",
+            "Informatika va telekommunikatsiya", "Informatika va kosmos",
+            "Informatika va dengiz", "Informatika va havo", "Informatika va yer",
+            "Informatika va odam", "Informatika va jamiyat", "Informatika va kelajak"
+        ];
+
+        // ✅ Javoblar — 7-sinf informatika darsligi asosida
+        const responses = {
+            "Informatika nima?": "Informatika — axborotlarni qayta ishlash, saqlash, uzatish va foydalanish usullarini o'rganuvchi fan.",
+            "Nima uchun informatikani o'rganamiz?": "Informatikani o'rganish orqali zamonaviy texnologiyalardan foydalanish, muammolarni hal qilish, kelajakda kiberjahon sohasida ishlash imkoniyatlarini yaratamiz.",
+            "Axborot nima?": "Axborot — insonni tashqi dunyo haqida ma'lumotga ega qiluvchi, atrofidagi voqealarni tushunishga yordam beruvchi xabarlar to'plami.",
+            "Axborot turlari": "Axborot turlari: matn, rasm, tovush, video, raqamli ma'lumotlar.",
+            "Analog axborot": "Analog axborot — uzluksiz o'zgaruvchan miqdorlar orqali ifodalangan axborot. Masalan: qo'l soati, termometr.",
+            "Raqamli axborot": "Raqamli axborot — diskret (uzilgan) qiymatlar orqali ifodalangan axborot. Kompyuterlardagi barcha axborot raqamli ko'rinishda saqlanadi.",
+            "Bit nima?": "Bit — axborotning eng kichik o'lchov birligi. U 0 yoki 1 qiymatni qabul qiladi.",
+            "Bayt nima?": "Bayt — 8 ta bitdan tashkil topgan axborot o'lchov birligi. 1 bayt = 8 bit.",
+            "Kilobayt nima?": "Kilobayt — 1024 baytgaa teng bo'lgan axborot o'lchov birligi. Belgilash: KB.",
+            "Megabayt nima?": "Megabayt — 1024 kilobaytga teng bo'lgan axborot o'lchov birligi. Belgilash: MB.",
+            "Gigabayt nima?": "Gigabayt — 1024 megabaytga teng bo'lgan axborot o'lchov birligi. Belgilash: GB.",
+            "Terabayt nima?": "Terabayt — 1024 gigabaytga teng bo'lgan axborot o'lchov birligi. Belgilash: TB.",
+            "Sanoq tizimlari nima?": "Sanoq tizimlari — sonlarni ifodalash usullari. Asosiy tizimlar: o'nlik (10-asosli), ikkilik (2-asosli), sakkizlik, o'n oltilik.",
+            "Ikkilik sanoq tizimi": "Ikkilik sanoq tizimi — faqat 0 va 1 raqamlaridan foydalaniladigan sanoq tizimi. Kompyuterlar faqat ikkilik tizimni tushunadi.",
+            "O'nlik sanoq tizimi": "O'nlik sanoq tizimi — 0 dan 9 gacha raqamlardan foydalaniladigan sanoq tizimi. Biz kundalik hayotda shu tizimdan foydalanamiz.",
+            "O'n oltilik sanoq tizimi": "O'n oltilik sanoq tizimi — 0-9 raqamlari va A-F harflaridan foydalaniladigan sanoq tizimi. Ranglar kodlashda ishlatiladi.",
+            "Kompyuter nima?": "Kompyuter — axborotlarni qayta ishlash, saqlash, uzatish va chiqarish imkonini beruvchi universal elektron hisoblash vositasi.",
+            "Shaxsiy kompyuter turlari": "Shaxsiy kompyuter turlari: stol usti (desktop), noutbuk (laptop), planshet, smartfon.",
+            "Laptop nima?": "Laptop (noutbuk) — batareyada ishlaydigan, olib yurish mumkin bo'lgan shaxsiy kompyuter.",
+            "Planshet nima?": "Planshet — ekran orqali boshqariladigan, simli klaviaturasiz, olib yurish mumkin bo'lgan kompyuter.",
+            "Smartfon nima?": "Smartfon — mobil aloqa qilish, internetdan foydalanish, dasturlar ishlatish imkonini beruvchi aqlli telefon.",
+            "Server nima?": "Server — tarmoqda boshqa kompyuterlarga xizmat ko'rsatuvchi maxsus kompyuter.",
+            "Tarmoq nima?": "Tarmoq — bir-biriga ulangan kompyuterlar to'plami. Ma'lumot almashish, resurslarni umumiy foydalanish uchun xizmat qiladi.",
+            "Internet nima?": "Internet — butun dunyoning kompyuter tarmoqlarini birlashtiruvchi ahamiyatli global tarmoq.",
+            "Intranet nima?": "Intranet — tashkilot ichidagi maxsus tarmoq. Faqat tashkilot a'zolari uchun mo'ljallangan.",
+            "Browser nima?": "Browser — internet sahifalarini ko'rish uchun mo'ljallangan dastur. Misol: Chrome, Firefox, Edge.",
+            "Fayl nima?": "Fayl — ma'lumotlarning nomlangan to'plami. Har bir fayl o'z nomi, kengaytmasi va hajmiga ega.",
+            "Papka nima?": "Papka — fayllarni tashkil qilish, tartibga solish uchun mo'ljallangan tuzilma.",
+            "Dastur nima?": "Dastur — kompyuterda bajariladigan buyruqlar ketma-ketligi.",
+            "Tizim dasturlari": "Tizim dasturlari — kompyuter ishini boshqaruvchi, uning ishini ta'minlovchi dasturlar. Masalan: operatsion tizimlar.",
+            "Foydalanuvchi dasturlari": "Foydalanuvchi dasturlari — foydalanuvchilarning maqsadli ishlarini amalga oshirish uchun mo'ljallangan dasturlar. Masalan: matn muharrirlari, dasturlash muhitlari.",
+            "Operatsion tizim nima?": "Operatsion tizim — kompyuter tizim dasturlarini, fayllarni boshqaruvchi, foydalanuvchi bilan muloqotni ta'minlovchi asosiy dastur.",
+            "Windows nima?": "Windows — Microsoft tomonidan ishlab chiqilgan operatsion tizim. Dunyoda eng keng tarqalgan tizim.",
+            "Linux nima?": "Linux — bepul, ochiq manbali operatsion tizim. Serverlar, smartfonlar (Android) uchun ishlatiladi.",
+            "macOS nima?": "macOS — Apple tomonidan ishlab chiqilgan operatsion tizim. Faqat Apple mahsulotlarida ishlaydi.",
+            "Algoritm nima?": "Algoritm — muayyan vazifani bajarish uchun belgilangan aniq qadamlar ketma-ketligi.",
+            "Algoritm xossalari": "Algoritm xossalari: aniqlik, diskretlik, tushunarlilik, natijaviylik, umumiylik.",
+            "Algoritm turlari": "Algoritm turlari: chiziqli, tarmoqlanuvchi, takrorlanuvchi (tsiklik).",
+            "Algoritm jadvali": "Algoritm jadvali — algoritmni jadval ko'rinishida ifodalash usuli.",
+            "Algoritm blok-sxemasi": "Algoritm blok-sxemasi — algoritmni geometrik shakllar orqali ifodalash. Har bir shakl ma'lum bir amalni ifodalaydi.",
+            "Dasturlash nima?": "Dasturlash — kompyuterga bajarilishi kerak bo'lgan buyruqlarni yozish jarayoni.",
+            "Dasturlash tili nima?": "Dasturlash tili — dasturlar yozish uchun mo'ljallangan maxsus til. Masalan: Python, Java, C++.",
+            "Python nima?": "Python — o'rganishga oson, qulay dasturlash tili. Sun'iy intellekt, veb-ilovalar, ma'lumotlar tahlili sohalarida keng qo'llaniladi.",
+            "QBasic nima?": "QBasic — o'rganuvchilar uchun mo'ljallangan oddiy dasturlash tili.",
+            "Scratch nima?": "Scratch — bolalar uchun mo'ljallangan vizual dasturlash muhiti. Bloklarni tortib qo'yish orqali dastur yoziladi.",
+            "Kiberxavfsizlik nima?": "Kiberxavfsizlik — axborot tizimlarini, tarmoqlarni, dasturlarni, ma'lumotlarni xavfli hujumlardan himoya qilish.",
+            "Parol xavfsizligi": "Parol xavfsizligi — murakkab parol ishlatish, uni boshqalar bilan bo'lmaslik, vaqt-vaqti bilan o'zgartirish.",
+            "Virus nima?": "Virus — kompyuterning ishini buzuvchi, fayllarga zarar yetkazuvchi zararli dastur.",
+            "Antivirus nima?": "Antivirus — viruslarni aniqlash, o'chirish, ulardan himoya qiluvchi dastur.",
+            "Fishing hujumi": "Fishing hujumi — foydalanuvchidan shaxsiy ma'lumotlar (parol, karta raqami) o'g'irlash uchun soxta sahifalardan foydalanish.",
+            "Ma'lumotlar bazasi nima?": "Ma'lumotlar bazasi — ma'lumotlarni tizimli saqlash, qidirish, tahlil qilish imkonini beruvchi tizim.",
+            "Elektron pochta nima?": "Elektron pochta — internet orqali xabar yuborish va qabul qilish xizmati. Misol: Gmail, Outlook.",
+            "Xavfsizlik sozlamalari": "Xavfsizlik sozlamalari — tizimni kuchaytirish, foydalanuvchilarni cheklash, axborotni himoya qilish uchun qilingan o'zgarishlar.",
+            "Cloud xotira nima?": "Cloud xotira — internet orqali foydalanish mumkin bo'lgan virtual xotira. Fayllarni saqlash va doimiy kirish imkonini beradi.",
+            "USB xotira nima?": "USB xotira — qo'lga solinadigan, portativ axborot saqlash qurilmasi.",
+            "SSD nima?": "SSD (Solid State Drive) — tez ishlovchi, xavfsiz axborot saqlash qurilmasi. Harakatlanuvchi qismlari yo'q.",
+            "HDD nima?": "HDD (Hard Disk Drive) — aylanuvchi plastinkalarda axborot saqlaydigan qurilma.",
+            "Operativ xotira nima?": "Operativ xotira (RAM) — dastur ishlash paytida vaqtinchalik axborot saqlaydigan xotira. Kompyuter o'chirilganda ma'lumotlar yo'qoladi.",
+            "Video xotira nima?": "Video xotira — grafik karta tomonidan ishlatiladigan alohida xotira. Rasmlarni ishlov berishda ishtirok etadi.",
+            "Protsessor nima?": "Protsessor — kompyuterning asosiy mikrosxemasi. Barcha hisob-kitoblarni amalga oshiradi.",
+            "Monitor nima?": "Monitor — axborotni vizual ko'rinishda chiqaruvchi qurilma.",
+            "Klaviatura nima?": "Klaviatura — axborotni kompyuterga kiritish uchun mo'ljallangan qurilma.",
+            "Sichqoncha nima?": "Sichqoncha — ekran ko'rsatkichini boshqarish uchun mo'ljallangan qurilma.",
+            "Printer nima?": "Printer — elektron hujjatlarni qog'ozga chop etish uchun mo'ljallangan qurilma.",
+            "Skanner nima?": "Skanner — qog'ozdagi matn yoki rasmlarni raqamli ko'rinishga o'tkazuvchi qurilma.",
+            "Modem nima?": "Modem — internetga ulanish uchun mo'ljallangan qurilma. Signalni raqamli va analog ko'rinishga aylantiradi.",
+            "Router nima?": "Router — internet signali bir nechta qurilmaga tarqatuvchi qurilma.",
+            "Wi-Fi nima?": "Wi-Fi — simsiz internetga ulanish texnologiyasi.",
+            "Bluetooth nima?": "Bluetooth — qurilmalarni qisqa masofada simsiz ulash texnologiyasi.",
+            "QR kod nima?": "QR kod — axborotni saqlash uchun mo'ljallangan kvadrat shaklidagi bar kod.",
+            "Bar kod nima?": "Bar kod — mahsulotlar haqida axborot saqlash uchun mo'ljallangan chiziqli kod.",
+            "Ma'lumotlarni saqlash": "Ma'lumotlarni saqlash — axborotni xavfsiz, doimiy saqlash usullari: xotira qurilmalari, cloud, arxiv.",
+            "Ma'lumotlarni arxivlash": "Ma'lumotlarni arxivlash — fayllarni siqish orqali hajmini kamaytirish.",
+            "ZIP nima?": "ZIP — fayllarni arxivlash uchun ishlatiladigan format.",
+            "RAR nima?": "RAR — fayllarni siqish uchun ishlatiladigan yana bir format.",
+            "Ma'lumotlarni qayta tiklash": "Ma'lumotlarni qayta tiklash — o'chirilgan yoki yo'qotilgan fayllarni qayta qo'lga kiritish jarayoni.",
+            "Ma'lumotlarni nusxalash": "Ma'lumotlarni nusxalash — fayllarni boshqa qurilmaga ko'chirish, ehtimoliy yo'qotishdan saqlash.",
+            "Ma'lumotlarni o'tkazish": "Ma'lumotlarni o'tkazish — tarmoq yoki kabel orqali bitta qurilmadan ikkinchisiga ma'lumot yuborish.",
+            "Ma'lumotlarni qidirish": "Ma'lumotlarni qidirish — kerakli fayl yoki ma'lumotni tez topish.",
+            "Ma'lumotlarni tashkillashtirish": "Ma'lumotlarni tashkillashtirish — fayllarni papkalar, nomlar, belgilar orqali tartibga solish.",
+            "Ma'lumotlarni tahlil qilish": "Ma'lumotlarni tahlil qilish — ma'lumotlarni o'rganish, qonuniyatlar, xulosalar aniqlash.",
+            "Big data nima?": "Big data — juda katta hajmdagi ma'lumotlar to'plami. Uni tahlil qilish orqali qimmatli xulosalar chiqariladi.",
+            "Sun'iy intellekt nima?": "Sun'iy intellekt — kompyuterning inson kabi o'ylash, o'rganish, qaror qabul qilish qobiliyatini taqlid qilish.",
+            "Robototexnika nima?": "Robototexnika — robotlarni loyihalash, qurish, dasturlash fanidir.",
+            "Kiberjahon nima?": "Kiberjahon — internet, tarmoqlar, axborot tizimlari birlashgan virtual dunyo.",
+            "Kiberhujum nima?": "Kiberhujum — axborot tizimlariga noqonuniy kirish, zarar yetkazish, ma'lumotlarni o'g'irlash harakati.",
+            "Kiberqonuniyat nima?": "Kiberqonuniyat — axborot texnologiyalari sohasidagi huquqiy qoidalarning majmui.",
+            "Axborot xavfsizligi": "Axborot xavfsizligi — axborotlarni yo'qotish, o'g'irlash, buzishdan himoya qilish.",
+            "Shaxsiy ma'lumotlarni himoya qilish": "Shaxsiy ma'lumotlarni himoya qilish — parol, telefon raqami, manzil kabi ma'lumotlarni boshqalar bilan bo'lmaslik.",
+            "Onlayn obro'ni saqlash": "Onlayn obro'ni saqlash — ijtimoiy tarmoqlarda adobli, ehtimotli, me'yorida munosabatda bo'lish.",
+            "Ijtimoiy tarmoqlarda xavfsizlik": "Ijtimoiy tarmoqlarda xavfsizlik — g'ayrioddiy xabarlar, noaniq so'rovlarga ehtimotli munosabatda bo'lish.",
+            "Foydalanuvchi shartnomasi": "Foydalanuvchi shartnomasi — dastur yoki xizmatdan foydalanish shartlarini belgilovchi hujjat.",
+            "Mualliflik huquqi": "Mualliflik huquqi — ijodkorning asariga nisbatan qonuniy huquqlari.",
+            "Elektron tijorat nima?": "Elektron tijorat — internet orqali tovar va xizmatlarni sotish.",
+            "Onlayn to'lov xavfsizligi": "Onlayn to'lov xavfsizligi — to'lovlarni amalga oshirishda parol, SMS tasdiqlash kabi usullardan foydalanish.",
+            "Kriptografiya nima?": "Kriptografiya — axborotni shifrlash, yashirish fanidir.",
+            "Ochiq kalitli shifrlash": "Ochiq kalitli shifrlash — axborotni yuboruvchi va qabul qiluvchi turli kalitlardan foydalanadi.",
+            "Yopiq kalitli shifrlash": "Yopiq kalitli shifrlash — axborotni yuboruvchi va qabul qiluvchi bir xil kalitdan foydalanadi.",
+            "Axborotni kodlash": "Axborotni kodlash — axborotni boshqa ko'rinishga o'tkazish. Masalan: matnni ikkilik ko'rinishga.",
+            "Axborotni dekodlash": "Axborotni dekodlash — kodlangan axborotni asl ko'rinishiga qaytarish.",
+            "Axborotni siqish": "Axborotni siqish — fayl hajmini kamaytirish orqali xotiradan tejash.",
+            "Axborotni tiklash": "Axborotni tiklash — siqilgan yoki arxivlangan faylni asl holatiga qaytarish.",
+            "Ma'lumotlar buzilishining sabablari": "Ma'lumotlar buzilishining sabablari: viruslar, noto'g'ri o'chirish, tizim xatoliklari, jismoniy zararlanish.",
+            "Ma'lumotlarni qanday himoya qilish kerak?": "Ma'lumotlarni himoya qilish uchun: antivirusdan foydalanish, muntazam nusxa olish, kuchli parol ishlatish, shaxsiy ma'lumotlarni himoya qilish kerak."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf informatika darsligi bo'yicha AI yordamchiman. Savollarga javob beraman va raqamli hisob-kitoblarni amalga oshiraman! 💻", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
