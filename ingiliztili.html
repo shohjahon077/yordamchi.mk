@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Language AI Bot — 7th Grade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1e88e5, #42a5f5, #64b5f6);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #e3f2fd;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23e3f2fd"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #e3f2fd;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #b3e5fc;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(227, 242, 253, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #e3f2fd;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(227, 242, 253, 0.3);
+            text-shadow: 0 0 10px rgba(227, 242, 253, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #1e88e5, #42a5f5);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #1565c0, #e3f2fd);
+            color: #0d47a1;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #e3f2fd;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(227, 242, 253, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #e3f2fd transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #e3f2fd;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 100, 180, 0.4);
+            color: #e3f2fd;
+            border: 1px solid rgba(227, 242, 253, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(227, 242, 253, 0.2);
+            border-color: #e3f2fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(227, 242, 253, 0.2);
+        }
+
+        /* GRAMMATICS CALCULATOR */
+        .grammar-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #e3f2fd;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(227, 242, 253, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #e3f2fd;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #b3e5fc;
+            border: 1px solid #e3f2fd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b3e5fc;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #42a5f5;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(33, 150, 243, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(33, 150, 243, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .grammar-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">English Language AI</div>
+        <div class="splash-subtext">7th Grade English Grammar & Vocabulary Assistant</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">📘 7th Grade English AI Bot</div>
+
+        <!-- GRAMMATICS CALCULATOR -->
+        <div class="grammar-calculator">
+            <div class="calc-title">Grammar Calculator</div>
+            <select class="calc-select" id="grammar-formula">
+                <option value="verb-form">Verb Forms (Base, Past, Past Participle)</option>
+                <option value="plural">Noun Plural Forms</option>
+                <option value="adjective">Adjective Comparison</option>
+                <option value="tense">Tense Formation</option>
+                <option value="pronoun">Pronoun Usage</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateGrammar()">Calculate</button>
+            <div class="calc-result" id="calc-result">Result</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Thinking...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Grammatika kalkulyatori
+        const formulaSelect = document.getElementById('grammar-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "verb-form": [
+                { label: "Base verb:", id: "baseVerb", placeholder: "go" }
+            ],
+            "plural": [
+                { label: "Singular noun:", id: "singularNoun", placeholder: "cat" }
+            ],
+            "adjective": [
+                { label: "Adjective:", id: "adj", placeholder: "beautiful" },
+                { label: "Noun:", id: "noun", placeholder: "girl" }
+            ],
+            "tense": [
+                { label: "Subject:", id: "subject", placeholder: "I" },
+                { label: "Verb:", id: "verb", placeholder: "eat" },
+                { label: "Time:", id: "time", placeholder: "now" }
+            ],
+            "pronoun": [
+                { label: "Subject:", id: "sub", placeholder: "She" },
+                { label: "Object:", id: "obj", placeholder: "me" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="text" id="${input.id}" placeholder="${input.placeholder}" style="text-transform: lowercase;">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateGrammar() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const getValue = (id) => document.getElementById(id)?.value.trim().toLowerCase();
+
+                if (formula === "verb-form") {
+                    const base = getValue("baseVerb");
+                    let past = "", pastParticiple = "";
+                    if (base === "go") { past = "went"; pastParticiple = "gone"; }
+                    else if (base === "eat") { past = "ate"; pastParticiple = "eaten"; }
+                    else if (base === "write") { past = "wrote"; pastParticiple = "written"; }
+                    else if (base === "see") { past = "saw"; pastParticiple = "seen"; }
+                    else if (base === "do") { past = "did"; pastParticiple = "done"; }
+                    else if (base === "be") { past = "was/were"; pastParticiple = "been"; }
+                    else if (base.endsWith("e")) { past = base + "d"; pastParticiple = base + "d"; }
+                    else if (base.endsWith("y") && !["a","e","i","o","u"].includes(base.slice(-2,-1))) { 
+                        past = base.slice(0,-1) + "ied"; pastParticiple = base.slice(0,-1) + "ied"; 
+                    }
+                    else { past = base + "ed"; pastParticiple = base + "ed"; }
+                    result = `Base: ${base} | Past: ${past} | Past Participle: ${pastParticiple}`;
+                }
+                else if (formula === "plural") {
+                    const noun = getValue("singularNoun");
+                    let plural = "";
+                    if (noun.endsWith("s") || noun.endsWith("sh") || noun.endsWith("ch") || noun.endsWith("x") || noun.endsWith("z")) {
+                        plural = noun + "es";
+                    } else if (noun.endsWith("y") && !["a","e","i","o","u"].includes(noun.slice(-2,-1))) {
+                        plural = noun.slice(0,-1) + "ies";
+                    } else if (noun === "child") { plural = "children"; }
+                    else if (noun === "man") { plural = "men"; }
+                    else if (noun === "woman") { plural = "women"; }
+                    else if (noun === "tooth") { plural = "teeth"; }
+                    else if (noun === "foot") { plural = "feet"; }
+                    else if (noun === "mouse") { plural = "mice"; }
+                    else { plural = noun + "s"; }
+                    result = `Singular: ${noun} → Plural: ${plural}`;
+                }
+                else if (formula === "adjective") {
+                    const adj = getValue("adj");
+                    const noun = getValue("noun");
+                    let comp = "", superl = "";
+                    if (adj.length <= 2) { 
+                        comp = adj + "er"; superl = adj + "est"; 
+                    } else if (adj.endsWith("e")) { 
+                        comp = adj + "r"; superl = adj + "st"; 
+                    } else if (adj.endsWith("y") && !["a","e","i","o","u"].includes(adj.slice(-2,-1))) { 
+                        comp = adj.slice(0,-1) + "ier"; superl = adj.slice(0,-1) + "iest"; 
+                    } else { 
+                        comp = "more " + adj; superl = "most " + adj; 
+                    }
+                    result = `${noun} is ${comp} than another. ${noun} is the ${superl}.`;
+                }
+                else if (formula === "tense") {
+                    const subj = getValue("subject");
+                    const verb = getValue("verb");
+                    const time = getValue("time");
+                    let form = "";
+                    if (time === "now") { 
+                        if (subj === "i" || subj === "we" || subj === "you" || subj === "they") form = subj + " " + verb + "s"; 
+                        else form = subj + " " + verb + "s"; 
+                    } else if (time === "yesterday") { 
+                        if (verb === "go") form = subj + " went"; 
+                        else if (verb === "eat") form = subj + " ate"; 
+                        else form = subj + " " + verb + "ed"; 
+                    } else if (time === "tomorrow") { 
+                        form = subj + " will " + verb; 
+                    } else { form = "I " + verb; }
+                    result = `Sentence: ${form}`;
+                }
+                else if (formula === "pronoun") {
+                    const sub = getValue("sub");
+                    const obj = getValue("obj");
+                    let correct = "";
+                    if (sub === "i") { correct = "I am"; }
+                    else if (sub === "you") { correct = "You are"; }
+                    else if (sub === "he") { correct = "He is"; }
+                    else if (sub === "she") { correct = "She is"; }
+                    else if (sub === "it") { correct = "It is"; }
+                    else if (sub === "we") { correct = "We are"; }
+                    else if (sub === "they") { correct = "They are"; }
+                    result = `${sub} → Subject Pronoun: ${sub} | Object Pronoun: ${obj} | Correct: ${correct}`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Error: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Result"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ ingliz tili savollari (7-sinf darsligi asosida)
+        const questions = [
+            "What is English language?", "Why do we learn English?", "What is a noun?", "What is a verb?",
+            "What is an adjective?", "What is an adverb?", "What is a pronoun?", "What is a preposition?",
+            "What is a conjunction?", "What is an article?", "What is a subject?", "What is a predicate?",
+            "What is a sentence?", "What is a simple sentence?", "What is a compound sentence?",
+            "What is a complex sentence?", "What is the present simple tense?", "What is the past simple tense?",
+            "What is the future simple tense?", "How to form the present simple tense?", "How to form the past simple tense?",
+            "How to form the future simple tense?", "What is the present continuous tense?", "What is the past continuous tense?",
+            "How to use 'am', 'is', 'are'?", "How to use 'was', 'were'?", "What is the difference between 'there is' and 'there are'?",
+            "What is the difference between 'have' and 'has'?", "What is the difference between 'do' and 'does'?",
+            "How to make questions in English?", "How to make negative sentences?", "What is the present perfect tense?",
+            "What is the past perfect tense?", "What is the future perfect tense?", "What is the present perfect continuous tense?",
+            "What is the difference between 'for' and 'since'?", "What is the difference between 'a' and 'an'?",
+            "What is the difference between 'some' and 'any'?", "What is the difference between 'much' and 'many'?",
+            "What is the difference between 'little' and 'few'?", "What is the difference between 'this' and 'that'?",
+            "What is the difference between 'these' and 'those'?", "What is the difference between 'I' and 'me'?",
+            "What is the difference between 'he' and 'him'?", "What is the difference between 'she' and 'her'?",
+            "What is the difference between 'we' and 'us'?", "What is the difference between 'they' and 'them'?",
+            "What is the difference between 'my' and 'mine'?", "What is the difference between 'your' and 'yours'?",
+            "What is the difference between 'his' and 'him'?", "What is the difference between 'her' and 'hers'?",
+            "What is the difference between 'our' and 'ours'?", "What is the difference between 'their' and 'theirs'?",
+            "How to use 'some', 'any', 'no'?", "How to use 'every', 'each'?", "How to use 'all', 'both'?",
+            "How to use 'either', 'neither'?", "How to use 'other', 'another'?", "How to use 'who', 'whom'?",
+            "How to use 'which', 'what'?", "How to use 'whose'?", "How to use 'where', 'when'?",
+            "How to use 'why', 'how'?", "How to use 'because', 'so'?", "How to use 'if', 'unless'?",
+            "How to use 'and', 'but', 'or'?", "How to use 'because', 'since', 'as'?", "How to use 'although', 'though'?",
+            "What are regular verbs?", "What are irregular verbs?", "What is the past tense of 'go'?", "What is the past tense of 'eat'?",
+            "What is the past tense of 'write'?", "What is the past tense of 'see'?", "What is the past tense of 'do'?",
+            "What is the past tense of 'be'?", "What is the past tense of 'have'?", "What is the past tense of 'make'?",
+            "What is the past tense of 'take'?", "What is the past tense of 'come'?", "What is the past tense of 'get'?",
+            "What is the past tense of 'give'?", "What is the past tense of 'find'?", "What is the past tense of 'know'?",
+            "What is the past tense of 'think'?", "What is the past tense of 'say'?", "What is the past tense of 'tell'?",
+            "What is the past tense of 'buy'?", "What is the past tense of 'bring'?", "What is the past tense of 'build'?",
+            "What is the past tense of 'sing'?", "What is the past tense of 'swim'?", "What is the past tense of 'run'?",
+            "What is the past tense of 'fly'?", "What is the past tense of 'drive'?", "What is the past tense of 'ride'?",
+            "What is the past tense of 'read'?", "What is the past tense of 'sleep'?", "What is the past tense of 'speak'?",
+            "What is the past tense of 'spend'?", "What is the past tense of 'begin'?", "What is the past tense of 'break'?",
+            "What is the past tense of 'choose'?", "What is the past tense of 'fall'?", "What is the past tense of 'forget'?",
+            "What is the past tense of 'grow'?", "What is the past tense of 'hide'?", "What is the past tense of 'hold'?",
+            "What is the past tense of 'keep'?", "What is the past tense of 'leave'?", "What is the past tense of 'lose'?",
+            "What is the past tense of 'meet'?", "What is the past tense of 'pay'?", "What is the past tense of 'put'?",
+            "What is the past tense of 'ring'?", "What is the past tense of 'rise'?", "What is the past tense of 'sell'?",
+            "What is the past tense of 'send'?", "What is the past tense of 'shake'?", "What is the past tense of 'shine'?",
+            "What is the past tense of 'shoot'?", "What is the past tense of 'show'?", "What is the past tense of 'sit'?",
+            "What is the past tense of 'stand'?", "What is the past tense of 'swear'?", "What is the past tense of 'teach'?",
+            "What is the past tense of 'tell'?", "What is the past tense of 'think'?", "What is the past tense of 'throw'?",
+            "What is the past tense of 'wear'?", "What is the past tense of 'win'?", "What is the past tense of 'write'?",
+            "How to make plural of 'child'?", "How to make plural of 'man'?", "How to make plural of 'woman'?",
+            "How to make plural of 'tooth'?", "How to make plural of 'foot'?", "How to make plural of 'mouse'?",
+            "How to make plural of 'person'?", "How to make plural of 'knife'?", "How to make plural of 'life'?",
+            "How to make plural of 'leaf'?", "How to make plural of 'shelf'?", "How to make plural of 'elf'?",
+            "How to make plural of 'cactus'?", "How to make plural of 'crisis'?", "How to make plural of 'analysis'?",
+            "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?", "How to make plural of 'medium'?",
+            "How to make plural of 'bacterium'?", "How to make plural of 'index'?", "How to make plural of 'matrix'?",
+            "How to make plural of 'alumnus'?", "How to make plural of 'formula'?", "How to make plural of 'radius'?",
+            "How to make plural of 'stimulus'?", "How to make plural of 'basis'?", "How to make plural of 'thesis'?",
+            "How to make plural of 'crisis'?", "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?",
+            "How to make plural of 'datum'?", "How to make plural of 'medium'?", "How to make plural of 'bacterium'?",
+            "How to make plural of 'index'?", "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?",
+            "How to make plural of 'formula'?", "How to make plural of 'radius'?", "How to make plural of 'stimulus'?",
+            "How to make plural of 'basis'?", "How to make plural of 'thesis'?", "How to make plural of 'crisis'?",
+            "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?",
+            "How to make plural of 'medium'?", "How to make plural of 'bacterium'?", "How to make plural of 'index'?",
+            "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?", "How to make plural of 'formula'?",
+            "How to make plural of 'radius'?", "How to make plural of 'stimulus'?", "How to make plural of 'basis'?",
+            "How to make plural of 'thesis'?", "How to make plural of 'crisis'?", "How to make plural of 'analysis'?",
+            "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?", "How to make plural of 'medium'?",
+            "How to make plural of 'bacterium'?", "How to make plural of 'index'?", "How to make plural of 'matrix'?",
+            "How to make plural of 'alumnus'?", "How to make plural of 'formula'?", "How to make plural of 'radius'?",
+            "How to make plural of 'stimulus'?", "How to make plural of 'basis'?", "How to make plural of 'thesis'?",
+            "How to make plural of 'crisis'?", "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?",
+            "How to make plural of 'datum'?", "How to make plural of 'medium'?", "How to make plural of 'bacterium'?",
+            "How to make plural of 'index'?", "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?",
+            "How to make plural of 'formula'?", "How to make plural of 'radius'?", "How to make plural of 'stimulus'?",
+            "How to make plural of 'basis'?", "How to make plural of 'thesis'?", "How to make plural of 'crisis'?",
+            "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?",
+            "How to make plural of 'medium'?", "How to make plural of 'bacterium'?", "How to make plural of 'index'?",
+            "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?", "How to make plural of 'formula'?",
+            "How to make plural of 'radius'?", "How to make plural of 'stimulus'?", "How to make plural of 'basis'?",
+            "How to make plural of 'thesis'?", "How to make plural of 'crisis'?", "How to make plural of 'analysis'?",
+            "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?", "How to make plural of 'medium'?",
+            "How to make plural of 'bacterium'?", "How to make plural of 'index'?", "How to make plural of 'matrix'?",
+            "How to make plural of 'alumnus'?", "How to make plural of 'formula'?", "How to make plural of 'radius'?",
+            "How to make plural of 'stimulus'?", "How to make plural of 'basis'?", "How to make plural of 'thesis'?",
+            "How to make plural of 'crisis'?", "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?",
+            "How to make plural of 'datum'?", "How to make plural of 'medium'?", "How to make plural of 'bacterium'?",
+            "How to make plural of 'index'?", "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?",
+            "How to make plural of 'formula'?", "How to make plural of 'radius'?", "How to make plural of 'stimulus'?",
+            "How to make plural of 'basis'?", "How to make plural of 'thesis'?", "How to make plural of 'crisis'?",
+            "How to make plural of 'analysis'?", "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?",
+            "How to make plural of 'medium'?", "How to make plural of 'bacterium'?", "How to make plural of 'index'?",
+            "How to make plural of 'matrix'?", "How to make plural of 'alumnus'?", "How to make plural of 'formula'?",
+            "How to make plural of 'radius'?", "How to make plural of 'stimulus'?", "How to make plural of 'basis'?",
+            "How to make plural of 'thesis'?", "How to make plural of 'crisis'?", "How to make plural of 'analysis'?",
+            "How to make plural of 'phenomenon'?", "How to make plural of 'datum'?", "How to make plural of 'medium'?",
+            "How to make plural of 'bacterium'?", "How to make plural of 'index'?", "How to make plural of 'matrix'?",
+            "How to make plural of 'alumnus'?", "How to make plural of 'formula'?", "How to make plural of 'radius'?",
+            "How to make plural of 'stimulus'?", "How to make plural of 'basis'?", "How to make plural of 'thesis'?"
+        ];
+
+        // ✅ Javoblar — 7-sinf ingliz tili darsligi asosida (batafsil)
+        const responses = {
+            "What is English language?": "English is a West Germanic language spoken by over 1.5 billion people worldwide. It is the official language of many countries including the UK, USA, Canada, Australia, and many others. It is also the most common language of international communication, science, and business.",
+            "Why do we learn English?": "We learn English because it is the most widely spoken language in the world. It helps us communicate with people from other countries, access global knowledge, study abroad, get good jobs, and understand movies, music, and the internet.",
+            "What is a noun?": "A noun is a word that names a person, place, thing, or idea. Examples: teacher, Tashkent, book, happiness. Nouns can be common (book) or proper (London).",
+            "What is a verb?": "A verb is a word that shows action or a state of being. Examples: run, eat, is, have. Verbs change form to show time (past, present, future).",
+            "What is an adjective?": "An adjective describes a noun or pronoun. It tells us what kind, how many, or which one. Examples: beautiful, tall, three, red. Adjectives usually come before the noun: a red car.",
+            "What is an adverb?": "An adverb describes a verb, adjective, or another adverb. It tells us how, when, where, or to what extent. Examples: quickly, yesterday, here, very. Example: She sings beautifully.",
+            "What is a pronoun?": "A pronoun replaces a noun to avoid repetition. Examples: I, you, he, she, it, we, they, me, him, her, us, them. Example: Mary is tired. She needs rest.",
+            "What is a preposition?": "A preposition shows the relationship between a noun (or pronoun) and other words in a sentence. Examples: in, on, at, under, with, by. Example: The book is on the table.",
+            "What is a conjunction?": "A conjunction joins words, phrases, or clauses. Examples: and, but, or, because, so. Example: I like tea and coffee.",
+            "What is an article?": "An article is a word used before a noun to show if it is specific or general. There are two articles: 'a/an' (indefinite) and 'the' (definite). Example: I saw a dog. The dog was big.",
+            "What is a subject?": "The subject is the person, place, thing, or idea that performs the action in a sentence. It usually comes before the verb. Example: 'Tom runs.' — 'Tom' is the subject.",
+            "What is a predicate?": "The predicate tells us what the subject does or is. It includes the verb and all other words that describe the action. Example: 'She reads a book.' — 'reads a book' is the predicate.",
+            "What is a sentence?": "A sentence is a group of words that expresses a complete thought. It must have a subject and a verb. Example: 'I like apples.'",
+            "What is a simple sentence?": "A simple sentence has one independent clause — one subject and one verb. Example: 'She walks to school.'",
+            "What is a compound sentence?": "A compound sentence has two or more independent clauses joined by a conjunction (and, but, or). Example: 'I like tea, but she likes coffee.'",
+            "What is a complex sentence?": "A complex sentence has one independent clause and one or more dependent clauses. It uses subordinating conjunctions like because, when, if. Example: 'I stayed home because it was raining.'",
+            "What is the present simple tense?": "The present simple tense is used for habits, facts, and general truths. Form: subject + base verb (add -s/-es for he/she/it). Example: I play football. She plays football.",
+            "What is the past simple tense?": "The past simple tense is used for completed actions in the past. Regular verbs add -ed. Irregular verbs change form. Example: I played football. She went to school.",
+            "What is the future simple tense?": "The future simple tense is used for actions that will happen in the future. Form: subject + will + base verb. Example: I will visit Tashkent next week.",
+            "How to form the present simple tense?": "For I, you, we, they: use base verb (I eat). For he, she, it: add -s or -es to the verb (He eats). Example: We study. She studies.",
+            "How to form the past simple tense?": "For regular verbs: add -ed (worked). For irregular verbs: memorize the form (go → went, eat → ate). Example: I walked. She ate.",
+            "How to form the future simple tense?": "Use 'will' + base verb. Example: I will call you tomorrow. Don't use 'will' after 'if' in conditionals.",
+            "What is the present continuous tense?": "The present continuous tense is used for actions happening now or around now. Form: subject + am/is/are + verb-ing. Example: I am reading a book now.",
+            "What is the past continuous tense?": "The past continuous tense is used for actions in progress at a specific time in the past. Form: subject + was/were + verb-ing. Example: I was studying when she called.",
+            "How to use 'am', 'is', 'are'?": "Use 'am' with I. Use 'is' with he, she, it. Use 'are' with you, we, they. Example: I am happy. He is tall. We are students.",
+            "How to use 'was', 'were'?": "Use 'was' with I, he, she, it. Use 'were' with you, we, they. Example: I was at home. They were at school.",
+            "What is the difference between 'there is' and 'there are'?": "Use 'there is' with singular nouns. Use 'there are' with plural nouns. Example: There is a book. There are two books.",
+            "What is the difference between 'have' and 'has'?": "Use 'have' with I, you, we, they. Use 'has' with he, she, it. Example: I have a car. She has a cat.",
+            "What is the difference between 'do' and 'does'?": "Use 'do' with I, you, we, they. Use 'does' with he, she, it. Example: Do you like apples? Does she play tennis?",
+            "How to make questions in English?": "For yes/no questions: use do/does/did + subject + verb. For wh-questions: use question word + do/does/did + subject + verb. Example: Do you like music? Where do you live?",
+            "How to make negative sentences?": "Use 'do not' (don't) or 'does not' (doesn't) before the base verb. For 'be': use am not, is not (isn't), are not (aren't). Example: I don't like coffee. She doesn't swim.",
+            "What is the present perfect tense?": "The present perfect tense is used for actions that happened at an unspecified time before now. Form: have/has + past participle. Example: I have visited Samarkand.",
+            "What is the past perfect tense?": "The past perfect tense is used for an action that happened before another action in the past. Form: had + past participle. Example: When I arrived, she had already left.",
+            "What is the future perfect tense?": "The future perfect tense is used for an action that will be completed before another time in the future. Form: will have + past participle. Example: By next year, I will have finished school.",
+            "What is the present perfect continuous tense?": "The present perfect continuous tense is used for actions that started in the past and continue to the present. Form: have/has been + verb-ing. Example: I have been studying for two hours.",
+            "What is the difference between 'for' and 'since'?": "Use 'for' with a period of time (for 5 years). Use 'since' with a point in time (since 2020). Example: I have lived here for 3 years. I have lived here since 2020.",
+            "What is the difference between 'a' and 'an'?": "Use 'a' before words that start with a consonant sound. Use 'an' before words that start with a vowel sound. Example: a book, an apple, an hour (h is silent).",
+            "What is the difference between 'some' and 'any'?": "Use 'some' in positive sentences and offers. Use 'any' in questions and negatives. Example: I have some money. Do you have any money? I don't have any money.",
+            "What is the difference between 'much' and 'many'?": "Use 'much' with uncountable nouns (water, time). Use 'many' with countable nouns (books, apples). Example: much water, many books.",
+            "What is the difference between 'little' and 'few'?": "Use 'little' with uncountable nouns (a little water). Use 'few' with countable nouns (a few apples). Both mean 'not many'.",
+            "What is the difference between 'this' and 'that'?": "Use 'this' for something near you. Use 'that' for something far away. Example: This book is mine. That car is expensive.",
+            "What is the difference between 'these' and 'those'?": "Use 'these' for plural things near you. Use 'those' for plural things far away. Example: These are my shoes. Those are her bags.",
+            "What is the difference between 'I' and 'me'?": "'I' is a subject pronoun (I eat). 'Me' is an object pronoun (She sees me).",
+            "What is the difference between 'he' and 'him'?": "'He' is subject (He runs). 'Him' is object (I saw him).",
+            "What is the difference between 'she' and 'her'?": "'She' is subject (She sings). 'Her' is object (I like her).",
+            "What is the difference between 'we' and 'us'?": "'We' is subject (We study). 'Us' is object (The teacher helps us).",
+            "What is the difference between 'they' and 'them'?": "'They' is subject (They play). 'Them' is object (I see them).",
+            "What is the difference between 'my' and 'mine'?": "'My' is a possessive adjective (my book). 'Mine' is a possessive pronoun (This book is mine).",
+            "What is the difference between 'your' and 'yours'?": "'Your' is possessive adjective (your car). 'Yours' is possessive pronoun (This car is yours).",
+            "What is the difference between 'his' and 'him'?": "'His' is possessive (his bag). 'Him' is object (I saw him).",
+            "What is the difference between 'her' and 'hers'?": "'Her' is possessive adjective (her dress) or object (I saw her). 'Hers' is possessive pronoun (The dress is hers).",
+            "What is the difference between 'our' and 'ours'?": "'Our' is possessive adjective (our house). 'Ours' is possessive pronoun (The house is ours).",
+            "What is the difference between 'their' and 'theirs'?": "'Their' is possessive adjective (their dog). 'Theirs' is possessive pronoun (The dog is theirs).",
+            "How to use 'some', 'any', 'no'?": "'Some' — positive sentences (I have some apples). 'Any' — questions and negatives (Do you have any? I don't have any). 'No' — negative meaning (I have no apples).",
+            "How to use 'every', 'each'?": "'Every' — used with plural nouns for general statements (every day). 'Each' — used for individual items (each student).",
+            "How to use 'all', 'both'?": "'All' — used for more than two (all students). 'Both' — used for exactly two (both sisters).",
+            "How to use 'either', 'neither'?": "'Either' — one or the other (You can take either book). 'Neither' — not one nor the other (Neither book is good).",
+            "How to use 'other', 'another'?": "'Other' — different (the other book). 'Another' — one more (I want another apple).",
+            "How to use 'who', 'whom'?": "'Who' — subject (Who is that?). 'Whom' — object (Whom did you see?).",
+            "How to use 'which', 'what'?": "'Which' — choice between known things (Which book do you like?). 'What' — general question (What is your name?).",
+            "How to use 'whose'?": "'Whose' shows possession (Whose book is this?).",
+            "How to use 'where', 'when'?": "'Where' — place (Where do you live?). 'When' — time (When did you arrive?).",
+            "How to use 'why', 'how'?": "'Why' — reason (Why are you late?). 'How' — manner or condition (How are you?).",
+            "How to use 'because', 'so'?": "'Because' — gives reason (I'm late because I missed the bus). 'So' — shows result (I missed the bus, so I'm late).",
+            "How to use 'if', 'unless'?": "'If' — condition (If it rains, I'll stay home). 'Unless' — except if (I won't go unless you come).",
+            "How to use 'and', 'but', 'or'?": "'And' — adds (I like tea and coffee). 'But' — contrast (I like tea but not coffee). 'Or' — choice (Do you want tea or coffee?).",
+            "How to use 'because', 'since', 'as'?": "All mean 'because'. 'Because' is strongest. 'Since' and 'as' are more formal. Example: Since it's raining, we'll stay inside.",
+            "How to use 'although', 'though'?": "Both mean 'even though'. Example: Although he was tired, he finished the work.",
+            "What are regular verbs?": "Regular verbs form the past tense and past participle by adding -ed. Example: play → played, work → worked.",
+            "What are irregular verbs?": "Irregular verbs do not follow the -ed rule. Each has a unique past and past participle. Example: go → went → gone.",
+            "What is the past tense of 'go'?": "The past tense of 'go' is 'went'.",
+            "What is the past tense of 'eat'?": "The past tense of 'eat' is 'ate'.",
+            "What is the past tense of 'write'?": "The past tense of 'write' is 'wrote'.",
+            "What is the past tense of 'see'?": "The past tense of 'see' is 'saw'.",
+            "What is the past tense of 'do'?": "The past tense of 'do' is 'did'.",
+            "What is the past tense of 'be'?": "The past tense of 'be' is 'was' (I/he/she/it) or 'were' (you/we/they).",
+            "What is the past tense of 'have'?": "The past tense of 'have' is 'had'.",
+            "What is the past tense of 'make'?": "The past tense of 'make' is 'made'.",
+            "What is the past tense of 'take'?": "The past tense of 'take' is 'took'.",
+            "What is the past tense of 'come'?": "The past tense of 'come' is 'came'.",
+            "What is the past tense of 'get'?": "The past tense of 'get' is 'got'.",
+            "What is the past tense of 'give'?": "The past tense of 'give' is 'gave'.",
+            "What is the past tense of 'find'?": "The past tense of 'find' is 'found'.",
+            "What is the past tense of 'know'?": "The past tense of 'know' is 'knew'.",
+            "What is the past tense of 'think'?": "The past tense of 'think' is 'thought'.",
+            "What is the past tense of 'say'?": "The past tense of 'say' is 'said'.",
+            "What is the past tense of 'tell'?": "The past tense of 'tell' is 'told'.",
+            "What is the past tense of 'buy'?": "The past tense of 'buy' is 'bought'.",
+            "What is the past tense of 'bring'?": "The past tense of 'bring' is 'brought'.",
+            "What is the past tense of 'build'?": "The past tense of 'build' is 'built'.",
+            "What is the past tense of 'sing'?": "The past tense of 'sing' is 'sang'.",
+            "What is the past tense of 'swim'?": "The past tense of 'swim' is 'swam'.",
+            "What is the past tense of 'run'?": "The past tense of 'run' is 'ran'.",
+            "What is the past tense of 'fly'?": "The past tense of 'fly' is 'flew'.",
+            "What is the past tense of 'drive'?": "The past tense of 'drive' is 'drove'.",
+            "What is the past tense of 'ride'?": "The past tense of 'ride' is 'rode'.",
+            "What is the past tense of 'read'?": "The past tense of 'read' is 'read' (pronounced 'red').",
+            "What is the past tense of 'sleep'?": "The past tense of 'sleep' is 'slept'.",
+            "What is the past tense of 'speak'?": "The past tense of 'speak' is 'spoke'.",
+            "What is the past tense of 'spend'?": "The past tense of 'spend' is 'spent'.",
+            "What is the past tense of 'begin'?": "The past tense of 'begin' is 'began'.",
+            "What is the past tense of 'break'?": "The past tense of 'break' is 'broke'.",
+            "What is the past tense of 'choose'?": "The past tense of 'choose' is 'chose'.",
+            "What is the past tense of 'fall'?": "The past tense of 'fall' is 'fell'.",
+            "What is the past tense of 'forget'?": "The past tense of 'forget' is 'forgot'.",
+            "What is the past tense of 'grow'?": "The past tense of 'grow' is 'grew'.",
+            "What is the past tense of 'hide'?": "The past tense of 'hide' is 'hid'.",
+            "What is the past tense of 'hold'?": "The past tense of 'hold' is 'held'.",
+            "What is the past tense of 'keep'?": "The past tense of 'keep' is 'kept'.",
+            "What is the past tense of 'leave'?": "The past tense of 'leave' is 'left'.",
+            "What is the past tense of 'lose'?": "The past tense of 'lose' is 'lost'.",
+            "What is the past tense of 'meet'?": "The past tense of 'meet' is 'met'.",
+            "What is the past tense of 'pay'?": "The past tense of 'pay' is 'paid'.",
+            "What is the past tense of 'put'?": "The past tense of 'put' is 'put'.",
+            "What is the past tense of 'ring'?": "The past tense of 'ring' is 'rang'.",
+            "What is the past tense of 'rise'?": "The past tense of 'rise' is 'rose'.",
+            "What is the past tense of 'sell'?": "The past tense of 'sell' is 'sold'.",
+            "What is the past tense of 'send'?": "The past tense of 'send' is 'sent'.",
+            "What is the past tense of 'shake'?": "The past tense of 'shake' is 'shook'.",
+            "What is the past tense of 'shine'?": "The past tense of 'shine' is 'shone'.",
+            "What is the past tense of 'shoot'?": "The past tense of 'shoot' is 'shot'.",
+            "What is the past tense of 'show'?": "The past tense of 'show' is 'showed' or 'showed'.",
+            "What is the past tense of 'sit'?": "The past tense of 'sit' is 'sat'.",
+            "What is the past tense of 'stand'?": "The past tense of 'stand' is 'stood'.",
+            "What is the past tense of 'swear'?": "The past tense of 'swear' is 'swore'.",
+            "What is the past tense of 'teach'?": "The past tense of 'teach' is 'taught'.",
+            "What is the past tense of 'tell'?": "The past tense of 'tell' is 'told'.",
+            "What is the past tense of 'think'?": "The past tense of 'think' is 'thought'.",
+            "What is the past tense of 'throw'?": "The past tense of 'throw' is 'threw'.",
+            "What is the past tense of 'wear'?": "The past tense of 'wear' is 'wore'.",
+            "What is the past tense of 'win'?": "The past tense of 'win' is 'won'.",
+            "What is the past tense of 'write'?": "The past tense of 'write' is 'wrote'.",
+            "How to make plural of 'child'?": "The plural of 'child' is 'children'.",
+            "How to make plural of 'man'?": "The plural of 'man' is 'men'.",
+            "How to make plural of 'woman'?": "The plural of 'woman' is 'women'.",
+            "How to make plural of 'tooth'?": "The plural of 'tooth' is 'teeth'.",
+            "How to make plural of 'foot'?": "The plural of 'foot' is 'feet'.",
+            "How to make plural of 'mouse'?": "The plural of 'mouse' is 'mice'.",
+            "How to make plural of 'person'?": "The plural of 'person' is 'people'.",
+            "How to make plural of 'knife'?": "The plural of 'knife' is 'knives'.",
+            "How to make plural of 'life'?": "The plural of 'life' is 'lives'.",
+            "How to make plural of 'leaf'?": "The plural of 'leaf' is 'leaves'.",
+            "How to make plural of 'shelf'?": "The plural of 'shelf' is 'shelves'.",
+            "How to make plural of 'elf'?": "The plural of 'elf' is 'elves'.",
+            "How to make plural of 'cactus'?": "The plural of 'cactus' is 'cacti'.",
+            "How to make plural of 'crisis'?": "The plural of 'crisis' is 'crises'.",
+            "How to make plural of 'analysis'?": "The plural of 'analysis' is 'analyses'.",
+            "How to make plural of 'phenomenon'?": "The plural of 'phenomenon' is 'phenomena'.",
+            "How to make plural of 'datum'?": "The plural of 'datum' is 'data'.",
+            "How to make plural of 'medium'?": "The plural of 'medium' is 'media'.",
+            "How to make plural of 'bacterium'?": "The plural of 'bacterium' is 'bacteria'.",
+            "How to make plural of 'index'?": "The plural of 'index' is 'indexes' or 'indices'.",
+            "How to make plural of 'matrix'?": "The plural of 'matrix' is 'matrices'.",
+            "How to make plural of 'alumnus'?": "The plural of 'alumnus' is 'alumni'.",
+            "How to make plural of 'formula'?": "The plural of 'formula' is 'formulas' or 'formulae'.",
+            "How to make plural of 'radius'?": "The plural of 'radius' is 'radii'.",
+            "How to make plural of 'stimulus'?": "The plural of 'stimulus' is 'stimuli'.",
+            "How to make plural of 'basis'?": "The plural of 'basis' is 'bases'.",
+            "How to make plural of 'thesis'?": "The plural of 'thesis' is 'theses'.",
+            "How to make plural of 'crisis'?": "The plural of 'crisis' is 'crises'.",
+            "How to make plural of 'analysis'?": "The plural of 'analysis' is 'analyses'.",
+            "How to make plural of 'phenomenon'?": "The plural of 'phenomenon' is 'phenomena'.",
+            "How to make plural of 'datum'?": "The plural of 'datum' is 'data'.",
+            "How to make plural of 'medium'?": "The plural of 'medium' is 'media'.",
+            "How to make plural of 'bacterium'?": "The plural of 'bacterium' is 'bacteria'.",
+            "How to make plural of 'index'?": "The plural of 'index' is 'indexes' or 'indices'.",
+            "How to make plural of 'matrix'?": "The plural of 'matrix' is 'matrices'.",
+            "How to make plural of 'alumnus'?": "The plural of 'alumnus' is 'alumni'.",
+            "How to make plural of 'formula'?": "The plural of 'formula' is 'formulas' or 'formulae'.",
+            "How to make plural of 'radius'?": "The plural of 'radius' is 'radii'.",
+            "How to make plural of 'stimulus'?": "The plural of 'stimulus' is 'stimuli'.",
+            "How to make plural of 'basis'?": "The plural of 'basis' is 'bases'.",
+            "How to make plural of 'thesis'?": "The plural of 'thesis' is 'theses'.",
+            "How to make plural of 'crisis'?": "The plural of 'crisis' is 'crises'.",
+            "How to make plural of 'analysis'?": "The plural of 'analysis' is 'analyses'.",
+            "How to make plural of 'phenomenon'?": "The plural of 'phenomenon' is 'phenomena'.",
+            "How to make plural of 'datum'?": "The plural of 'datum' is 'data'.",
+            "How to make plural of 'medium'?": "The plural of 'medium' is 'media'.",
+            "How to make plural of 'bacterium'?": "The plural of 'bacterium' is 'bacteria'.",
+            "How to make plural of 'index'?": "The plural of 'index' is 'indexes' or 'indices'.",
+            "How to make plural of 'matrix'?": "The plural of 'matrix' is 'matrices'.",
+            "How to make plural of 'alumnus'?": "The plural of 'alumnus' is 'alumni'.",
+            "How to make plural of 'formula'?": "The plural of 'formula' is 'formulas' or 'formulae'.",
+            "How to make plural of 'radius'?": "The plural of 'radius' is 'radii'.",
+            "How to make plural of 'stimulus'?": "The plural of 'stimulus' is 'stimuli'.",
+            "How to make plural of 'basis'?": "The plural of 'basis' is 'bases'.",
+            "How to make plural of 'thesis'?": "The plural of 'thesis' is 'theses'.",
+            "How to make plural of 'crisis'?": "The plural of 'crisis' is 'crises'.",
+            "How to make plural of 'analysis'?": "The plural of 'analysis' is 'analyses'.",
+            "How to make plural of 'phenomenon'?": "The plural of 'phenomenon' is 'phenomena'.",
+            "How to make plural of 'datum'?": "The plural of 'datum' is 'data'.",
+            "How to make plural of 'medium'?": "The plural of 'medium' is 'media'.",
+            "How to make plural of 'bacterium'?": "The plural of 'bacterium' is 'bacteria'.",
+            "How to make plural of 'index'?": "The plural of 'index' is 'indexes' or 'indices'.",
+            "How to make plural of 'matrix'?": "The plural of 'matrix' is 'matrices'.",
+            "How to make plural of 'alumnus'?": "The plural of 'alumnus' is 'alumni'.",
+            "How to make plural of 'formula'?": "The plural of 'formula' is 'formulas' or 'formulae'.",
+            "How to make plural of 'radius'?": "The plural of 'radius' is 'radii'.",
+            "How to make plural of 'stimulus'?": "The plural of 'stimulus' is 'stimuli'.",
+            "How to make plural of 'basis'?": "The plural of 'basis' is 'bases'.",
+            "How to make plural of 'thesis'?": "The plural of 'thesis' is 'theses'."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Hello! I'm your 7th Grade English AI Assistant. Ask me grammar questions or vocabulary! 📘", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Sorry, I don't know this question.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
