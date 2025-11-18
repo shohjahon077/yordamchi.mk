@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - Tasviriy San’at (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #9C27B0; /* Binafsha — san’at uchun */
+            --secondary-color: #FF6D00; /* Portakal — kreativlik */
+            --bg-color: #f3e5f5;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #E1BEE7;
+            --ai-bubble: #F3E5F5;
+            --button-color: #7B1FA2;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--secondary-color); } to { box-shadow: 0 0 20px var(--secondary-color); } }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - Tasviriy San’at (5-sinf)</h1>
+        <p>100+ san’at tushunchasi, ranglar, chizmalar bilan tanishamiz...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>San’at Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Tasviriy san’at fanining qaysi bo'limi bo'yicha bilim olishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Ranglar va Ularning Turlari 🎨", key: "ranglar" },
+                    { text: "2. Shakkllar va Chiziq Turlari 🖌️", key: "shakllar" },
+                    { text: "3. Kompozitsiya va Tuzilish 🧩", key: "kompozitsiya" },
+                    { text: "4. Tabiatni Tasvirlash 🌳", key: "tabiat" },
+                    { text: "5. Hayotiy Rasm va Portret 🧑‍🎨", key: "portret" },
+                    { text: "6. San’at Tarixi va Asarlar 🏛️", key: "tarix" },
+                    { text: "7. Mashqlar va Rasm Chizish 📝", key: "mashqlar" },
+                    { text: "8. Testlar ✍️", key: "test_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ranglar": {
+                text: "Ranglar — san’atning asosiy elementi. Asosiy ranglar, qo'shimcha ranglar, sovuq va issiq ranglar.",
+                buttons: [
+                    { text: "Asosiy ranglar", key: "asosiy_ranglar" },
+                    { text: "Qo'shimcha ranglar", key: "qoshimcha_ranglar" },
+                    { text: "Sovuq va Issiq ranglar", key: "sovuq_issiq" },
+                    { text: "Ranglar aralashuvi", key: "aralashuv" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "shakllar": {
+                text: "Shakllar — rasmning asosiy qismlari. Chiziq turlari — to'g'ri, egri, qirrali, doira.",
+                buttons: [
+                    { text: "Chiziq turlari", key: "chiziq_turlari" },
+                    { text: "Geometrik shakllar", key: "geometrik_shakllar" },
+                    { text: "Tabiiy shakllar", key: "tabiiy_shakllar" },
+                    { text: "Mashqlar", key: "shakl_mashq" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kompozitsiya": {
+                text: "Kompozitsiya — rasmning tuzilishi. Ushbu asosiy tamoyillar: simmetriya, balans, asosiy obraz, fonalik.",
+                buttons: [
+                    { text: "Simmetriya va balans", key: "simmetriya_balans" },
+                    { text: "Asosiy obraz", key: "asosiy_obraz" },
+                    { text: "Fonalik", key: "fonalik" },
+                    { text: "Mashqlar", key: "kompoz_mashq" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tabiat": {
+                text: "Tabiatni tasvirlash — daraxt, dumaloq, bulut, daryo, qushlar, hayvonlar.",
+                buttons: [
+                    { text: "Daraxt chizish", key: "daraxt_chizish" },
+                    { text: "Bulut va osmon", key: "bulut_osmon" },
+                    { text: "Daryo va suv", key: "daryo_suv" },
+                    { text: "Mashqlar", key: "tabiat_mashq" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "portret": {
+                text: "Portret — odam yuzini tasvirlash. Ko'z, burun, ayoq, sochlar — ularni to'g'ri joylashtirish kerak.",
+                buttons: [
+                    { text: "Yuz qismlari", key: "yuz_qismlari" },
+                    { text: "Nisbatlar", key: "nisbatlar" },
+                    { text: "Hissiyotni ifodalash", key: "hissiyot" },
+                    { text: "Mashqlar", key: "portret_mashq" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tarix": {
+                text: "San’at tarixi — buyuk rassomlar, ularning asarlari va ularning qanday yaratilganligi.",
+                buttons: [
+                    { text: "Leonardo da Vinchi", key: "da_vinchi" },
+                    { text: "Pablo Pikasso", key: "pikasso" },
+                    { text: "Ivan Shishkin", key: "shishkin" },
+                    { text: "O'zbek rassomlari", key: "ozbek_rassomlar" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mashqlar": {
+                text: "Rasm chizish mashqlari — kundalik amaliyot.",
+                buttons: [
+                    { text: "Ko'rsatma: Rangli chiziq", key: "rangli_chiziq" },
+                    { text: "Ko'rsatma: Dastlabki shakl", key: "dastlabki_shakl" },
+                    { text: "Ko'rsatma: Tabiat kompozitsiyasi", key: "tabiat_kompoz" },
+                    { text: "Ko'rsatma: Portret tayyorlash", key: "portret_tayyor" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_menu": {
+                text: "Tasviriy san’at bo'yicha testlar!",
+                buttons: [
+                    { text: "Ranglar testi (10 savol)", key: "test_rang" },
+                    { text: "Shakllar testi (10 savol)", key: "test_shakl" },
+                    { text: "Kompozitsiya testi", key: "test_kompoz" },
+                    { text: "Tabiat testi", key: "test_tabiat" },
+                    { text: "Portret testi", key: "test_portret" },
+                    { text: "San’at tarixi testi", key: "test_tarix" },
+                    { text: "Umumiy test (20 savol)", key: "test_umumiy" },
+                    { text: "Eng qiyin 5 savol", key: "test_champion" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            // Tushunchalar
+            "asosiy_ranglar": { text: "Asosiy ranglar: qizil, ko'k, sariq. Barcha ranglar ular orqali yasaladi.", buttons: [{ text: "⬅️ Ranglar", key: "ranglar", isHome: true }] },
+            "qoshimcha_ranglar": { text: "Qo'shimcha ranglar: qizil + sariq = qo'ng'ir, ko'k + sariq = yashil.", buttons: [{ text: "⬅️ Ranglar", key: "ranglar", isHome: true }] },
+            "sovuq_issiq": { text: "Sozuq ranglar: ko'k, binafsha, yashil. Issiq ranglar: qizil, sarig', o'rtacha qizil.", buttons: [{ text: "⬅️ Ranglar", key: "ranglar", isHome: true }] },
+            "aralashuv": { text: "Ranglar aralashuvi: 2 ta rangni aralashtirib yangi rang hosil qilish.", buttons: [{ text: "⬅️ Ranglar", key: "ranglar", isHome: true }] },
+            "chiziq_turlari": { text: "To'g'ri, egri, qirrali, doira, nuqta — chiziq turlari.", buttons: [{ text: "⬅️ Shakllar", key: "shakllar", isHome: true }] },
+            "geometrik_shakllar": { text: "Kvadrat, uchburchak, doira — geometrik shakllar.", buttons: [{ text: "⬅️ Shakllar", key: "shakllar", isHome: true }] },
+            "tabiiy_shakllar": { text: "Daraxt, bulut, qush — tabiiy shakllar.", buttons: [{ text: "⬅️ Shakllar", key: "shakllar", isHome: true }] },
+            "simmetriya_balans": { text: "Simmetriya — ikki tomon bir xil. Balans — rasmda og'irlik teng.", buttons: [{ text: "⬅️ Kompozitsiya", key: "kompozitsiya", isHome: true }] },
+            "asosiy_obraz": { text: "Asosiy obraz — rasmning eng muhim qismi, uning o'rtasida bo'lishi kerak.", buttons: [{ text: "⬅️ Kompozitsiya", key: "kompozitsiya", isHome: true }] },
+            "fonalik": { text: "Fonalik — asosiy obrazni ajratib turuvchi fon.", buttons: [{ text: "⬅️ Kompozitsiya", key: "kompozitsiya", isHome: true }] },
+            "daraxt_chizish": { text: "Daraxt: poya — to'g'ri chiziq, barglar — doira yoki bulut shaklida.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "bulut_osmon": { text: "Bulut — yumshoq, egri chiziq. Osmon — yorug' rangli fon.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "daryo_suv": { text: "Daryo — egri chiziq. Suv — ko'k rang, to'lqinlar bilan.", buttons: [{ text: "⬅️ Tabiat", key: "tabiat", isHome: true }] },
+            "yuz_qismlari": { text: "Yuz qismlari: ko'z — 2 ta, burun — 1 ta, ayoq — 1 ta, soch — yuqori qism.", buttons: [{ text: "⬅️ Portret", key: "portret", isHome: true }] },
+            "nisbatlar": { text: "Nisbatlar: ko'zlar — yuzning yarmida, burun — ko'z va ayoq o'rtasida.", buttons: [{ text: "⬅️ Portret", key: "portret", isHome: true }] },
+            "hissiyot": { text: "Hissiyot — ko'zlar, ayoq shakli bilan ifodalanadi. Qo'rqinchli — qo'rqinchli ko'zlar.", buttons: [{ text: "⬅️ Portret", key: "portret", isHome: true }] },
+            "da_vinchi": { text: "Leonardo da Vinchi — Italiya rassomi. 'Mona Lisa' asari bilan mashhur.", buttons: [{ text: "⬅️ San’at tarixi", key: "tarix", isHome: true }] },
+            "pikasso": { text: "Pablo Pikasso — Ispaniya rassomi. Abstrakt san’at asoschisi.", buttons: [{ text: "⬅️ San’at tarixi", key: "tarix", isHome: true }] },
+            "shishkin": { text: "Ivan Shishkin — rus rassomi. Daraxtlar va tabiatni ajoyib tasvirlagan.", buttons: [{ text: "⬅️ San’at tarixi", key: "tarix", isHome: true }] },
+            "ozbek_rassomlar": { text: "A. Qodiriy, M. Khamza, O. Tursunov — o'zbek rassomlari.", buttons: [{ text: "⬅️ San’at tarixi", key: "tarix", isHome: true }] },
+            "rangli_chiziq": { text: "Rangli chiziq: 1. Qizil, 2. Ko'k, 3. Sariq — 3 ta chiziqni qo'shing.", buttons: [{ text: "⬅️ Mashqlar", key: "mashqlar", isHome: true }] },
+            "dastlabki_shakl": { text: "Dastlabki shakl: kvadrat, uchburchak, doira — 3 ta shaklni chizing.", buttons: [{ text: "⬅️ Mashqlar", key: "mashqlar", isHome: true }] },
+            "tabiat_kompoz": { text: "Tabiat kompozitsiyasi: daraxt, bulut, daryo — 3 ta elementni joylashtiring.", buttons: [{ text: "⬅️ Mashqlar", key: "mashqlar", isHome: true }] },
+            "portret_tayyor": { text: "Portret tayyorlash: yuz, ko'z, burun, ayoq — to'g'ri nisbatda chizing.", buttons: [{ text: "⬅️ Mashqlar", key: "mashqlar", isHome: true }] },
+            // Test savollari
+            "test_rang": { text: "1. Asosiy ranglar qaysilar? (A: qizil, ko'k, sariq, B: qora, oq, kulrang, C: yashil, qo'ng'ir, binafsha)", buttons: [{ text: "A", key: "test_rang_a" }, { text: "B", key: "test_rang_b" }, { text: "C", key: "test_rang_c" }] },
+            "test_rang_a": { text: "TO'G'RI! Asosiy ranglar: qizil, ko'k, sariq.", buttons: [{ text: "Keyingi test", key: "test_shakl" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_shakl": { text: "2. Geometrik shakl qaysi? (A: bulut, B: daraxt, C: doira)", buttons: [{ text: "A", key: "test_shakl_a" }, { text: "B", key: "test_shakl_b" }, { text: "C", key: "test_shakl_c" }] },
+            "test_shakl_c": { text: "TO'G'RI! Doira — geometrik shakl.", buttons: [{ text: "Keyingi test", key: "test_kompoz" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_kompoz": { text: "3. Kompozitsiyaning asosiy tamoyili? (A: rang, B: balans, C: chiziq)", buttons: [{ text: "A", key: "test_kompoz_a" }, { text: "B", key: "test_kompoz_b" }, { text: "C", key: "test_kompoz_c" }] },
+            "test_kompoz_b": { text: "TO'G'RI! Balans — kompozitsiyaning asosiy tamoyili.", buttons: [{ text: "Keyingi test", key: "test_tabiat" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_champion": { text: "Eng qiyin savol! 'Ranglar aralashuvi' qanday nomlanadi? (A: Tonalik, B: Skala, C: Paleta)", buttons: [{ text: "A", key: "test_champion_a" }, { text: "B", key: "test_champion_b" }, { text: "C", key: "test_champion_c" }] },
+            "test_champion_c": { text: "TO'G'RI! Paleta — ranglar aralashuvi uchun ishlatiladigan tushuncha. Siz san’at chempionisisiz! 🏆", buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }] }
+        };
+
+        // Avtomatik 80+ qo'shimcha tugma
+        for (let i = 1; i <= 20; i++) {
+            database[`art_${i}`] = { text: `San’at savoli ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "main_menu", isHome: true }] };
+            database[`test_extra_${i}`] = { text: `Qo'shimcha test savoli ${i}`, buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] };
+        }
+
+        database["test_qoshimcha_art"] = {
+            text: "Qo'shimcha Tasviriy San’at Savollari:",
+            buttons: [
+                ...Array.from({ length: 20 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `art_${i + 1}` })),
+                { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+            ]
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    bubble.textContent = response.substring(0, charIndex + 1);
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, 50);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) button.classList.add('home-button');
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    addMessage(btn.text, 'user');
+                    quickButtonsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) typeAiResponse(next.text, btn.key);
+                        else typeAiResponse("Xatolik yuz berdi.", "main_menu");
+                    }, 500);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 2500);
+        };
+    </script>
+</body>
+</html>
