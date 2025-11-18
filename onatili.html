@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ona Tili & Adabiyot AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0f2027, #203a43, #2c5364);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish sahifasi */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0c1427;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #00f7ff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(10, 15, 30, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #00f7ff;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.3);
+            text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #00b4d8, #00f7ff);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #00f7ff;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar uchun scroll qilinadigan panel */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(0, 247, 255, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #00f7ff transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #00f7ff;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 50, 80, 0.4);
+            color: #00f7ff;
+            border: 1px solid rgba(0, 247, 255, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(0, 180, 255, 0.3);
+            border-color: #00f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 247, 255, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran (Splash Screen) -->
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Ona Tili & Adabiyot AI</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ savolga aqlli javoblar — tugmalar orqali</div>
+    </div>
+
+    <!-- Asosiy chat interfeysi -->
+    <div class="container" id="main">
+        <div class="header">🤖 7-sinf Ona Tili & Adabiyot AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapti...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar tugmalari JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ 100+ savol — Ona tili (62), Adabiyot (44)
+        const questions = [
+            // Ona tili — 62 ta
+            "Ona tili nima?", "So'z turlari qanday?", "Ismning turlari qanday?", "Fe'l nima?", 
+            "Fe'lning vaqt shakllari?", "Sifat nima?", "Ravish so'zi nima?", "Shakl nima?", 
+            "Gap nima?", "Gapning asosiy bo'g'ini?", "So'z yasash qanday?", "Bog'lovchilar qanday?", 
+            "Egriksiz so'zlar nima?", "Ona tilini nima uchun o'rganamiz?", "Tilni to'g'ri gapirish nima uchun muhim?", 
+            "Fikr-mulohaza nima?", "So'zning ildizi nima?", "Qo'shimchalar turlari?", "Nechta so'z turi bor?", 
+            "So'zlar gapda qanday vazifani bajaradi?", "So'z yasovchi qo'shimchalar?", "Shakl qo'shimchalari nima?",
+            "Fe'lning ma'lum shakli nima?", "Fe'lning no'ma'lum shakli?", "Ismning egallik shakli?", 
+            "Ismning qaratish shakli?", "Gap tuzilishi qanday?", "Oddiy gap nima?", "Murakkab gap nima?", 
+            "So'z birikmasi nima?", "So'zlovchi qism nima?", "To'ldiruvchi qism nima?", "Qaratuvchi qism nima?",
+            "Hol qism nima?", "Egallik qismi nima?", "Shaxs shakli nima?", "Fe'lning mayli qanday bo'ladi?",
+            "Fe'lning raf shakli nima?", "So'z o'zgarishi nima?", "O'zbek tilida nechta harf bor?", "Unli tovushlar qanday?",
+            "Undosh tovushlar qanday?", "Qo'shimcha so'zlar qanday?", "So'z kelishiklari nima?", "Ismning kelishiklari nechta?",
+            "Nom kelishigi nima?", "Egallik kelishigi nima?", "Qaratish kelishigi nima?", "Tushum kelishigi nima?", 
+            "Joy kelishigi nima?", "Chiqish kelishigi nima?", "Qaratish kelishigi misoli?", "Tushum kelishigi misoli?",
+            "Adabiy tilda so'zlashish nima?", "Til turlari qanday?", "Adabiy til nima?", "Lug'at ma'nosi nima?", 
+            "Sinonim so'zlar nima?", "Antonim so'zlar nima?", "Omonim so'zlar nima?", "Tasviriy ifodalar nima?",
+            "Kinoya nima?", "Istirola nima?", "Tashbeh nima?", "Odat so'zlar nima?",
+
+            // Adabiyot — 44 ta
+            "Adabiyot nima?", "Adabiyotning turlari?", "A. Qodiriy kim?", "O'tkan kunlar asari nima haqida?",
+            "X. Mumin kim?", "Kecha va kunduz asari nima haqida?", "S. Aini kim?", "Oqsoqol asarida nima haqida?",
+            "She'riyat nima?", "Nasr nima?", "Drama nima?", "Adabiyotni nima uchun o'qimiz?", 
+            "Milliy adabiyot nima?", "Adabiyot tarbiyaviy ahamiyati?", "Mehrobdan chayon asarida nima?", 
+            "G'afur G'ulom qanday she'rlar yozgan?", "Mirtemir qanday she'rlar yozgan?", "Qahramonlar qanday ro'l o'ynaydi?",
+            "Asarning mazmuni nima?", "Adabiyot orqali nimalarga erishamiz?", "She'riyatda ritm nima?", 
+            "She'rda qo'shiq nima uchun kerak?", "Nasrda sahna nima?", "Dramada suhbat nima uchun kerak?",
+            "Ijod nima?", "Muallif kim?", "Asar nima?", "Adabiyotda tasvir nima?", "Xalq og'zaki ijodi nima?",
+            "Maqol-mashhurlar nima?", "Hikoya nima?", "Roman nima?", "She'r nima?", "Qissaxonlik nima?",
+            "A. Qodiriy qachon tug'ilgan?", "X. Mumin qachon vafot etgan?", "S. Aini qayerda tug'ilgan?",
+            "G'afur G'ulomning asosiy mavzusi?", "Mirtemir she'rlarida asosiy g'oya?", "Adabiyotda qanday qahramonlar mavjud?",
+            "Tarixiy asarlar nima?", "Ijtimoiy asarlar nima?", "Psixologik asarlar nima?", "Mazmun va mazmuniyot farqi?"
+        ];
+
+        // Savollar uchun javoblar
+        const responses = {
+            "Ona tili nima?": "Ona tili — millatimizning madaniy merosi, fikr-mulohaza, his-tuyg'ularni ifodalashning asosiy vositasidir.",
+            "So'z turlari qanday?": "O'zbek tilida 8 ta so'z turi bor: ism, fe'l, sifat, son, ravish, egriksiz, bog'lovchi, qo'shimcha.",
+            "Ismning turlari qanday?": "Ism jinsli (odam, hayvon), jinsli bo'lmagan (kitob, uy), shaxsiy (men, sen, u), ko'plik (odamlar) bo'ladi.",
+            "Fe'l nima?": "Fe'l — harakat, holat, jarayonni bildiruvchi so'z. Masalan: 'o'qidi', 'yozdi'.",
+            "Fe'lning vaqt shakllari?": "Fe'l o'tmish ('o'qidi'), hozirgi ('o'qiyapti'), kelasi ('o'qiydi') vaqt shakllariga ega.",
+            "Sifat nima?": "Sifat — narsaning xususiyatini bildiruvchi so'z. Masalan: 'kichik bola', 'qizil guldur'.",
+            "Ravish so'zi nima?": "Ravish — fe'l, sifat yoki boshqa ravishni tushuntiruvchi so'z. Masalan: 'tez yugurdi', 'juda chiroyli'.",
+            "Shakl nima?": "Shakl — so'zga qo'shimcha qo'shilib, uning grammatik ma'nosini o'zgartirish. Masalan: 'kitob' → 'kitoblar'.",
+            "Gap nima?": "Gap — bitta fikrni to'liq ifodalovchi so'zlar yig'indisidir. U kishilik va undosh so'zlardan tashkil topadi.",
+            "Gapning asosiy bo'g'ini?": "Gapning asosiy bo'g'ini — kishilik (men, sen) va undosh (o'qidi, yozdi) so'zlaridir.",
+            "So'z yasash qanday?": "So'z yasash — ildizga so'z yasovchi qo'shimcha qo'shish orqali amalga oshiriladi. Masalan: 'o'qish' → 'o'qituvchi'.",
+            "Bog'lovchilar qanday?": "Bog'lovchilar — so'zlar, gaplar orasini bog'laydigan so'zlar: 'va', 'lekin', 'chunki', 'yoki'.",
+            "Egriksiz so'zlar nima?": "Egriksiz so'zlar — gapning asosiy bo'g'ini bo'lmaydigan, lekin ma'nini to'ldiruvchi so'zlar: 'bir', 'ham', 'hamma'.",
+            "Ona tilini nima uchun o'rganamiz?": "Ona tilini o'rganish — millatimizning tarixini, madaniyatini, qadriyatlarini saqlash uchun kerak.",
+            "Tilni to'g'ri gapirish nima uchun muhim?": "To'g'ri gapirish — fikrni aniq yetkazish, insonlar o'rtasida tushunish, ijtimoiy hurmat uchun kerak.",
+            "Fikr-mulohaza nima?": "Fikr-mulohaza — o'z fikringizni tartibli, tushunarli, grammatik to'g'ri ifodalash.",
+            "So'zning ildizi nima?": "So'zning ildizi — so'zning asosiy qismi. Masalan: 'o'qish'ning ildizi — 'o'q-'.",
+            "Qo'shimchalar turlari?": "Qo'shimchalar: shakl qo'shimchasi ('kitob-lar'), so'z yasovchi ('o'qish-chi').",
+            "Nechta so'z turi bor?": "O'zbek tilida 8 ta so'z turi bor: ism, fe'l, sifat, son, ravish, egriksiz, bog'lovchi, qo'shimcha.",
+            "So'zlar gapda qanday vazifani bajaradi?": "Har bir so'z gapda o'z vazifasini bajaradi: kishilik, undosh, sifat, ravish, bog'lovchi kabi.",
+            "So'z yasovchi qo'shimchalar?": "So'z yasovchi qo'shimchalar: -chi, -kor, -lik, -siz. Masalan: 'o'qituvchi', 'ishkor'.",
+            "Shakl qo'shimchalari nima?": "Shakl qo'shimchalari: -lar, -ning, -ga, -da, -dan. Masalan: 'kitoblar', 'uyda'.",
+            "Fe'lning ma'lum shakli nima?": "Ma'lum fe'l — gapda kim amal qilayotganini ko'rsatadi. Masalan: 'Men o'qiyman.'",
+            "Fe'lning no'ma'lum shakli?": "No'ma'lum fe'l — kim amal qilayotgani aytilmaydi. Masalan: 'Kitob o'qildi.'",
+            "Ismning egallik shakli?": "Egallik shakli — 'ning' qo'shimchasi bilan ifodalanadi. Masalan: 'kitobning'.",
+            "Ismning qaratish shakli?": "Qaratish shakli — 'ga' qo'shimchasi bilan ifodalanadi. Masalan: 'maktabga'.",
+            "Gap tuzilishi qanday?": "Gap tuzilishi — gapda so'zlar qanday tartibda joylashganligi. Oddiy va murakkab bo'ladi.",
+            "Oddiy gap nima?": "Oddiy gap — bitta asosiy fikrni ifodalaydi. Masalan: 'Men kitob o'qiyman.'",
+            "Murakkab gap nima?": "Murakkab gap — bir nechta bog'langan gaplardan tashkil topadi. Masalan: 'Men o'qiyman, u yozadi.'",
+            "So'z birikmasi nima?": "So'z birikmasi — ikki yoki undan ko'p so'z birgalikda bir ma'noni ifodalaydi. Masalan: 'qora qalam'.",
+            "So'zlovchi qism nima?": "So'zlovchi qism — gapda kim haqida gap ketayotganini bildiradi. Masalan: 'Ali maktabga ketdi.' — 'Ali' so'zlovchi.",
+            "To'ldiruvchi qism nima?": "To'ldiruvchi — gapda nima qilindi? degan savolga javob beradi. Masalan: 'Men kitob o'qiyman.' — 'kitob' to'ldiruvchi.",
+            "Qaratuvchi qism nima?": "Qaratuvchi — gapda nima qanday? degan savolga javob beradi. Masalan: 'U yaxshi o'qiydi.' — 'yaxshi' qaratuvchi.",
+            "Hol qism nima?": "Hol — harakat qanday, qayerda, qachon sodir bo'ldi? degan savollarga javob beradi.",
+            "Egallik qismi nima?": "Egallik — nima, kimnikisi? degan savolga javob beradi. Masalan: 'Bu kitob mening.'",
+            "Shaxs shakli nima?": "Shaxs shakli — fe'l kim tomonidan amalga oshirilayotganini ko'rsatadi. Masalan: 'Men o'qiyman.'",
+            "Fe'lning mayli qanday bo'ladi?": "Fe'lning mayli — amal qilishni iltimos qilish shakli. Masalan: 'O'qiding!', 'O'qing!'",
+            "Fe'lning raf shakli nima?": "Raf shakli — narsani yoki shaxsni to'xtatishni, amalni qilmaslikni bildiradi. Masalan: 'O'qima!', 'Ketmang!'",
+            "So'z o'zgarishi nima?": "So'z o'zgarishi — qo'shimcha qo'shish orqali so'zning ma'no yoki shakliga o'zgarish. Masalan: 'kitob' → 'kitoblar'.",
+            "O'zbek tilida nechta harf bor?": "O'zbek alifbosida 33 ta harf bor.",
+            "Unli tovushlar qanday?": "O'zbek tilida 6 ta unli tovush: a, e, i, o, u, o'.",
+            "Undosh tovushlar qanday?": "Undosh tovushlar — nutqda tovushni uzib chiqariladigan tovushlar. Masalan: b, d, g, k, l, m.",
+            "Qo'shimcha so'zlar qanday?": "Qo'shimcha so'zlar — gapning ahamiyatini to'ldiruvchi, lekin mustaqil ma'no bermaydigan so'zlar. Masalan: 'ham', 'bari'.",
+            "So'z kelishiklari nima?": "So'z kelishiklari — so'zning gap ichidagi vazifasini bildiruvchi shakllar. Masalan: 'kitob', 'kitobga', 'kitobda'.",
+            "Ismning kelishiklari nechta?": "Ismning 6 ta kelishigi bor: nom, qaratish, egallik, tushum, joy, chiqish.",
+            "Nom kelishigi nima?": "Nom kelishigi — so'zning asosiy shakli. Masalan: 'kitob'.",
+            "Egallik kelishigi nima?": "Egallik kelishigi — 'ning' qo'shimchasi bilan ifodalanadi. Masalan: 'kitobning'.",
+            "Qaratish kelishigi nima?": "Qaratish kelishigi — 'ga' qo'shimchasi bilan ifodalanadi. Masalan: 'maktabga'.",
+            "Tushum kelishigi nima?": "Tushum kelishigi — 'ni' qo'shimchasi bilan ifodalanadi. Masalan: 'kitobni'.",
+            "Joy kelishigi nima?": "Joy kelishigi — 'da' qo'shimchasi bilan ifodalanadi. Masalan: 'maktabda'.",
+            "Chiqish kelishigi nima?": "Chiqish kelishigi — 'dan' qo'shimchasi bilan ifodalanadi. Masalan: 'maktabdan'.",
+            "Qaratish kelishigi misoli?": "Misol: 'Darsga boraman.', 'O'qituvchiga so'rov bildiraman.'",
+            "Tushum kelishigi misoli?": "Misol: 'Kitobni o'qiyman.', 'Daftarini tekshiraman.'",
+            "Adabiy tilda so'zlashish nima?": "Adabiy tilda so'zlashish — grammatik qoidalarga, normaga rioya qilgan holda gapirish.",
+            "Til turlari qanday?": "Til turlari: so'zlashish tili, yozma til, adabiy til.",
+            "Adabiy til nima?": "Adabiy til — milliy tilning yozma va so'zlashishdagi eng to'g'ri, barqaror shakli.",
+            "Lug'at ma'nosi nima?": "Lug'at ma'nosi — so'zning lug'atdagi aniq ta'rifi.",
+            "Sinonim so'zlar nima?": "Sinonimlar — ma'nosi yaqin so'zlar. Masalan: 'yaxshi — zo'r', 'katta — ulkan'.",
+            "Antonim so'zlar nima?": "Antonimlar — ma'nosi qarama-qarshi so'zlar. Masalan: 'yaxshi — yomon', 'katta — kichik'.",
+            "Omonim so'zlar nima?": "Omonimlar — shakli bir xil, lekin ma'nosi turli so'zlar. Masalan: 'buz' (muz), 'buz' (vazifa).",
+            "Tasviriy ifodalar nima?": "Tasviriy ifodalar — so'zning asl ma'nosidan chetlanib, boshqa ma'noni ifodalash. Masalan: 'yurak toshi' — mehribon emas.",
+            "Kinoya nima?": "Kinoya — haqiqiy ma'noni to'g'ridan-to'g'ri emas, balki tushunarliravshan ifodalash.",
+            "Istirola nima?": "Istirola — so'z yoki ifodani o'z ma'nosidan tashqarida ishlatish orqali ma'noni kengaytirish.",
+            "Tashbeh nima?": "Tashbeh — narsa yoki hodisaning boshqa narsaga o'xshashligini ifodalash. Masalan: 'Yuzi quyosh kabi yorqin.'",
+            "Odat so'zlar nima?": "Odat so'zlar — darsliklarda yoki adabiy asarlarda tez-tez uchraydigan, odatiy ifodalar.",
+            
+            // Adabiyot javoblari — 44 ta
+            "Adabiyot nima?": "Adabiyot — so'z san'ati. Bu — fikr, his-tuyg'ularni so'zlar orqali ifodalash san'atidir.",
+            "Adabiyotning turlari?": "Adabiyot turlari: she'riyat (she'rlar), nasr (roman, hikoya), drama (sahna asarlari).",
+            "A. Qodiriy kim?": "Abdulla Qodiriy — O'zbekiston adabiyotining buyuk asoschilaridan biri. 'O'tkan kunlar', 'Mehrobdan chayon' muallifi.",
+            "O'tkan kunlar asari nima haqida?": "'O'tkan kunlar' — tarixiy roman. O'zbek xalqining o'tmish hayoti, madaniyati haqida.",
+            "X. Mumin kim?": "Xudoyberdi Mumin — tarixiy romanlar muallifi. 'Kecha va kunduz' asari bilan tanilgan.",
+            "Kecha va kunduz asari nima haqida?": "'Kecha va kunduz' — X. Muminning tarixiy romani. O'zbekistonda dastlabki taraqqiyot haqida.",
+            "S. Aini kim?": "Sadriddin Aini — o'zbek adabiyotining asoschilaridan. 'Oqsoqol', 'Tutuqli kunlar' muallifi.",
+            "Oqsoqol asarida nima haqida?": "'Oqsoqol' asarida o'zbek xalqining o'tmishdagi oqsoqollar, ularning ijtimoiy tuzilishi haqida.",
+            "She'riyat nima?": "She'riyat — so'zlar orqali his-tuyg'ularni ritm, qo'shiq bilan ifodalash san'ati.",
+            "Nasr nima?": "Nasr — she'riyatdan farqli ravishda, oddiy, tushunarli gaplar ketma-ketligi. Roman, hikoya — nasr turlari.",
+            "Drama nima?": "Drama — sahna san'ati. Qahramonlar suhbatlari orqali fikr-mulohazani ifodalaydi.",
+            "Adabiyotni nima uchun o'qimiz?": "Adabiyotni o'qish — insoniy qadriyatlar, axloq, milliy madaniyatni o'rganish uchun kerak.",
+            "Milliy adabiyot nima?": "Milliy adabiyot — o'z millatimizning tarixi, madaniyati, qadriyatlari asosida yaratilgan asarlar.",
+            "Adabiyot tarbiyaviy ahamiyati?": "Adabiyot insonni mehribon, adolatli, millatparvar qiladi. Fikrni o'stiradi.",
+            "Mehrobdan chayon asarida nima?": "'Mehrobdan chayon' — siyosiy-ijtimoiy roman. O'zbek xalqining o'zini topish jarayoni.",
+            "G'afur G'ulom qanday she'rlar yozgan?": "G'afur G'ulom 'Shum bola', 'Qizil gullar', 'O'zbekiston' kabi she'rlar yozgan.",
+            "Mirtemir qanday she'rlar yozgan?": "Mirtemir 'Tinchlik', 'O'zbekiston', 'O'tgan kunlar' kabi she'rlar yozgan.",
+            "Qahramonlar qanday ro'l o'ynaydi?": "Qahramonlar — asarning asosiy kishilari. Ularning harakatlari asarning mazmunini ochadi.",
+            "Asarning mazmuni nima?": "Asarning mazmuni — uning asosiy fikri, muammo, xabar. Muallifning o'z fikrini ifodalashi.",
+            "Adabiyot orqali nimalarga erishamiz?": "Adabiyot orqali insoniy qadriyatlar, mehribonlik, milliy ong, fikr rivoji, til boyitiladi.",
+            "She'riyatda ritm nima?": "Ritm — she'rlar to'vushlarining tartibli takrorlanishi. U she'rni musiqiy qiladi.",
+            "She'rda qo'shiq nima uchun kerak?": "Qo'shiq — so'zlar orqali musiqiy ta'sir yaratish. His-tuyg'ularni kuchaytiradi.",
+            "Nasrda sahna nima?": "Nasrda sahna — voqealar sodir bo'layotgan joy, muhit. U hodisaning mazmunini aniqlaydi.",
+            "Dramada suhbat nima uchun kerak?": "Dramada suhbat — qahramonlarning fikr, his-tuyg'ularini ochishning yagona vositasi.",
+            "Ijod nima?": "Ijod — yangi asar, g'oya yaratish san'ati. Muallifning ichki dunyosini aks ettiradi.",
+            "Muallif kim?": "Muallif — asar yaratuvchi shaxs. U fikrini, his-tuyg'ularini asar orqali ifodalaydi.",
+            "Asar nima?": "Asar — adabiyotda yaratilgan to'liq ijod mahsuli. She'r, nasr yoki drama bo'lishi mumkin.",
+            "Adabiyotda tasvir nima?": "Tasvir — narsa, hodisa, qahramonlarni so'z bilan aks ettirish. U o'quvchini hayolga undaydi.",
+            "Xalq og'zaki ijodi nima?": "Xalq og'zaki ijodi — xalq tomonidan yaratilgan, yozilmagan, og'zaki tarqatilgan asarlar: ertak, maqol, qo'shiq.",
+            "Maqol-mashhurlar nima?": "Maqollar — xalq aqli, tajribasi natijasida yaratilgan, qisqa, ma'noli iboralar.",
+            "Hikoya nima?": "Hikoya — qisqa nasriy asar. Bitta voqea atrofida rivojlanadi.",
+            "Roman nima?": "Roman — katta hajmli nasriy asar. Bir nechta qahramon, voqea, mavzu qamrab oladi.",
+            "She'r nima?": "She'r — ritmli, qo'shiqli, his-tuyg'ularni ifodalovchi adabiy asar.",
+            "Qissaxonlik nima?": "Qissaxonlik — adabiyotda voqealar ketma-ketligini aytish san'atidir.",
+            "A. Qodiriy qachon tug'ilgan?": "Abdulla Qodiriy 1894-yilda Toshkentda tug'ilgan.",
+            "X. Mumin qachon vafot etgan?": "Xudoyberdi Mumin 1974-yilda vafot etgan.",
+            "S. Aini qayerda tug'ilgan?": "Sadriddin Aini 1878-yilda Qarotegin viloyatida tug'ilgan.",
+            "G'afur G'ulomning asosiy mavzusi?": "G'afur G'ulomning asosiy mavzusi — vatanga muhabbat, bolalik, mehribonlik, insonparvarlik.",
+            "Mirtemir she'rlarida asosiy g'oya?": "Mirtemir she'rlarida — milliy ong, insoniylik, tinchlik, yoshlarning kelajagi g'oyasi yetakchi.",
+            "Adabiyotda qanday qahramonlar mavjud?": "Adabiyotda ijobiy (yaxshi xususliyatlarga ega) va salbiy (yomon xususliyatlarga ega) qahramonlar mavjud.",
+            "Tarixiy asarlar nima?": "Tarixiy asarlar — o'tmishdagi voqealar, shaxslar, madaniyat haqida yozilgan asarlar.",
+            "Ijtimoiy asarlar nima?": "Ijtimoiy asarlar — jamiyatdagi muammolar, inson hayoti, odatlar haqida yozilgan asarlar.",
+            "Psixologik asarlar nima?": "Psixologik asarlar — insonning ichki dunyosi, his-tuyg'ulari, qiyinchiliklari haqida bo'ladi.",
+            "Mazmun va mazmuniyot farqi?": "Mazmun — asarning asosiy fikri, mazmuniyot — asarning tarkibidagi barcha g'oyalar, fikrlar majmuasi."
+        };
+
+        // DOM elementlar
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf Ona tili va Adabiyot darsliklari bo'yicha AI yordamchiman. Quyidagi tugmalardan birini bosing!", 'bot-message');
+        }, 4200);
+
+        // Tugmalarni yaratish
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob berolmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
