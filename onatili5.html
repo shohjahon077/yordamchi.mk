@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - 100 Tugmali Ta'lim (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #00BCD4;
+            --secondary-color: #FFEB3B;
+            --bg-color: #e4f3f9;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #B2EBF2;
+            --ai-bubble: #E0F7FA;
+            --button-color: #0097A7;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--secondary-color); }
+            to { box-shadow: 0 0 20px var(--secondary-color); }
+        }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #EF5350;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - 5-sinf</h1>
+        <p>100 tugmali bilim darchasi yuklanmoqda...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>AI Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Qaysi boʻlim boʻyicha bilim olishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Grammatika 📘", key: "grammar_menu" },
+                    { text: "2. Adabiyot 📜", key: "literature_menu" },
+                    { text: "3. Lug'at boyligi 📚", key: "vocabulary_menu" },
+                    { text: "4. Test va Mashqlar ✍️", key: "test_menu" }
+                ]
+            },
+            "grammar_menu": {
+                text: "Grammatika bo'limi. Qaysi so'z turkumini o'rganamiz?",
+                buttons: [
+                    { text: "Ot 🧑‍🏫", key: "ot_haqida" },
+                    { text: "Sifat ✨", key: "sifat_haqida" },
+                    { text: "Fe'l 🏃", key: "fe'l_haqida" },
+                    { text: "Son 🔢", key: "son_haqida" },
+                    { text: "Olmosh 🔄", key: "olmosh_haqida" },
+                    { text: "Gap bo'laklari", key: "gap_bolaklari_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ot_haqida": {
+                text: "Ot (Kim? Nima? Qayer?) — narsa, shaxs, joy nomini bildiradi. Qanday turlari bor?",
+                buttons: [
+                    { text: "Ot turlari (Turlanish)", key: "ot_turlanish" },
+                    { text: "Egalik qo'shimchalari", key: "egalik_qoshimchalari" },
+                    { text: "Otga oid 5 ta mashq", key: "test_ot" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "sifat_haqida": {
+                text: "Sifat (Qanday?) — narsa-buyumning belgisini (rang, hajm, xususiyat) bildiruvchi so'z turkumi. Darajalari haqida bilishni istaysizmi?",
+                buttons: [
+                    { text: "Sifat darajalari", key: "sifat_darajalari" },
+                    { text: "Asosiy va yasama sifat", key: "asosiy_yasama_sifat" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "fe'l_haqida": {
+                text: "Fe'l (Nima qildi?) — harakatni yoki holatni bildiruvchi soʻz turkumi. Fe'l shakllari juda ko'p!",
+                buttons: [
+                    { text: "Fe'l zamonlari", key: "fe'l_zamonlari" },
+                    { text: "Fe'l nisbatlari", key: "fe'l_nisbatlari" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "son_haqida": { text: "Son (Nechta? Nechanchi?) — narsa-buyumning sanog'ini yoki tartibini bildiradi. Asosiy va tartib sonlar bor.", buttons: [{ text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }] },
+            "olmosh_haqida": { text: "Olmosh — ot, sifat, son o'rnida qo'llaniluvchi so'z turkumi. Masalan: Men, Siz, Ular. Ular so'roqqa javob bermaydi.", buttons: [{ text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }] },
+            "gap_bolaklari_menu": {
+                text: "Gap bo'laklari. Bular: ega, kesim, to'ldiruvchi, aniqlovchi va hol.",
+                buttons: [
+                    { text: "Ega va Kesim", key: "ega_kesim" },
+                    { text: "Ikkinchi darajali bo'laklar", key: "ikkinchi_bolak" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "literature_menu": {
+                text: "Adabiyot bo'limi. Qaysi janr yoki yozuvchi haqida o'rganamiz?",
+                buttons: [
+                    { text: "Ertak 🐉", key: "ertak_janri" },
+                    { text: "Hikoya 📖", key: "hikoya_janri" },
+                    { text: "Afsona va Rivoyat", key: "afsona_rivoyat" },
+                    { text: "Alisher Navoiy", key: "navoiy_haqida" },
+                    { text: "G'afur G'ulom", key: "ghafur_ghulom" },
+                    { text: "She'riyat turlari", key: "she'riyat_turlari" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ertak_janri": { text: "Ertak — xalq og'zaki ijodi. To'qima, sehrli voqealar. Yaxshilik yomonlik ustidan g'alaba qiladi.", buttons: [{ text: "Mening eng sevimli ertagim!", key: "ertak_mashq" }, { text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "hikoya_janri": { text: "Hikoya — hayotiy voqea tasvirlanadi. Qahramonlar soni oz bo'ladi.", buttons: [{ text: "Hikoya turlari", key: "hikoya_turlari" }, { text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "navoiy_haqida": { text: "Alisher Navoiy (1441-1501) - buyuk shoir va mutafakkir. 'Xamsa' uning eng yirik asari. U o'zbek adabiyotini yuksaklikka ko'targan.", buttons: [{ text: "Navoiyning 3 g'azali", key: "navoiy_gazal" }, { text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "vocabulary_menu": {
+                text: "Lug'at boyligi bo'limi. So'zlarning ma'nosini o'rganamiz!",
+                buttons: [
+                    { text: "Sinonimlar (Ma'nodosh)", key: "sinonimlar" },
+                    { text: "Antonimlar (Zid ma'noli)", key: "antonimlar" },
+                    { text: "Omonimlar (Shakl bir xil, ma'no har xil)", key: "omonimlar" },
+                    { text: "Morfema (So'z qismlari)", key: "morfema" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sinonimlar": { text: "Sinonimlar - ma'nosi bir-biriga yaqin so'zlar. Masalan: chiroyli, go'zal, zebo.", buttons: [{ text: "5 ta sinonim juftligi", key: "sinonim_juftlik" }, { text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "antonimlar": { text: "Antonimlar - ma'nosi bir-biriga zid so'zlar. Masalan: yaxshi - yomon, issiq - sovuq.", buttons: [{ text: "5 ta antonim juftligi", key: "antonim_juftlik" }, { text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "test_menu": {
+                text: "A'lo! Test bo'limiga xush kelibsiz. Qaysi mavzuda bilimingizni sinaysiz?",
+                buttons: [
+                    { text: "Ot 1-qism testi (10 savol)", key: "test_ot_1" },
+                    { text: "Sifat 1-qism testi (10 savol)", key: "test_sifat_1" },
+                    { text: "Fe'l zamonlari testi", key: "test_fel_zamon" },
+                    { text: "Lug'atdan 10 savol", key: "test_lugat_1" },
+                    { text: "Adabiyotdan 10 savol", key: "test_adabiyot_1" },
+                    { text: "Qo'shimcha Grammatika Savollari (10 savol)", key: "test_qoshimcha_gramm" },
+                    { text: "Qo'shimcha Adabiyot Savollari (10 savol)", key: "test_qoshimcha_lit" },
+                    { text: "Umumiy 5-sinf testi (20 savol)", key: "test_umumiy" },
+                    { text: "Eng qiyin 5 savol", key: "test_qiyin" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ot_turlanish": { text: "Otlar son, egalik va kelishik qo'shimchalari orqali turlanadi. Masalan: Kitob -> Kitobim, Kitobga.", buttons: [{ text: "6 ta kelishikni ko'rsat", key: "kelishiklar" }, { text: "⬅️ Ot Haqida", key: "ot_haqida", isHome: true }] },
+            "egalik_qoshimchalari": { text: "Egalik qo'shimchalari: -im, -ing, -i (bir. shaxs); -imiz, -ingiz, -lari (koʻp. shaxs). Bu qo'shimchalar qaratuvchi kelishigi o'rnida ham keladi.", buttons: [{ text: "⬅️ Ot Haqida", key: "ot_haqida", isHome: true }] },
+            "sifat_darajalari": { text: "Sifat darajalari: Oddiy (katta), Qiyosiy (kattaroq), Orttirma (eng katta), Ozaytirma (ochiq ko'k).", buttons: [{ text: "Orttirma darajaga 5 misol", key: "orttirma_misol" }, { text: "⬅️ Sifat Haqida", key: "sifat_haqida", isHome: true }] },
+            "asosiy_yasama_sifat": { text: "Asosiy sifat: qizil, tez. Yasama sifat: otga qo'shimcha qo'shib yasaladi. Masalan: kuch + li = kuchli, bilim + don = bilimdon.", buttons: [{ text: "⬅️ Sifat Haqida", key: "sifat_haqida", isHome: true }] },
+            "fe'l_zamonlari": { text: "Fe'l zamonlari: O'tgan (o'qidi), Hozirgi (o'qiyapti), Kelasi (o'qiydi).", buttons: [{ text: "O'tgan zamon turlari", key: "utgan_zamon_turlari" }, { text: "⬅️ Fe'l Haqida", key: "fe'l_haqida", isHome: true }] },
+            "fe'l_nisbatlari": { text: "Fe'l nisbatlari: Aniq, O'zgalik, Majhul, Birgalik, O'zlik.", buttons: [{ text: "Majhul nisbatga misol", key: "majhul_nisbat" }, { text: "⬅️ Fe'l Haqida", key: "fe'l_haqida", isHome: true }] },
+            "ega_kesim": { text: "Ega - gapda kim? nima? so'rog'iga javob beradi. Kesim - nima qildi? so'rog'iga javob beradi va gapni yakunlaydi.", buttons: [{ text: "Ega va Kesimga 5 ta misol", key: "ega_kesim_misol" }, { text: "⬅️ Gap bo'laklari", key: "gap_bolaklari_menu", isHome: true }] },
+            "ikkinchi_bolak": { text: "Bular: To'ldiruvchi (ot), Aniqlovchi (sifat/olmosh), Hol (ravish/fe'l). Ular gapni to'ldiradi.", buttons: [{ text: "⬅️ Gap bo'laklari", key: "gap_bolaklari_menu", isHome: true }] },
+            "afsona_rivoyat": { text: "Afsona - xayoliy mavjudotlar haqida. Rivoyat - tarixiy shaxslar yoki joylar haqidagi to'qima hikoyalar.", buttons: [{ text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "she'riyat_turlari": { text: "She'riyat turlari: G'azal, Ruboiy, To'rtlik, Doston. Bular vazni va bandlari bilan farqlanadi.", buttons: [{ text: "G'azalning xususiyati", key: "gazal_xususiyat" }, { text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "morfema": { text: "Morfema - so'zning ma'noli eng kichik qismi. Bular: o'zak, asos va qo'shimcha.", buttons: [{ text: "O'zak va Qo'shimchaga misol", key: "ozak_qoshimcha" }, { text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "test_ot_1": { text: "TEST: Ot 1-qism. Qaysi so'z shaxs otidir? (A: stol, B: kitob, C: qiziqchi). To'g'ri javobni tanlang:", buttons: [{ text: "A: stol", key: "test_ot_1_a" }, { text: "B: kitob", key: "test_ot_1_b" }, { text: "C: qiziqchi", key: "test_ot_1_c" }] },
+            "test_sifat_1": { text: "TEST: Sifat 1-qism. Qaysi so'z sifatning orttirma darajasida? (A: go'zalroq, B: eng go'zal, C: go'zalcha). To'g'ri javobni tanlang:", buttons: [{ text: "A: go'zalroq", key: "test_sifat_1_a" }, { text: "B: eng go'zal", key: "test_sifat_1_b" }, { text: "C: go'zalcha", key: "test_sifat_1_c" }] },
+            "test_lugat_1": { text: "TEST: Lug'at. 'Umid' so'zining sinonimi nima? (A: Orzu, B: Xafa, C: G'am). To'g'ri javobni tanlang:", buttons: [{ text: "A: Orzu", key: "test_lugat_1_a" }, { text: "B: Xafa", key: "test_lugat_1_b" }, { text: "C: G'am", key: "test_lugat_1_c" }] },
+            "test_ot_1_a": { text: "Xato. Stol - narsa oti. To'g'ri javob: Qiziqchi.", buttons: [{ text: "Grammatika bo'limiga qaytish", key: "grammar_menu", isHome: true }] },
+            "test_ot_1_b": { text: "Xato. Kitob - narsa oti. To'g'ri javob: Qiziqchi.", buttons: [{ text: "Grammatika bo'limiga qaytish", key: "grammar_menu", isHome: true }] },
+            "test_ot_1_c": { text: "TO'G'RI! Qiziqchi - shaxs oti. A'lo!", buttons: [{ text: "Keyingi savolga o'tish", key: "test_sifat_1" }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_sifat_1_a": { text: "Xato. Bu qiyosiy daraja. To'g'ri javob: Eng go'zal.", buttons: [{ text: "Sifat haqida yana o'qish", key: "sifat_haqida" }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_sifat_1_b": { text: "TO'G'RI! 'Eng' old qo'shimchasi orttirma darajani yasaydi. Baraka toping!", buttons: [{ text: "Keyingi savolga o'tish", key: "test_lugat_1" }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_sifat_1_c": { text: "Xato. Bu ozaytirma daraja (kichkina ozaygan belgi). To'g'ri javob: Eng go'zal.", buttons: [{ text: "Sifat haqida yana o'qish", key: "sifat_haqida" }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_lugat_1_a": { text: "TO'G'RI! Umid va Orzu - ma'nodosh (sinonim) so'zlar.", buttons: [{ text: "Lug'at bo'limiga qaytish", key: "vocabulary_menu", isHome: true }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_lugat_1_b": { text: "Xato. Xafa - bu 'xursand'ning antonimi. To'g'ri javob: Orzu.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_lugat_1_c": { text: "Xato. G'am - bu 'quvonch'ning antonimi. To'g'ri javob: Orzu.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "kelishiklar": { text: "Ona tilidagi 6 ta kelishik: Bosh, Qaratqich, Tushum, Jo'nalish, Chiqish, O'rin-payt.", buttons: [
+                { text: "Bosh kelishik (Kim? Nima?)", key: "kelishik_bosh" },
+                { text: "Qaratqich (-ning)", key: "kelishik_qaratqich" },
+                { text: "Tushum (-ni)", key: "kelishik_tushum" },
+                { text: "Jo'nalish (-ga)", key: "kelishik_junalish" },
+                { text: "Chiqish (-dan)", key: "kelishik_chiqish" },
+                { text: "O'rin-payt (-da)", key: "kelishik_orin" },
+                { text: "⬅️ Ot Haqida", key: "ot_haqida", isHome: true }
+            ]},
+            "orttirma_misol": { text: "Orttirma darajaga 5 misol: Eng chiroyli, G'oyat shirin, Nihoyatda uzun, Juda tez, O'ta baland.", buttons: [{ text: "⬅️ Sifat Haqida", key: "sifat_haqida", isHome: true }] },
+            "utgan_zamon_turlari": { text: "O'tgan zamon turlari: Aniq o'tgan (-di), Guzaron o'tgan (-gan), Uzoq o'tgan (-ar edi).", buttons: [{ text: "⬅️ Fe'l Haqida", key: "fe'l_haqida", isHome: true }] },
+            "majhul_nisbat": { text: "Majhul nisbat - harakat kim tomonidan bajarilgani noma'lum bo'ladi. (-il, -in). Masalan: Xat yozildi.", buttons: [{ text: "⬅️ Fe'l Haqida", key: "fe'l_haqida", isHome: true }] },
+            "ega_kesim_misol": { text: "Ega/Kesim misollari: Quyosh chiqdi. O'quvchi kitob o'qidi. Men besh oldim.", buttons: [{ text: "⬅️ Gap bo'laklari", key: "gap_bolaklari_menu", isHome: true }] },
+            "hikoya_turlari": { text: "Hikoya turlari: Lirik hikoya (hislarga boy), Doston hikoya (qahramonlikka asoslangan), Hajviy hikoya (kulgi orqali tanqid).", buttons: [{ text: "⬅️ Adabiyot", key: "literature_menu", isHome: true }] },
+            "gazal_xususiyat": { text: "G'azal - har bir bayti bir xil qofiyalanadigan, hajmi 5 tadan 19 tagacha bo'lgan lirika janri.", buttons: [{ text: "⬅️ She'riyat turlari", key: "she'riyat_turlari", isHome: true }] },
+            "ozak_qoshimcha": { text: "Masalan: Maktab + lar + imiz. O'zak: Maktab. Qo'shimchalar: -lar (ko'plik), -imiz (egalik).", buttons: [{ text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "sinonim_juftlik": { text: "5 sinonim juftlik: 1) Rost, to'g'ri. 2) Ozoda, toza. 3) Jasur, botir. 4) Xushchaqchaq, quvnoq. 5) Donishmand, aqlli.", buttons: [{ text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "antonim_juftlik": { text: "5 antonim juftlik: 1) Baland, past. 2) Ochiq, yopiq. 3) Katta, kichik. 4) Erta, kech. 5) Achchiq, shirin.", buttons: [{ text: "⬅️ Lug'at", key: "vocabulary_menu", isHome: true }] },
+            "kelishik_bosh": { text: "Bosh kelishik: qo'shimchasiz, gapda ega bo'lib keladi. (Masalan: Bola yugurdi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "kelishik_qaratqich": { text: "Qaratqich kelishigi: -ning qo'shimchasi. (Masalan: Uning kitobi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "kelishik_tushum": { text: "Tushum kelishigi: -ni qo'shimchasi. (Masalan: Daftar(ni) oldi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "kelishik_junalish": { text: "Jo'nalish kelishigi: -ga/ka/qa qo'shimchasi. (Masalan: Maktabga bordi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "kelishik_chiqish": { text: "Chiqish kelishigi: -dan qo'shimchasi. (Masalan: Uy(dan) chiqdi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "kelishik_orin": { text: "O'rin-payt kelishigi: -da qo'shimchasi. (Masalan: Xonada o'qidi).", buttons: [{ text: "⬅️ Kelishiklar", key: "kelishiklar", isHome: true }] },
+            "test_fel_zamon": { text: "Fe'l zamonlari testi boshlanadi! 'Yozmoqchi' qaysi zamon? (A: O'tgan, B: Kelasi, C: Hozirgi)", buttons: [{ text: "A: O'tgan", key: "fel_zamon_a" }, { text: "B: Kelasi", key: "fel_zamon_b" }, { text: "C: Hozirgi", key: "fel_zamon_c" }] },
+            "fel_zamon_a": { text: "Xato. O'tgan zamon -di yoki -gan qo'shimchasi bilan keladi. To'g'ri javob: Kelasi.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "fel_zamon_b": { text: "TO'G'RI! 'Yozmoqchi' kelasi zamonni (maqsadni) bildiradi.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "fel_zamon_c": { text: "Xato. Hozirgi zamon -yap qo'shimchasi bilan keladi. To'g'ri javob: Kelasi.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_qoshimcha_gramm": { text: "Qo'shimcha Grammatika savollari. Qaysi savolni tanlaysiz?", buttons: [
+                { text: "1. Undosh tovushlar", key: "gramm_1" },
+                { text: "2. Unli tovushlar", key: "gramm_2" },
+                { text: "3. So'z yasalishi", key: "gramm_3" },
+                { text: "4. Qo'shma so'zlar", key: "gramm_4" },
+                { text: "5. Juft so'zlar", key: "gramm_5" },
+                { text: "6. Sodda gap", key: "gramm_6" },
+                { text: "7. Qo'shma gap", key: "gramm_7" },
+                { text: "8. Ko'chirma gap", key: "gramm_8" },
+                { text: "9. Tinish belgilari", key: "gramm_9" },
+                { text: "10. Ravishlar", key: "gramm_10" },
+                { text: "11. Undov so'zlar", key: "gramm_11" },
+                { text: "12. Ko'makchilar", key: "gramm_12" },
+                { text: "13. Bog'lovchilar", key: "gramm_13" },
+                { text: "14. Modal so'zlar", key: "gramm_14" },
+                { text: "15. Taqlid so'zlar", key: "gramm_15" },
+                { text: "16. Shaxs otlari", key: "gramm_16" },
+                { text: "17. Narsa otlari", key: "gramm_17" },
+                { text: "18. Mavhum otlar", key: "gramm_18" },
+                { text: "19. Atoqli otlar", key: "gramm_19" },
+                { text: "20. Turdosh otlar", key: "gramm_20" },
+                { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }
+            ]},
+            "test_qoshimcha_lit": { text: "Qo'shimcha Adabiyot savollari. Qaysi mavzuni o'rganamiz?", buttons: [
+                { text: "21. Hikmatli so'zlar", key: "lit_1" },
+                { text: "22. Maqol", key: "lit_2" },
+                { text: "23. Topishmoq", key: "lit_3" },
+                { text: "24. Badiiy asar", key: "lit_4" },
+                { text: "25. Muallif haqida", key: "lit_5" },
+                { text: "26. O'xshatish", key: "lit_6" },
+                { text: "27. Mubolag'a", key: "lit_7" },
+                { text: "28. Jonlantirish", key: "lit_8" },
+                { text: "29. Bobur ijodi", key: "lit_9" },
+                { text: "30. Cho'lpon ijodi", key: "lit_10" },
+                { text: "31. Hamza ijodi", key: "lit_11" },
+                { text: "32. Shayx Zindaniy", key: "lit_12" },
+                { text: "33. Jami", key: "lit_13" },
+                { text: "34. G'ulom Zafariy", key: "lit_14" },
+                { text: "35. Abdulla Qodiriy", key: "lit_15" },
+                { text: "36. Asar qahramoni", key: "lit_16" },
+                { text: "37. Mavzu va g'oya", key: "lit_17" },
+                { text: "38. Tillar tarixi", key: "lit_18" },
+                { text: "39. Asar tahlili", key: "lit_19" },
+                { text: "40. Adabiy til", key: "lit_20" },
+                { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }
+            ]},
+            // --- Mukammalashtirilgan: Barcha gramm_1 - gramm_20 va lit_1 - lit_20 uchun to'liq javoblar ---
+            "gramm_1": { text: "Undosh tovushlar: tilning to'siqqa uchrashi natijasida hosil bo'ladi. Masalan: b, d, g, k.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_2": { text: "Unli tovushlar: havo oqimi og'iz bo'shlig'ida to'siqqa uchramasdan chiqadi. Masalan: a, o, u, i, e.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_3": { text: "So'z yasalishi: asos so'zga qo'shimcha qo'shish orqali yangi so'zlar yasaladi. Masalan: yaxshi + lik = yaxshilik.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_4": { text: "Qo'shma so'zlar: ikki yoki undan ortiq so'z birlashib yasaladi. Masalan: o't-kir, qo'l-ko'z.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_5": { text: "Juft so'zlar: bir-biriga bog'liq so'zlar. Masalan: qo'l-oyoq, ko'z-quloq.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_6": { text: "Sodda gap: faqat bitta ega va kesimdan iborat. Masalan: Qush uchdi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_7": { text: "Qo'shma gap: ikki yoki undan ortiq sodda gaplardan tashkil topgan. Masalan: O't oldi, o't ketdi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_8": { text: "Ko'chirma gap: boshqa gap yoki so'zning o'zidan qaytarilgan gap. Masalan: 'Yaxshi o'qiyapmiz' dedi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_9": { text: "Tinish belgilari: gaplarni ajratish, to'xtash, his-hayajonni bildirish uchun kerak. Masalan: . , ! ? ;", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_10": { text: "Ravishlar: harakatning holatini, o'rnini, paytini bildiradi. Masalan: tez, sekin, erta.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_11": { text: "Undov so'zlar: his-hayajonni ifodalaydi. Masalan: Voy, Bah! Oh!", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_12": { text: "Ko'makchilar: so'zlarni bog'lovchi yordamchi so'zlar. Masalan: uchun, bilan, kabi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_13": { text: "Bog'lovchilar: gap bo'laklarini yoki gaplarni bog'laydi. Masalan: va, ammo, lekin.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_14": { text: "Modal so'zlar: so'zlovchining munosabatini bildiradi. Masalan: balki, aftidan, albatta.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_15": { text: "Taqlid so'zlar: ovozga (taq-tuq), holatga (lip-lip) taqlid qiladi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_16": { text: "Shaxs otlari: inson nomini bildiradi. (o'quvchi, do'xtir).", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_17": { text: "Narsa otlari: jonsiz narsalar (daftar, qalam).", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_18": { text: "Mavhum otlar: sezish mumkin bo'lmagan narsa (sevgi, nafrat).", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_19": { text: "Atoqli otlar: Yagona nom (Alisher, Samarqand).", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "gramm_20": { text: "Turdosh otlar: ko'p narsalarga umumiy nom (daryo, shahar).", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_gramm", isHome: true }] },
+            "lit_1": { text: "Hikmatli so'zlar (aforizmlar) - qisqa, chuqur ma'noli so'zlar. Ular katta tajribani aks ettiradi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_2": { text: "Maqol - xalq donishmandligining qisqa, aniq ifodasi. Masalan: 'Ko'p yasha, ko'p bil'.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_3": { text: "Topishmoq - xalq og'zaki ijodidagi so'z o'yini. Xossalarni aytib, narsani topishga undaydi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_4": { text: "Badiiy asar - o'ziga xos til, uslub va mavzuga ega adabiyot.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_5": { text: "Muallif haqida - asar yaratgan shaxs, uning hayoti, ijodi. Masalan: A. Navoiy, G'afur G'ulom.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_6": { text: "O'xshatish - ikki narsani bir-biriga o'xshatish. Masalan: O'ta go'zal, yuzi quyoshga o'xshaydi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_7": { text: "Mubolag'a - haqiqatdan ortiqroq aytish. Masalan: Ming yil yashasin, yuz yuz ming bor.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_8": { text: "Jonlantirish - jonli narsa sifatida tasvirlash. Masalan: Daraxt gapirdi, shamol keldi, o't oldi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_9": { text: "Bobur - O'zbek davlati asoschisi, shoir va tarixchi. 'Vasfiy", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_10": { text: "Cho'lpon (Abdulhamid Sulaymon o'g'li) ijodi: 'Kecha va kunduz' romani bilan mashhur. U jadid adabiyotining yirik vakili.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_11": { text: "Hamza Hakimzoda Niyoziy: O'zbek dramaturgiyasining asoschisi. 'Boy ila xizmatchi' asari bilan mashhur.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_12": { text: "Shayx Zindaniy haqida qisqacha ma'lumot: Buxoroda yashagan olim va avliyo.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_13": { text: "Jami: Arabchada 'to'plam, yig'indi' ma'nosini bildiradi. Kitoblar to'plami ham jami deyiladi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_14": { text: "G'ulom Zafariy: O'zbek adabiyotining qisqa hikoyalar ustasi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_15": { text: "Abdulla Qodiriy: 'O'tgan kunlar' va 'Mehrobdan chayon' asarlari muallifi. O'zbek romanining asoschisi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_16": { text: "Asar qahramoni: Asarda voqealarni amalga oshiruvchi shaxs yoki obraz.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_17": { text: "Mavzu va g'oya: Mavzu - asar nimani tasvirlaydi. G'oya - asarning asosiy fikri, maqsadi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_18": { text: "Tillar tarixi: Tilning paydo bo'lishi va rivojlanishi.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_19": { text: "Asar tahlili: Asarning mazmuni, qahramonlari, g'oyasi va badiiy xususiyatlarini o'rganish.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "lit_20": { text: "Adabiy til: Qoidalashtirilgan, yozma va og'zaki nutqda ishlatiladigan rasmiy til.", buttons: [{ text: "⬅️ Oldingi Menyu", key: "test_qoshimcha_lit", isHome: true }] },
+            "test_umumiy": { text: "Umumiy 5-sinf testi. Tayyormisiz? Eng birinchi savol: Atoqli otga 3 ta misol keltiring (A: Toshkent, B: maktab, C: suv). To'g'ri javobni tanlang:", buttons: [{ text: "A: Toshkent", key: "test_umumiy_a" }, { text: "B: maktab", key: "test_umumiy_b" }, { text: "C: suv", key: "test_umumiy_c" }] },
+            "test_qiyin": { text: "Bu bo'lim faqat 5-sinf chempionlari uchun! Qiyin savol: 'Bilimli' so'zidagi -li qanday qo'shimcha? (A: egalik, B: yasovchi, C: kelishik).", buttons: [{ text: "A: egalik", key: "test_qiyin_a" }, { text: "B: yasovchi", key: "test_qiyin_b" }, { text: "C: kelishik", key: "test_qiyin_c" }] },
+            "test_umumiy_a": { text: "TO'G'RI! Toshkent - atoqli ot. Keyingi savolga o'tish uchun quyidagi tugmani bosing.", buttons: [{ text: "Keyingi Umumiy Savol", key: "test_umumiy_2" }, { text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_umumiy_b": { text: "Xato. Maktab - turdosh ot. To'g'ri javob: Toshkent.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_umumiy_c": { text: "Xato. Suv - narsa oti. To'g'ri javob: Toshkent.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_umumiy_2": { text: "Yaxshi! 2-savol: 'Uzoqdan keldi' gapida 'uzo-qdan' so'zi qanday gap bo'lagi? (A: ega, B: hol, C: kesim).", buttons: [{ text: "A: ega", key: "test_umumiy_2_a" }, { text: "B: hol", key: "test_umumiy_2_b" }, { text: "C: kesim", key: "test_umumiy_2_c" }] },
+            "test_umumiy_2_a": { text: "Xato. Ega Kim? Nima? so'rog'iga javob beradi. To'g'ri javob: Hol.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_umumiy_2_b": { text: "TO'G'RI! 'Uzoqdan' - harakatning o'rnini bildirgan hol.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_umumiy_2_c": { text: "Xato. Kesim harakatni ifodalaydi. To'g'ri javob: Hol.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_qiyin_a": { text: "Xato. Egalik qo'shimchasi otga qo'shiladi. Bu sifat yasagan. To'g'ri javob: Yasovchi.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_qiyin_b": { text: "TO'G'RI! '-li' bu yerda sifat yasovchi qo'shimcha. Siz chempionsiz!", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] },
+            "test_qiyin_c": { text: "Xato. Kelishik qo'shimchasi faqat otga qo'shiladi. To'g'ri javob: Yasovchi.", buttons: [{ text: "⬅️ Testlar Menyu", key: "test_menu", isHome: true }] }
+        };
+
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingInterval = 50;
+            let typedText = '';
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    typedText += response[charIndex];
+                    bubble.textContent = typedText;
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, typingInterval);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                console.error("Menyu topilmadi:", menuKey);
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) {
+                    button.classList.add('home-button');
+                }
+                button.textContent = btn.text;
+                button.dataset.key = btn.key;
+                button.addEventListener('click', () => {
+                    handleButtonClick(btn.text, btn.key);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        function handleButtonClick(buttonText, nextKey) {
+            addMessage(buttonText, 'user');
+            quickButtonsContainer.innerHTML = '';
+            const nextMenu = database[nextKey];
+            if (nextMenu) {
+                setTimeout(() => {
+                    typeAiResponse(nextMenu.text, nextKey);
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    typeAiResponse("Kechirasiz, xatolik yuz berdi. Asosiy menyuga qaytamiz.", "main_menu");
+                }, 500);
+            }
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
