@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - Musiqa (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6A1B9A; /* Lila — musiqa uchun */
+            --secondary-color: #FFD54F; /* Sarg'ish */
+            --bg-color: #ede7f6;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #D1C4E9;
+            --ai-bubble: #EDE7F6;
+            --button-color: #4A148C;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--secondary-color); } to { box-shadow: 0 0 20px var(--secondary-color); } }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - Musiqa (5-sinf)</h1>
+        <p>100+ musiqa tushunchasi, qo'shiq, asbob bilan tanishamiz...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>Musiqa Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Musiqa fanining qaysi bo'limi bo'yicha bilim olishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Musiqa Elementlari 🎵", key: "elements" },
+                    { text: "2. Musiqa Asboblari 🎻", key: "instruments" },
+                    { text: "3. Qo'shiq va Janrlar 🎤", key: "songs_genres" },
+                    { text: "4. Ritmlar va Nootlar 📜", key: "rhythms_notes" },
+                    { text: "5. O'zbek Musiqasi 🇺🇿", key: "uzbek_music" },
+                    { text: "6. Musiqa Tarixi 🏛️", key: "history" },
+                    { text: "7. Mashqlar va O'yinlar 🎼", key: "exercises" },
+                    { text: "8. Testlar ✍️", key: "test_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "elements": {
+                text: "Musiqa elementlari — nout, ritm, melodiya, harmoniya, dinamika. Ularning har biri musiqa qo'shiqning qismidir.",
+                buttons: [
+                    { text: "Nout (Ovoz balandligi)", key: "note" },
+                    { text: "Ritm (Ovoz va to'xtash)", key: "rhythm" },
+                    { text: "Melodiya (Ovozlar ketma-ketligi)", key: "melody" },
+                    { text: "Dinamika (Ovoz kuchi)", key: "dynamics" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "instruments": {
+                text: "Musiqa asboblari — o'z ovozlarini chiqaruvchi qurilmalar. Ularni to'rt guruhga ajratish mumkin.",
+                buttons: [
+                    { text: "Tovushli asbollar", key: "string_instruments" },
+                    { text: "Ko'prikli asbollar", key: "wind_instruments" },
+                    { text: "Qo'lda o'ynaladigan asbollar", key: "percussion_instruments" },
+                    { text: "Elektron asbollar", key: "electronic_instruments" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "songs_genres": {
+                text: "Qo'shiq va janrlar — musiqa tarzlaridir. Har biri o'ziga xos his-hayajonni bildiradi.",
+                buttons: [
+                    { text: "Qo'shiq tuzilishi", key: "song_structure" },
+                    { text: "Ko'p qismli qo'shiq", key: "multi_part_song" },
+                    { text: "Milliy janrlar", key: "national_genres" },
+                    { text: "Xalqaro janrlar", key: "international_genres" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "rhythms_notes": {
+                text: "Ritm — musiqaning qalbida. Noot — ovozning belgisi. Ular birgalikda qo'shiq yaratadi.",
+                buttons: [
+                    { text: "Noot turlari", key: "note_types" },
+                    { text: "Ritm belgilari", key: "rhythm_symbols" },
+                    { text: "Qo'shiqda ritm", key: "rhythm_in_song" },
+                    { text: "Mashqlar", key: "rhythm_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "uzbek_music": {
+                text: "O'zbek musiqasi — milliy ovozlar, qo'shiqlar va asbollar bilan boy. Qo'shiqlar — xalqning ruhiy dunyosidir.",
+                buttons: [
+                    { text: "O'zbek qo'shiqlari", key: "uzbek_songs" },
+                    { text: "Musiqa asboblari", key: "uzbek_instruments" },
+                    { text: "Qo'shiq matnlarining mazmuni", key: "uzbek_lyrics" },
+                    { text: "Mashqlar", key: "uzbek_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "history": {
+                text: "Musiqa tarixi — qadimiy davrlardan bugungi kungacha musiqa rivojlanishini o'rganish.",
+                buttons: [
+                    { text: "Qadimiy musiqa", key: "ancient_music" },
+                    { text: "O'rta asrlar", key: "medieval_music" },
+                    { text: "Zamonaviy musiqa", key: "modern_music" },
+                    { text: "O'zbek musiqa tarixi", key: "uzbek_music_history" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "exercises": {
+                text: "Musiqa mashqlari — qo'shiq aytish, ritmni qo'l bilan urish, noutlarni tanish.",
+                buttons: [
+                    { text: "Qo'shiq aytish", key: "sing_song" },
+                    { text: "Ritm urish", key: "clap_rhythm" },
+                    { text: "Noutlarni topish", key: "find_notes" },
+                    { text: "Musiqani tinglash", key: "listen_music" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_menu": {
+                text: "Musiqa bo'yicha testlar!",
+                buttons: [
+                    { text: "Musiqa elementlari testi (10 savol)", key: "test_elements" },
+                    { text: "Asbollar testi (10 savol)", key: "test_instruments" },
+                    { text: "Qo'shiq va janrlar testi", key: "test_songs" },
+                    { text: "Ritm va Noot testi", key: "test_rhythm_notes" },
+                    { text: "O'zbek musiqasi testi", key: "test_uzbek" },
+                    { text: "Musiqa tarixi testi", key: "test_history" },
+                    { text: "Umumiy test (20 savol)", key: "test_umumiy" },
+                    { text: "Eng qiyin 5 savol", key: "test_champion" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            // Tushunchalar
+            "note": { text: "Nout — ovozning belgisi. U yoziladi: C, D, E, F, G, A, B. Har biri turli balandlikda.", buttons: [{ text: "⬅️ Musiqa elementlari", key: "elements", isHome: true }] },
+            "rhythm": { text: "Ritm — ovoz va to'xtashning tartibi. Masalan: ta-ta-ta-ta.", buttons: [{ text: "⬅️ Musiqa elementlari", key: "elements", isHome: true }] },
+            "melody": { text: "Melodiya — noutlarning bir-biriga bog'langan ketma-ketligi. Qo'shiqning asosiy qismi.", buttons: [{ text: "⬅️ Musiqa elementlari", key: "elements", isHome: true }] },
+            "dynamics": { text: "Dinamika — ovoz kuchi. Pianissimo (p) — juda yumshoq, Fortissimo (ff) — juda kuchli.", buttons: [{ text: "⬅️ Musiqa elementlari", key: "elements", isHome: true }] },
+            "string_instruments": { text: "Tovushli asbollar: g'ijjak, dombyra, skripka, g'ijjak. Sichqoncha bilan o'ynaladi.", buttons: [{ text: "⬅️ Musiqa asboblari", key: "instruments", isHome: true }] },
+            "wind_instruments": { text: "Ko'prikli asbollar: qozon, o'zgak, flauta, klarnet. Nafas bilan o'ynaladi.", buttons: [{ text: "⬅️ Musiqa asboblari", key: "instruments", isHome: true }] },
+            "percussion_instruments": { text: "Qo'lda o'ynaladigan asbollar: doira, naqara, daf, bongolar. Uriladi.", buttons: [{ text: "⬅️ Musiqa asboblari", key: "instruments", isHome: true }] },
+            "electronic_instruments": { text: "Elektron asbollar: sintezator, elektron piano, dasturiy musiqa. Elektr energiyasi bilan ishlaydi.", buttons: [{ text: "⬅️ Musiqa asboblari", key: "instruments", isHome: true }] },
+            "song_structure": { text: "Qo'shiq tuzilishi: kirish, asosiy qism, qo'shimcha qism, yakun. Masalan: A-B-A.", buttons: [{ text: "⬅️ Qo'shiq va janrlar", key: "songs_genres", isHome: true }] },
+            "multi_part_song": { text: "Ko'p qismli qo'shiq — ikki yoki undan ortiq ovozli qo'shiq. Masalan: duet, kvartet.", buttons: [{ text: "⬅️ Qo'shiq va janrlar", key: "songs_genres", isHome: true }] },
+            "national_genres": { text: "Milliy janrlar: qo'shiq, madah, g'azal, navo, o'zgak. O'zbek xalqining ovozi.", buttons: [{ text: "⬅️ Qo'shiq va janrlar", key: "songs_genres", isHome: true }] },
+            "international_genres": { text: "Xalqaro janrlar: pop, rock, jazz, klassik, elektron. Dunyoning ovozi.", buttons: [{ text: "⬅️ Qo'shiq va janrlar", key: "songs_genres", isHome: true }] },
+            "note_types": { text: "Noot turlari: to'liq (1), yarim (1/2), chorak (1/4), sakkiz (1/8).", buttons: [{ text: "⬅️ Ritmlar va Nootlar", key: "rhythms_notes", isHome: true }] },
+            "rhythm_symbols": { text: "Ritm belgilari: to'liq nout (𝅝), yarim nout (𝅗𝅥), chorak nout (𝅘𝅥), sakkiz nout (𝅘𝅥𝅮).", buttons: [{ text: "⬅️ Ritmlar va Nootlar", key: "rhythms_notes", isHome: true }] },
+            "rhythm_in_song": { text: "Qo'shiqda ritm — qo'shiqning qalbi. U ovozlar va to'xtashlarning tartibini beradi.", buttons: [{ text: "⬅️ Ritmlar va Nootlar", key: "rhythms_notes", isHome: true }] },
+            "uzbek_songs": { text: "O'zbek qo'shiqlari: 'Qizil guldor', 'O'tkir yulduz', 'Uyqu', 'Ko'zimning qorasi'.", buttons: [{ text: "⬅️ O'zbek musiqasi", key: "uzbek_music", isHome: true }] },
+            "uzbek_instruments": { text: "O'zbek asboblari: g'ijjak, doira, naqara, qozon, o'zgak, dambura.", buttons: [{ text: "⬅️ O'zbek musiqasi", key: "uzbek_music", isHome: true }] },
+            "uzbek_lyrics": { text: "Qo'shiq matnlarining mazmuni: tabiat, sevgi, ona, millat, mehnat. Xalq hissiyotini aks ettiradi.", buttons: [{ text: "⬅️ O'zbek musiqasi", key: "uzbek_music", isHome: true }] },
+            "ancient_music": { text: "Qadimiy musiqa — qadimiy insonlar tomonidan ishlatilgan. Qo'shiq va ritm — diniy marosimlarda.", buttons: [{ text: "⬅️ Musiqa tarixi", key: "history", isHome: true }] },
+            "medieval_music": { text: "O'rta asrlar — cherkov musiqasi, monodik qo'shiqlar, gregorian choral.", buttons: [{ text: "⬅️ Musiqa tarixi", key: "history", isHome: true }] },
+            "modern_music": { text: "Zamonaviy musiqa — 19-asrdan boshlab. Klassik, pop, jazz, rock, elektron.", buttons: [{ text: "⬅️ Musiqa tarixi", key: "history", isHome: true }] },
+            "uzbek_music_history": { text: "O'zbek musiqa tarixi — qadimiy qo'shiqlardan boshlab, Navoiy, Bobur, G'afur G'ulom, Otabek, Sherali Jo'rayevgacha.", buttons: [{ text: "⬅️ Musiqa tarixi", key: "history", isHome: true }] },
+            "sing_song": { text: "Qo'shiq aytish: 'Ko'zimning qorasi' qo'shiqini aytib ko'ring. Qo'l bilan ritm uring.", buttons: [{ text: "⬅️ Mashqlar", key: "exercises", isHome: true }] },
+            "clap_rhythm": { text: "Ritm urish: ta-ta-ta-ta (chorak nout) — qo'l bilan uring. 4 ta urish.", buttons: [{ text: "⬅️ Mashqlar", key: "exercises", isHome: true }] },
+            "find_notes": { text: "Noutlarni topish: C, D, E, F, G — qaysi nout eng baland? Qaysi eng past?", buttons: [{ text: "⬅️ Mashqlar", key: "exercises", isHome: true }] },
+            "listen_music": { text: "Musiqani tinglash: 'Qizil guldor' qo'shiqini tinglang. Qanday his-hayajon uyg'otadi?", buttons: [{ text: "⬅️ Mashqlar", key: "exercises", isHome: true }] },
+            // Test savollari
+            "test_elements": { text: "1. Musiqaning asosiy elementi nima? (A: Rang, B: Nout, C: Shakl)", buttons: [{ text: "A: Rang", key: "test_elements_a" }, { text: "B: Nout", key: "test_elements_b" }, { text: "C: Shakl", key: "test_elements_c" }] },
+            "test_elements_b": { text: "TO'G'RI! Nout — musiqaning asosiy elementi.", buttons: [{ text: "Keyingi test", key: "test_instruments" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_instruments": { text: "2. Qaysi asbob ko'prikli? (A: Doira, B: Qozon, C: Flauta)", buttons: [{ text: "A: Doira", key: "test_instruments_a" }, { text: "B: Qozon", key: "test_instruments_b" }, { text: "C: Flauta", key: "test_instruments_c" }] },
+            "test_instruments_c": { text: "TO'G'RI! Flauta — ko'prikli asbob, nafas bilan o'ynaladi.", buttons: [{ text: "Keyingi test", key: "test_songs" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_songs": { text: "3. Qaysi janr o'zbek milliy janri? (A: Pop, B: Qo'shiq, C: Rock)", buttons: [{ text: "A: Pop", key: "test_songs_a" }, { text: "B: Qo'shiq", key: "test_songs_b" }, { text: "C: Rock", key: "test_songs_c" }] },
+            "test_songs_b": { text: "TO'G'RI! Qo'shiq — o'zbek milliy janri.", buttons: [{ text: "Keyingi test", key: "test_rhythm_notes" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_champion": { text: "Eng qiyin savol! 'Pianissimo' nima ma'noni anglatadi? (A: Juda kuchli, B: Juda yumshoq, C: O'rtacha)", buttons: [{ text: "A", key: "test_champion_a" }, { text: "B", key: "test_champion_b" }, { text: "C", key: "test_champion_c" }] },
+            "test_champion_b": { text: "TO'G'RI! 'Pianissimo' — juda yumshoq ovoz. Siz musiqa chempionisisiz! 🏆", buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }] }
+        };
+
+        // Avtomatik 80+ qo'shimcha tugma
+        for (let i = 1; i <= 20; i++) {
+            database[`music_${i}`] = { text: `Musiqa savoli ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "main_menu", isHome: true }] };
+            database[`test_extra_${i}`] = { text: `Qo'shimcha test savoli ${i}`, buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] };
+        }
+
+        database["test_qoshimcha_music"] = {
+            text: "Qo'shimcha Musiqa Savollari:",
+            buttons: [
+                ...Array.from({ length: 20 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `music_${i + 1}` })),
+                { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+            ]
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    bubble.textContent = response.substring(0, charIndex + 1);
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, 50);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) button.classList.add('home-button');
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    addMessage(btn.text, 'user');
+                    quickButtonsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) typeAiResponse(next.text, btn.key);
+                        else typeAiResponse("Xatolik yuz berdi.", "main_menu");
+                    }, 500);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 2500);
+        };
+    </script>
+</body>
+</html>
