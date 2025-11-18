@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geografiya AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #01579b, #0277bd, #039be5);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #81d4fa;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2381d4fa"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #81d4fa;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #b3e5fc;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(129, 212, 250, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #81d4fa;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(129, 212, 250, 0.3);
+            text-shadow: 0 0 10px rgba(129, 212, 250, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #0277bd, #039be5);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #01579b, #81d4fa);
+            color: white;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #81d4fa;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(129, 212, 250, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #81d4fa transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #81d4fa;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 100, 130, 0.4);
+            color: #81d4fa;
+            border: 1px solid rgba(129, 212, 250, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(129, 212, 250, 0.2);
+            border-color: #81d4fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(129, 212, 250, 0.2);
+        }
+
+        /* GEOGRAFIK KALKULYATOR */
+        .geo-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #81d4fa;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(129, 212, 250, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #81d4fa;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #b3e5fc;
+            border: 1px solid #81d4fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b3e5fc;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #039be5;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(3, 155, 229, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(3, 155, 229, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .geo-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Geografiya AI + Kalkulyator</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ geografiya savoli va ilmiy hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">🌍 7-sinf Geografiya AI Bot</div>
+
+        <!-- GEOGRAFIK KALKULYATOR -->
+        <div class="geo-calculator">
+            <div class="calc-title">Geografik Kalkulyator</div>
+            <select class="calc-select" id="geo-formula">
+                <option value="distance">Masofani hisoblash (xarita)</option>
+                <option value="height">Balandlikni aniqlash</option>
+                <option value="temp">Harorat o'zgarishi</option>
+                <option value="scale">Masshtabni topish</option>
+                <option value="area">Hudud yuzini hisoblash</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateGeography()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Geografik kalkulyator
+        const formulaSelect = document.getElementById('geo-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "distance": [
+                { label: "Xarita masofasi (sm):", id: "mapDist", placeholder: "5" },
+                { label: "Masshtab:", id: "scale", placeholder: "1:100000" }
+            ],
+            "height": [
+                { label: "Barometr ko'rsatgichi (past, mm):", id: "lowerPress", placeholder: "750" },
+                { label: "Yuqori joydagi bosim (mm):", id: "upperPress", placeholder: "700" }
+            ],
+            "temp": [
+                { label: "Past balandlikdagi harorat (°C):", id: "tempLow", placeholder: "20" },
+                { label: "Balandlik farqi (m):", id: "heightDiff", placeholder: "1000" }
+            ],
+            "scale": [
+                { label: "Haqiqiy masofa (km):", id: "realDist", placeholder: "50" },
+                { label: "Xaritadagi masofa (cm):", id: "mapDistS", placeholder: "10" }
+            ],
+            "area": [
+                { label: "Xaritadagi maydon (sm²):", id: "mapArea", placeholder: "4" },
+                { label: "Masshtab:", id: "scaleArea", placeholder: "1:50000" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateGeography() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num)) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "distance") {
+                    const mapDist = parseFloatSafe("mapDist");
+                    const scaleStr = document.getElementById("scale").value;
+                    const match = scaleStr.match(/1:(\d+)/);
+                    if (!match) throw new Error("Masshtab noto'g'ri formatda");
+                    const scale = parseInt(match[1]);
+                    const realDist = (mapDist / 100000) * scale;
+                    result = `Haqiqiy masofa: ${realDist.toFixed(2)} km`;
+                }
+                else if (formula === "height") {
+                    const lowerPress = parseFloatSafe("lowerPress");
+                    const upperPress = parseFloatSafe("upperPress");
+                    const height = (lowerPress - upperPress) * 10;
+                    result = `Taxminiy balandlik: ${height} metr`;
+                }
+                else if (formula === "temp") {
+                    const tempLow = parseFloatSafe("tempLow");
+                    const heightDiff = parseFloatSafe("heightDiff");
+                    const tempChange = (heightDiff / 100) * 0.6;
+                    const tempHigh = tempLow - tempChange;
+                    result = `Yuqoridagi harorat: ${tempHigh.toFixed(1)} °C`;
+                }
+                else if (formula === "scale") {
+                    const realDist = parseFloatSafe("realDist") * 100000; // sm ga aylantirish
+                    const mapDist = parseFloatSafe("mapDistS");
+                    const scale = Math.round(realDist / mapDist);
+                    result = `Masshtab: 1:${scale}`;
+                }
+                else if (formula === "area") {
+                    const mapArea = parseFloatSafe("mapArea");
+                    const scaleStr = document.getElementById("scaleArea").value;
+                    const match = scaleStr.match(/1:(\d+)/);
+                    if (!match) throw new Error("Masshtab noto'g'ri formatda");
+                    const scale = parseInt(match[1]);
+                    const realArea = mapArea * (scale * scale) / 100000000;
+                    result = `Haqiqiy hudud yuzi: ${realArea.toFixed(2)} km²`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ geografiya savollari (7-sinf darsligi asosida)
+        const questions = [
+            "Geografiya nima?", "Nima uchun geografiyani o'rganamiz?", "Geografiyaning turlari", "Tabiiy geografiya nima?",
+            "Iqtisodiy geografiya nima?", "Geografik xarita nima?", "Globus nima?", "Meridian nima?",
+            "Parallel nima?", "Ekvator nima?", "Shimoliy qutb nima?", "Janubiy qutb nima?",
+            "Geografik kenglik nima?", "Geografik uzunlik nima?", "Koordinatalar tizimi nima?",
+            "Tropiklar nima?", "Arktika doirasi nima?", "Antarktika doirasi nima?", "Iqlim nima?",
+            "Ob-havo nima?", "Atmosfera bosimi nima?", "Yomg'ir nima?", "Qor nima?",
+            "Tuman nima?", "Shamol nima?", "Havzalar nima?", "Daryo havzasi nima?",
+            "Okeanlar nomlari", "Dunyo okeani nima?", "Materiklar nomlari", "Osiyo materigi",
+            "Afrika materigi", "Amerika materigi", "Antarktida materigi", "Avstraliya materigi",
+            "Yevropa materigi", "Yer sharining qatlamlari", "Yadro nima?", "Mantiya nima?",
+            "Zem terasining qatlamlari", "Granit qavat nima?", "Siyematik qavat nima?", "Yer po'stining qalinligi",
+            "Vulkan nima?", "Lava nima?", "Mag'ma nima?", "Zilzila nima?",
+            "Epitsentr nima?", "Geyzer nima?", "Tog'lar nima?", "Tektonik plitalar nima?",
+            "Plitalarning harakati", "O'tkir tog'lar nima?", "Doimiy muzlar nima?", "Glatsier nima?",
+            "Cho'llar nima?", "O'rmonlar nima?", "Tundra nima?", "Tayga nima?",
+            "Step nima?", "Savanna nima?", "Butazor nima?", "Botqoq nima?",
+            "Orol nima?", "Poluostrov nima?", "Bo'ron nima?", "Tsunami nima?",
+            "Okean oqimlari nima?", "Issiq oqimlar nima?", "Sovuq oqimlar nima?", "Mexanik eruvchanlik",
+            "Kimyoviy eruvchanlik", "Biologik eruvchanlik", "Erozion nima?", "Akumulyatsiya nima?",
+            "Rel'yef nima?", "Rel'yefning turlari", "Tektonik rel'yef", "Vulkanik rel'yef",
+            "Erkin rel'yef", "Oqim suvlar ta'siri", "Muzliklar ta'siri", "Shamollar ta'siri",
+            "Okean to'lqinlari ta'siri", "Xarita masshtabi nima?", "Chiziq masshtab nima?",
+            "Sonli masshtab nima?", "Nomli masshtab nima?", "Xaritada belgilar nima?",
+            "Shartli belgilar nima?", "Xaritani o'qish qanday?", "Xaritadan ma'lumot olish",
+            "Topografik xarita nima?", "Geografik atlas nima?", "Globusdan foydalanish",
+            "Geografik tadqiqot usullari", "Kuzatish nima?", "Tajriba nima?", "Statistik usul",
+            "Tarixiy usul", "Solishtirma usul", "Geografik obyekt nima?", "Geografik hodisa nima?",
+            "Geografik jarayon nima?", "Global o'zgarishlar", "Iqlim o'zgarishi", "Ozon qatlamining ingraysi",
+            "Global isish", "Ekologik muammolar", "Tabiatni muhofaza qilish", "O'rmonlarni saqlash",
+            "Suv resurslarini muhofaza qilish", "Tuproq eroziyasini oldini olish", "Shaharlarda ifloslanish",
+            "Hududiy bo'linish", "Davlatlar soni", "Aholi zichligi nima?", "Aholi punktlari",
+            "Shahar nima?", "Qishloq nima?", "Metropolia nima?", "Megapolis nima?",
+            "Xalqaro hamkorlik", "BMT nima?", "Xalqaro geografik ittifoq", "Geografiyada texnologiyalar",
+            "Sun'iy yo'ldoshlar nima?", "GPS nima?", "Geografik axborot tizimi (GIS)", "Xarita loyihasi"
+        ];
+
+        // ✅ Javoblar — 7-sinf geografiya darsligi asosida
+        const responses = {
+            "Geografiya nima?": "Geografiya — Yer sharini, uning tabiiy va inson yaratgan sharoitlarini, aholi, davlatlar, tabiiy resurslar haqida o'rganuvchi fan. So'z yunoncha 'ge' (yer) va 'graphien' (tasvirlash) so'zlaridan olingan.",
+            "Nima uchun geografiyani o'rganamiz?": "Geografiyani o'rganish orqali dunyoning qayerda, qanday, nima uchun shunday joylashganligini tushunamiz. Bu sayohat, savdo, transport, iqlim o'zgarishlari, tabiatni muhofaza qilishda yordam beradi.",
+            "Geografiyaning turlari": "Geografiya ikki katta bo'limga bo'linadi: 1) Tabiiy geografiya — Yerning tabiiy sharoitlarini o'rganadi; 2) Iqtisodiy va ijtimoiy geografiya — odamlar, ularning faoliyati, aholi, davlatlar, iqtisodiyotni o'rganadi.",
+            "Tabiiy geografiya nima?": "Tabiiy geografiya — Yer sharining tabiiy qismi, ya'ni atmosfera, gidrosfera, litosfera, biosfera, iqlim, landshaftlar, okeanlar, daryolar, tog'lar, o'rmonlar kabi tabiiy hodisalarni o'rganuvchi bo'lim.",
+            "Iqtisodiy geografiya nima?": "Iqtisodiy geografiya — inson faoliyatining geografik jihatini, ya'ni aholi, shaharlar, sanoat, qishloq xo'jaligi, transport, savdo, resurslar taqsimlanishini o'rganadi.",
+            "Geografik xarita nima?": "Geografik xarita — Yer yuzining kamaytirilgan, shartli belgilar bilan tasvirlangan tekis tasviri. Xaritalar turli maqsadlarga qarab tuziladi: umumiy geografik, mavzuli, topografik.",
+            "Globus nima?": "Globus — Yer shari, sayyoralar yoki osmon jismlarining aniqroq, hajmli modeli. Globusda masofa, yo'nalish, quruqlik va suv hajmlari haqiqiyroq aks etadi.",
+            "Meridian nima?": "Meridian — Shimoliy qutbdan Janubiy qutbgacha cho'zilgan shartli bo'ylam chiziqlar. Hammasi Ekvatorni kesib o'tadi. Greenwich meridiani 0° deb qabul qilingan.",
+            "Parallel nima?": "Parallel — Ekvatorga parallel ravishda cho'zilgan shartli kenglik chiziqlari. Ular doira shaklida bo'ladi va qutblarga yaqinlashganda qisqaradi.",
+            "Ekvator nima?": "Ekvator — Yerni shimol va janubga teng ikkiga bo'luvchi eng uzun parallel. U 0° kenglikda joylashgan.",
+            "Shimoliy qutb nima?": "Shimoliy qutb — Yerning aylanish o'qining shimoliy uchi. U Yevropa, Osiyo va Amerika materiklariga yaqin joylashgan.",
+            "Janubiy qutb nima?": "Janubiy qutb — Yerning aylanish o'qining janubiy uchi. U Antarktida materigida joylashgan.",
+            "Geografik kenglik nima?": "Geografik kenglik — Ekvator chizig'idan boshlab nuqtagacha bo'lgan burchak. 0° dan 90° gacha bo'ladi. Shimoliy va janubiy kenglik bor.",
+            "Geografik uzunlik nima?": "Geografik uzunlik — Greenwich meridianidan boshlab nuqtagacha bo'lgan burchak. 0° dan 180° gacha bo'ladi. Sharqiy va g'obi uzunlik bor.",
+            "Koordinatalar tizimi nima?": "Koordinatalar tizimi — Yer yuzidagi istalgan nuqtaning aniq joylashuvini belgilash uchun ishlatiladigan tizim. U kenglik va uzunlikdan iborat.",
+            "Tropiklar nima?": "Tropiklar — Ekvator atrofidagi 23.5° kenglikdagi aylana chiziqlar. Shimoliy tropik — Rak, Janubiy tropik — Egizaklar.",
+            "Arktika doirasi nima?": "Arktika doirasi — Shimoliy qutb atrofida 66.5° shimoliy kenglikda joylashgan aylana. Unda bir yilda bir marta kun vakti, bir marta tun bo'ladi.",
+            "Antarktika doirasi nima?": "Antarktika doirasi — Janubiy qutb atrofida 66.5° janubiy kenglikda joylashgan aylana. Xuddi Arktika doirasiga o'xshaydi.",
+            "Iqlim nima?": "Iqlim — bir hududda uzoq muddat (30 yildan kam bo'lmasin) davom etgan ob-havo holatlarining o'rtacha ko'rsatkichlari: harorat, yog'ingarchilik, shamol.",
+            "Ob-havo nima?": "Ob-havo — biror hududda bir necha soat yoki kun davomida kuzatiladigan atmosfera holati: harorat, namlik, shamol, yog'ingarchilik.",
+            "Atmosfera bosimi nima?": "Atmosfera bosimi — havoning Yer sirtiga ko'rsatayotgan vertikal bosimi. Balandlik oshgan sari bosim kamayadi.",
+            "Yomg'ir nima?": "Yomg'ir — bulutlardan suyuq holda tushadigan yog'ingarchilik. U kondensatsiya natijasida hosil bo'ladi.",
+            "Qor nima?": "Qor — suyuq holsiz, qattiq holda tushadigan yog'ingarchilik. U havo harorati 0°C dan past bo'lganda hosil bo'ladi.",
+            "Tuman nima?": "Tuman — havoda suyuq suv droppachalari juda zich joylashgan holat. Ko'rinish chegarasi 1 km dan kam bo'lsa, tuman hisoblanadi.",
+            "Shamol nima?": "Shamol — atmosferada havo massalarining gorizontal harakati. Shuviq-tershuviq (passat), monsoon, briz kabi turlari bor.",
+            "Havzalar nima?": "Havzalar — daryo, ko'l yoki okean suvini to'playdigan hudud. Daryo havzasi — daryoga suv yetkazuvchi butun hudud.",
+            "Daryo havzasi nima?": "Daryo havzasi — daryoni suv bilan ta'minlovchi butun hudud. Bu yerda barcha suv daryo oqimiga kiradi.",
+            "Okeanlar nomlari": "Dunyoda 4 ta katta okean bor: Tinch okeani, Atlantika okeani, Hind okeani, Shimoliy Muz okeani.",
+            "Dunyo okeani nima?": "Dunyo okeani — barcha okeanlar, dengizlar, ko'llar, daryolar, muzlar, yer osti suvlari kabi barcha suv jismlarining yagona tizimi.",
+            "Materiklar nomlari": "6 ta materik bor: Osiyo, Afrika, Amerika (Shimoliy va Janubiy), Antarktida, Avstraliya, Yevropa.",
+            "Osiyo materigi": "Osiyo — eng katta materik. U Yer yuzining 30% ni egallaydi. Aholisi ham eng ko'p.",
+            "Afrika materigi": "Afrika — 2-chi katta materik. Ekvatorda joylashgan, iqlimi issiq, savannalar, cho'llar keng tarqalgan.",
+            "Amerika materigi": "Amerika — ikki qismdan iborat: Shimoliy Amerika va Janubiy Amerika. Ularni Panama kanali ajratadi.",
+            "Antarktida materigi": "Antarktida — eng sovuq, muz bilan qoplangan, aholisi yo'q materik. Faqat ilmiy stansiyalar bor.",
+            "Avstraliya materigi": "Avstraliya — eng kichik materik. Tasmali arslon, koala, yassaburun kabi o'ziga xos hayvonlar yashaydi.",
+            "Yevropa materigi": "Yevropa — nisbatan kichik, lekin rivojlangan iqtisodiyotga ega kontinent. Sanoat, transport, madaniyat markazi.",
+            "Yer sharining qatlamlari": "Yer 3 qatlamdan iborat: 1) Yadro, 2) Mantiya, 3) Zem terasi (po'sti).",
+            "Yadro nima?": "Yadro — Yerning markaziy qismi. Ikki qavatdan iborat: tashqi suyuq, ichki qattiq. Temperaturasi 5000°C atrofida.",
+            "Mantiya nima?": "Mantiya — yadro ustida, zem terasi tagida joylashgan qatlam. U plastik xossalarga ega, vulkanlar va zilzilalarga sabab bo'ladi.",
+            "Zem terasining qatlamlari": "Zem terasida ikki asosiy qatlam bor: 1) Granit qavati — quruqlik ostida, 2) Siyematik qavat — okean ostida.",
+            "Granit qavat nima?": "Granit qavat — quruqlik ostida joylashgan, granit, pesht, o'tkon kabi mag'matik tog' jinslaridan tashkil topgan qatlam.",
+            "Siyematik qavat nima?": "Siyematik qavat — okean ostida joylashgan, siyematik jinslardan tashkil topgan qatlam. U quruqlik qatlamidan qalinroq.",
+            "Yer po'stining qalinligi": "Yer po'sti qalinligi quruqlikda 30-70 km, okean ostida 5-10 km atrofida.",
+            "Vulkan nima?": "Vulkan — Yer po'stidagi tranzish orqali mag'ma, gaz, pumice chiqaradigan tog'.",
+            "Lava nima?": "Lava — Yer yuziga chiqqan mag'ma. Sotilgandan keyin tog' jinsi — bazaltga aylanadi.",
+            "Mag'ma nima?": "Mag'ma — Yer ichidagi yonilgan, suyuq jins. U vulkan portlashida Yer yuziga chiqadi.",
+            "Zilzila nima?": "Zilzila — tektonik plitalarning siljishi natijasida Yer yuzida sodir bo'ladigan titroq.",
+            "Epitsentr nima?": "Epitsentr — zilzilanish manbai Yer yuzidagi proyeksiyasi. Eng kuchli titroq shu yerda bo'ladi.",
+            "Geyzer nima?": "Geyzer — muntazam ravishda issiq suv va bug'ni yuqoriga otiladigan issiq manba.",
+            "Tog'lar nima?": "Tog'lar — Yer yuzining 200 metrdan yuqori ko'tarilgan, qiyalikli, burmalangan qismlari.",
+            "Tektonik plitalar nima?": "Tektonik plitalar — Yer po'stining katta bo'laklari. Ularning harakati vulkanlar, zilzila, tog'lar hosil qiladi.",
+            "Plitalarning harakati": "Plitalar uchrashadi (tog' hosil qiladi), ajraladi (okean yaras hosil qiladi), bir-birini surib ketadi.",
+            "O'tkir tog'lar nima?": "O'tkir tog'lar — vulkanik yoki tektonik faollik natijasida hosil bo'lgan, cho'qqilari o'tkir tog'lar.",
+            "Doimiy muzlar nima?": "Doimiy muzlar — yozda ham erimaydigan muzlar. Antarktida, Grenlandiya, tog'larda uchraydi.",
+            "Glatsier nima?": "Glatsier — doimiy muzdan tashkil topgan, sekin harakatlanuvchi muz bloki. U rel'yefni shakllantiradi.",
+            "Cho'llar nima?": "Cho'llar — yomg'ir kam tushadigan, o'simlik qoplamining deyarli bo'lmagan, quruq hududlar.",
+            "O'rmonlar nima?": "O'rmonlar — daraxtlar bilan qoplangan keng hududlar. Tropik, subtropik, mo'tadil, subarktik o'rmonlar bor.",
+            "Tundra nima?": "Tundra — Arktika doirasida joylashgan, daraxtsiz, buta, o't, mo's yashaydigan hudud.",
+            "Tayga nima?": "Tayga — mo'tadil iqlim mintaqasida joylashgan ignepo'stli o'rmonlar. Rossiya, Kanada, Skandinaviya keng tarqalgan.",
+            "Step nima?": "Step — o'tloq, daraxtsiz, och, tekislik. O'zbekistonda, Qozog'istonda keng tarqalgan.",
+            "Savanna nima?": "Savanna — tropik mintaqadagi o'tloq, ba'zi daraxtlar bor. Afrikada, Braziliyada uchraydi.",
+            "Butazor nima?": "Butazor — butalar bilan qoplangan, quruq, chala cho'l hudud. Markaziy Osiyoda uchraydi.",
+            "Botqoq nima?": "Botqoq — suv to'planib, namlik ortiqcha bo'lgan, tuproqda organik modda ko'p bo'lgan hudud.",
+            "Orol nima?": "Orol — suv tomonidan to'liq o'ralgan quruqlik. Misol: Madagaskar, Yaponiya.",
+            "Poluostrov nima?": "Poluostrov — uch tomoni suv tomonidan o'ralgan, bittasi quruqlik bilan bog'langan quruqlik. Misol: Arabiston, Skandinaviya.",
+            "Bo'ron nima?": "Bo'ron — kuchli shamol (75 km/soat dan tezroq), bulutlar, yog'ingarchilik bilan kechadigan atmosfera hodisasi.",
+            "Tsunami nima?": "Tsunami — zilzila, vulkan portlashi natijasida dengizda hosil bo'ladigan katta to'lqinlar.",
+            "Okean oqimlari nima?": "Okean oqimlari — okean suvining doimiy, keng masshtabli gorizontal harakati.",
+            "Issiq oqimlar nima?": "Issiq oqimlar — ekvator atrofidan qutblarga suv olib boradi, sovuq hududlarni iliq tutadi.",
+            "Sovuq oqimlar nima?": "Sovuq oqimlar — qutblardan ekvator tomonga suv olib boradi, issiq hududlarni sovutiladi.",
+            "Mexanik eruvchanlik": "Mexanik eruvchanlik — suv, muz, shamol, hayvonlar yordamida jinslarning fizik parchalanishi.",
+            "Kimyoviy eruvchanlik": "Kimyoviy eruvchanlik — suv bilan kimyoviy reaksiyaga kirishib, jinslarning tarkibiy o'zgarishi.",
+            "Biologik eruvchanlik": "Biologik eruvchanlik — o'simlik ildizlari, mikroorganizmlar, hayvonlar yordamida jinslarning vujudga kelishi.",
+            "Erozion nima?": "Erozion — suv, muz, shamol, gravitatsiya ta'sirida Yer yuzining yemirilishi.",
+            "Akumulyatsiya nima?": "Akumulyatsiya — erkinuvchanlik mahsulotlarining yangi joyda jamlanishi. Misol: deltalar, morena.",
+            "Rel'yef nima?": "Rel'yef — Yer yuzining tik, tekis, baland, past qismlari. Rel'yef shakllari: tog', tekislik, vodiya, tepalik.",
+            "Rel'yefning turlari": "Rel'yef turlari: tektonik, vulkanik, erkinuvchanlik, karst, antropogen.",
+            "Tektonik rel'yef": "Tektonik rel'yef — plitalarning harakati natijasida hosil bo'lgan: tog', vodiya, rift.",
+            "Vulkanik rel'yef": "Vulkanik rel'yef — vulkan portlashi natijasida hosil bo'lgan: krater, lava maydoni, kupa.",
+            "Erkin rel'yef": "Erkin rel'yef — suv, muz, shamol ta'sirida hosil bo'lgan: delta, morena, duna.",
+            "Oqim suvlar ta'siri": "Oqim suvlar (daryolar) vodiya, kan'on, deltani shakllantiradi.",
+            "Muzliklar ta'siri": "Muzliklar (glatsierlar) U-shaklidagi vodiya, morena, karioyer hosil qiladi.",
+            "Shamollar ta'siri": "Shamollar dunalarni, batolarni shakllantiradi, jinslarni yemiradi.",
+            "Okean to'lqinlari ta'siri": "To'lqinlar qirg'oqni yemiradi, plyaj, laguna, koryel hosil qiladi.",
+            "Xarita masshtabi nima?": "Xarita masshtabi — xaritadagi masofaning haqiqiy masofaga nisbati. Masalan: 1:100000 — 1 sm = 1 km.",
+            "Chiziq masshtab nima?": "Chiziq masshtab — xaritada chizilgan chiziq, uning har 1 sm segmenti haqiqiy masofani ko'rsatadi.",
+            "Sonli masshtab nima?": "Sonli masshtab — oddiy kasr ko'rinishidagi masshtab: 1:50000 — xaritadagi 1 birlik = 50000 birlik haqiqiyda.",
+            "Nomli masshtab nima?": "Nomli masshtab — so'z bilan ifodalangan masshtab: '1 sm — 1 km'.",
+            "Xaritada belgilar nima?": "Xaritada belgilar — xaritadagi obyektlarni shartli ravishda ifodalovchi ramzlar.",
+            "Shartli belgilar nima?": "Shartli belgilar — xaritalarda daryo, temir yo'l, shahar, o'rmon kabi obyektlarni ifodalash uchun qabul qilingan ramzlar.",
+            "Xaritani o'qish qanday?": "Xaritani o'qish — uning masshtabi, shartli belgilari, koordinatalari, mavzusi bo'yicha tahlil qilish.",
+            "Xaritadan ma'lumot olish": "Xaritadan masofa, balandlik, yo'nalish, obyektlar joylashuvi haqida ma'lumot olinadi.",
+            "Topografik xarita nima?": "Topografik xarita — rel'yefni balandlik chiziqlari (izohipsa) bilan aks ettiruvchi xarita.",
+            "Geografik atlas nima?": "Geografik atlas — bir nechta xaritalar, diagrammalar, jadvallar to'plami. Odatda mavzu yoki hudus bo'yicha tuziladi.",
+            "Globusdan foydalanish": "Globusdan Yer sharini haqiqiyroq ko'rishingiz, masofa, qutb, ekvator, materiklar joylashuvini o'rganishingiz mumkin.",
+            "Geografik tadqiqot usullari": "Asosiy usullar: kuzatish, tajriba, statistik, tarixiy, solishtirma, GIS.",
+            "Kuzatish nima?": "Kuzatish — tabiat hodisalarini bevosita ko'rish, yozib olish, tahlil qilish.",
+            "Tajriba nima?": "Tajriba — hodisaning sharoitini nazorat qilish orqali o'rganish.",
+            "Statistik usul": "Statistik usul — aholi, iqlim, iqtisodiyot ko'rsatkichlarini raqamlar, jadvallar, diagrammalar bilan tahlil qilish.",
+            "Tarixiy usul": "Tarixiy usul — geografik hodisalarning rivojlanish tarixini o'rganish.",
+            "Solishtirma usul": "Solishtirma usul — turli hududlarni o'xshashlik va farqlari bo'yicha taqqoslash.",
+            "Geografik obyekt nima?": "Geografik obyekt — xaritada ko'rsatiladigan, aniq joylashuvga ega bo'lgan narsa: daryo, shahar, tog'.",
+            "Geografik hodisa nima?": "Geografik hodisa — Yer yuzida sodir bo'ladigan voqea: zilzila, vulkan, bo'ron, toshqin.",
+            "Geografik jarayon nima?": "Geografik jarayon — vaqt o'tishi bilan kechadigan uzluksiz o'zgarish: iqlim o'zgarishi, urbanizatsiya.",
+            "Global o'zgarishlar": "Global o'zgarishlar — butun Yer shari miqyosida sodir bo'layotgan o'zgarishlar: global isish, ozon qatlamining ingraysi.",
+            "Iqlim o'zgarishi": "Iqlim o'zgarishi — atmosfera tarkibidagi gazlarning (CO₂) ortishi natijasida o'rtacha haroratning oshishi.",
+            "Ozon qatlamining ingraysi": "Ozon qatlamining ingraysi — atmosferadagi ozon qatlamining vodorod-khlorid gazlari (freonlar) tufayli ingrayishi.",
+            "Global isish": "Global isish — Yer o'rtacha haroratining oshishi, glatsierlarning erishi, dengiz sathining ko'tarilishi.",
+            "Ekologik muammolar": "Ekologik muammolar — inson faoliyati natijasida atrof-muhitning ifloslanishi, resurslarning tugashi.",
+            "Tabiatni muhofaza qilish": "Tabiatni muhofaza qilish — o'rmonlarni saqlash, qizil kitob, milliy bog'lar, toza texnologiyalar.",
+            "O'rmonlarni saqlash": "O'rmonlarni saqlash — o'rmonlarni kesishni cheklash, yangi o'rmonlar ekish, yong'inlarni oldini olish.",
+            "Suv resurslarini muhofaza qilish": "Suv resurslarini muhofaza qilish — suvni tejash, iflos suvlarni tozalash, suv omborlarini qurish.",
+            "Tuproq eroziyasini oldini olish": "Tuproq eroziyasini oldini olish — teraslashtirish, o'rmon ekish, ekin almashinuvi.",
+            "Shaharlarda ifloslanish": "Shaharlarda ifloslanish — avtomashinalar, sanoat korxonalari, uy-joylardan chiqadigan chiqindilar.",
+            "Hududiy bo'linish": "Hududiy bo'linish — Yer sharini iqtisodiy, siyosiy, geografik jihatlardan guruhlarga ajratish.",
+            "Davlatlar soni": "Dunyoda taxminan 195 ta davlat bor: 193 ta BMT a'zosi, 2 ta kuzatuvchi (Vatikan, Palestina).",
+            "Aholi zichligi nima?": "Aholi zichligi — 1 km² maydonga to'g'ri keladigan aholi soni. Formula: aholi / hudud yuzi.",
+            "Aholi punktlari": "Aholi punktlari — insonlar yashaydigan joylar: shahar, qishloq, posyolk, aul.",
+            "Shahar nima?": "Shahar — aholisi 12 mingdan oshgan, asosan sanoat, xizmat ko'rsatish bilan shug'ullanuvchi joy.",
+            "Qishloq nima?": "Qishloq — aholisi kam, asosan qishloq xo'jaligi bilan shug'ullanuvchi joy.",
+            "Metropolia nima?": "Metropolia — katta shahar, uning atrofidagi shaharlar tarmog'i bilan birlashgan yirik iqtisodiy markaz.",
+            "Megapolis nima?": "Megapolis — 10 milliondan ortiq aholi bo'lgan katta shahar yoki shaharlar guruhi. Misol: Tokio, Nyu-York.",
+            "Xalqaro hamkorlik": "Xalqaro hamkorlik — davlatlar o'rtasida iqtisodiy, siyosiy, madaniy, ilmiy aloqalar.",
+            "BMT nima?": "BMT (Birlashgan Millatlar Tashkiloti) — xalqaro tinchlik, xavfsizlik, inson huquqlari, rivojlanish uchun ishlovchi tashkilot.",
+            "Xalqaro geografik ittifoq": "Xalqaro geografik ittifoq (IGU) — geograf olimlarining xalqaro tashkiloti, geografiyani rivojlantirish maqsadida.",
+            "Geografiyada texnologiyalar": "Geografiyada GPS, sun'iy yo'ldoshlar, GIS, dronlar, elektron xaritalar keng qo'llaniladi.",
+            "Sun'iy yo'ldoshlar nima?": "Sun'iy yo'ldoshlar — Yerni aylanuvchi, ma'lumot yig'uvchi, aloqa qiluvchi kosmik apparatlar.",
+            "GPS nima?": "GPS (Global Positioning System) — Yer yuzidagi istalgan nuqtaning aniq koordinatasini belgilash tizimi.",
+            "Geografik axborot tizimi (GIS)": "GIS — geografik ma'lumotlarni saqlash, tahlil qilish, chizish, boshqarish uchun dasturiy vosita.",
+            "Xarita loyihasi": "Xarita loyihasi — globusdagi Yer yuzini tekis xarita sifatida aks ettirish usuli. Mercator, Gauss-Kryuger kabi turlari bor."
+        };
+
+        // DOM elementlar
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf geografiya darsligi bo'yicha AI yordamchiman. Savollarga batafsil javob beraman va geografik hisob-kitoblarni amalga oshiraman! 🌍", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
