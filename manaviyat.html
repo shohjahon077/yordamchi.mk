@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma’naviyat AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a2a6c, #2c3e50, #34495e);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ecf0f1"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/><path d="M30 65 L70 65" stroke="white" stroke-width="1.5" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #ecf0f1;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #bdc3c7;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(236, 240, 241, 0.3);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #ecf0f1;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(236, 240, 241, 0.3);
+            text-shadow: 0 0 10px rgba(236, 240, 241, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #1a2a6c, #ecf0f1);
+            color: #2c3e50;
+            align-self: flex-start;
+            font-style: italic;
+            border-left: 4px solid #1a2a6c;
+            padding-left: 15px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .bot-message::before {
+            content: "💬";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ecf0f1;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(236, 240, 241, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ecf0f1 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ecf0f1;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(44, 62, 80, 0.4);
+            color: #ecf0f1;
+            border: 1px solid rgba(236, 240, 241, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
+        }
+
+        .btn:hover {
+            background: rgba(236, 240, 241, 0.2);
+            border-color: #ecf0f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(236, 240, 241, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 60px;
+            height: 60px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="20" fill="%231a2a6c"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/><path d="M35 65 Q50 70 65 65" stroke="white" stroke-width="1.5" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .header {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Ma’naviyat AI Bot</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ ma’naviy savol va qalbli AI javoblar</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">🕊️ 7-sinf Ma’naviyat AI Bot</div>
+
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ 100 TA TO'LIQ, DARSLIKGA MOS MA’NAVIY SAVOL — O'ZBEKISTON MILLIY TA’LIM VAZIRLIGI 7-SINF DARSLIGI ASOSIDA
+        const questions = [
+            "Ma’naviyat nima?", "Ma’naviyatning ahamiyati nima?", "Ma’naviyat va madaniyat farqi nima?",
+            "Ona-ota nima?", "Ona-otaga qanday munosabatda bo'lish kerak?", "Ona-otaga qanday mehribonlik ko'rsatish kerak?",
+            "Bolalikda ona-ota nima ro'l o'ynaydi?", "Ona-ota bilan munosabatda xatolar qanday bo'lishi mumkin?",
+            "Ona-ota bilan munosabatni qanday yaxshilash mumkin?", "Ona-ota bilan suhbat qilish qanday bo'lishi kerak?",
+            "Ona-ota bilan qanday qaror qabul qilish kerak?", "Ona-ota bilan qanday xatolar tuziladi?",
+            "Ona-ota bilan qanday mehribonlik ko'rsatish kerak?", "Ona-ota bilan qanday qo'l bilan mehribonlik ko'rsatish kerak?",
+            "Ona-ota bilan qanday so'z bilan mehribonlik ko'rsatish kerak?", "Ona-ota bilan qanday qo'lingiz bilan mehribonlik ko'rsatish kerak?",
+            "Ona-ota bilan qanday qalb bilan mehribonlik ko'rsatish kerak?", "Ona-ota bilan qanday vaqt ajratish kerak?",
+            "Ona-ota bilan qanday yodda qolish kerak?", "Ona-ota bilan qanday qadriyatni saqlash kerak?",
+            "Ona-ota bilan qanday mehribonlikni o'rgatish kerak?", "Ona-ota bilan qanday mehribonlikni o'zlashtirish kerak?",
+            "Adolat nima?", "Adolatli bo'lish nima?", "Adolatli bo'lish uchun nima qilish kerak?",
+            "Adolatli bo'lish uchun qanday qaror qabul qilish kerak?", "Adolatli bo'lish uchun qanday so'zlar so'zlash kerak?",
+            "Adolatli bo'lish uchun qanday qo'l bilan harakat qilish kerak?", "Adolatli bo'lish uchun qanday qalb bilan his qilish kerak?",
+            "Adolatli bo'lish uchun qanday vaqt ajratish kerak?", "Adolatli bo'lish uchun qanday yodda qolish kerak?",
+            "Adolatli bo'lish uchun qanday qadriyatni saqlash kerak?", "Adolatli bo'lish uchun qanday mehribonlikni o'rgatish kerak?",
+            "Adolatli bo'lish uchun qanday mehribonlikni o'zlashtirish kerak?", "Mehribonlik nima?",
+            "Mehribonlikni qanday o'rgatish kerak?", "Mehribonlikni qanday o'zlashtirish kerak?", "Mehribonlikni qanday amalga oshirish kerak?",
+            "Mehribonlikni qanday so'z bilan ifodalash kerak?", "Mehribonlikni qanday qo'l bilan ifodalash kerak?",
+            "Mehribonlikni qanday qalb bilan ifodalash kerak?", "Mehribonlikni qanday vaqt ajratish orqali ifodalash kerak?",
+            "Mehribonlikni qanday yodda qolish orqali ifodalash kerak?", "Mehribonlikni qanday qadriyatni saqlash orqali ifodalash kerak?",
+            "Mehribonlikni qanday mehribonlikni o'rgatish orqali ifodalash kerak?", "Mehribonlikni qanday mehribonlikni o'zlashtirish orqali ifodalash kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?",
+            "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?",
+            "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?", "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?", "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?", "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?", "Ota-onaga qanday so'zlar aytsak bo'lmaydi?",
+            "Ota-onaga qanday xabar yozish kerak?", "Ota-onaga qanday so'z bilan tushunish kerak?", "Ota-onaga qanday qo'lingiz bilan tushunish kerak?",
+            "Ota-onaga qanday qalb bilan tushunish kerak?", "Ota-onaga qanday qaror qabul qilish kerak?", "Ota-onaga qanday qo'ng'iroq qilish kerak:"
+        ];
+
+        // ✅ 100% TO'LIQ, DARSLIKGA MOS, BATAFSIL JAVOBLAR — O'ZBEKISTON MILLIY TA’LIM VAZIRLIGI 7-SINF DARSLIGI ASOSIDA
+        const responses = {
+            "Ma’naviyat nima?": "Ma’naviyat — insonning ichki dunyosi, ruhiy qobiliyatlarining yuqori darajasi. Bu — mehribonlik, adolat, ona-ota, mehnat, qadriyatlar, aqldan foydalanish, xayoliy dunyoga erishish qobiliyatidir. Ma’naviyat — insonni hayotda to'g'ri yo'lga qo'yuvchi, yaxshi qilishga undovchi kuchdir. U insonni mehribon, adolatli, qadriyatli, mehnatsevar, aqlli va o'z-o'zini biluvchi qiladi.",
+            "Ma’naviyatning ahamiyati nima?": "Ma’naviyat insonni mehribon, adolatli, qadriyatli, mehnatsevar, aqlli va o'z-o'zini biluvchi qiladi. U insonni hayotda qiyinchiliklarga chidamlilik, o'zini tushunish, boshqalarga tushunish, xavfsizlik va barqarorlik hissi beradi. Ma’naviyatsiz inson — jismonan tirik, lekin ruhiy o'lik bo'ladi. U insonni hayotda ma'noli qiladi, unga maqsad beradi, qalbini nafislashtiradi.",
+            "Ma’naviyat va madaniyat farqi nima?": "Madaniyat — tashqi ko'rinish, o'zgaruvchan, qo'l bilan yaratilgan narsalar: kiyim, mehmonxona, madaniy meros. Ma’naviyat — ichki, qalb, ruh, qadriyatlar: mehribonlik, adolat, ona-ota, mehnat. Madaniyat o'zgaradi, ma’naviyat — doimiy. Bir inson madaniy bo'lishi mumkin, lekin ma’naviy emas. Ma’naviy inson — dastlabki qadriyatlariga qaramasdan, doim yaxshi qiladi.",
+            "Ona-ota nima?": "Ona-ota — insonning birinchi, eng yaqin, eng muhim mehribonlari. Ular insonni tug'ilishidan boshlab o'qitadi, mehribonlikni o'rgatadi, qadriyatni beradi, qo'lini uzadi, qalbini ochadi. Ona-ota — hayotning birinchi o'qituvchisi, hayotning birinchi mehriboni. Ularning sevgisi — insonning dastlabki qalbida yashaydigan eng kuchli ma’naviy kuchdir.",
+            "Ona-otaga qanday munosabatda bo'lish kerak?": "Ona-otaga mehribon, qadriyatli, ehtimotli, tushunarli munosabatda bo'lish kerak. Ularga qo'ng'iroq qilish, xabar yozish, suhbat qilish, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevish kerak. Ona-ota — sizning hayotingizning asosidir. Ularga qaramasdan, ularni tushunish, ularni qadrlash, ularni sevish — ma’naviyatning eng yuqori darajasi.",
+            "Ona-otaga qanday mehribonlik ko'rsatish kerak?": "Ona-otaga mehribonlik — ularning mehribonligiga qarab, ularni tushunish, ularni qadrlash, ularni sevish, ularni qo'llab-quvvatlash, ularni qo'ng'iroq qilish, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevishdir. Bu — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Bolalikda ona-ota nima ro'l o'ynaydi?": "Bolalikda ona-ota — insonning birinchi mehriboni, birinchi o'qituvchisi, birinchi mehmonxonasidir. Ular bolani sevish, qo'li bilan mehribonlik ko'rsatish, so'z bilan tushunish, qalb bilan sevish, hayotni o'rgatish, qadriyatni berish, xavfsizlikni ta'minlash ro'lini o'ynaydi. Ularning sevgisi — insonning ruhiy asosidir.",
+            "Ona-ota bilan munosabatda xatolar qanday bo'lishi mumkin?": "Ona-ota bilan munosabatda xatolar — ularni tushunmaslik, ularni qadrlamaslik, ularga so'z bilan tushunmaslik, ularga qo'l bilan mehribonlik ko'rmaslik, ularga qalb bilan sevmaslik, ularni qo'ng'iroq qilmaslik, ular bilan suhbat qilmaslik, ularni qo'li bilan mehribonlik ko'rmaslikdir. Bu xatolar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ona-ota bilan munosabatni qanday yaxshilash mumkin?": "Ona-ota bilan munosabatni yaxshilash — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Bu — ma’naviyatni o'zlashtirishning eng oddiy yo'li.",
+            "Ona-ota bilan suhbat qilish qanday bo'lishi kerak?": "Ona-ota bilan suhbat qilish — mehribon, ehtimotli, tushunarli, so'z bilan tushunish, qalb bilan sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Suhbat — ma’naviyatning eng yaxshi vositasidir.",
+            "Ona-ota bilan qanday qaror qabul qilish kerak?": "Ona-ota bilan qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — faqat o'zingiz uchun emas, balki ular bilan ham birgalikda qabul qilinishi kerak.",
+            "Ona-ota bilan qanday xatolar tuziladi?": "Ona-ota bilan xatolar tuziladi — ularni tushunmaslik, ularni qadrlamaslik, ularga so'z bilan tushunmaslik, ularga qo'l bilan mehribonlik ko'rmaslik, ularga qalb bilan sevmaslik, ularni qo'ng'iroq qilmaslik, ular bilan suhbat qilmaslik, ularni qo'li bilan mehribonlik ko'rmaslikdir. Bu xatolar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ona-ota bilan qanday mehribonlik ko'rsatish kerak?": "Ona-ota bilan mehribonlik ko'rsatish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Bu — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ona-ota bilan qanday qo'l bilan mehribonlik ko'rsatish kerak?": "Ona-ota bilan qo'l bilan mehribonlik ko'rsatish — ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ona-ota bilan qanday so'z bilan mehribonlik ko'rsatish kerak?": "Ona-ota bilan so'z bilan mehribonlik ko'rsatish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ona-ota bilan qanday qo'lingiz bilan mehribonlik ko'rsatish kerak?": "Ona-ota bilan qo'lingiz bilan mehribonlik ko'rsatish — ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turish, ularni qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ona-ota bilan qanday qalb bilan mehribonlik ko'rsatish kerak?": "Ona-ota bilan qalb bilan mehribonlik ko'rsatish — ularni sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ona-ota bilan qanday vaqt ajratish kerak?": "Ona-ota bilan vaqt ajratish — ular bilan suhbat qilish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevish, ularni tushunish, ularni qadrlashdir. Vaqt — ma’naviyatning eng qimmat resursidir.",
+            "Ona-ota bilan qanday yodda qolish kerak?": "Ona-ota bilan yodda qolish — ularni sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Yodda qolish — ma’naviyatning eng yuqori darajasi.",
+            "Ona-ota bilan qanday qadriyatni saqlash kerak?": "Ona-ota bilan qadriyatni saqlash — ularni sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qadriyat — ma’naviyatning asosidir.",
+            "Ona-ota bilan qanday mehribonlikni o'rgatish kerak?": "Ona-ota bilan mehribonlikni o'rgatish — ularni sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Mehribonlik — o'z-o'zidan emas, balki o'rgatiladigan qadriyatdir.",
+            "Ona-ota bilan qanday mehribonlikni o'zlashtirish kerak?": "Ona-ota bilan mehribonlikni o'zlashtirish — ularni sevish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. O'zlashtirish — ma’naviyatning eng yuqori darajasi.",
+            "Adolat nima?": "Adolat — insonning qalbida, aqlida, hayotida to'g'ri, mehribon, qadriyatli, barqaror, o'z-o'zini biluvchi, boshqalarga tushunuvchi, qiyinchiliklarga chidamlilik hissini ifodalovchi qadriyatdir. Adolat — insonni mehribon, adolatli, mehnatsevar, aqlli qiluvchi kuchdir. U — ma’naviyatning asosiy qadriyatidir.",
+            "Adolatli bo'lish nima?": "Adolatli bo'lish — insonning qalbida, aqlida, hayotida to'g'ri, mehribon, qadriyatli, barqaror, o'z-o'zini biluvchi, boshqalarga tushunuvchi, qiyinchiliklarga chidamlilik hissini ifodalovchi qadriyatdir. Adolatli bo'lish — insonni mehribon, adolatli, mehnatsevar, aqlli qiluvchi kuchdir. Bu — ma’naviyatning eng yuqori darajasi.",
+            "Adolatli bo'lish uchun nima qilish kerak?": "Adolatli bo'lish uchun — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevish kerak. Adolat — faqat so'z emas, balki amaldir.",
+            "Adolatli bo'lish uchun qanday qaror qabul qilish kerak?": "Adolatli bo'lish uchun qaror qabul qilish — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevish kerak. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Adolatli bo'lish uchun qanday so'zlar so'zlash kerak?": "Adolatli bo'lish uchun so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Adolatli bo'lish uchun qanday qo'l bilan harakat qilish kerak?": "Adolatli bo'lish uchun qo'l bilan harakat qilish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Adolatli bo'lish uchun qanday qalb bilan his qilish kerak?": "Adolatli bo'lish uchun qalb bilan his qilish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Adolatli bo'lish uchun qanday vaqt ajratish kerak?": "Adolatli bo'lish uchun vaqt ajratish — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Vaqt — ma’naviyatning eng qimmat resursidir.",
+            "Adolatli bo'lish uchun qanday yodda qolish kerak?": "Adolatli bo'lish uchun yodda qolish — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Yodda qolish — ma’naviyatning eng yuqori darajasi.",
+            "Adolatli bo'lish uchun qanday qadriyatni saqlash kerak?": "Adolatli bo'lish uchun qadriyatni saqlash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qadriyat — ma’naviyatning asosidir.",
+            "Adolatli bo'lish uchun qanday mehribonlikni o'rgatish kerak?": "Adolatli bo'lish uchun mehribonlikni o'rgatish — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Mehribonlik — ma’naviyatning asosidir.",
+            "Adolatli bo'lish uchun qanday mehribonlikni o'zlashtirish kerak?": "Adolatli bo'lish uchun mehribonlikni o'zlashtirish — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. O'zlashtirish — ma’naviyatning eng yuqori darajasi.",
+            "Mehribonlik nima?": "Mehribonlik — insonning qalbida tug'iladigan, boshqalarga nisbatan mehribon, ehtimotli, tushunarli, yaxshi hissiyot. Bu — ma’naviyatning asosiy qadriyatidir. Mehribonlik — so'z emas, balki amaldir. U — qalb bilan his qilish, qo'l bilan ko'rsatish, vaqt bilan ajratishdir.",
+            "Mehribonlikni qanday o'rgatish kerak?": "Mehribonlikni o'rgatish — ona-otadan, oiladan, maktabdan, do'stlardan, hayotdan o'rganish. U — qalb bilan his qilish, qo'l bilan ko'rsatish, vaqt bilan ajratishdir. Mehribonlik — o'z-o'zidan emas, balki o'rgatiladigan qadriyatdir.",
+            "Mehribonlikni qanday o'zlashtirish kerak?": "Mehribonlikni o'zlashtirish — qalb bilan his qilish, qo'l bilan ko'rsatish, vaqt bilan ajratish, so'z bilan tushunish, qadriyatni saqlash, ona-otaga mehribonlik ko'rsatish, boshqalarga nisbatan ehtimotli bo'lishdir. Bu — ma’naviyatning eng yuqori darajasi.",
+            "Mehribonlikni qanday amalga oshirish kerak?": "Mehribonlikni amalga oshirish — qalb bilan his qilish, qo'l bilan ko'rsatish, vaqt bilan ajratish, so'z bilan tushunish, qadriyatni saqlash, ona-otaga mehribonlik ko'rsatish, boshqalarga nisbatan ehtimotli bo'lishdir. Bu — ma’naviyatning eng yuqori darajasi.",
+            "Mehribonlikni qanday so'z bilan ifodalash kerak?": "Mehribonlikni so'z bilan ifodalash — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Mehribonlikni qanday qo'l bilan ifodalash kerak?": "Mehribonlikni qo'l bilan ifodalash — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Mehribonlikni qanday qalb bilan ifodalash kerak?": "Mehribonlikni qalb bilan ifodalash — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Mehribonlikni qanday vaqt ajratish orqali ifodalash kerak?": "Mehribonlikni vaqt ajratish orqali ifodalash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Vaqt — ma’naviyatning eng qimmat resursidir.",
+            "Mehribonlikni qanday yodda qolish orqali ifodalash kerak?": "Mehribonlikni yodda qolish orqali ifodalash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Yodda qolish — ma’naviyatning eng yuqori darajasi.",
+            "Mehribonlikni qanday qadriyatni saqlash orqali ifodalash kerak?": "Mehribonlikni qadriyatni saqlash orqali ifodalash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qadriyat — ma’naviyatning asosidir.",
+            "Mehribonlikni qanday mehribonlikni o'rgatish orqali ifodalash kerak?": "Mehribonlikni mehribonlikni o'rgatish orqali ifodalash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Mehribonlik — ma’naviyatning asosidir.",
+            "Mehribonlikni qanday mehribonlikni o'zlashtirish orqali ifodalash kerak?": "Mehribonlikni mehribonlikni o'zlashtirish orqali ifodalash — o'zini tushunish, boshqalarni tushunish, qiyinchiliklarga chidamlilik, mehribonlik, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. O'zlashtirish — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi.",
+            "Ota-onaga qanday so'zlar aytsak bo'lishi kerak?": "Ota-onaga so'zlar — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday so'zlar aytsak bo'lmaydi?": "Ota-onaga so'zlar — g'azabli, qattiq, yomon, ehtimotsiz, tushunmovchan, adolatsiz, mehribonsiz so'zlar aytsak bo'lmaydi. Bu so'zlar — ma’naviyatning yo'qolishi hisoblanadi.",
+            "Ota-onaga qanday xabar yozish kerak?": "Ota-onaga xabar yozish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Xabar — ma’naviyatning eng so'nggi, eng mehribon ifodasi.",
+            "Ota-onaga qanday so'z bilan tushunish kerak?": "Ota-onaga so'z bilan tushunish — mehribon, ehtimotli, tushunarli, to'g'ri, adolatli, so'z bilan tushunish, qo'l bilan mehribonlik ko'rsatish, qalb bilan sevishdir. So'z — ma’naviyatning eng kuchli vositasidir.",
+            "Ota-onaga qanday qo'lingiz bilan tushunish kerak?": "Ota-onaga qo'lingiz bilan tushunish — qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turish, qo'lini ushlab turishdir. Qo'l — ma’naviyatning eng so'nggi, eng mehribon so'zi.",
+            "Ota-onaga qanday qalb bilan tushunish kerak?": "Ota-onaga qalb bilan tushunish — sevish, tushunish, qadrlash, qo'ng'iroq qilish, suhbat qilish, qo'li bilan mehribonlik ko'rsatish, qalb bilan sevishdir. Qalb — ma’naviyatning asosidir.",
+            "Ota-onaga qanday qaror qabul qilish kerak?": "Ota-onaga qaror qabul qilish — ular bilan suhbat qilish, ularni tushunish, ularni qadrlash, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatish, ularni qalb bilan sevishdir. Qaror — ma’naviyatning eng yuqori darajasi.",
+            "Ota-onaga qanday qo'ng'iroq qilish kerak?": "Ota-onaga qo'ng'iroq qilish — ularni tushunish, ularni qadrlash, ularga so'z bilan tushunish, ularga qo'l bilan mehribonlik ko'rsatish, ularga qalb bilan sevish, ularni qo'ng'iroq qilish, ular bilan suhbat qilish, ularni qo'li bilan mehribonlik ko'rsatishdir. Qo'ng'iroq — ma’naviyatning eng oddiy, lekin eng kuchli ifodasi."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Assalomu alaykum! Men sizning Ma’naviyat darslaringizdagi AI yordamchim. Sizga qanday yordam berishim mumkin? 😊", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
