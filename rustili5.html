@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Uchitel' - 100 knopkali Obuchenie (5 klass)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #00BCD4; /* Свежий синий */
+            --secondary-color: #FFEB3B; /* Желтый */
+            --bg-color: #e4f3f9; 
+            --chat-bg-color: #ffffff;
+            --user-bubble: #B2EBF2; 
+            --ai-bubble: #E0F7FA; 
+            --button-color: #0097A7; /* Темный синий */
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--secondary-color); }
+            to { box-shadow: 0 0 20px var(--secondary-color); }
+        }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #EF5350; /* Красный */
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Uchitel' - 5 klass</h1>
+        <p>100 knopkali obuchenie zagruzhayetsya...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>AI Uchitel'</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Po kakomu razdelu vy hotite poluchit' znanija?",
+                buttons: [
+                    { text: "1. Grammatika 📘", key: "grammar_menu" },
+                    { text: "2. Literatura 📜", key: "literature_menu" },
+                    { text: "3. Slovarnyi zapas 📚", key: "vocabulary_menu" },
+                    { text: "4. Testy i Uprazhnenija ✍️", key: "test_menu" }
+                ]
+            },
+            "grammar_menu": {
+                text: "Razdel grammatiki. Kakuyu chast' rechi izuchim?",
+                buttons: [
+                    { text: "Imja sushestvitel'noe 🧑‍🏫", key: "noun_info" },
+                    { text: "Imja prilagatel'noe ✨", key: "adjective_info" },
+                    { text: "Glagol 🏃", key: "verb_info" },
+                    { text: "Chislo 🔢", key: "numeral_info" },
+                    { text: "Mestoimenie 🔄", key: "pronoun_info" },
+                    { text: "Chleny predlozhenija", key: "sentence_parts_menu" },
+                    { text: "⬅️ Glavnoe Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "noun_info": {
+                text: "Imja sushestvitel'noe (Kto? Chto?) — oboznachaet imja lica, predmeta, mesta. Kakie byvajut vidy?",
+                buttons: [
+                    { text: "Vidy imen sushestvitel'nykh", key: "noun_types" },
+                    { text: "Prityazhatel'nye okonchanija", key: "possessive_endings" },
+                    { text: "5 uprazhnenij po teme", key: "test_noun" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "adjective_info": {
+                text: "Imja prilagatel'noe (Kakoj?) — opisyvaet priznaki predmeta (cvet, razmer, kachestvo). Hotite izuchit' stepeni sravnenija?",
+                buttons: [
+                    { text: "Stepeni sravnenija", key: "adjective_degrees" },
+                    { text: "Sobstvennye i proizvodnye prilagatel'nye", key: "own_deriv_adjectives" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "verb_info": {
+                text: "Glagol (Chto delayet?) — vyrazhaet deistvie ili sostojanie. Formy glagolov raznoobrazny!",
+                buttons: [
+                    { text: "Vremena glagola", key: "verb_tenses" },
+                    { text: "Vidy glagola", key: "verb_aspects" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "numeral_info": { text: "Chislo (Skol'ko? Kotorij po schetu?) — oboznachaet kolichestvo ili porjadok. Est' kolichestvennye i porjadkovye.", buttons: [{ text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }] },
+            "pronoun_info": { text: "Mestoimenie — zamenjaet imja sushestvitel'noe, prilagatel'noe, chislo. Naprimer: Ja, Vy, Oni. Ono ne otvechaet na vopros.", buttons: [{ text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }] },
+            "sentence_parts_menu": {
+                text: "Chleny predlozhenija: podlezhashchee, skazuemoe, vtorostepennye chleny (dopolnenie, opredelenie, obstojatel'stvo).",
+                buttons: [
+                    { text: "Podlezhashchee i Skazuemoe", key: "subject_predicate" },
+                    { text: "Vtorostepennye chleny", key: "secondary_parts" },
+                    { text: "⬅️ Grammatika", key: "grammar_menu", isHome: true }
+                ]
+            },
+            "literature_menu": {
+                text: "Razdel literatury. O kakom zhanre ili avtore hotite uznat'?",
+                buttons: [
+                    { text: "Skazka 🐉", key: "fairy_tale_genre" },
+                    { text: "Rasskaz 📖", key: "story_genre" },
+                    { text: "Bylina i Povest'", key: "bylina_tale" },
+                    { text: "Aleksandr Pushkin", key: "pushkin_info" },
+                    { text: "Maksim Gorkij", key: "gorky_info" },
+                    { text: "Vidy stikhotvorenij", key: "poetry_types" },
+                    { text: "⬅️ Glavnoe Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "fairy_tale_genre": { text: "Skazka — narodnoe ustnoe tvorchestvo. Soderzhit chary, volshebnye sobytiya. Dobro pobezhda zlo.", buttons: [{ text: "Moj ljubimyj skazochka!", key: "fairy_tale_exercise" }, { text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "story_genre": { text: "Rasskaz — otobrazhaet zhitel'skie sobytiya. Kolichestvo geroev malo.", buttons: [{ text: "Vidy rasskazov", key: "story_types" }, { text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "pushkin_info": { text: "Aleksandr Sergeevich Pushkin (1799-1837) — velikij russkij poet i pisatel'. 'Evgenij Onegin' — ego samoe izvestnoe proizvedenie. On voznes russkuyu literaturu.", buttons: [{ text: "3 stikha Pushkina", key: "pushkin_poems" }, { text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "vocabulary_menu": {
+                text: "Razdel slovarnogo zapasa. Uznaem znachenie slov!",
+                buttons: [
+                    { text: "Sinonimy (Blizkie po znacheniju)", key: "synonyms" },
+                    { text: "Antonimy (Protivopolozhnye znachenija)", key: "antonyms" },
+                    { text: "Omonimy (Odnakoval'nye, raznoe znachenie)", key: "homonyms" },
+                    { text: "Morfe (Chasti slova)", key: "morpheme" },
+                    { text: "⬅️ Glavnoe Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "synonyms": { text: "Sinonimy — slova s blizkim znacheniem. Naprimer: krasiv, prekrasen, prelestnyj.", buttons: [{ text: "5 par sinonimov", key: "synonym_pairs" }, { text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "antonyms": { text: "Antonimy — slova s protivopolozhnym znacheniem. Naprimer: khorosho - plokho, gorjacho - kholodno.", buttons: [{ text: "5 par antonimov", key: "antonym_pairs" }, { text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "test_menu": {
+                text: "Otlichno! Razdel testov. Po kakoj teme proverim znanija?",
+                buttons: [
+                    { text: "Test po Imeni Sushestvitel'nomu (10 voprosov)", key: "test_noun_1" },
+                    { text: "Test po Imeni Prilagatel'nomu (10 voprosov)", key: "test_adjective_1" },
+                    { text: "Test po Vremenam Glagola", key: "test_verb_tenses" },
+                    { text: "10 voprosov iz Slovarnogo Zapasa", key: "test_vocabulary_1" },
+                    { text: "10 voprosov iz Literatury", key: "test_literature_1" },
+                    { text: "Dopolnitel'nye Voprosy po Grammatike (10 voprosov)", key: "test_additional_grammar" },
+                    { text: "Dopolnitel'nye Voprosy po Literature (10 voprosov)", key: "test_additional_literature" },
+                    { text: "Obshchij Test dlya 5 klassa (20 voprosov)", key: "test_general" },
+                    { text: "5 Samykh Slozhnykh Voprosov", key: "test_difficult" },
+                    { text: "⬅️ Glavnoe Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "noun_types": { text: "Imena sushestvitel'nye izmenjajutsja po chislam, prityazhatel'nym i padezhnym okonchanijam. Naprimer: Kniga -> Moja kniga, K knige.", buttons: [{ text: "6 padezhej", key: "cases" }, { text: "⬅️ Imja sushestvitel'noe", key: "noun_info", isHome: true }] },
+            "possessive_endings": { text: "Prityazhatel'nye okonchanija: -a, -u, -i (edin. chislo); -i, -u, -y (mnog. chislo). Oni mogut zamenit' roditel'nyj padezh.", buttons: [{ text: "⬅️ Imja sushestvitel'noe", key: "noun_info", isHome: true }] },
+            "adjective_degrees": { text: "Stepeni sravnenija: Osnovnaja (bol'shoj), Sravnitel'naja (bol'she), Prevyshe (samyj bol'shoj), Umen'shenie (seryj).", buttons: [{ text: "5 primerov prevyshennoj stepeni", key: "superlative_examples" }, { text: "⬅️ Imja prilagatel'noe", key: "adjective_info", isHome: true }] },
+            "own_deriv_adjectives": { text: "Sobstvennye prilagatel'nye: krasnyj, bystryj. Proizvodnye: iz sushestvitel'nogo s prikljucheniem. Naprimer: sila + nyj = sil'nyj, znaniya + tel'nyj = znatel'nyj.", buttons: [{ text: "⬅️ Imja prilagatel'noe", key: "adjective_info", isHome: true }] },
+            "verb_tenses": { text: "Vremena glagola: Proshloe (chital), Nastojashchee (chitaet), Buduschee (budet chitat').", buttons: [{ text: "Vidy proshlogo vremeni", key: "past_aspects" }, { text: "⬅️ Glagol", key: "verb_info", isHome: true }] },
+            "verb_aspects": { text: "Vidy glagola: Sovershennyj i Nesovershennyj. Oni pokazyvajut zavershennost' deistvija.", buttons: [{ text: "Primer v vozvratnoj forme", key: "reflexive_verb" }, { text: "⬅️ Glagol", key: "verb_info", isHome: true }] },
+            "subject_predicate": { text: "Podlezhashchee — otvechaet na vopros kto? chto? Skazuemoe — na vopros chto delayet? i zakanchivaet predlozhenie.", buttons: [{ text: "5 primerov podlezhashchego i skazuemogo", key: "subject_predicate_examples" }, { text: "⬅️ Chleny predlozhenija", key: "sentence_parts_menu", isHome: true }] },
+            "secondary_parts": { text: "Eto: dopolnenie (sush.), opredelenie (prilagatel'noe/mestoimenie), obstojatel'stvo (narechie/glagol). Oni dopolnjajut predlozhenie.", buttons: [{ text: "⬅️ Chleny predlozhenija", key: "sentence_parts_menu", isHome: true }] },
+            "bylina_tale": { text: "Bylina — o volshebnykh lichnostjakh. Povest' — o istoricheskikh lichnostjakh ili mestakh.", buttons: [{ text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "poetry_types": { text: "Vidy stikhotvorenij: Oda, Sonet, Ballada, Poema. Oni razlichajutsja metrom i strofami.", buttons: [{ text: "Osobennosti ody", key: "ode_features" }, { text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "morpheme": { text: "Morfe — naimensha posledovatel'nost' slova, nesushestvuyushchaja znachenija. Eto koren', osnova i pristavki.", buttons: [{ text: "Koren' i Pristavki", key: "root_affix" }, { text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "test_noun_1": { text: "TEST: Imja sushestvitel'noe, chast' 1. Kotoroe iz slov oboznachaet lico? (A: stol, B: kniga, C: uchenik). Vyberite pravil'nyj otvet:", buttons: [{ text: "A: stol", key: "test_noun_1_a" }, { text: "B: kniga", key: "test_noun_1_b" }, { text: "C: uchenik", key: "test_noun_1_c" }] },
+            "test_adjective_1": { text: "TEST: Imja prilagatel'noe, chast' 1. Kotoroe iz slov vyshe stepeni sravnenija? (A: krasivee, B: samyj krasiv, C: krasivishko). Vyberite pravil'nyj otvet:", buttons: [{ text: "A: krasivee", key: "test_adjective_1_a" }, { text: "B: samyj krasiv", key: "test_adjective_1_b" }, { text: "C: krasivishko", key: "test_adjective_1_c" }] },
+            "test_vocabulary_1": { text: "TEST: Slovar'. Synonim k slovu 'nadezhda'? (A: Zhelanije, B: Obida, C: Pechal'). Vyberite pravil'nyj otvet:", buttons: [{ text: "A: Zhelanije", key: "test_vocabulary_1_a" }, { text: "B: Obida", key: "test_vocabulary_1_b" }, { text: "C: Pechal'", key: "test_vocabulary_1_c" }] },
+            "test_noun_1_a": { text: "Nepravil'no. Stol — imja predmeta. Pravil'nyj otvet: Uchenik.", buttons: [{ text: "Vernut'sja v razdel grammatiki", key: "grammar_menu", isHome: true }] },
+            "test_noun_1_b": { text: "Nepravil'no. Kniga — imja predmeta. Pravil'nyj otvet: Uchenik.", buttons: [{ text: "Vernut'sja v razdel grammatiki", key: "grammar_menu", isHome: true }] },
+            "test_noun_1_c": { text: "PRAVIL'NO! Uchenik — imja lica. Molodec!", buttons: [{ text: "K sledujushchemu voprosu", key: "test_adjective_1" }, { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_adjective_1_a": { text: "Nepravil'no. Eto sravnitel'naja stepen'. Pravil'nyj otvet: Samyj krasiv.", buttons: [{ text: "Prochitat' o prilagatel'nykh", key: "adjective_info" }, { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_adjective_1_b": { text: "PRAVIL'NO! 'Samyj' obrazuet prevyshe stepen'. Pozdravlju!", buttons: [{ text: "K sledujushchemu voprosu", key: "test_vocabulary_1" }, { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_adjective_1_c": { text: "Nepravil'no. Eto umenshenie (s malym umensheniem). Pravil'nyj otvet: Samyj krasiv.", buttons: [{ text: "Prochitat' o prilagatel'nykh", key: "adjective_info" }, { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_vocabulary_1_a": { text: "PRAVIL'NO! 'Nadezhda' i 'Zhelanije' — sinonimy.", buttons: [{ text: "Vernut'sja v razdel slovarja", key: "vocabulary_menu", isHome: true }, { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_vocabulary_1_b": { text: "Nepravil'no. 'Obida' — antonim 'Radosti'. Pravil'nyj otvet: Zhelanije.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_vocabulary_1_c": { text: "Nepravil'no. 'Pechal'' — antonim 'Radosti'. Pravil'nyj otvet: Zhelanije.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "cases": { text: "6 padezhej v russkom jazyke: Imenitel'nyj, Roditel'nyj, Dativnyj, Vinitel'nyj, Tvoreitel'nyj, Predlozhnyj.", buttons: [
+                { text: "Imenitel'nyj padezh (Kto? Chto?)", key: "case_nominative" },
+                { text: "Roditel'nyj (-a)", key: "case_genitive" },
+                { text: "Dativnyj (-u)", key: "case_dative" },
+                { text: "Vinitel'nyj (-u)", key: "case_accusative" },
+                { text: "Tvoreitel'nyj (-om)", key: "case_instrumental" },
+                { text: "Predlozhnyj (-e)", key: "case_prepositional" },
+                { text: "⬅️ Imja sushestvitel'noe", key: "noun_info", isHome: true }
+            ]},
+            "superlative_examples": { text: "Primerov prevyshennoj stepeni: Samyj krasivyj, Samyj sladkij, Samyj dol'gij, Samyj bystryj, Samyj vysokij.", buttons: [{ text: "⬅️ Imja prilagatel'noe", key: "adjective_info", isHome: true }] },
+            "past_aspects": { text: "Vidy proshlogo vremeni: Sovershennyj (-l), Nesovershennyj (-l).", buttons: [{ text: "⬅️ Glagol", key: "verb_info", isHome: true }] },
+            "reflexive_verb": { text: "Vozvratnye glagoly — deistvie vozvrawaetsja k dejustvujushchemu. (-sja, -s'). Naprimer: 'On umyvaetsja'.", buttons: [{ text: "⬅️ Glagol", key: "verb_info", isHome: true }] },
+            "subject_predicate_examples": { text: "Primerov: Solnce voshlo. Uchenik chitaet knigu. Ja poluchil pyaterku.", buttons: [{ text: "⬅️ Chleny predlozhenija", key: "sentence_parts_menu", isHome: true }] },
+            "story_types": { text: "Vidy rasskazov: Liricheskij (mnogo chuvstv), Epos (podvig), Satiricheskij (osmejanie).", buttons: [{ text: "⬅️ Literatura", key: "literature_menu", isHome: true }] },
+            "ode_features": { text: "Oda — slavoslovie, vyrazhajushchee vysokoe chuvstvo. Imeet stroficheskuyu strukturu.", buttons: [{ text: "⬅️ Vidy stikhotvorenij", key: "poetry_types", isHome: true }] },
+            "root_affix": { text: "Primer: 'Shkol'nik'. Koren': Shkol'. Pristavki: -nik (mnog. chislo), -ov (prityazhatel'noe).", buttons: [{ text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "synonym_pairs": { text: "5 par sinonimov: 1) Pravda, istina. 2) Chist, nezhnyj. 3) Smelyj, khрабryj. 4) Veselyj, radostnyj. 5) Umnyj, razumnyj.", buttons: [{ text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "antonym_pairs": { text: "5 par antonimov: 1) Vysoko, nizko. 2) Otkryto, zakryto. 3) Bol'shoj, malen'kij. 4) Rano, pozdno. 5) Ostryj, sladkij.", buttons: [{ text: "⬅️ Slovar'", key: "vocabulary_menu", isHome: true }] },
+            "case_nominative": { text: "Imenitel'nyj padezh: bez okonchanija, v predlozhenii podlezhashchee. (Naprimer: Mal'chik biezhit).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "case_genitive": { text: "Roditel'nyj padezh: -a, -u. (Naprimer: Kniga uchenika).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "case_dative": { text: "Dativnyj padezh: -u, -ju. (Naprimer: Ucheniku podarili knigu).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "case_accusative": { text: "Vinitel'nyj padezh: -u, -a. (Naprimer: On chitaet knigu).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "case_instrumental": { text: "Tvoreitel'nyj padezh: -om, -em. (Naprimer: On pishet ruchkoj).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "case_prepositional": { text: "Predlozhnyj padezh: -e. (Naprimer: Kniga lezhit na stole).", buttons: [{ text: "⬅️ 6 padezhej", key: "cases", isHome: true }] },
+            "test_verb_tenses": { text: "Test po vremenam glagola nachinaetsja! 'Hotet' — kakoe vremja? (A: Proshloe, B: Buduschee, C: Nastojashchee)", buttons: [{ text: "A: Proshloe", key: "verb_tense_a" }, { text: "B: Buduschee", key: "verb_tense_b" }, { text: "C: Nastojashchee", key: "verb_tense_c" }] },
+            "verb_tense_a": { text: "Nepravil'no. Proshloe — 'zakonchil'. Pravil'nyj otvet: Proshloe.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "verb_tense_b": { text: "Nepravil'no. Buduschee — 'budet'. Pravil'nyj otvet: Proshloe.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "verb_tense_c": { text: "Nepravil'no. Nastojashchee — 'pishet'. Pravil'nyj otvet: Proshloe.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_additional_grammar": { text: "Dopolnitel'nye voprosy po grammatike. Kotoroe iz nikh vyberete?", buttons: [
+                { text: "1. Soglasnye zvuki", key: "gramm_1" },
+                { text: "2. Glagol'nye zvuki", key: "gramm_2" },
+                { text: "3. Obrazovanie slov", key: "gramm_3" },
+                { text: "4. Slozhnye slova", key: "gramm_4" },
+                { text: "5. Parnye slova", key: "gramm_5" },
+                { text: "6. Prostoe predlozhenie", key: "gramm_6" },
+                { text: "7. Slozhnoe predlozhenie", key: "gramm_7" },
+                { text: "8. Povtornoe predlozhenie", key: "gramm_8" },
+                { text: "9. Znak prepina", key: "gramm_9" },
+                { text: "10. Narechija", key: "gramm_10" },
+                { text: "11. Vozglyagatel'nye slova", key: "gramm_11" },
+                { text: "12. Vspomogatel'nye slova", key: "gramm_12" },
+                { text: "13. Sojuznye slova", key: "gramm_13" },
+                { text: "14. Modal'nye slova", key: "gramm_14" },
+                { text: "15. Zvukopisnye slova", key: "gramm_15" },
+                { text: "16. Lichnye imena", key: "gramm_16" },
+                { text: "17. Imena predmetov", key: "gramm_17" },
+                { text: "18. Nereal'nye imena", key: "gramm_18" },
+                { text: "19. Imena sobstvennye", key: "gramm_19" },
+                { text: "20. Imena obshchie", key: "gramm_20" },
+                { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }
+            ]},
+            "test_additional_literature": { text: "Dopolnitel'nye voprosy po literature. Po kakoj teme izuchim?", buttons: [
+                { text: "21. Mudrye mysli", key: "lit_1" },
+                { text: "22. Poslovitsa", key: "lit_2" },
+                { text: "23. Zagadka", key: "lit_3" },
+                { text: "24. Khudozhestvennoe proizvedenie", key: "lit_4" },
+                { text: "25. O avtore", key: "lit_5" },
+                { text: "26. Sravnenie", key: "lit_6" },
+                { text: "27. Preuvelichenie", key: "lit_7" },
+                { text: "28. Zhivoe opisanie", key: "lit_8" },
+                { text: "29. Tvorchestvo Pushkina", key: "lit_9" },
+                { text: "30. Tvorchestvo L'va Tolstogo", key: "lit_10" },
+                { text: "31. Tvorchestvo Chekhova", key: "lit_11" },
+                { text: "32. Shejkh Zindaniy", key: "lit_12" },
+                { text: "33. Sobranie", key: "lit_13" },
+                { text: "34. G'ulom Zafariy", key: "lit_14" },
+                { text: "35. Abdulla Qodiriy", key: "lit_15" },
+                { text: "36. Geroy proizvedenija", key: "lit_16" },
+                { text: "37. Tema i ideja", key: "lit_17" },
+                { text: "38. Istorija jazykov", key: "lit_18" },
+                { text: "39. Analiz proizvedenija", key: "lit_19" },
+                { text: "40. Literaturnyj jazyk", key: "lit_20" },
+                { text: "⬅️ Menyu testov", key: "test_menu", isHome: true }
+            ]},
+            "gramm_1": { text: "Soglasnye zvuki: proiznostitsja pri prepyatstvii jazyka. Naprimer: b, d, g, k.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_2": { text: "Glagol'nye zvuki: vozdukh prokhodit svobodno. Naprimer: a, o, u, i, e.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_3": { text: "Obrazovanie slov: dobavlenie pristavki k osnovnomu slovu. Naprimer: khorosh + o = khorosho.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_4": { text: "Slozhnye slova: sochetanie dvukh ili bolee slov. Naprimer: ruchka-pi", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_5": { text: "Parnye slova: svjazannye slova. Naprimer: ruka-noga, glaza-usy.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_6": { text: "Prostoe predlozhenie: tol'ko odno podlezhashchee i skazuemoe. Naprimer: Ptitsa letit.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_7": { text: "Slozhnoe predlozhenie: iz dvukh ili bolee prostykh predlozhenij. Naprimer: On prishel, on ushel.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_8": { text: "Povtornoe predlozhenie: povtorjenie drugogo slova ili predlozhenija. Naprimer: 'My khorosho uchimsja', skazal on.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_9": { text: "Znaki prepina: razdeljajut predlozhenija, zavershajut, vyrazhajut emotsii. Naprimer: . , ! ? ;", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_10": { text: "Narechija: opisyvajut deistvie, mesto, vremja. Naprimer: bystro, medlenno, rano.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_11": { text: "Vozglyagatel'nye slova: vyrazhajut emotsii. Naprimer: Oj, Ukh! Akh!", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_12": { text: "Vspomogatel'nye slova: svjazyvajut slova. Naprimer: dlya, s, kak.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_13": { text: "Sojuznye slova: svjazyvajut chleny predlozhenija. Naprimer: i, no, no.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_14": { text: "Modal'nye slova: vyrazhajut otnoshenie govorjashchego. Naprimer: mozhet byt', navernoe, tochno.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_15": { text: "Zvukopisnye slova: imitirujut zvuk (tuk-tuk), sostojanie (lip-lip).", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_16": { text: "Lichnye imena: oboznachajut imena lits (uchenik, doktor).", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_17": { text: "Imena predmetov: bezdushnye veshchi (tetrad', ruchka).", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_18": { text: "Nereal'nye imena: nevozmozhno vosprinimat' (ljubov', nenavist').", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_19": { text: "Imena sobstvennye: unikal'noe imja (Alisher, Samarkand).", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "gramm_20": { text: "Imena obshchie: obshchij termin dlya mnogikh (reka, gorod).", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_grammar", isHome: true }] },
+            "lit_1": { text: "Mudrye mysli (aforizmy) — kratkie, glubokie vyskazyvanija. Oni otrazhajut bol'shoy opyt.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_2": { text: "Poslovitsa — narodnaya mudrost'. Naprimer: 'Mnogo zhil, mnogo znal'.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_3": { text: "Zagadka — igra slov. Opisyvaet svojstva, a my dolzhny ugadat' predmet.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_4": { text: "Khudozhestvennoe proizvedenie — imeet unikal'nyj jazyk, stil' i temu.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_5": { text: "O avtore — kto sozdal proizvedenie, ego zhizn', tvorchestvo. Naprimer: A. Pushkin, M. Gorkij.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_6": { text: "Sravnenie — sravnenie dvukh veshchej. Naprimer: Tak prekrasno, lico ego sverkaet kak solntse.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_7": { text: "Preuvelichenie — govorit' bol'she chem est'. Naprimer: Tysjacha let zhivu, sto tysjach raz.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_8": { text: "Zhivoe opisanie — opisanie kak zhivoe. Naprimer: Derevo govorit, veter prishel, ogon' gorit.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_9": { text: "Tvorchestvo Pushkina: 'Evgenij Onegin' — ego glavnoe proizvedenie. On osnovatel' russkoj literatury.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_10": { text: "L'v Nikolayevich Tolstoj: 'Voyna i mir', 'Anna Karenina'. Velikij klassik.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_11": { text: "Anton Pavlovich Chekhov: 'Vishnevyj sad', 'Chelovek v futljare'. Master rasskazov.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_12": { text: "Shejkh Zindaniy: Ochen' pochitajemyj uchenyj i svjatoy v Bukharskom khanstve.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_13": { text: "Sobranie: v arabskom znachenii 'sbornik, sobranie'. Knizhnye sobranija takzhe nazvajutsja sobranijami.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_14": { text: "G'ulom Zafariy: Master krotkikh istorij v uzbekskoj literature.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_15": { text: "Abdulla Qodiriy: Avtor 'O'tkan kunlar', 'Mehrobdan chayon'. Osnovatel' uzbekskogo romana.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_16": { text: "Geroy proizvedenija: kto deistvuet v proizvedenii.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_17": { text: "Tema i ideja: Tema — o chem proizvedenie. Ideja — glavnaja mysl'.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_18": { text: "Istorija jazykov: kak jazyk voznik i razvivalся.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_19": { text: "Analiz proizvedenija: izuchenie soderzhaniya, geroev, idei i khudozhestvennykh osobennostej.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "lit_20": { text: "Literaturnyj jazyk: pravil'nyj, ofitsial'nyj jazyk dlya pismennoj i ustnoj rechi.", buttons: [{ text: "⬅️ Predydushchee menyu", key: "test_additional_literature", isHome: true }] },
+            "test_general": { text: "Obshchij test dlya 5 klassa. Gotovy? Pervyj vopros: Kakoj iz variantov prilagatel'noe? (A: Tashkent, B: shkola, C: krasivyj). Vyberite pravil'nyj otvet:", buttons: [{ text: "A: Tashkent", key: "test_general_a" }, { text: "B: shkola", key: "test_general_b" }, { text: "C: krasivyj", key: "test_general_c" }] },
+            "test_difficult": { text: "Etot razdel tol'ko dlya chempionov 5 klassa! Slozhnyj vopros: V slove 'umnik' - 'k' eto... (A: okonchanie, B: pristavka, C: koren').", buttons: [{ text: "A: okonchanie", key: "test_difficult_a" }, { text: "B: pristavka", key: "test_difficult_b" }, { text: "C: koren'", key: "test_difficult_c" }] },
+            "test_general_a": { text: "Nepravil'no. Tashkent — sobstvennoe imja. Pravil'nyj otvet: Krasivyj.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_general_b": { text: "Nepravil'no. Shkola — sushestvitel'noe. Pravil'nyj otvet: Krasivyj.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_general_c": { text: "PRAVIL'NO! Krasivyj — prilagatel'noe. Vy chempion!", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_difficult_a": { text: "Nepravil'no. Okonchanie — eto chast' slova. 'K' v etom sluchae — pristavka. Pravil'nyj otvet: Pristavka.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_difficult_b": { text: "PRAVIL'NO! 'K' v slove 'umnik' — eto pristavka. Vy pravda chempion!", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] },
+            "test_difficult_c": { text: "Nepravil'no. Koren' — eto nachal'naja chast' slova. Pravil'nyj otvet: Pristavka.", buttons: [{ text: "⬅️ Menyu testov", key: "test_menu", isHome: true }] }
+        };
+
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingInterval = 50;
+            let typedText = '';
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    typedText += response[charIndex];
+                    bubble.textContent = typedText;
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, typingInterval);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                console.error("Menyu ne naideno:", menuKey);
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) {
+                    button.classList.add('home-button');
+                }
+                button.textContent = btn.text;
+                button.dataset.key = btn.key;
+                button.addEventListener('click', () => {
+                    handleButtonClick(btn.text, btn.key);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        function handleButtonClick(buttonText, nextKey) {
+            addMessage(buttonText, 'user');
+            quickButtonsContainer.innerHTML = '';
+            const nextMenu = database[nextKey];
+            if (nextMenu) {
+                setTimeout(() => {
+                    typeAiResponse(nextMenu.text, nextKey);
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    typeAiResponse("Izvinite, proizoshla oshibka. Vozvrat v glavnoe menyu.", "main_menu");
+                }, 500);
+            }
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
