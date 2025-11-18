@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarix AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #4a148c, #7b1fa2, #9c27b0);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #ce93d8;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ce93d8"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #ce93d8;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #e1bee7;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyanimations pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(206, 147, 216, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #ce93d8;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(206, 147, 216, 0.3);
+            text-shadow: 0 0 10px rgba(206, 147, 216, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #7b1fa2, #9c27b0);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #6a1b9a, #ce93d8);
+            color: white;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ce93d8;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(206, 147, 216, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ce93d8 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ce93d8;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(100, 50, 120, 0.4);
+            color: #ce93d8;
+            border: 1px solid rgba(206, 147, 216, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(206, 147, 216, 0.2);
+            border-color: #ce93d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(206, 147, 216, 0.2);
+        }
+
+        /* TARIXIY KALKULYATOR */
+        .history-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ce93d8;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(206, 147, 216, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #ce93d8;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #e1bee7;
+            border: 1px solid #ce93d8;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b39ddb;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #9c27b0;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(156, 39, 176, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(156, 39, 176, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .history-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Tarix AI + Kalkulyator</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ tarix savoli va tarixiy hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">📜 7-sinf Tarix AI Bot</div>
+
+        <!-- TARIXIY KALKULYATOR -->
+        <div class="history-calculator">
+            <div class="calc-title">Tarixiy Kalkulyator</div>
+            <select class="calc-select" id="history-formula">
+                <option value="century">Yildan asrni aniqlash</option>
+                <option value="period">Ikki yil orasidagi vaqt</option>
+                <option value="beforeAfter">Miloddan avvalgi va keyingi yillar</option>
+                <option value="reign">Hukmronlik davri</option>
+                <option value="compare">Voqealarni taqqoslash</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateHistory()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Tarixiy kalkulyator
+        const formulaSelect = document.getElementById('history-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "century": [
+                { label: "Yil:", id: "year", placeholder: "1453" }
+            ],
+            "period": [
+                { label: "Boshlang'ich yil:", id: "startYear", placeholder: "1370" },
+                { label: "Tugash yili:", id: "endYear", placeholder: "1405" }
+            ],
+            "beforeAfter": [
+                { label: "Miloddan avval:", id: "bc", placeholder: "500" },
+                { label: "Miloddan keyin:", id: "ad", placeholder: "1991" }
+            ],
+            "reign": [
+                { label: "Hukm boshlagan yil:", id: "reignStart", placeholder: "1370" },
+                { label: "Hukm tugagan yil:", id: "reignEnd", placeholder: "1405" }
+            ],
+            "compare": [
+                { label: "1-voqea yili:", id: "event1", placeholder: "751" },
+                { label: "2-voqea yili:", id: "event2", placeholder: "1220" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="1">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateHistory() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseIntSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseInt(val);
+                    if (isNaN(num)) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "century") {
+                    const y = parseIntSafe("year");
+                    const century = Math.ceil(y / 100);
+                    const era = y > 0 ? "miloddan keyingi" : "miloddan avvalgi";
+                    result = `${y} yil — ${century}-${era} asr`;
+                }
+                else if (formula === "period") {
+                    const start = parseIntSafe("startYear");
+                    const end = parseIntSafe("endYear");
+                    if (end < start) throw new Error("Tugash yili boshlang'ichdan katta bo'lishi kerak");
+                    const period = end - start;
+                    result = `Davr: ${period} yil (${start} - ${end})`;
+                }
+                else if (formula === "beforeAfter") {
+                    const bc = parseIntSafe("bc");
+                    const ad = parseIntSafe("ad");
+                    const total = bc + ad;
+                    result = `Miloddan avval ${bc} yil va miloddan keyin ${ad} yil orasidagi farq: ${total} yil`;
+                }
+                else if (formula === "reign") {
+                    const start = parseIntSafe("reignStart");
+                    const end = parseIntSafe("reignEnd");
+                    const reign = end - start;
+                    result = `Hukmronlik davri: ${reign} yil (${start} - ${end})`;
+                }
+                else if (formula === "compare") {
+                    const e1 = parseIntSafe("event1");
+                    const e2 = parseIntSafe("event2");
+                    const diff = Math.abs(e2 - e1);
+                    const order = e1 < e2 ? "1-voqea 2-voqeadan avvalroq" : "2-voqea 1-voqeadan avvalroq";
+                    result = `${order}.\nFarq: ${diff} yil`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ tarix savollari (7-sinf darsligi asosida)
+        const questions = [
+            "Tarix nima?", "Nima uchun tarixni o'rganamiz?", "Tarix fani qanday bo'ladi?",
+            "O'zbekiston tarixi nima?", "Jahon tarixi nima?", "Qadimiy davr nima?",
+            "O'rta asrlar nima?", "Yangi davr nima?", "Eng yangi davr nima?",
+            "Milodiy sanoq nima?", "Miloddan avvalgi sanoq nima?", "Ajrashgan sanoq tizimi",
+            "Tarixiy manbalar nima?", "Yozma manbalar nima?", "Arxeologik manbalar nima?",
+            "Folklord manbalar nima?", "Numizmatik manbalar nima?", "Genealogik manbalar",
+            "O'zbek elliklari nima?", "Sog'd nima?", "Xorazm nima?",
+            "Buxoro Sog'd nima?", "Tohariston nima?", "Farg'ona vodiysi tarixi",
+            "Qadimiy O'zbekiston aholisi", "Massagetlar kimlar?", "Saklar kimlar?",
+            "Sarmatlar kimlar?", "Qushonlar davlati", "Qushonlar imperiyasi",
+            "Eftillar kimlar?", "G'uzlar kimlar?", "Kangli qabilalari",
+            "Chig'il qabilalari", "O'g'uzlar tarixi", "Karluklar tarixi",
+            "Qarluqlar davlati", "Ahmad ibn Fadlon kim?", "Ibn Sino tarixi",
+            "Beruniy kim?", "Al-Xorazmiy kim?", "Amir Temur kim?",
+            "Amir Temurning tug'ilgan yili", "Amir Temurning hukmronlik davri",
+            "G'aznaviylar davlati", "Qoraxoniylar davlati", "Mo'g'ul bosqini",
+            "Chingizxon kim?", "Mo'g'ul imperiyasi", "Oltin O'rda davlati",
+            "Hulagu xon kim?", "Temuriylar davlati", "Shayboniyxon kim?",
+            "Buxoro xonligi", "Xiva xonligi", "Qo'qon xonligi",
+            "O'zbek xonliklari", "Rossiya imperiyasi", "Sovet davri",
+            "O'zbekiston Respublikasi", "Mustaqillik yili", "O'zbekiston konstitutsiyasi",
+            "Qadimiy yunon tarixi", "Rim imperiyasi", "Fransiya inqilobi",
+            "Amerika inqilobi", "Sanoat inqilobi", "Birinchi jahon urush",
+            "Ikkinchi jahon urush", "BMT tashkil etilgan yil", "Qadimiy Misr",
+            "Qadimiy Xitoy", "Qadimiy Hindiston", "Vizantiya imperiyasi",
+            "Arab xilofati", "Salohiddin Ayyubiy", "Karl Maydan", "Napoleon Bonapart",
+            "G'ulom Ahmad qaynoni", "O'zbekistonning qadimiy shaharlari", "Amudaryo tarixi",
+            "Sirdaryo tarixi", "Qizilqum cho'li tarixi", "Farg'ona vodiysi ahamiyati",
+            "Movarounnahr nima?", "Transoxiana nima?", "Sharqiy Turkiston tarixi",
+            "Buyuk ipak yo'li", "Ipak yo'lining ahamiyati", "Samarqand tarixi",
+            "Buxoro tarixi", "Xiva tarixi", "Toshkent tarixi",
+            "Osh tarixi", "Marg'ilon tarixi", "Andijon tarixi",
+            "Namangan tarixi", "Jizzax tarixi", "Samarqand madrasalari",
+            "Ulughbek rasadxonasi", "Registon maydoni", "Shahrisabz tarixi",
+            "Qarshi tarixi", "Termiz tarixi", "O'zbekiston madaniy merosi",
+            "Alisher Navoiy kim?", "Alisher Navoiy asarlari", "Zahiriddin Muhammad Bobur",
+            "Boburnoma nima?", "Abdulla Qodiriy kim?", "O'tkan kunlar asari",
+            "Chingiz Aytmatov kim?", "Tarixda qanday qonunlar bor?", "Tarixda qanday hodisalar bor?",
+            "Siyosiy tarix nima?", "Iqtisodiy tarix nima?", "Madaniy tarix nima?",
+            "Qadimiy tarix", "Qadimiy Yevropa", "Yangi zamanaviy tarix",
+            "O'zbekiston milliy ozodlik harakati", "Jadidlar kimlar?", "Fayzulla Xo'jayev kim?",
+            "Temur Malik kim?", "Abdurauf Fitrat kim?", "Cho'lpon kim?",
+            "Oybek kim?", "O'zbekiston mustaqilligi uchun kurashganlar", "O'zbekiston bayrog'i",
+            "O'zbekiston gerbi", "O'zbekiston madhiyasi", "O'zbekiston poytaxti",
+            "O'zbekiston viloyatlari soni", "O'zbekiston aholisi", "O'zbekiston tarixiy shaxslari",
+            "O'zbekiston qadimiy yodgorliklari", "O'zbekiston muzeylari", "O'zbekiston UNESCO obidalari",
+            "Ittifoqchilik", "Millatchilik", "Demokratiya nima?",
+            "Fuqarolik jamiyati", "Inson huquqlari", "O'zbekiston BMT a'zosi",
+            "O'zbekiston hamkorlikdagi tashkilotlar", "O'zbekiston tashqi siyosati",
+            "O'zbekiston ichki siyosati", "O'zbekiston iqtisodiyot tarixi",
+            "O'zbekiston qishloq xo'jaligi tarixi", "O'zbekiston sanoat tarixi",
+            "O'zbekiston ta'lim tarixi", "O'zbekiston sog'liqni saqlash tarixi",
+            "O'zbekiston san'at tarixi", "O'zbekiston adabiyot tarixi",
+            "O'zbekiston musiqa tarixi", "O'zbekiston me'morchiligi",
+            "O'zbekiston qadimiy san'at asarlari", "O'zbekiston tarixiy xaritalari",
+            "Tarixda davrlar taqsimoti", "Tarixda sanoq tizimlari",
+            "Tarixda yil hisobi", "Tarixda asrlar hisobi", "Tarixda mingyilliklar",
+            "Tarixda davrlar nomlari", "Tarixda voqealar ketma-ketligi",
+            "Tarixda qahramonlar", "Tarixda sultonlar", "Tarixda xonlar",
+            "Tarixda amirlar", "Tarixda shayxlar", "Tarixda mutafakkirlar",
+            "Tarixda shoirlar", "Tarixda sanoatchilar", "Tarixda savdogarlar",
+            "Tarixda askarlar", "Tarixda dehqonlar", "Tarixda hunarmandlar",
+            "Tarixda me'morlar", "Tarixda rassomlar", "Tarixda kompozitorlar"
+        ];
+
+        // ✅ Javoblar — 7-sinf tarix darsligi asosida
+        const responses = {
+            "Tarix nima?": "Tarix — insoniyatning o'tmishdagi tajribasini, ijtimoiy hodisa va jarayonlarni o'rganuvchi fan. So'z yunoncha 'historia' — 'so'roq, tadqiqot' so'zidan olingan.",
+            "Nima uchun tarixni o'rganamiz?": "Tarixni o'rganish orqali o'tmishni tushunamiz, xatolarni takrorlamaslik, milliy ongimizni mustahkamlash, bugungi kunning ildizi va kelajakka yo'l sifatida foydalanamiz.",
+            "Tarix fani qanday bo'ladi?": "Tarix fani ikkiga bo'linadi: 1) O'zbekiston tarixi — mamlakatimizning rivojlanish tarixi; 2) Jahon tarixi — butun insoniyatning taraqqiyot tarixi.",
+            "O'zbekiston tarixi nima?": "O'zbekiston tarixi — mamlakatimiz hududida yashab kelgan xalqlarning ijtimoiy-siyosiy, iqtisodiy, madaniy hayotini o'rganuvchi fandir.",
+            "Jahon tarixi nima?": "Jahon tarixi — butun dunyoning, barcha mamlakat va xalqlarning rivojlanish tarixini o'rganadi.",
+            "Qadimiy davr nima?": "Qadimiy davr — insoniyatning paydo bo'lishidan miloddan avvalgi I ming yillikning oxirigacha bo'lgan davr.",
+            "O'rta asrlar nima?": "O'rta asrlar — miloddan avvalgi I asrdan XV asr oxirigacha bo'lgan davr. Feodalizm asri deb ham ataladi.",
+            "Yangi davr nima?": "Yangi davr — XV asr oxiridan 1917-yilgacha bo'lgan davr. Sanoat inqilobi, kolonializm, kapitalizm rivojlanish davri.",
+            "Eng yangi davr nima?": "Eng yangi davr — 1917-yildan hozirgacha bo'lgan davr. Insoniyatda inqilobiy o'zgarishlar, globalizatsiya davri.",
+            "Milodiy sanoq nima?": "Milodiy sanoq — Iso Masihning tug'ilgan sanasidan boshlanadigan yil hisobi. Bugungi kunda xalqaro qabul qilingan sanoq tizimi.",
+            "Miloddan avvalgi sanoq nima?": "Miloddan avvalgi sanoq — milodiy sanoqdan oldingi yillarni belgilash. 'miloddan avval' qisqartmasi — m.a. yoki BC (before Christ).",
+            "Ajrashgan sanoq tizimi": "Ba'zi mamlakatlarda o'zlarining sanoq tizimlari mavjud: hijriy sanoq (Islom), buddaviy sanoq, hind sanoqi.",
+            "Tarixiy manbalar nima?": "Tarixiy manbalar — o'tmishni o'rganish uchun foydalaniladigan hamma dalillar: yozma, arxeologik, og'zaki, tasvirlangan.",
+            "Yozma manbalar nima?": "Yozma manbalar — kitoblar, qo'lyozmalar, hujjatlar, xatlar, yozuvlar orqali yetib kelgan ma'lumotlar.",
+            "Arxeologik manbalar nima?": "Arxeologik manbalar — qazishmalar natijasida topilgan buyumlar: qurollar, idishlar, soxta, qurilish qoldiqlari.",
+            "Folklord manbalar nima?": "Folklord manbalar — og'zaki ijod: ertaklar, dostonlar, she'rlar, maqollar, qo'shiqlar orqali yetib kelgan tarixiy ma'lumotlar.",
+            "Numizmatik manbalar nima?": "Numizmatik manbalar — tangalar orqali o'tgan davr haqida ma'lumot beradi. Tangalarda hukmdorning nomi, davlat nomi, sanasi bo'ladi.",
+            "Genealogik manbalar": "Genealogik manbalar — avlodlar tarixi, oilaviy shajara, urug'-qurun haqida ma'lumot beruvchi manbalar.",
+            "O'zbek elliklari nima?": "O'zbek elliklari — O'zbekistonda qadimdan mavjud bo'lgan etnik guruhlar: sog'd, xorazm, tohar, bactriya, farg'ona vodiysi xalqlari.",
+            "Sog'd nima?": "Sog'd — Farg'ona, Samarqand, Buxoro atrofida yashagan qadimiy xalq. Ularning poytaxti — Afrosiob (Samarqand). Sog'dlar savdo orqali dunyoni birlashtirgan.",
+            "Xorazm nima?": "Xorazm — Amudaryoning quyi oqimida joylashgan qadimiy madaniyat markazi. Xorazmliklar irrigatsiya tizimlarini yaxshi bilishgan.",
+            "Buxoro Sog'd nima?": "Buxoro Sog'd — Buxoro vohasida yashagan sog'd xalqi bo'lagi. Ularning markazi — Ramitan va Vardanzya shaharlari.",
+            "Tohariston nima?": "Tohariston — hozirgi Tojikiston, Afg'onistonning shimoliy qismi, Xitoyning g'arbiy qismida yashagan qadimiy xalq.",
+            "Farg'ona vodiysi tarixi": "Farg'ona vodiysi — tarixiy jihatdan strategik ahamiyatga ega hudud. Buyuk ipak yo'lining bir qismi, ko'plab xalqlar shu yerda yashagan.",
+            "Qadimiy O'zbekiston aholisi": "Qadimiy O'zbekiston aholisi — ironsariy (indo-evropa), sovet, turkiy tillarda so'zlashuvchi qabilalar aralashmasi edi.",
+            "Massagetlar kimlar?": "Massagetlar — miloddan avvalgi I ming yillikda O'zbekiston va Qozog'iston hududida yashagan ko'chmanchi qabilalar.",
+            "Saklar kimlar?": "Saklar — miloddan avvalgi VI–III asrlarda O'zbekiston, Eron, Efiopiya hududida yashagan qadimiy xalq. Ularning qahramoni — Tomiris xotun.",
+            "Sarmatlar kimlar?": "Sarmatlar — Saklarning bir tarmog'i bo'lib, ular ham ko'chmanchi hayot kechirgan, jangchi xalq bo'lgan.",
+            "Qushonlar davlati": "Qushonlar davlati — miloddan avvalgi I asrdan milodiy III asrgacha mavjud bo'lgan kuchli davlat. Poytaxti — Bagram (Afg'oniston).",
+            "Qushonlar imperiyasi": "Qushonlar imperiyasi — O'zbekiston, Tojikiston, Afg'oniston, Hindiston, Xitoyning g'arbiy qismlarini qamrab olgan keng hududli davlat.",
+            "Eftillar kimlar?": "Eftillar — V–VI asrlarda O'zbekiston hududida yashagan xalq. Ularning qisman qarluqlar bilan aralashgani taxmin qilinadi.",
+            "G'uzlar kimlar?": "G'uzlar — turkiy qabilalar bo'lib, keyinchalik O'g'uzlar deb atalgan. Ular hozirgi Turkmaniston, Quyi O'zbekiston, Eron hududida yashagan.",
+            "Kangli qabilalari": "Kangli qabilalari — Qizilqum cho'li va Amudaryo bo'yida yashagan qadimiy qabilalar. Ular savdo va dehqonchilik bilan shug'ullangan.",
+            "Chig'il qabilalari": "Chig'il — turkiy qabilalar bo'lib, hozirgi O'zbekiston, Qozog'iston hududida yashagan. Ularning nomi 'chig'il' (qattiq) so'zidan kelib chiqqan.",
+            "O'g'uzlar tarixi": "O'g'uzlar — turkiy xalqlarning ajdodlaridan biri. Ular Buyuk ipak yo'li bo'ylab yurib, ko'plab hududlarga tarqagan.",
+            "Karluklar tarixi": "Karluklar — turkiy qabilalar bo'lib, VII–X asrlarda Jetisu (Semirechye) va Farg'ona vodiysida yashagan.",
+            "Qarluqlar davlati": "Qarluqlar davlati — VIII–X asrlarda Jetisu va Farg'ona vodiysida mavjud bo'lgan davlat. Davlat asoschisi — Suluk xon.",
+            "Ahmad ibn Fadlon kim?": "Ahmad ibn Fadlon — X asrda Xorazmlik olim, xalifa al-Muqtadir tomonidan bolgar elchisi sifatida yuborilgan. Uning 'Safarnoma'si O'zbekiston tarixiga qimmatli manba.",
+            "Ibn Sino tarixi": "Ibn Sino (980–1037) — Buxoroda tug'ilgan buyuk olim, faylasuf, shifokor. Uning 'Tib qonunlari' asari Yevropada 600 yil darslik bo'lib xizmat qilgan.",
+            "Beruniy kim?": "Abu Rayhon Beruniy (973–1048) — Xorazmlik buyuk olim. U tarix, geografiya, astronomiya, matematika sohalarida ishlagan. 'Hindiston' asari mashhur.",
+            "Al-Xorazmiy kim?": "Al-Xorazmiy (780–850) — Xorazmlik buyuk matematik. Algoritm so'zi uning nomidan kelib chiqqan. Al-Jabr asari algebraga asos bo'ldi.",
+            "Amir Temur kim?": "Amir Temur (1336–1405) — Samarqandda tug'ilgan buyuk davlat arbobi. U Temuriylar davlatini tashkil etdi va Butun Sharqni birlashtirdi.",
+            "Amir Temurning tug'ilgan yili": "Amir Temur 1336-yil 9-aprelda Sirdaryoning sohilidagi Kesh shahrida (hozirgi Shahrisabz) tug'ilgan.",
+            "Amir Temurning hukmronlik davri": "Amir Temur 1370-yildan 1405-yilgacha hukmronlik qilgan. U o'z davlatini Movarounnahr asosida qurdi.",
+            "G'aznaviylar davlati": "G'aznaviylar davlati — X–XI asrlarda Afg'oniston, Eron, Hindiston hududida mavjud bo'lgan davlat. Asoschisi — Alptegin, mashhuri — Mahmud G'aznaviy.",
+            "Qoraxoniylar davlati": "Qoraxoniylar davlati — X–XII asrlarda Movarounnahr va Sharqiy Turkistonda mavjud bo'lgan birinchi islomiy turkiy davlat.",
+            "Mo'g'ul bosqini": "Mo'g'ul bosqini — 1219–1221-yillarda Chingizxon tomonidan O'zbekiston hududiga qilingan vahshiylikli hujumlar.",
+            "Chingizxon kim?": "Chingizxon (1162–1227) — mo'g'ul qabilalari birlashmasining rahbari, mo'g'ul imperiyasining asoschisi.",
+            "Mo'g'ul imperiyasi": "Mo'g'ul imperiyasi — tarixdagi eng katta quruqlik imperiyasi. U Osiyodan Yevropagacha cho'zilgan edi.",
+            "Oltin O'rda davlati": "Oltin O'rda — mo'g'ul imperiyasining g'arbiy qismi. U Rus, Qozog'iston, O'zbekiston qismi hududlarini qamrab olgan.",
+            "Hulagu xon kim?": "Hulagu xon — Chingizxonning nevarasi, Eron, Iroq, Suriya hududlarini zabt etgan mo'g'ul sardori.",
+            "Temuriylar davlati": "Temuriylar davlati — Amir Temur tashkil etgan kuchli davlat. Poytaxti — Samarqand. U Butun Sharqni birlashtirdi.",
+            "Shayboniyxon kim?": "Shayboniyxon (1451–1510) — o'zbek qobilalari birlashmasining rahbari, Shayboniylar sulolasining asoschisi.",
+            "Buxoro xonligi": "Buxoro xonligi — XV–XIX asrlarda mavjud bo'lgan davlat. Poytaxti — Buxoro. Shayboniylar, Ashtarkoniyylar, Mang'itlar sulolalari hukmronlik qilgan.",
+            "Xiva xonligi": "Xiva xonligi — XVI–1920-yillarda Amudaryo quyi oqimida mavjud bo'lgan davlat. Poytaxti — Xiva.",
+            "Qo'qon xonligi": "Qo'qon xonligi — XVI–1876-yillarda Farg'ona vodiysida mavjud bo'lgan davlat. Poytaxti — Qo'qon.",
+            // Qo'shimcha savollar javoblari — 100 taga to'ldirilgan
+            "O'zbek xonliklari": "O'zbek xonliklari — XIX asrda O'zbekiston hududida mavjud bo'lgan uchta davlat: Buxoro, Xiva va Qo'qon xonliklari.",
+            "Rossiya imperiyasi": "Rossiya imperiyasi — O'zbekiston xonliklarini 1865–1884-yillarda bosib olgan davlat. Keyin O'zbekiston Rossiya tarkibiga kirdi.",
+            "Sovet davri": "Sovet davri — 1924–1991-yillarda O'zbekiston Sovet Sotsialistik Respublikasi tarkibida bo'ldi.",
+            "O'zbekiston Respublikasi": "O'zbekiston Respublikasi — 1991-yil 31-avgustda mustaqilligini e'lon qilgan davlat.",
+            "Mustaqillik yili": "O'zbekiston mustaqilligi 1991-yil 31-avgust kuni e'lon qilingan.",
+            "O'zbekiston konstitutsiyasi": "O'zbekiston Konstitutsiyasi — 1992-yil 8-dekabrda qabul qilingan. Mamlakatning asosiy qonuni.",
+            "Qadimiy yunon tarixi": "Qadimiy Yunoniston — tarixiy jihatdan demokratiyaning vatani. Afinalar, Sparta, Aleksandr Makedonskiy mashhur shaxslardir.",
+            "Rim imperiyasi": "Rim imperiyasi — Qadimiy dunyoning eng kuchli davlatlaridan biri. U butun Yevropa, Shimoliy Afrika, G'arbiy Osiyoni qamrab olgan.",
+            "Fransiya inqilobi": "Fransiya inqilobi — 1789-yilda boshlangan. Qirollik bekor qilindi, demokratiya g'oyasi tarqaldi.",
+            "Amerika inqilobi": "Amerika inqilobi — 1775–1783-yillarda AQSH mustaqilligini olish uchun Angliyaga qarshi olib borilgan kurash.",
+            "Sanoat inqilobi": "Sanoat inqilobi — XVIII asr oxiridan XIX asrga qadar Yevropa va AQSHda texnika va sanoatda katta yutuqlar sodir bo'ldi.",
+            "Birinchi jahon urush": "Birinchi jahon urush — 1914–1918-yillarda bo'lib o'tdi. Ikki tomon — Ittifoqchilar (Fransiya, Angliya, Rossiya) va Markaziy davlatlar (Germaniya, Avstriya-Vengriya).",
+            "Ikkinchi jahon urush": "Ikkinchi jahon urush — 1939–1945-yillarda bo'lib o'tdi. Fashistlar (Germaniya, Italiya, Yaponiya) va Ittifoqchilar (SSSR, AQSH, Angliya) o'rtasida.",
+            "BMT tashkil etilgan yil": "BMT — 1945-yil 24-oktyabrda tashkil etilgan. Dunyoda tinchlik, xavfsizlik, hamkorlik uchun ishlaydi.",
+            "Qadimiy Misr": "Qadimiy Misr — Nil daryosi bo'ylab rivojlangan qadimiy sivilizatsiya. Piramidalar, faraonlar, iyerogliflar bilan mashhur.",
+            "Qadimiy Xitoy": "Qadimiy Xitoy — Xitoy tarixi minglab yillarga cho'ziladi. Qin sulolasi, Xan sulolasi, Buyuk Xitoy devori mashhur.",
+            "Qadimiy Hindiston": "Qadimiy Hindiston — Sind daryosi vodiysida rivojlangan sivilizatsiya. Budaviylik, hinduizm, sanskrit tili rivojlangan.",
+            "Vizantiya imperiyasi": "Vizantiya imperiyasi — Rim imperiyasining sharqiy qismi. Poytaxti — Konstantinopol (hozirgi Istanbul).",
+            "Arab xilofati": "Arab xilofati — VII–XIII asrlarda arablar tomonidan tashkil etilgan keng hududli islomiy davlat.",
+            "Salohiddin Ayyubiy": "Salohiddin Ayyubiy — XI asrda Misr va Suriyani birlashtirgan, Salib yurishlariga qarshi kurashgan buyuk amir.",
+            "Karl Maydan": "Karl Maydan — Fransiyaning buyuk imperatori (1804–1815). U Yevropa xaritasini o'zgartirdi.",
+            "Napoleon Bonapart": "Napoleon Bonapart — Fransiya armiyasi sardori, keyin imperator. U 'Napoleon qonunlari'ni ishlab chiqdi.",
+            "G'ulom Ahmad qaynoni": "G'ulom Ahmad qaynoni — XIX asr o'zbek mutafakkiri, jadid ta'limining asoschilaridan biri.",
+            "O'zbekistonning qadimiy shaharlari": "O'zbekistonning qadimiy shaharlari: Samarqand, Buxoro, Xiva, Toshkent, Termiz, Qarshi, Andijon — barchasi 2500 yildan ortiq tarixga ega.",
+            "Amudaryo tarixi": "Amudaryo — O'zbekistonning asosiy daryolaridan biri. Qadimdan sug'orish, savdo yo'li sifatida foydalanilgan.",
+            "Sirdaryo tarixi": "Sirdaryo — O'zbekistonning yana bir katta daryosi. Qadimdan Farg'ona vodiysini tirik tutgan.",
+            "Qizilqum cho'li tarixi": "Qizilqum — O'zbekiston va Qozog'iston hududida joylashgan katta cho'l. Qadimdan savdo karvonlari o'tgan.",
+            "Farg'ona vodiysi ahamiyati": "Farg'ona vodiysi — strategik jihatdan muhim hudud. Ko'plab xalqlar uchun o'tish joyi bo'lgan.",
+            "Movarounnahr nima?": "Movarounnahr — Sirdaryo va Amudaryo o'rtasidagi hudud. Tarixiy jihatdan 'Ikki daryo orasi' deb ataladi.",
+            "Transoxiana nima?": "Transoxiana — lotincha so'z bo'lib, Movarounnahrni anglatadi. Yunonlar ham shu nom bilan atagan.",
+            "Sharqiy Turkiston tarixi": "Sharqiy Turkiston — Xitoyning g'arbiy qismi, qadimdan turkiy xalqlar yashagan hudud.",
+            "Buyuk ipak yo'li": "Buyuk ipak yo'li — Xitoydan Yevropagacha cho'zilgan savdo yo'li. Ipak, zargarlik buyumlari, g'oyalar, dinlar tarqagan.",
+            "Ipak yo'lining ahamiyati": "Ipak yo'li — nafaqat savdo, balki madaniyat, fan, din almashinuvi uchun ham muhim bo'lgan yo'l.",
+            "Samarqand tarixi": "Samarqand — 2700 yildan ortiq tarixga ega shahar. Qadimiy poytaxt — Afrosiob, keyin Registon markazi bo'ldi.",
+            "Buxoro tarixi": "Buxoro — 2500 yildan ortiq tarixga ega. 'Islom madaniyati poytaxti' deb ataladi.",
+            "Xiva tarixi": "Xiva — 2000 yildan ortiq tarixga ega. Kunya-Arx, Tosh-Hovli kabi yodgorliklari bor.",
+            "Toshkent tarixi": "Toshkent — 2000 yildan ortiq tarixga ega. Qadimdan savdo, madaniyat markazi bo'lgan.",
+            "Osh tarixi": "Osh — Farg'ona vodiysidagi qadimiy shahar. 3000 yildan ortiq tarixga ega.",
+            "Marg'ilon tarixi": "Marg'ilon — Farg'ona vodiysidagi qadimiy shahar. Ipak sanoati bilan mashhur.",
+            "Andijon tarixi": "Andijon — Farg'ona vodiysidagi qadimiy shahar. Amir Temur oilasi shu yerda yashagan.",
+            "Namangan tarixi": "Namangan — Farg'ona vodiysidagi katta shahar. XVIII–XIX asrlarda kuchli savdo markazi bo'lgan.",
+            "Jizzax tarixi": "Jizzax — Movarounnahrdagi qadimiy shahar. 'Qal'a shahri' deb ataladi.",
+            "Samarqand madrasalari": "Samarqand madrasalari — Ulug'bek, Sher-Dor, Tilla-Kari madrasalari Registon maydonida joylashgan.",
+            "Ulughbek rasadxonasi": "Ulughbek rasadxonasi — Samarqandda XV asrda qurilgan astronomiya markazi. Dunyoning eng aniq yulduz jadvallarini tuzdi.",
+            "Registon maydoni": "Registon maydoni — Samarqandning yuragidir. U O'zbekistonning ramzi hisoblanadi.",
+            "Shahrisabz tarixi": "Shahrisabz — Amir Temurning tug'ilgan joyi. Qadimiy shahar — 2500 yildan ortiq tarixga ega.",
+            "Qarshi tarixi": "Qarshi — Qashqadaryo vodiysidagi qadimiy shahar. Qadimiy nomi — Nasaf.",
+            "Termiz tarixi": "Termiz — Surxondaryo viloyatidagi qadimiy shahar. 2500 yildan ortiq tarixga ega. Buddaviylik markazi bo'lgan.",
+            "O'zbekiston madaniy merosi": "O'zbekiston madaniy merosi — Registon, Xiva, Buxoro, Shahrisabz kabi UNESCO obidalari bilan boy.",
+            "Alisher Navoiy kim?": "Alisher Navoiy (1441–1501) — o'zbek adabiyotining asoschisi, davlat arbobi, mutafakkir. 'Xamsa', 'Muhokamat al-lug'atayn' asarlari mashhur.",
+            "Alisher Navoiy asarlari": "Alisher Navoiyning asarlari: 'Xamsa' (besh doston), 'Lison ut-tayr', 'Mahbub ul-qulub', 'Muhokamat al-lug'atayn'.",
+            "Zahiriddin Muhammad Bobur": "Zakhiriddin Muhammad Bobur (1483–1530) — Amir Temurning nevarasi, Hindistonni zabt etgan, 'Boburnoma' yozgan buyuk shaxs.",
+            "Boburnoma nima?": "'Boburnoma' — Z.M. Boburning o'zbek tilida yozgan xotiralar to'plami. Dunyoning eng qimmatli yodgorliklaridan biri.",
+            "Abdulla Qodiriy kim?": "Abdulla Qodiriy (1894–1938) — o'zbek adabiyotining klassik yozuvchisi. 'O'tkan kunlar', 'Mehrobdan chayon' asarlari mashhur.",
+            "O'tkan kunlar asari": "'O'tkan kunlar' — A. Qodiriyning tarixiy romani. O'zbek xalqining XIX asr hayotini aks ettiradi.",
+            "Chingiz Aytmatov kim?": "Chingiz Aytmatov — qirg'iz yozuvchisi, lekin o'zbek xalqiga ham yaqin. 'Oq kema', 'Ananuriylik paytida' asarlari mashhur.",
+            "Tarixda qanday qonunlar bor?": "Tarixda ijtimoiy, iqtisodiy, siyosiy qonunlar bor: tabiiy tanlanish, ijtimoiy inqiloblar, tarixiy shaxslar roli.",
+            "Tarixda qanday hodisalar bor?": "Tarixda inqiloblar, urushlar, kashfiyotlar, ijtimoiy harakatlar kabi hodisalar sodir bo'ladi.",
+            "Siyosiy tarix nima?": "Siyosiy tarix — davlat tuzilishi, hukmdorlar, urushlar, shartnomalar kabi siyosiy voqealarni o'rganadi.",
+            "Iqtisodiy tarix nima?": "Iqtisodiy tarix — ishlab chiqarish, savdo, moliya, bank tizimi kabi iqtisodiy jarayonlarni o'rganadi.",
+            "Madaniy tarix nima?": "Madaniy tarix — adabiyot, san'at, arxitektura, din, ta'lim kabi madaniy jarayonlarni o'rganadi.",
+            "Qadimiy tarix": "Qadimiy tarix — miloddan avvalgi I ming yillikgacha bo'lgan davrni o'rganadi.",
+            "Qadimiy Yevropa": "Qadimiy Yevropa — Qadimiy Yunoniston va Rim imperiyasi asosida rivojlangan.",
+            "Yangi zamanaviy tarix": "Yangi zamanaviy tarix — XX–XXI asrlarda sodir bo'lgan voqealarni o'rganadi.",
+            "O'zbekiston milliy ozodlik harakati": "O'zbekiston milliy ozodlik harakati — Rossiya hukmronligiga qarshi kurash. Jadidlar, F. Xo'jayev, A. Qodiriy ishtirok etdi.",
+            "Jadidlar kimlar?": "Jadidlar — XIX–XX asrlarda yangi uslubda ta'lim olib boruvchi o'zbek ziyolilari. Maqsadi — milliy ong uyg'otish.",
+            "Fayzulla Xo'jayev kim?": "Fayzulla Xo'jayev — O'zbekiston SSR asoschilaridan biri, birinchi hokimi bo'ldi.",
+            "Temur Malik kim?": "Temur Malik — Xorazmda mo'g'ullarga qarshi qat'iy qarshilik ko'rsatgan qahramon. 'Xorazmning oxirgi qahramoni' deb ataladi.",
+            "Abdurauf Fitrat kim?": "Abdurauf Fitrat — jadid mutafakkiri, olim, yozuvchi. 'Hind xotinining maktubi' asari mashhur.",
+            "Cho'lpon kim?": "Cho'lpon — o'zbek adabiyotining yirik namoyandasi. 'Odham o'g'li', 'Qochqin' kabi asarlari bor.",
+            "Oybek kim?": "Oybek — sovet davri yozuvchisi. 'Navoiy', 'Qorayog'di' asarlari O'zbekiston tarixiga bag'ishlangan.",
+            "O'zbekiston mustaqilligi uchun kurashganlar": "O'zbekiston mustaqilligi uchun Ismoil Jurabekov, Nasrullo Saidov, Muhammad Solih kabi shaxslar kurashgan.",
+            "O'zbekiston bayrog'i": "O'zbekiston bayrog'i — ko'k, oq, yashil chiziqlar, oq oy va yulduzdan iborat. Ko'k — osmon, oq — tinchlik, yashil — tabiat.",
+            "O'zbekiston gerbi": "O'zbekiston gerbi — humo qushi, Registon, sarsazan, bug'doy boshoqlari tasvirlangan.",
+            "O'zbekiston madhiyasi": "O'zbekiston madhiyasi — mutaxassislari A. Qodiriy, M. Yusupov, mutaqassimlari S. Yoqubov tomonidan yozilgan.",
+            "O'zbekiston poytaxti": "O'zbekiston poytaxti — Toshkent shahri.",
+            "O'zbekiston viloyatlari soni": "O'zbekistonda 12 ta viloyat, 1 respublika (Qoraqalpog'iston), 1 shahar (Toshkent) mavjud.",
+            "O'zbekiston aholisi": "O'zbekiston aholisi — 36 milliondan ortiq. Aksariyati — o'zbeklar.",
+            "O'zbekiston tarixiy shaxslari": "O'zbekiston tarixiy shaxslari: Amir Temur, Alisher Navoiy, Ulug'bek, Z.M. Bobur, Ahmad Farg'oniy.",
+            "O'zbekiston qadimiy yodgorliklari": "O'zbekiston qadimiy yodgorliklari: Afrosiob, Varaxsha, Toprakqala, Qoyliq, Chig'atoy qabristoni.",
+            "O'zbekiston muzeylari": "O'zbekiston muzeylari: Tarix muzeyi, Amir Temur muzeyi, Navoiy muzeyi, Samarqand muzeyi.",
+            "O'zbekiston UNESCO obidalari": "O'zbekiston UNESCO obidalari: Ichan Qal'a (Xiva), Buxoro markazi, Shahrisabz, Samarqand (Registon).",
+            "Ittifoqchilik": "Ittifoqchilik — xalqlar, mamlakatlar o'rtasida hamkorlik, do'stlik, tinchlik siyosatini olib borish.",
+            "Millatchilik": "Millatchilik — o'z millatini yuksak tutish, uni rivojlantirishga intilish.",
+            "Demokratiya nima?": "Demokratiya — xalq hokimiyati, fuqarolarning erkin fikr bildirish, saylash huquqiga ega bo'lish.",
+            "Fuqarolik jamiyati": "Fuqarolik jamiyati — fuqarolar, nodavlat tashkilotlar, ommaviy tashkilotlarning faol ishtiroki.",
+            "Inson huquqlari": "Inson huquqlari — har bir insonning tug'ilishidan beri ega bo'ladigan asosiy huquqlari: hayot, erkinlik, ta'lim, ish.",
+            "O'zbekiston BMT a'zosi": "O'zbekiston — 1992-yilda BMTga a'zo bo'ldi.",
+            "O'zbekiston hamkorlikdagi tashkilotlar": "O'zbekiston BMT, UNESCO, ESHDO, Ijtimoiy Hamkorlik Tashkiloti, Osiyo Hamkorlik Forumi a'zosi.",
+            "O'zbekiston tashqi siyosati": "O'zbekiston tashqi siyosati — mustaqillik, tinchlik, hamkorlik, chegaralarni hurmat qilish asosida.",
+            "O'zbekiston ichki siyosati": "O'zbekiston ichki siyosati — demokratiya, inson huquqlari, iqtisodiy islohotlar, ta'limni rivojlantirish.",
+            "O'zbekiston iqtisodiyot tarixi": "O'zbekiston iqtisodiyot tarixi — qishloq xo'jaligidan boshlab, sanoat, xizmat ko'rsatish sohasigacha rivojlandi.",
+            "O'zbekiston qishloq xo'jaligi tarixi": "O'zbekiston qishloq xo'jaligi tarixi — paxta, g'alla, sabzavot yetishtirish an'anaviy tarmoqlar.",
+            "O'zbekiston sanoat tarixi": "O'zbekiston sanoat tarixi — neft, gaz, oltin, kimyo, yengil sanoat rivojlangan.",
+            "O'zbekiston ta'lim tarixi": "O'zbekiston ta'lim tarixi — milodiy 1000-yillarda maktablar, medresalar mavjud bo'lgan.",
+            "O'zbekiston sog'liqni saqlash tarixi": "O'zbekiston sog'liqni saqlash tarixi — Ibn Sino, Farobi kabi buyuk shifokorlar asos solgan.",
+            "O'zbekiston san'at tarixi": "O'zbekiston san'at tarixi — miniatyura, g'ilamtoqish, chust gulchop, zarduzlik an'nalari rivojlangan.",
+            "O'zbekiston adabiyot tarixi": "O'zbekiston adabiyot tarixi — Alisher Navoiy, Bobur, Fitrat, Qodiriy, Oybek kabi buyuk yozuvchilar asos solgan.",
+            "O'zbekiston musiqa tarixi": "O'zbekiston musiqa tarixi — shashmaqom, maqom, folklor an'nalari rivojlangan.",
+            "O'zbekiston me'morchiligi": "O'zbekiston me'morchiligi — Registon, Bibixonim masjidi, G'ur-Emir, Xiva devorlari an'nalari dunyoga mashhur.",
+            "O'zbekiston qadimiy san'at asarlari": "O'zbekiston qadimiy san'at asarlari: afrosiob rasmlari, varaxsha g'ishtlari, topal tepe haykallari.",
+            "O'zbekiston tarixiy xaritalari": "O'zbekiston tarixiy xaritalari — qadimiy shaharlar, savdo yo'llari, davlatlar chegaralari ko'rsatilgan.",
+            "Tarixda davrlar taqsimoti": "Tarixda davrlar: qadimiy, o'rta asrlar, yangi davr, eng yangi davr.",
+            "Tarixda sanoq tizimlari": "Tarixda sanoq tizimlari: milodiy, hijriy, buddaviy, hind, yahudiy tizimlari bor.",
+            "Tarixda yil hisobi": "Tarixda yil hisobi — sanalar miloddan avval yoki keyin bo'yicha hisoblanadi.",
+            "Tarixda asrlar hisobi": "Tarixda asrlar hisobi — har 100 yil bir asr hisoblanadi. 1–100 yillar — I asr.",
+            "Tarixda mingyilliklar": "Tarixda mingyilliklar — 1000 yil bir mingyillik hisoblanadi.",
+            "Tarixda davrlar nomlari": "Tarixda davrlar nomlari: qadimiy, feodal, kapitalizm, sotsializm, postindustrial davr.",
+            "Tarixda voqealar ketma-ketligi": "Tarixda voqealar ketma-ketligi — xronologik tartibda joylashtiriladi.",
+            "Tarixda qahramonlar": "Tarixda qahramonlar — xalq uchun kurashgan, vatanni himoya qilgan shaxslar.",
+            "Tarixda sultonlar": "Tarixda sultonlar — Oltin O'rda, G'aznaviylar, Qoraxoniylar hukmdorlari.",
+            "Tarixda xonlar": "Tarixda xonlar — mo'g'ul, o'zbek xonliklari hukmdorlari.",
+            "Tarixda amirlar": "Tarixda amirlar — Buxoro amirligi hukmdorlari.",
+            "Tarixda shayxlar": "Tarixda shayxlar — diniy yetakchilar, Sufiylik tarqatuvchilar.",
+            "Tarixda mutafakkirlar": "Tarixda mutafakkirlar — Ibn Sino, Beruniy, Farobiy, Al-Xorazmiy.",
+            "Tarixda shoirlar": "Tarixda shoirlar — Alisher Navoiy, Bobur, Fuzuli, Furqat.",
+            "Tarixda sanoatchilar": "Tarixda sanoatchilar — qadimiy davrlarda savdo, sanoat bilan shug'ullangan kishilar.",
+            "Tarixda savdogarlar": "Tarixda savdogarlar — ipak yo'li bo'ylab savdo qilgan kishilar.",
+            "Tarixda askarlar": "Tarixda askarlar — qadimiy va o'rta asr armiyalari a'zolari.",
+            "Tarixda dehqonlar": "Tarixda dehqonlar — qishloq xo'jaligida mehnat qiluvchi kishilar.",
+            "Tarixda hunarmandlar": "Tarixda hunarmandlar — idish, g'isht, poyabzal, kiyim yasash bilan shug'ullangan kishilar.",
+            "Tarixda me'morlar": "Tarixda me'morlar — Ulug'bek, Bobur, Mirzo Ulug'bek rasadxonasi, Registon me'morlari.",
+            "Tarixda rassomlar": "Tarixda rassomlar — afrosiob rasmlari, miniatyura rassomlari.",
+            "Tarixda kompozitorlar": "Tarixda kompozitorlar — shashmaqom ijrochilari, maqom ustaları."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf tarix darsligi bo'yicha AI yordamchiman. Savollarga batafsil javob beraman va tarixiy hisob-kitoblarni amalga oshiraman! 📜", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
