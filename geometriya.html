@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometriya AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #4a148c, #7b1fa2, #9c27b0);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #ce93d8;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ce93d8"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #ce93d8;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #e1bee7;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(206, 147, 216, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #ce93d8;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(206, 147, 216, 0.3);
+            text-shadow: 0 0 10px rgba(206, 147, 216, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #7b1fa2, #9c27b0);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #6a1b9a, #ce93d8);
+            color: white;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ce93d8;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(206, 147, 216, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ce93d8 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ce93d8;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(100, 50, 120, 0.4);
+            color: #ce93d8;
+            border: 1px solid rgba(206, 147, 216, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(206, 147, 216, 0.2);
+            border-color: #ce93d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(206, 147, 216, 0.2);
+        }
+
+        /* GEOMETRIK KALKULYATOR */
+        .geo-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ce93d8;
+            border-radius: 15px;
+            padding: 10px;
+            width: 220px;
+            box-shadow: 0 0 15px rgba(206, 147, 216, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #ce93d8;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #e1bee7;
+            border: 1px solid #ce93d8;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b39ddb;
+        }
+
+        .calc-input-group input {
+            width: 90px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #9c27b0;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(156, 39, 176, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(156, 39, 176, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .geo-calculator {
+                width: 180px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 70px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Geometriya AI + Kalkulyator</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ geometriya savoli va maxsus hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">📐 7-sinf Geometriya AI Bot</div>
+
+        <!-- GEOMETRIK KALKULYATOR -->
+        <div class="geo-calculator">
+            <div class="calc-title">Geometrik Kalkulyator</div>
+            <select class="calc-select" id="geo-shape">
+                <option value="triangle-angles">Uchburchak burchaklari</option>
+                <option value="square">Kvadrat (yuz, perimetr)</option>
+                <option value="rectangle">To'g'ri to'rtburchak</option>
+                <option value="circle">Aylana (uzunlik, yuz)</option>
+                <option value="triangle-area">Uchburchak yuzi</option>
+                <option value="pythagoras">Pifagor teoremasi</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateGeometry()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Geometrik kalkulyator
+        const shapeSelect = document.getElementById('geo-shape');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "triangle-angles": [
+                { label: "Burchak A (°):", id: "angleA", placeholder: "masalan: 60" },
+                { label: "Burchak B (°):", id: "angleB", placeholder: "masalan: 70" }
+            ],
+            "square": [
+                { label: "Tomon (a):", id: "side", placeholder: "masalan: 5" }
+            ],
+            "rectangle": [
+                { label: "Tomon a:", id: "rectA", placeholder: "5" },
+                { label: "Tomon b:", id: "rectB", placeholder: "3" }
+            ],
+            "circle": [
+                { label: "Radius (r):", id: "radius", placeholder: "masalan: 4" }
+            ],
+            "triangle-area": [
+                { label: "Asos (a):", id: "base", placeholder: "6" },
+                { label: "Balandlik (h):", id: "height", placeholder: "4" }
+            ],
+            "pythagoras": [
+                { label: "Katet a:", id: "legA", placeholder: "3" },
+                { label: "Katet b:", id: "legB", placeholder: "4" }
+            ]
+        };
+
+        function updateInputs() {
+            const shape = shapeSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[shape];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateGeometry() {
+            const shape = shapeSelect.value;
+            try {
+                let result = "";
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num) || num <= 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (shape === "triangle-angles") {
+                    const a = parseFloatSafe("angleA");
+                    const b = parseFloatSafe("angleB");
+                    if (a + b >= 180) throw new Error("Burchaklar yig'indisi 180° dan kam bo'lishi kerak");
+                    const c = 180 - a - b;
+                    result = `Uchinchi burchak: ${c.toFixed(2)}°`;
+                }
+                else if (shape === "square") {
+                    const a = parseFloatSafe("side");
+                    const perimeter = 4 * a;
+                    const area = a * a;
+                    result = `Perimetr: ${perimeter.toFixed(2)}, Yuz: ${area.toFixed(2)}`;
+                }
+                else if (shape === "rectangle") {
+                    const a = parseFloatSafe("rectA");
+                    const b = parseFloatSafe("rectB");
+                    const perimeter = 2 * (a + b);
+                    const area = a * b;
+                    result = `Perimetr: ${perimeter.toFixed(2)}, Yuz: ${area.toFixed(2)}`;
+                }
+                else if (shape === "circle") {
+                    const r = parseFloatSafe("radius");
+                    const pi = Math.PI;
+                    const circumference = 2 * pi * r;
+                    const area = pi * r * r;
+                    result = `Uzunlik: ${circumference.toFixed(2)}, Yuz: ${area.toFixed(2)}`;
+                }
+                else if (shape === "triangle-area") {
+                    const base = parseFloatSafe("base");
+                    const height = parseFloatSafe("height");
+                    const area = 0.5 * base * height;
+                    result = `Yuz: ${area.toFixed(2)}`;
+                }
+                else if (shape === "pythagoras") {
+                    const a = parseFloatSafe("legA");
+                    const b = parseFloatSafe("legB");
+                    const c = Math.sqrt(a*a + b*b);
+                    result = `Gipotenuza: ${c.toFixed(2)}`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        shapeSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ geometriya savollari (7-sinf darslik asosida)
+        const questions = [
+            "Geometriya nima?", "Nima uchun geometriyani o'rganamiz?", "Nuqta nima?", "To'g'ri chiziq nima?",
+            "Nur nima?", "Kesma nima?", "Burchak nima?", "Bissectrisa nima?", "Teng burchaklar nima?",
+            "To'g'ri burchak nima?", "O'tmas burchak nima?", "O'tkir burchak nima?", "Yoyiq burchak nima?",
+            "Qo'shni burchaklar nima?", "Vertikal burchaklar nima?", "Uchburchak nima?", "Uchburchakning turlari?",
+            "Teng yonli uchburchak nima?", "Teng tomonli uchburchak nima?", "To'g'ri burchakli uchburchak nima?",
+            "Uchburchakning perimetri nima?", "Uchburchakning yuzi qanday hisoblanadi?", "Mediana nima?",
+            "Balandlik nima?", "Bissectrisa nima?", "Pifagor teoremasi nima?", "Kvadrat nima?",
+            "To'g'ri to'rtburchak nima?", "Romb nima?", "Parallelogramm nima?", "Trapeksiya nima?",
+            "Ko'pburchak nima?", "Muntazam ko'pburchak nima?", "Aylana nima?", "Doira nima?",
+            "Radius nima?", "Diametr nima?", "Vatar nima?", "Aylana uzunligi qanday hisoblanadi?",
+            "Doira yuzi qanday hisoblanadi?", "Geometrik jismlar nima?", "Kub nima?", "Paralelepiped nima?",
+            "Prizma nima?", "Piramida nima?", "Shartli belgilar nima uchun kerak?", "Geometrik shakllarni chizish",
+            "Masofa nima?", "Perpendikulyar nima?", "Parallel to'g'ri chiziqlar nima?", "Koordinata tekisligi",
+            "Nuqtaning koordinatalari", "Segment uzunligi qanday topiladi?", "Burchak o'lchov birligi",
+            "Gradus nima?", "Minut nima?", "Sekund nima?", "Transportir nima uchun kerak?",
+            "Sirkul nima uchun kerak?", "Chizg'ich nima uchun kerak?", "Uchburchak tengsizligi",
+            "Uchburchakning ichki burchaklari yig'indisi", "Tashqi burchak nima?", "Uchburchakning tashqi burchagi",
+            "Medianalar kesishgan nuqta", "Balandliklar kesishgan nuqta", "Bissectrisalar kesishgan nuqta",
+            "Teng yonli uchburchak xossalari", "Teng tomonli uchburchak xossalari", "To'g'ri burchakli uchburchak xossalari",
+            "Gipotenuza nima?", "Katet nima?", "30° li burchak qarshisidagi katet", "Pifagor sonlari",
+            "Geometrik joy nima?", "Aylana yoyi nima?", "Markaziy burchak nima?", "Chiziq burchak nima?",
+            "Doiraviy segment nima?", "Doiraviy sektor nima?", "Geometrik masalalarni yechish bosqichlari",
+            "Chizma qilish nima uchun kerak?", "Geometrik isbot nima?", "Aksioma nima?", "Teorema nima?",
+            "Geometriyada ta'rif nima?", "Fazoviy shakllar nima?", "Yuz nima?", "Hajm nima?",
+            "Kvadratning perimetri", "Kvadratning yuzi", "To'g'ri to'rtburchakning perimetri", "To'g'ri to'rtburchakning yuzi",
+            "Rombning perimetri", "Rombning yuzi", "Parallelogrammning perimetri", "Parallelogrammning yuzi",
+            "Trapeksiyaning perimetri", "Trapeksiyaning yuzi", "Muntazam uchburchakning yuzi",
+            "Muntazam oltiburchakning yuzi", "Aylananing uzunligi", "Doiraning yuzi", "Kubning hajmi",
+            "Kubning sirti", "To'rtburchak parallelepiped hajmi", "To'rtburchak parallelepiped sirti",
+            "Geometriyada o'xshashlik", "Geometriyada tenglik", "Geometriyada simmetriya",
+            "O'qqa nisbatan simmetriya", "Markazga nisbatan simmetriya", "Parallel ko'chirish",
+            "Burilish nima?", "Geometrik almashtirishlar", "Koordinata tekisligida nuqta koordinatalari",
+            "Nuqtalarni kesishmasdan qanday belgilaymiz?", "Geometrik shakllarni nomlash",
+            "Geometriyada ishlatiladigan lotin harflari", "Geometrik masalalarda qanday yozuvlar kerak?",
+            "Geometriyada hisob-kitoblar", "Geometriyada taxmin qilish", "Geometriyada aniqlik",
+            "Geometriyada xatolikka yo'l qo'ymaslik", "Geometriyada chizma aniqligi", "Geometriyada hisoblash tartibi"
+        ];
+
+        // ✅ Javoblar — 7-sinf geometriya darsligi asosida
+        const responses = {
+            "Geometriya nima?": "Geometriya — fazodagi shakl, o'lcham va o'zaro joylashuvni o'rganuvchi matematika bo'limi.",
+            "Nima uchun geometriyani o'rganamiz?": "Geometriya atrofimizdagi dunyoni tushunish, muhandislik, arxitektura, dizayn sohalarida kerak bo'ladi.",
+            "Nuqta nima?": "Nuqta — geometriyaning asosiy tushunchalaridan biri. U joylashuvni bildiradi, lekin o'lchami yo'q.",
+            "To'g'ri chiziq nima?": "To'g'ri chiziq — ikki nuqtadan o'tuvchi, cheksiz uzunlikdagi va to'g'ri chiziqli shakl.",
+            "Nur nima?": "Nur — bitta nuqtadan boshlanib, bir tomonga cheksiz davom etuvchi to'g'ri chiziqning qismi.",
+            "Kesma nima?": "Kesma — ikkita nuqta orasidagi to'g'ri chiziqning cheklangan qismi.",
+            "Burchak nima?": "Burchak — bir nuqtadan chiqqan ikkita nur orasidagi figura.",
+            "Bissectrisa nima?": "Bissectrisa — burchakni ikkita teng burchakka bo'luvchi nur.",
+            "Teng burchaklar nima?": "Teng burchaklar — gradus o'lchovi bir xil bo'lgan burchaklar.",
+            "To'g'ri burchak nima?": "To'g'ri burchak — 90° ga teng bo'lgan burchak.",
+            "O'tmas burchak nima?": "O'tmas burchak — 90° dan katta, 180° dan kichik bo'lgan burchak.",
+            "O'tkir burchak nima?": "O'tkir burchak — 0° dan katta, 90° dan kichik bo'lgan burchak.",
+            "Yoyiq burchak nima?": "Yoyiq burchak — 180° ga teng bo'lgan burchak.",
+            "Qo'shni burchaklar nima?": "Qo'shni burchaklar — bir tomoni umumiy, ikkinchi tomonlari to'g'ri chiziqni tashkil qiluvchi ikkita burchak.",
+            "Vertikal burchaklar nima?": "Vertikal burchaklar — ikkita to'g'ri chiziqning kesishishidan hosil bo'ladigan qarama-qarshi burchaklar.",
+            "Uchburchak nima?": "Uchburchak — uchta nuqta va ularni tutashtiruvchi uchta kesmadan tashkil topgan figura.",
+            "Uchburchakning turlari?": "Uchburchaklar burchaklari bo'yicha: o'tkir burchakli, o'tmas burchakli, to'g'ri burchakli. Tomonlari bo'yicha: teng yonli, teng tomonli, turli tomonli.",
+            "Teng yonli uchburchak nima?": "Teng yonli uchburchak — ikkita tomoni teng bo'lgan uchburchak.",
+            "Teng tomonli uchburchak nima?": "Teng tomonli uchburchak — uchala tomoni teng bo'lgan uchburchak.",
+            "To'g'ri burchakli uchburchak nima?": "To'g'ri burchakli uchburchak — burchaklaridan biri to'g'ri (90°) bo'lgan uchburchak.",
+            "Uchburchakning perimetri nima?": "Uchburchakning perimetri — uchala tomonining uzunliklari yig'indisiga teng.",
+            "Uchburchakning yuzi qanday hisoblanadi?": "Uchburchakning yuzi = (asos × balandlik) ÷ 2.",
+            "Mediana nima?": "Mediana — uchburchakning uchidan qarshisidagi tomon o'rtasiga tushirilgan kesma.",
+            "Balandlik nima?": "Balandlik — uchburchakning uchidan qarshisidagi tomonga perpendikulyar tushirilgan kesma.",
+            "Bissectrisa nima?": "Bissectrisa — uchburchakning burchagini teng ikkiga bo'luvchi kesma.",
+            "Pifagor teoremasi nima?": "To'g'ri burchakli uchburchakda gipotenuzaning kvadrati katetlarning kvadratlari yig'indisiga teng: c² = a² + b².",
+            "Kvadrat nima?": "Kvadrat — barcha tomonlari teng va barcha burchaklari to'g'ri bo'lgan to'rtburchak.",
+            "To'g'ri to'rtburchak nima?": "To'g'ri to'rtburchak — barcha burchaklari to'g'ri bo'lgan parallelogramm.",
+            "Romb nima?": "Romb — barcha tomonlari teng bo'lgan parallelogramm.",
+            "Parallelogramm nima?": "Parallelogramm — qarama-qarshi tomonlari parallel bo'lgan to'rtburchak.",
+            "Trapeksiya nima?": "Trapeksiya — faqat ikkita qarama-qarshi tomoni parallel bo'lgan to'rtburchak.",
+            "Ko'pburchak nima?": "Ko'pburchak — uchta yoki undan ko'p tomonli yopiq figura.",
+            "Muntazam ko'pburchak nima?": "Muntazam ko'pburchak — barcha tomonlari va burchaklari teng bo'lgan ko'pburchak.",
+            "Aylana nima?": "Aylana — berilgan nuqtadan (markazdan) bir xil masofada yotuvchi nuqtalar to'plami.",
+            "Doira nima?": "Doira — aylana bilan chegaralangan yopiq soha.",
+            "Radius nima?": "Radius — aylana markazidan uning istalgan nuqtasigacha bo'lgan kesma.",
+            "Diametr nima?": "Diametr — aylana markazidan o'tuvchi va aylananing ikki nuqtasini tutashtiruvchi kesma. Diametr = 2 × radius.",
+            "Vatar nima?": "Vatar — aylananing istalgan ikki nuqtasini tutashtiruvchi kesma.",
+            "Aylana uzunligi qanday hisoblanadi?": "Aylana uzunligi C = 2πr yoki C = πd, bu yerda r — radius, d — diametr, π ≈ 3.14.",
+            "Doira yuzi qanday hisoblanadi?": "Doira yuzi S = πr², bu yerda r — radius.",
+            "Geometrik jismlar nima?": "Geometrik jismlar — fazoda uch o'lchovli shakllar: kub, shar, prizma, piramida va h.k.",
+            "Kub nima?": "Kub — barcha qirralari teng bo'lgan to'g'ri burchakli parallelepiped.",
+            "Paralelepiped nima?": "Parallelepiped — qarama-qarshi yuzlari teng parallelogrammlardan iborat jism.",
+            "Prizma nima?": "Prizma — ikkita asosi teng ko'pburchaklardan, yon qirralari parallelogrammlardan iborat jism.",
+            "Piramida nima?": "Piramida — bitta asosi ko'pburchakdan, yon yuzlari uchburchaklardan iborat jism.",
+            "Shartli belgilar nima uchun kerak?": "Shartli belgilar — geometrik shakllarni to'g'ri chizish va tushunish uchun kerak. Masalan: perpendikulyar ⊥, parallel ∥.",
+            "Geometrik shakllarni chizish": "Geometrik shakllarni chizish uchun sirkul, chizg'ich, transportir kabi asboblar kerak.",
+            "Masofa nima?": "Masofa — ikki nuqta orasidagi to'g'ri chiziq uzunligi.",
+            "Perpendikulyar nima?": "Perpendikulyar — ikkita to'g'ri chiziqning 90° burchak ostida kesishuvi.",
+            "Parallel to'g'ri chiziqlar nima?": "Parallel to'g'ri chiziqlar — hech qachon kesishmaydigan to'g'ri chiziqlar.",
+            "Koordinata tekisligi": "Koordinata tekisligi — ikkita perpendikulyar o'q (Ox va Oy) yordamida nuqtalarni belgilash tizimi.",
+            "Nuqtaning koordinatalari": "Nuqtaning koordinatalari — (x; y) ko'rinishidagi sonlar juftligi, bu nuqtaning o'qlardagi joylashuvini ko'rsatadi.",
+            "Segment uzunligi qanday topiladi?": "Segment uzunligi = |x₂ - x₁| (bir o'qda). Ikki o'qda: √[(x₂-x₁)² + (y₂-y₁)²].",
+            "Burchak o'lchov birligi": "Burchak o'lchov birligi — gradus (°). To'liq aylana 360°, yoyiq burchak 180°, to'g'ri burchak 90°.",
+            "Gradus nima?": "Gradus — burchak o'lchov birligi. To'liq aylananing 1/360 qismi.",
+            "Minut nima?": "Minut — gradusning 1/60 qismi. Belgisi: '.",
+            "Sekund nima?": "Sekund — minutning 1/60 qismi. Belgisi: \".",
+            "Transportir nima uchun kerak?": "Transportir — burchaklarni o'lchash va chizish uchun asbob.",
+            "Sirkul nima uchun kerak?": "Sirkul — aylana, doira, kesma uzunligini ko'chirish uchun ishlatiladi.",
+            "Chizg'ich nima uchun kerak?": "Chizg'ich — to'g'ri chiziqlar, kesmalar chizish uchun ishlatiladi.",
+            "Uchburchak tengsizligi": "Uchburchakning istalgan tomoni qolgan ikki tomonining yig'indisidan kichik bo'ladi.",
+            "Uchburchakning ichki burchaklari yig'indisi": "Uchburchakning ichki burchaklari yig'indisi har doim 180° ga teng.",
+            "Tashqi burchak nima?": "Tashqi burchak — uchburchakning bir ichki burchagiga qo'shni bo'lgan burchak.",
+            "Uchburchakning tashqi burchagi": "Uchburchakning tashqi burchagi qarama-qarshi ichki burchaklar yig'indisiga teng.",
+            "Medianalar kesishgan nuqta": "Medianalar uchburchakning yuzini teng 6 ta qismga bo'ladi va bitta nuqtada kesishadi.",
+            "Balandliklar kesishgan nuqta": "Balandliklar ham bitta nuqtada kesishadi — bu nuqta uchburchak turi (o'tkir, o'tmas, to'g'ri)ga qarab ichkarida yoki tashqarida bo'ladi.",
+            "Bissectrisalar kesishgan nuqta": "Bissectrisalar doim uchburchak ichida bitta nuqtada kesishadi va shu nuqta aylana markazidir.",
+            "Teng yonli uchburchak xossalari": "Teng yonli uchburchakda asosga tushirilgan balandlik, mediana va bissectrisa bir xil bo'ladi.",
+            "Teng tomonli uchburchak xossalari": "Teng tomonli uchburchakda barcha burchaklar 60° ga teng, barcha medianalar, balandliklar, bissectrisalar bir xil.",
+            "To'g'ri burchakli uchburchak xossalari": "To'g'ri burchakli uchburchakda Pifagor teoremasi o'rinli, 30° li burchak qarshisidagi katet gipotenuzaning yarmiga teng.",
+            "Gipotenuza nima?": "Gipotenuza — to'g'ri burchakli uchburchakning to'g'ri burchak qarshisidagi eng uzun tomon.",
+            "Katet nima?": "Katet — to'g'ri burchakli uchburchakning to'g'ri burchakni hosil qiluvchi tomonlari.",
+            "30° li burchak qarshisidagi katet": "To'g'ri burchakli uchburchakda 30° li burchak qarshisidagi katet gipotenuzaning yarmiga teng.",
+            "Pifagor sonlari": "Pifagor sonlari — Pifagor teoremasini qanoatlantiruvchi natural sonlar uchligi. Masalan: (3, 4, 5), (5, 12, 13).",
+            "Geometrik joy nima?": "Geometrik joy — berilgan shartni qanoatlantiruvchi barcha nuqtalar to'plami. Masalan: aylana — berilgan nuqtadan bir xil masofadagi nuqtalar to'plami.",
+            "Aylana yoyi nima?": "Aylana yoyi — aylananing ikkita nuqta orasidagi qismi.",
+            "Markaziy burchak nima?": "Markaziy burchak — uchlanishi aylana markazida bo'lgan burchak.",
+            "Chiziq burchak nima?": "Chiziq burchak — uchlanishi aylana nuqtasida, tomonlari esa vatar bo'lgan burchak.",
+            "Doiraviy segment nima?": "Doiraviy segment — vatar va aylana yoyi orasidagi qism.",
+            "Doiraviy sektor nima?": "Doiraviy sektor — ikkita radius va ular orasidagi yoy bilan chegaralangan qism.",
+            "Geometrik masalalarni yechish bosqichlari": "1) Masalani tushunish, 2) Chizma chizish, 3) Berilgan va topiladiganlarni aniqlash, 4) Formula yoki teoremadan foydalanish, 5) Hisoblash, 6) Javobni tekshirish.",
+            "Chizma qilish nima uchun kerak?": "Chizma — masalani vizual ravishda tushunish, berilganlarni to'g'ri joylashtirish uchun kerak.",
+            "Geometrik isbot nima?": "Geometrik isbot — teorema yoki fikrning to'g'riligini mantiqiy fikrlar bilan asoslash.",
+            "Aksioma nima?": "Aksioma — isbot talab qilmaydigan asosiy geometrik fikr. Masalan: 'Ikki nuqtadan faqat bitta to'g'ri chiziq o'tkazish mumkin.'",
+            "Teorema nima?": "Teorema — isbotlangan geometrik fikr. Masalan: 'Pifagor teoremasi'.",
+            "Geometriyada ta'rif nima?": "Ta'rif — tushunchani aniq ifodalash. Masalan: 'Kvadrat — barcha tomonlari teng bo'lgan to'g'ri to'rtburchak.'",
+            "Fazoviy shakllar nima?": "Fazoviy shakllar — uch o'lchovli (uzunlik, kenglik, balandlik) jismlar: kub, shar, silindr.",
+            "Yuz nima?": "Yuz — figura tomonidan egallangan tekislikdagi maydon o'lchovi.",
+            "Hajm nima?": "Hajm — jism tomonidan egallangan fazodagi hajm o'lchovi.",
+            "Kvadratning perimetri": "Kvadratning perimetri P = 4a, bu yerda a — tomon uzunligi.",
+            "Kvadratning yuzi": "Kvadratning yuzi S = a².",
+            "To'g'ri to'rtburchakning perimetri": "To'g'ri to'rtburchakning perimetri P = 2(a + b).",
+            "To'g'ri to'rtburchakning yuzi": "To'g'ri to'rtburchakning yuzi S = a × b.",
+            "Rombning perimetri": "Rombning perimetri P = 4a.",
+            "Rombning yuzi": "Rombning yuzi S = a × h yoki S = (d₁ × d₂) ÷ 2, bu yerda d₁, d₂ — diagonal uzunliklari.",
+            "Parallelogrammning perimetri": "Parallelogrammning perimetri P = 2(a + b).",
+            "Parallelogrammning yuzi": "Parallelogrammning yuzi S = a × h.",
+            "Trapeksiyaning perimetri": "Trapeksiyaning perimetri — tomonlar yig'indisi: P = a + b + c + d.",
+            "Trapeksiyaning yuzi": "Trapeksiyaning yuzi S = (a + b) ÷ 2 × h, bu yerda a, b — asoslar, h — balandlik.",
+            "Muntazam uchburchakning yuzi": "Muntazam uchburchakning yuzi S = (√3 ÷ 4) × a².",
+            "Muntazam oltiburchakning yuzi": "Muntazam oltiburchakning yuzi S = (3√3 ÷ 2) × a².",
+            "Aylananing uzunligi": "Aylananing uzunligi C = 2πr.",
+            "Doiraning yuzi": "Doiraning yuzi S = πr².",
+            "Kubning hajmi": "Kubning hajmi V = a³.",
+            "Kubning sirti": "Kubning sirti S = 6a².",
+            "To'rtburchak parallelepiped hajmi": "To'rtburchak parallelepiped hajmi V = a × b × c.",
+            "To'rtburchak parallelepiped sirti": "To'rtburchak parallelepiped sirti S = 2(ab + ac + bc).",
+            "Geometriyada o'xshashlik": "O'xshash shakllar — shakllari bir xil, lekin o'lchamlari turli bo'lgan figuralar.",
+            "Geometriyada tenglik": "Teng shakllar — o'lchamlari va shakllari bir xil bo'lgan figuralar.",
+            "Geometriyada simmetriya": "Simmetriya — shaklning o'q yoki markazga nisbatan o'ziga o'xshashligi.",
+            "O'qqa nisbatan simmetriya": "O'qqa nisbatan simmetriya — shakl biror to'g'ri chiziq (o'q) atrofida aylantirilganda o'ziga mos kelishi.",
+            "Markazga nisbatan simmetriya": "Markazga nisbatan simmetriya — shakl markaz orqali 180° burilganda o'ziga mos kelishi.",
+            "Parallel ko'chirish": "Parallel ko'chirish — shaklni biror yo'nalishda siljitish, shaklning o'lchami va burchaklari o'zgarmaydi.",
+            "Burilish nima?": "Burilish — shaklni biror nuqta atrofida ma'lum burchakka aylantirish.",
+            "Geometrik almashtirishlar": "Geometrik almashtirishlar — simmetriya, parallel ko'chirish, burilish orqali shaklning joylashuvini o'zgartirish.",
+            "Koordinata tekisligida nuqta koordinatalari": "Nuqta koordinatalari (x; y), x — absissa, y — ordinata.",
+            "Nuqtalarni kesishmasdan qanday belgilaymiz?": "Nuqtalarni katta lotin harflari bilan belgilaymiz: A, B, C, D.",
+            "Geometrik shakllarni nomlash": "Geometrik shakllarni nuqtalari orqali nomlaymiz: uchburchak ABC, to'rtburchak DEFG.",
+            "Geometriyada ishlatiladigan lotin harflari": "Nuqtalar — A, B, C; tomonlar — a, b, c; burchaklar — α, β, γ yoki A, B, C.",
+            "Geometrik masalalarda qanday yozuvlar kerak?": "Berilgan, Topish kerak, Yechish, Javob — shu 4 qism bo'lishi kerak.",
+            "Geometriyada hisob-kitoblar": "Geometriyada hisob-kitoblar aniq formulalar asosida amalga oshiriladi.",
+            "Geometriyada taxmin qilish": "Ba'zi hollarda natijani taxmin qilish ham foydali bo'ladi.",
+            "Geometriyada aniqlik": "Geometriyada chizma va hisoblar juda aniq bo'lishi kerak.",
+            "Geometriyada xatolikka yo'l qo'ymaslik": "Kichik xatolar ham masala yechimini noto'g'ri qilishi mumkin.",
+            "Geometriyada chizma aniqligi": "Chizma qanchalik aniq bo'lsa, masalani tushunish shunchalik oson.",
+            "Geometriyada hisoblash tartibi": "Geometriyada ham hisoblash tartibi: qavslar, daraja, ko'paytirish/bo'lish, qo'shish/ayirish."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf geometriya darsligi bo'yicha AI yordamchiman. Savollarga javob beraman va hisoblashga yordam beraman! 📐", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
