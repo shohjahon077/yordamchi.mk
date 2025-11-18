@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jismoniy Tarbiya AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #006064, #00838f, #0097a7);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Kirish ekran */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #80deea;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2380deea"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #80deea;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #b2ebf2;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(128, 222, 234, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #80deea;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(128, 222, 234, 0.3);
+            text-shadow: 0 0 10px rgba(128, 222, 234, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #00838f, #039be5);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #01579b, #81d4fa);
+            color: white;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #80deea;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(128, 222, 234, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #80deea transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #80deea;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 100, 120, 0.4);
+            color: #80deea;
+            border: 1px solid rgba(128, 222, 234, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(128, 222, 234, 0.2);
+            border-color: #80deea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(128, 222, 234, 0.2);
+        }
+
+        /* JISMONIY TARBIYA KALKULYATORI */
+        .fitness-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #80deea;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(128, 222, 234, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #80deea;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #b3e5fc;
+            border: 1px solid #80deea;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #b3e5fc;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #039be5;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(3, 155, 229, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(3, 155, 229, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .fitness-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Jismoniy Tarbiya AI</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ savol va sog'liqni hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">💪 7-sinf Jismoniy Tarbiya AI Bot</div>
+
+        <!-- FITNESS KALKULYATORI -->
+        <div class="fitness-calculator">
+            <div class="calc-title">Sog'liq Kalkulyatori</div>
+            <select class="calc-select" id="fitness-formula">
+                <option value="bmi">BMI hisoblash</option>
+                <option value="heart-rate">Puls me'yori</option>
+                <option value="calories">Kalloriyani taxmin qilish</option>
+                <option value="speed">Tezlik (m/s)</option>
+                <option value="steps">Qadam sonidan masofa</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateFitness()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Fitness kalkulyatori
+        const formulaSelect = document.getElementById('fitness-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "bmi": [
+                { label: "Og'irlik (kg):", id: "weight", placeholder: "50" },
+                { label: "Bo'y (sm):", id: "height", placeholder: "160" }
+            ],
+            "heart-rate": [
+                { label: "Yosh:", id: "age", placeholder: "13" }
+            ],
+            "calories": [
+                { label: "Vazn (kg):", id: "calWeight", placeholder: "50" },
+                { label: "Masofa (km):", id: "distance", placeholder: "3" },
+                { label: "Vaqt (min):", id: "time", placeholder: "30" }
+            ],
+            "speed": [
+                { label: "Masofa (m):", id: "dist", placeholder: "100" },
+                { label: "Vaqt (s):", id: "sec", placeholder: "15" }
+            ],
+            "steps": [
+                { label: "Qadam soni:", id: "steps", placeholder: "10000" },
+                { label: "Bir qadam uzunligi (m):", id: "stepLength", placeholder: "0.6" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateFitness() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num) || num <= 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+                const parseIntSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseInt(val);
+                    if (isNaN(num) || num <= 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "bmi") {
+                    const weight = parseFloatSafe("weight");
+                    const height = parseFloatSafe("height") / 100;
+                    const bmi = weight / (height * height);
+                    let status = "";
+                    if (bmi < 16) status = "Kuchli ozish";
+                    else if (bmi < 18.5) status = "Ozish";
+                    else if (bmi < 25) status = "Normal";
+                    else if (bmi < 30) status = "Semizlik I-daraja";
+                    else status = "Semizlik II-daraja";
+                    result = `BMI: ${bmi.toFixed(2)} → ${status}`;
+                }
+                else if (formula === "heart-rate") {
+                    const age = parseIntSafe("age");
+                    const maxHR = 220 - age;
+                    const targetLow = Math.round(maxHR * 0.6);
+                    const targetHigh = Math.round(maxHR * 0.8);
+                    result = `Puls me'yori: ${targetLow}-${targetHigh} bpm`;
+                }
+                else if (formula === "calories") {
+                    const w = parseFloatSafe("calWeight");
+                    const d = parseFloatSafe("distance");
+                    const t = parseFloatSafe("time");
+                    const calories = w * d * 1.036;
+                    const speed = (d * 1000) / (t * 60);
+                    result = `Taxminan kaloriya: ${calories.toFixed(0)} kcal\nTezlik: ${speed.toFixed(2)} m/s`;
+                }
+                else if (formula === "speed") {
+                    const dist = parseFloatSafe("dist");
+                    const sec = parseFloatSafe("sec");
+                    if (sec === 0) throw new Error("Vaqt 0 bo'lishi mumkin emas");
+                    const speed = dist / sec;
+                    result = `${dist}/${sec} = ${speed.toFixed(2)} m/s`;
+                }
+                else if (formula === "steps") {
+                    const steps = parseIntSafe("steps");
+                    const len = parseFloatSafe("stepLength");
+                    const distance = steps * len / 1000;
+                    result = `${steps} qadam ≈ ${(steps * len).toFixed(2)} metr\n${distance.toFixed(2)} km`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ jismoniy tarbiya savollari (7-sinf darsligi asosida)
+        const questions = [
+            "Jismoniy tarbiya nima?", "Nima uchun jismoniy tarbiyani o'rganamiz?", "Jismoniy faoliyat nima?",
+            "Sport nima?", "Sog'lom turmush tarzi nima?", "Sog'liq nima?", "Jismoniy sog'liq nima?",
+            "Ruhiy sog'liq nima?", "Ijtimoiy sog'liq nima?", "Sog'liqni saqlash nima?",
+            "Jismoniy tarbiyaning ahamiyati", "Jismoniy tarbiya bilan o'sish", "Jismoniy tarbiya bilan rivojlanish",
+            "Jismoniy tarbiya bilan sog'liq", "Jismoniy tarbiya bilan og'irlik", "Jismoniy tarbiya bilan miya",
+            "Jismoniy tarbiya bilan uyqu", "Jismoniy tarbiya bilan stress", "Jismoniy tarbiya bilan irodani mustahkamlash",
+            "Jismoniy tarbiya bilan do'stona munosabatlar", "Jismoniy tarbiya bilan millatparvarlik",
+            "Jismoniy tarbiya bilan vatanga muhabbat", "Jismoniy tarbiya bilan mehnat sevgisi",
+            "Jismoniy tarbiya bilan adolat", "Jismoniy tarbiya bilan mehribonlik", "Jismoniy tarbiya bilan tinchlik",
+            "Jismoniy tarbiya bilan barqarorlik", "Jismoniy tarbiya bilan insonparvarlik", "Jismoniy tarbiya bilan xavfsizlik",
+            "Jismoniy tarbiya bilan ekologiya", "Jismoniy tarbiya bilan tabiat", "Jismoniy tarbiya bilan oila",
+            "Jismoniy tarbiya bilan maktab", "Jismoniy tarbiya bilan jamoa", "Jismoniy tarbiya bilan mehnat",
+            "Jismoniy tarbiya bilan san'at", "Jismoniy tarbiya bilan adabiyot", "Jismoniy tarbiya bilan musiqa",
+            "Jismoniy tarbiya bilan matematika", "Jismoniy tarbiya bilan fizika", "Jismoniy tarbiya bilan biologiya",
+            "Jismoniy tarbiya bilan geografiya", "Jismoniy tarbiya bilan tarix", "Jismoniy tarbiya bilan informatika",
+            "Jismoniy tarbiya bilan rus tili", "Jismoniy tarbiya bilan ingliz tili", "Jismoniy tarbiya bilan ona tili",
+            "Jismoniy tarbiya bilan ma’naviyat", "Jismoniy tarbiya bilan din", "Jismoniy tarbiya bilan axloq",
+            "Jismoniy tarbiya bilan madaniyat", "Jismoniy tarbiya bilan estetika", "Jismoniy tarbiya bilan psixologiya",
+            "Jismoniy tarbiya bilan pedagogika", "Jismoniy tarbiya bilan nutq", "Jismoniy tarbiya bilan harakat",
+            "Jismoniy tarbiya bilan koordinatsiya", "Jismoniy tarbiya bilan refleks", "Jismoniy tarbiya bilan reaksiya",
+            "Jismoniy tarbiya bilan qo'pol harakat", "Jismoniy tarbiya bilan aniqlik", "Jismoniy tarbiya bilan tezlik",
+            "Jismoniy tarbiya bilan quvvat", "Jismoniy tarbiya bilan chidamlilik", "Jismoniy tarbiya bilan moslashuvchanlik",
+            "Jismoniy tarbiya bilan plastiklik", "Jismoniy tarbiya bilan sinxronlik", "Jismoniy tarbiya bilan ritm",
+            "Jismoniy tarbiya bilan mantiq", "Jismoniy tarbiya bilan ijodkorlik", "Jismoniy tarbiya bilan tahlil",
+            "Jismoniy tarbiya bilan strategiya", "Jismoniy tarbiya bilan reja", "Jismoniy tarbiya bilan taktika",
+            "Jismoniy tarbiya bilan boshqaruv", "Jismoniy tarbiya bilan mas'uliyat", "Jismoniy tarbiya bilan intizom",
+            "Jismoniy tarbiya bilan tartib", "Jismoniy tarbiya bilan qoida", "Jismoniy tarbiya bilan qonun",
+            "Jismoniy tarbiya bilan o'yin", "Jismoniy tarbiya bilan kurash", "Jismoniy tarbiya bilan raqobat",
+            "Jismoniy tarbiya bilan hamkorlik", "Jismoniy tarbiya bilan jamoatchilik", "Jismoniy tarbiya bilan liderlik",
+            "Jismoniy tarbiya bilan qo'llab-quvvatlash", "Jismoniy tarbiya bilan guruh", "Jismoniy tarbiya bilan jamoa",
+            "Jismoniy tarbiya bilan suhbat", "Jismoniy tarbiya bilan aloqa", "Jismoniy tarbiya bilan til",
+            "Jismoniy tarbiya bilan xatti-harakat", "Jismoniy tarbiya bilan mehnat", "Jismoniy tarbiya bilan sovunish",
+            "Jismoniy tarbiya bilan tomosha", "Jismoniy tarbiya bilan ishtirok etish", "Jismoniy tarbiya bilan g'alaba",
+            "Jismoniy tarbiya bilan mag'lubiyat", "Jismoniy tarbiya bilan sabr", "Jismoniy tarbiya bilan izzat",
+            "Jismoniy tarbiya bilan faxr", "Jismoniy tarbiya bilan obro'", "Jismoniy tarbiya bilan hurmat",
+            "Jismoniy tarbiya bilan do'stlik", "Jismoniy tarbiya bilan ongli", "Jismoniy tarbiya bilan ongsiz",
+            "Jismoniy tarbiya bilan ong", "Jismoniy tarbiya bilan xotira", "Jismoniy tarbiya bilan diqqat",
+            "Jismoniy tarbiya bilan sezgi", "Jismoniy tarbiya bilan ko'rish", "Jismoniy tarbiya bilan eshitish",
+            "Jismoniy tarbiya bilan tekshirish", "Jismoniy tarbiya bilan baholash", "Jismoniy tarbiya bilan test",
+            "Jismoniy tarbiya bilan monitoring", "Jismoniy tarbiya bilan natijaviylik", "Jismoniy tarbiya bilan statistika",
+            "Jismoniy tarbiya bilan rekord", "Jismoniy tarbiya bilan standart", "Jismoniy tarbiya bilan me'yor",
+            "Jismoniy tarbiya bilan normativ", "Jismoniy tarbiya bilan sertifikat", "Jismoniy tarbiya bilan medaly",
+            "Jismoniy tarbiya bilan unvon", "Jismoniy tarbiya bilan diplim", "Jismoniy tarbiya bilan brend",
+            "Jismoniy tarbiya bilan moda", "Jismoniy tarbiya bilan kiyim", "Jismoniy tarbiya bilan poyafzal",
+            "Jismoniy tarbiya bilan sport jihozlari", "Jismoniy tarbiya bilan to'p", "Jismoniy tarbiya bilan maydon",
+            "Jismoniy tarbiya bilan sport zal", "Jismoniy tarbiya bilan trenajor", "Jismoniy tarbiya bilan sport mushaklari",
+            "Jismoniy tarbiya bilan yurak", "Jismoniy tarbiya bilan o'pka", "Jismoniy tarbiya bilan skelet",
+            "Jismoniy tarbiya bilan miya", "Jismoniy tarbiya bilan nerv sistemasi", "Jismoniy tarbiya bilan gormonlar",
+            "Jismoniy tarbiya bilan ovqatlanish", "Jismoniy tarbiya bilan suv", "Jismoniy tarbiya bilan vitamin",
+            "Jismoniy tarbiya bilan protеin", "Jismoniy tarbiya bilan karbo", "Jismoniy tarbiya bilan yog'",
+            "Jismoniy tarbiya bilan tanaffus", "Jismoniy tarbiya bilan rejim", "Jismoniy tarbiya bilan kun tartibi",
+            "Jismoniy tarbiya bilan dam olish", "Jismoniy tarbiya bilan sport", "Jismoniy tarbiya bilan olimpiada",
+            "Jismoniy tarbiya bilan FIFA", "Jismoniy tarbiya bilan NBA", "Jismoniy tarbiya bilan ATP", "Jismoniy tarbiya bilan FIA",
+            "Jismoniy tarbiya bilan O'zbekiston", "Jismoniy tarbiya bilan AQSH", "Jismoniy tarbiya bilan Rossiya", "Jismoniy tarbiya bilan Yevropa",
+            "Jismoniy tarbiya bilan Osiyo", "Jismoniy tarbiya bilan Afrika", "Jismoniy tarbiya bilan Amerika", "Jismoniy tarbiya bilan Avstraliya",
+            "Jismoniy tarbiya bilan dunyo", "Jismoniy tarbiya bilan kosmos", "Jismoniy tarbiya bilan sayohat", "Jismoniy tarbiya bilan transport",
+            "Jismoniy tarbiya bilan televizor", "Jismoniy tarbiya bilan telefon", "Jismoniy tarbiya bilan kompyuter", "Jismoniy tarbiya bilan internet",
+            "Jismoniy tarbiya bilan ijtimoiy tarmoq", "Jismoniy tarbiya bilan YouTube", "Jismoniy tarbiya bilan TikTok", "Jismoniy tarbiya bilan Instagram",
+            "Jismoniy tarbiya bilan Telegram", "Jismoniy tarbiya bilan WhatsApp", "Jismoniy tarbiya bilan elektron kitob", "Jismoniy tarbiya bilan audiokitob",
+            "Jismoniy tarbiya bilan podkast", "Jismoniy tarbiya bilan radio", "Jismoniy tarbiya bilan gazeta", "Jismoniy tarbiya bilan jurnal",
+            "Jismoniy tarbiya bilan reklama", "Jismoniy tarbiya bilan marketing", "Jismoniy tarbiya bilan jamoat fikri", "Jismoniy tarbiya bilan axborot",
+            "Jismoniy tarbiya bilan yangilik", "Jismoniy tarbiya bilan sun'iy intellekt", "Jismoniy tarbiya bilan robot", "Jismoniy tarbiya bilan dron",
+            "Jismoniy tarbiya bilan avtomobil", "Jismoniy tarbiya bilan velosiped", "Jismoniy tarbiya bilan skuter", "Jismoniy tarbiya bilan samolyot",
+            "Jismoniy tarbiya bilan kem", "Jismoniy tarbiya bilan parashyut", "Jismoniy tarbiya bilan havo sharlari", "Jismoniy tarbiya bilan kross",
+            "Jismoniy tarbiya bilan marafon", "Jismoniy tarbiya bilan sprint", "Jismoniy tarbiya bilan uzoq masofaga yugurish", "Jismoniy tarbiya bilan chang'ichi",
+            "Jismoniy tarbiya bilan futbol", "Jismoniy tarbiya bilan basketbol", "Jismoniy tarbiya bilan voleybol", "Jismoniy tarbiya bilan tennis",
+            "Jismoniy tarbiya bilan gimnastika", "Jismoniy tarbiya bilan suzish", "Jismoniy tarbiya bilan yengil atletika", "Jismoniy tarbiya bilan og'ir atletika",
+            "Jismoniy tarbiya bilan kurash", "Jismoniy tarbiya bilan jangovar san'at", "Jismoniy tarbiya bilan judo", "Jismoniy tarbiya bilan karate",
+            "Jismoniy tarbiya bilan boks", "Jismoniy tarbiya bilan shaxmatchi", "Jismoniy tarbiya bilan sport haykarchiligi", "Jismoniy tarbiya bilan sport rasmlari",
+            "Jismoniy tarbiya bilan sport filmi", "Jismoniy tarbiya bilan sport seriali", "Jismoniy tarbiya bilan sport aktyori", "Jismoniy tarbiya bilan sport musiqasi",
+            "Jismoniy tarbiya bilan sport himoyachisi", "Jismoniy tarbiya bilan sport arbitri", "Jismoniy tarbiya bilan trener", "Jismoniy tarbiya bilan murabbiy",
+            "Jismoniy tarbiya bilan sovrin", "Jismoniy tarbiya bilan taqdirlash", "Jismoniy tarbiya bilan marosim", "Jismoniy tarbiya bilan bayram",
+            "Jismoniy tarbiya bilan ramazon", "Jismoniy tarbiya bilan navruz", "Jismoniy tarbiya bilan mustaqillik", "Jismoniy tarbiya bilan xotira kuni",
+            "Jismoniy tarbiya bilan ona kuni", "Jismoniy tarbiya bilan bobo kuni", "Jismoniy tarbiya bilan bemor", "Jismoniy tarbiya bilan kasallik",
+            "Jismoniy tarbiya bilan sog'liqni tiklash", "Jismoniy tarbiya bilan reabilitatsiya", "Jismoniy tarbiya bilan profilaktika", "Jismoniy tarbiya bilan dorilar",
+            "Jismoniy tarbiya bilan dorixona", "Jismoniy tarbiya bilan poliklinika", "Jismoniy tarbiya bilan shifokor", "Jismoniy tarbiya bilan terapevt",
+            "Jismoniy tarbiya bilan travmatolog", "Jismoniy tarbiya bilan kardiolog", "Jismoniy tarbiya bilan nevrolog", "Jismoniy tarbiya bilan psixolog",
+            "Jismoniy tarbiya bilan sport tibbiyoti", "Jismoniy tarbiya bilan massaj", "Jismoniy tarbiya bilan gimnastika", "Jismoniy tarbiya bilan yoga",
+            "Jismoniy tarbiya bilan pilates", "Jismoniy tarbiya bilan streching", "Jismoniy tarbiya bilan kardio", "Jismoniy tarbiya bilan kuch mashqlari",
+            "Jismoniy tarbiya bilan plyometrika", "Jismoniy tarbiya bilan interval trenirovka", "Jismoniy tarbiya bilan krossfit", "Jismoniy tarbiya bilan parkour",
+            "Jismoniy tarbiya bilan sport salomatligi", "Jismoniy tarbiya bilan sog'liq", "Jismoniy tarbiya bilan farovonlik", "Jismoniy tarbiya bilan tinchlik",
+            "Jismoniy tarbiya bilan ruhiy tinish", "Jismoniy tarbiya bilan mehnat", "Jismoniy tarbiya bilan talim", "Jismoniy tarbiya bilan ilm-fan"
+        ];
+
+        // ✅ Javoblar — 7-sinf jismoniy tarbiya darsligi asosida
+        const responses = {
+            "Jismoniy tarbiya nima?": "Jismoniy tarbiya — insonning jismoniy, ruhiy, ijtimoiy sog'lig'ini saqlash, rivojlantirish, sport bilan shug'ullanish, sog'liqni mustahkamlash, harakat malakalarini o'rgatish maqsadida amalga oshiriladigan tizimli mashqlar majmu'idir.",
+            "Nima uchun jismoniy tarbiyani o'rganamiz?": "Jismoniy tarbiyani o'rganish orqali jismoniy sog'lig'imizni mustahkamlash, semizlikdan saqlanish, miya ish faoliyatini oshirish, stresdan qochish, jamoada yaxshi munosabatlar o'rnatish, sport qobiliyatlarini rivojlantirish imkoniyatini yaratamiz.",
+            "Jismoniy faoliyat nima?": "Jismoniy faoliyat — jismni harakatlantirish, mashq qilish, yugurish, sakrash, ko'tarish, tortish, o'yin o'ynash, sport bilan shug'ullanish kabi harakatlar majmu'idir. Bu — sog'liqni mustahkamlashning asosiy vositasidir.",
+            "Sport nima?": "Sport — belgilangan qoidalar asosida o'tkaziladigan jismoniy faoliyat turi. Sportda jamoa yoki individual ravishda g'alaba qozonish, rekor o'rnatish, o'z-o'zini sinab ko'rish maqsadi mavjud.",
+            "Sog'lom turmush tarzi nima?": "Sog'lom turmush tarzi — to'g'ri ovqatlanish, kundalik jismoniy faoliyat, yetarli uku, stresni kamaytirish, chekishdan voz kechish, alkogoldan voz kechish, sog'liqni kuzatishni o'z ichiga oladi.",
+            "Sog'liq nima?": "Sog'liq — insonning jismoniy, ruhiy va ijtimoiy jihatdan mutlaq tinchligi holati. U faqat kasallik yo'qligini emas, balki barqaror, farovon hayotni anglatadi.",
+            "Jismoniy sog'liq nima?": "Jismoniy sog'liq — mushaklar, yurak, o'pka, skelet, moddalar almashinuvi jihatidan to'liq funksiyalarga ega bo'lish. Yuqori chidamlilik, kuch, tezlik, moslashuvchanlik, plastiklik, koordinatsiya bilan bog'liq.",
+            "Ruhiy sog'liq nima?": "Ruhiy sog'liq — insonning ruhiy tinchligi, ijobiy his-tuyg'ulari, stressga chidamliligi, o'zini bilishi, boshqalarga tushunishi, qaror qabul qilish qobiliyati.",
+            "Ijtimoiy sog'liq nima?": "Ijtimoiy sog'liq — insonning jamoadoshlik, do'stona munosabatlar, hamkorlik, jamoada ishlash, jamoat hayotida faol ishtirok etish qobiliyati.",
+            "Sog'liqni saqlash nima?": "Sog'liqni saqlash — kasalliklardan oldini olish, sog'lom ovqatlanish, jismoniy faoliyat, sanitariya, vaktsina, tibbiy tekshiruvlar, sog'liqni kuzatish.",
+            "Jismoniy tarbiyaning ahamiyati": "Jismoniy tarbiya — jismni rivojlantiradi, kasalliklardan himoya qiladi, ruhiy tinchni saqlaydi, mehnatga tayyorlaydi, intizomni oshiradi, jamoa ruhini tarbiyalaydi.",
+            "Jismoniy tarbiya bilan o'sish": "Doimiy jismoniy tarbiya bolaning o'sishini rag'batlantiradi, skelet rivojlanishini yaxshilaydi, balandlik o'sishini ta'minlaydi.",
+            "Jismoniy tarbiya bilan rivojlanish": "Jismoniy tarbiya — jismoniy, ruhiy, ijtimoiy rivojlanish uchun asosdir. Mushaklar, miya, nerv sistema, ijtimoiy ko'nikmalar rivojlanadi.",
+            "Jismoniy tarbiya bilan sog'liq": "Jismoniy tarbiya — yurak-qon tomir, nafas olish, mevalar, moddalar almashinuvi tizimlarini mustahkamlaydi. Kasalliklarga chidamlilik hosil qiladi.",
+            "Jismoniy tarbiya bilan og'irlik": "Jismoniy tarbiya — ortiqcha og'irlikni kamaytiradi, mushaklarni o'stiradi, metabolizmni tezlashtiradi. Og'irlikni nazorat qilish uchun eng samarali usullardan biri.",
+            "Jismoniy tarbiya bilan miya": "Jismoniy tarbiya miyaga qon yetkazilishini oshiradi, ehtimot, diqqat, xotira, o'qish qobiliyatini yaxshilaydi. Miya rivojlanadi, stress pasayadi.",
+            "Jismoniy tarbiya bilan uyqu": "Doimiy jismoniy tarbiya — uyqusizlikni davolaydi, uykuning sifatini oshiradi, chuqur uxlab ketish imkonini beradi.",
+            "Jismoniy tarbiya bilan stress": "Jismoniy tarbiya stress hormonlarini kamaytiradi, endorfin ajralishini oshiradi, ruhiy tinchlik, ijobiy his-tuyg'u hissini kuchaytiradi.",
+            "Jismoniy tarbiya bilan irodani mustahkamlash": "Muntazam mashq — irodani mustahkamlaydi, sabr-toqat, iztirok, maqsadga erishishga undovchi kuchdir.",
+            "Jismoniy tarbiya bilan do'stona munosabatlar": "Jamoa o'yinlari, sport tadbirlari orqali do'stona munosabatlar, hamkorlik, ishonch, jamoa ruhi shakllanadi.",
+            "Jismoniy tarbiya bilan millatparvarlik": "Milliy sport turlari (kurash, kopkari, uloqtirish), bayramlarda sport musobaqalari millatparvarlik tuyg'ularini uyg'otadi.",
+            "Jismoniy tarbiya bilan vatanga muhabbat": "Vatan himoyasiga tayyorgarlik, patriyotik sport musobaqalari, O'zbekiston bayrog'i ostida kurashish — vatanga muhabbatni o'stiradi.",
+            "Jismoniy tarbiya bilan mehnat sevgisi": "Harakat, mehnat, doimiylik, intizom — mehnat sevgisini tarbiyalaydi. Sport ham mehnat, natija — mehnat natijasidir.",
+            "Jismoniy tarbiya bilan adolat": "Sportda barcha teng, qoidalar barcha uchun bir xil. G'alaba — mehnat, o'tkirlik, adolatli kurash natijasidir.",
+            "Jismoniy tarbiya bilan mehribonlik": "Jamoadoshga yordam, jarohatlanganni ko'tarish, g'oyalash, hamrohat — sportda mehribonlik namoyon bo'ladi.",
+            "Jismoniy tarbiya bilan tinchlik": "Sport — tinchlikni tarbiyalaydi, kurashda voqeasizlik, mehnatsevarlik, o'yin ustuvorligini o'rgatadi.",
+            "Jismoniy tarbiya bilan barqarorlik": "Muntazam mashq — jism, ruh, hayotda barqarorlik, tinchlik, ma'noni his qilishni o'rgatadi.",
+            "Jismoniy tarbiya bilan insonparvarlik": "Barcha insonlarning teng huquqlari, sportda teng imkoniyatlar, g'alaba uchun mehnat — insonparvarlik tamoyillariga xizmat qiladi.",
+            "Jismoniy tarbiya bilan xavfsizlik": "Xavfsiz harakat, qoidalar, intizom, o'yinda tinchlik — xavfsizlikni o'rgatadi.",
+            "Jismoniy tarbiya bilan ekologiya": "Tabiatda yugurish, sayr, piyoda yurish, suzish — tabiatni sevish, muhofaza qilishga undaydi.",
+            "Jismoniy tarbiya bilan tabiat": "Tabiiy muhitda jismoniy tarbiya — insonni tabiat bilan yaqinlashtiradi, uning go'zalligini his qilishga yordam beradi.",
+            "Jismoniy tarbiya bilan oila": "Oilaviy sport, sayr, piyoda yurish — oila birliligini mustahkamlashga xizmat qiladi.",
+            "Jismoniy tarbiya bilan maktab": "Maktabda jismoniy tarbiya darsi — o'quvchilarni sog'lom, faol, mehnatsevar, jamoadosh qilishga yordam beradi.",
+            "Jismoniy tarbiya bilan jamoa": "Futbol, basketbol, voleybol — jamoa ruhini, hamkorlikni, boshqaruvni, intizomni tarbiyalaydi.",
+            "Jismoniy tarbiya bilan mehnat": "Mehnat ham jismoniy tarbiya, jismoniy tarbiya ham mehnat. Ikkalasi ham — natijaga erishish uchun mehnatni talab qiladi.",
+            "Jismoniy tarbiya bilan san'at": "Gimnastika, raqs, parkour — jismning chiroyli, ritmik harakatlar san'atidir.",
+            "Jismoniy tarbiya bilan adabiyot": "Adabiyotda qahramonlarning jismoniy kuch, mehnat, kurash haqidagi sahnalar — jismoniy tarbiyaga undovchi manba.",
+            "Jismoniy tarbiya bilan musiqa": "Musiqa ostida mashq, ritmik gimnastika, raqs — jismoniy tarbiyani qiziqarli, samarali qiladi.",
+            "Jismoniy tarbiya bilan matematika": "Sportda statistika, tezlik, masofa, puls, rekorlar — matematikani amaliy qo'llash joyi.",
+            "Jismoniy tarbiya bilan fizika": "Harakat, tezlik, kuch, inersiya, og'irlik markazi — jismoniy tarbiya darslarida fizika qonunlari namoyon bo'ladi.",
+            "Jismoniy tarbiya bilan biologiya": "Mushaklar, yurak, o'pka, skelet — jismoniy tarbiya darslarida biologiya bilimlari amaliy qo'llaniladi.",
+            "Jismoniy tarbiya bilan geografiya": "Tabiat sharoitida sport, tog'ga chiqish, sayr, trekking — geografik bilimlarni o'stiradi.",
+            "Jismoniy tarbiya bilan tarix": "Tarixiy kurashlar, milliy sport turlari, o'zbek urushchilari — tarix bilan bog'liq.",
+            "Jismoniy tarbiya bilan informatika": "Sportda statistika, video tahlil, fitnes ilovalari — IT bilimlarini jismoniy tarbiyada qo'llash.",
+            "Jismoniy tarbiya bilan rus tili": "Rus tili o'quvchilari bilan sportda suhbat, o'yin, hamkorlik — tilni o'rganishga yordam beradi.",
+            "Jismoniy tarbiya bilan ingliz tili": "Ingliz tili orqali sport terminlarini o'rganish, xalqaro musobaqalarda ishtirok etish.",
+            "Jismoniy tarbiya bilan ona tili": "Ona tilida sport haqida gapirish, tushunchalar, tushuntirish — tilni boyitishga yordam beradi.",
+            "Jismoniy tarbiya bilan ma’naviyat": "Intizom, mehnat, sabr, mehribonlik, adolat — jismoniy tarbiya orqali ma’naviy qadriyatlar shakllanadi.",
+            "Jismoniy tarbiya bilan din": "Namoz, zikr, sajda — jismoniy harakatlar. Ba'zi dinlarda jismoniy tarbiya — ibodat sifatida qaraladi.",
+            "Jismoniy tarbiya bilan axloq": "Sportda adolat, to'g'rilik, g'oyibona, mehribonlik, intizom — axloqiy qadriyatlarni o'rgatadi.",
+            "Jismoniy tarbiya bilan madaniyat": "Milliy o'yinlar, an'anaviy sport turlari — madaniyatni saqlash, o'rganishga xizmat qiladi.",
+            "Jismoniy tarbiya bilan estetika": "Chiroyli, to'g'ri, ritmik harakatlar — jismoniy estetikani o'rgatadi.",
+            "Jismoniy tarbiya bilan psixologiya": "Sport — stressni kamaytiradi, ijobiy his-tuyg'u, o'ziga ishonch, iroda, motivatsiya oshiradi.",
+            "Jismoniy tarbiya bilan pedagogika": "Jismoniy tarbiya — o'quvchilarni tarbiyalash, mehnat, jamoa, intizom, maqsad qo'yishni o'rgatish.",
+            "Jismoniy tarbiya bilan nutq": "Sportda nutq, tushuntirish, jamoaga rahbarlik — nutq madaniyatini oshiradi.",
+            "Jismoniy tarbiya bilan harakat": "Jismoniy tarbiya — harakat, qo'pol harakat, tezlik, sakrash, yugurish, sakrash, egilish, burilish.",
+            "Jismoniy tarbiya bilan koordinatsiya": "Koordinatsiya — harakatlar, muvozanat, boshqaruv, refleks, reaksiya qobiliyatini o'z ichiga oladi.",
+            "Jismoniy tarbiya bilan refleks": "Refleks — tashqi ta'sirga tezkor javob. Mashqlar orqali refleks tezlashtiriladi.",
+            "Jismoniy tarbiya bilan reaksiya": "Reaksiya vaqti — tashqi ta'sirga javob berish tezligi. Sportda bu juda muhim.",
+            "Jismoniy tarbiya bilan qo'pol harakat": "Qo'pol harakat — yugurish, sakrash, itarish, tortish, siljitish. Asosiy jismoniy harakat turi.",
+            "Jismoniy tarbiya bilan aniqlik": "Aniqlik — harakatning to'g'riligi, maqsadga qaratilganligi. Gimnastika, strelba, suzishda ahamiyatli.",
+            "Jismoniy tarbiya bilan tezlik": "Tezlik — harakatni maksimal tezlikda bajarish qobiliyati. Sprint, yugurish, poyga.",
+            "Jismoniy tarbiya bilan quvvat": "Quvvat — kuch va tezlikning birlashmasi. Sakrash, itarish, uloqtirishda namoyon bo'ladi.",
+            "Jismoniy tarbiya bilan chidamlilik": "Chidamlilik — uzoq vaqt jismoniy kuch sarflash qobiliyati. Masofali yugurish, suzish, velosiped.",
+            "Jismoniy tarbiya bilan moslashuvchanlik": "Moslashuvchanlik — har xil sharoitda, vaziyatda jismoniy faoliyatni davom ettirish qobiliyati.",
+            "Jismoniy tarbiya bilan plastiklik": "Plastiklik — jismning egiluvchanligi, burchakda burilish qobiliyati. Gimnastika, yoga, raqsda muhim.",
+            "Jismoniy tarbiya bilan sinxronlik": "Sinxronlik — birgalikda, bir ritmda, bir xil harakat qilish. Jamoa gimnastikasi, raqs, suzishda muhim.",
+            "Jismoniy tarbiya bilan ritm": "Ritm — harakatning muntazam, o'lchovli ketma-ketligi. Raqs, gimnastika, yugurishda ahamiyatli.",
+            "Jismoniy tarbiya bilan mantiq": "Sportda taktika, strategiya, qaror qabul qilish — mantiqni o'rgatadi.",
+            "Jismoniy tarbiya bilan ijodkorlik": "Parkour, freerunning, raqs, gimnastika — jism bilan ijod qilish san'atidir.",
+            "Jismoniy tarbiya bilan tahlil": "Musobaqalarni tahlil qilish, o'z xatosini topish, keyingi reja — jismoniy tarbiyada mantiqiy tahlil qilish.",
+            "Jismoniy tarbiya bilan strategiya": "Jamoa o'yinlarida, kurashda, shaxmatchida g'alaba — yaxshi strategiya natijasidir.",
+            "Jismoniy tarbiya bilan reja": "Reja — mashq, trenirovka, turnir, musobaqa, dam olish uchun kerak. Rejasiz jismoniy tarbiya — samarasiz.",
+            "Jismoniy tarbiya bilan taktika": "Taktika — bir martalik harakatlar, qisqa muddatli reja. Musobaqada foydalaniladi.",
+            "Jismoniy tarbiya bilan boshqaruv": "Jismoniy tarbiya — jismni, harakatni, pulsni, nafasni boshqarishni o'rgatadi.",
+            "Jismoniy tarbiya bilan mas'uliyat": "O'z sog'lig'ingiz, mashq, reja — barchasiga o'zingiz mas'ulsiz. Sportda ham jamoa uchun mas'uliyat.",
+            "Jismoniy tarbiya bilan intizom": "Muntazam mashq, reja, vaqt, kiyim, qoida — jismoniy tarbiyada intizom asosidir.",
+            "Jismoniy tarbiya bilan tartib": "Tartib — mashq tartibi, sport zalidagi joy, kiyim, jihozlar joyi. Tartibsizlik — jarohatga olib keladi.",
+            "Jismoniy tarbiya bilan qoida": "Qoida — sportda, mashqda, zalda, maydonda har doim bor. Ularga rioya qilish — xavfsizlik kaliti.",
+            "Jismoniy tarbiya bilan qonun": "Jismoniy tarbiya — umumta'lim qonunlariga amal qilinadi. Milliy va xalqaro qonunlar ham mavjud.",
+            "Jismoniy tarbiya bilan o'yin": "O'yin — jismoniy tarbiyaning asosiy shakli. Bolalar uchun o'yin — dars, o'yin — tarbiya.",
+            "Jismoniy tarbiya bilan kurash": "Kurash — jismoniy tarbiyaning bir turi. O'zbekistonda an'anaviy kurash (Kopkari, Kurash) rivojlangan.",
+            "Jismoniy tarbiya bilan raqobat": "Raqobat — g'alaba qozonish, o'zini sinab ko'rish, o'sish, rivojlanish uchun zarur.",
+            "Jismoniy tarbiya bilan hamkorlik": "Hamkorlik — jamoa o'yinlarida, mashqlarda, tadbirlarda muhim. Jamoa muvaffaqiyatining asosi.",
+            "Jismoniy tarbiya bilan jamoatchilik": "Jamoatchilik — jismoniy tarbiyada jamoa ruhi, yordam, qo'llab-quvvatlash, hamkorlik.",
+            "Jismoniy tarbiya bilan liderlik": "Liderlik — jamoada rahbarlik qilish, boshqarish, qo'llab-quvvatlash, misol bo'lish.",
+            "Jismoniy tarbiya bilan qo'llab-quvvatlash": "Do'stingizni rag'batlantirish, yordam berish, g'alaba qozonganida qo'llab-quvvatlash — jismoniy tarbiyada muhim.",
+            "Jismoniy tarbiya bilan guruh": "Guruhda mashq — barcha jismoniy tarbiya darslarining asosi. Hamkorlik, jamoa ruhi.",
+            "Jismoniy tarbiya bilan jamoa": "Jamoa — jismoniy tarbiyaning asosiy shakli. Futbol, basketbol, voleybol — jamoa sportlari.",
+            "Jismoniy tarbiya bilan suhbat": "Suhbat — mashq, o'yin, musobaqa paytida hamkorlik, tushunish, qo'llab-quvvatlash.",
+            "Jismoniy tarbiya bilan aloqa": "Aloqa — o'qituvchi, murabbiy, jamoadosh, raqib bilan. Tushunish, hamkorlik, intizom.",
+            "Jismoniy tarbiya bilan til": "To'g'ri nutq, so'zlash, tushuntirish — jismoniy tarbiyada ham muhim.",
+            "Jismoniy tarbiya bilan xatti-harakat": "Harakat — jismoniy tarbiyaning asosi. Har bir harakat — maqsadga qaratilgan.",
+            "Jismoniy tarbiya bilan mehnat": "Jismoniy tarbiya — mehnat, mehnat — jismoniy tarbiya. Ikkalasi ham — natijaga erishish uchun mehnat.",
+            "Jismoniy tarbiya bilan sovunish": "Mashqdan keyin sovunish — jismoniy, ruhiy, ijtimoiy sovunish. Sport — sovunish hamdir.",
+            "Jismoniy tarbiya bilan tomosha": "Tomosha — sport, musobaqa, o'yin, olimpiada. Tomosha ham jismoniy tarbiya elementi.",
+            "Jismoniy tarbiya bilan ishtirok etish": "Ishtirok etish — musobaqada, tadbirda, darsda. Faol fuqarolik, jamoa ruhi.",
+            "Jismoniy tarbiya bilan g'alaba": "G'alaba — mehnat, intizom, reja, maqsad qo'yish, harakat natijasidir.",
+            "Jismoniy tarbiya bilan mag'lubiyat": "Mag'lubiyat — tajriba, o'rganish, yana urinish. Mag'lubiyat — halokat emas.",
+            "Jismoniy tarbiya bilan sabr": "Sabr — uzoq muddat mashq qilish, natija kutish, qiyinchiliklarga chidash.",
+            "Jismoniy tarbiya bilan izzat": "Izzat — raqibga, murabbiyga, qoidaga, jismoniy tarbiyaga nisbatan. Sportda izzat — asos.",
+            "Jismoniy tarbiya bilan faxr": "Faxr — jamoa, mamlakat, oila, o'z o'ziga. Sportda faxr — ijobiy motivatsiya.",
+            "Jismoniy tarbiya bilan obro'": "Obro' — sportda, jismoniy tarbiyada, jamoada. Obro'ni oshirish — mehnat, g'alaba, intizom.",
+            "Jismoniy tarbiya bilan hurmat": "Hurmat — murabbiy, raqib, hakam, qoida, jamoa, sportga. Hurmat — jismoniy tarbiyaning asosi.",
+            "Jismoniy tarbiya bilan do'stlik": "Do'stlik — jamoadosh, hamkasb, bir jamoa. Sport do'stlikni mustahkamlashga yordam beradi.",
+            "Jismoniy tarbiya bilan ongli": "Ongli — mashq, harakat, nafas, pulsni boshqarish. Ongrilik — jismoniy tarbiyaning asosi.",
+            "Jismoniy tarbiya bilan ongsiz": "Ongsiz harakat — refleks, avtomatik harakatlar. Masalan: nafas, yurak urishi.",
+            "Jismoniy tarbiya bilan ong": "Ong — jismoniy tarbiyada harakat, maqsad, nazorat. Ongli harakat — samarali.",
+            "Jismoniy tarbiya bilan xotira": "Xotira — mashq tartibi, harakatlar, qoidalar, taktika, reja eslab qolish.",
+            "Jismoniy tarbiya bilan diqqat": "Diqqat — raqib, to'p, maydon, hakam, murabbiyga. Diqqatli bo'lish — g'alabaning kaliti.",
+            "Jismoniy tarbiya bilan sezgi": "Sezgi — muvozanat, harakat, tezlik, kuch, masofa, to'qnashuvni his qilish.",
+            "Jismoniy tarbiya bilan ko'rish": "Ko'rish — to'p, maydon, raqib, harakatni kuzatish. Ko'rish — jismoniy tarbiyada muhim sezgi.",
+            "Jismoniy tarbiya bilan eshitish": "Eshitish — murabbiy, hakam, jamoadosh, tovushlarni eshitish. Eshitish — xavfsizlik, aloqa, koordinatsiya.",
+            "Jismoniy tarbiya bilan tekshirish": "Tekshirish — o'z jismoniy tayyorgarligingiz, og'irlik, bo'y, puls, bosim, jismoniy sinov.",
+            "Jismoniy tarbiya bilan baholash": "Baholash — jismoniy tayyorgarlik, rekor, sport natijalari, o'qituvchi tomonidan.",
+            "Jismoniy tarbiya bilan test": "Test — jismoniy tayyorgarlik, chidamlilik, kuch, tezlik, plastiklikni baholash.",
+            "Jismoniy tarbiya bilan monitoring": "Monitoring — sog'liq, rivojlanish, jismoniy tayyorgarlikni doimiy kuzatish.",
+            "Jismoniy tarbiya bilan natijaviylik": "Natijaviylik — mashqlarning, rejaning, mehnatning natijasi. Rekor, g'alaba, rivojlanish.",
+            "Jismoniy tarbiya bilan statistika": "Statistika — natijalar, rekordlar, pulslar, tezlik, masofa, kaloriya. Hissiyot emas, balki raqamlar.",
+            "Jismoniy tarbiya bilan rekord": "Rekord — o'z rejangizni yoki boshqalarni super qilish. Rekor — rivojlanish ramzi.",
+            "Jismoniy tarbiya bilan standart": "Standart — davlat, maktab, sinf bo'yicha belgilangan me'yoriy ko'rsatkichlar.",
+            "Jismoniy tarbiya bilan me'yor": "Me'yor — jismoniy tayyorgarlik, sport, sog'liq bo'yicha davlat belgilagan ko'rsatkichlar.",
+            "Jismoniy tarbiya bilan normativ": "Normativ — jismoniy tarbiya darslarida bajariladigan me'yoriy mashqlar: 100 m, uzunlikka sakrash, kuch, plastiklik.",
+            "Jismoniy tarbiya bilan sertifikat": "Sertifikat — jismoniy tayyorgarlik, sport, test natijalari asosida beriladi.",
+            "Jismoniy tarbiya bilan medaly": "Medaly — sport musobaqasida g'alaba qozongan yoki yaxshi natija ko'rsatganda beriladi.",
+            "Jismoniy tarbiya bilan unvon": "Unvon — sportdagi yutuqlar, darajalar, rekorlar asosida beriladi. Misol: II, I razryad, MSAN.",
+            "Jismoniy tarbiya bilan diplim": "Diplom — jismoniy tarbiya, sport, test, olimpiada, reja yakunlanganda beriladi.",
+            "Jismoniy tarbiya bilan brend": "Brend — sport kiyimi, poyafzal, jihozlar, logotipi. Nike, Adidas, Puma kabi.",
+            "Jismoniy tarbiya bilan moda": "Moda — sport kiyimlarida ham rivojlanadi. Lekin darsda oddiy, qulay kiyim kiritiladi.",
+            "Jismoniy tarbiya bilan kiyim": "Kiyim — jismoniy tarbiya darslarida qulay, nafas o'tkazuvchan, harakatga to'sqinlik qilmaydigan kiyim kiritiladi.",
+            "Jismoniy tarbiya bilan poyafzal": "Poyafzal — jismoniy tarbiya darslarida maxsus sport poyafzali kiyiladi. Qattiq, sirpanmaydigan, qulay.",
+            "Jismoniy tarbiya bilan sport jihozlari": "Jihozlar — to'p, savatcha, skakalka, rezinka, tayoq, qo'lqop, qisqich, kiyim, poyafzal.",
+            "Jismoniy tarbiya bilan to'p": "To'p — futbol, basketbol, voleybol, tennis kabi o'yinlarda ishlatiladigan asbob.",
+            "Jismoniy tarbiya bilan maydon": "Maydon — sport o'yinlari o'tkaziladigan joy. O'lchami, shakli, qoplami turlicha.",
+            "Jismoniy tarbiya bilan sport zal": "Sport zal — gimnastika, kurash, basketbol, voleybol uchun mo'ljallangan xona.",
+            "Jismoniy tarbiya bilan trenajor": "Trenajor — jismoniy tarbiya, kuch, chidamlilikni oshirish uchun mo'ljallangan jihoz.",
+            "Jismoniy tarbiya bilan sport mushaklari": "Mushaklar — jismoniy tarbiyada ishtirok etuvchi asosiy organ. Muntazam mashq — mushaklarni mustahkamlash, o'stirish.",
+            "Jismoniy tarbiya bilan yurak": "Yurak — jismoniy tarbiyada eng ko'p ishlaydigan organ. Mashq — yurakni kuchaytiradi, qon aylanishni yaxshilaydi.",
+            "Jismoniy tarbiya bilan o'pka": "O'pka — nafas olish organi. Mashq — o'pkaning sig'imini oshiradi, nafas olish samaradorligini oshiradi.",
+            "Jismoniy tarbiya bilan skelet": "Skelet — jismning asosiy tayanchi. Jismoniy tarbiya — skelet rivojlanishini rag'batlantiradi, bukilmalarni oldini oladi.",
+            "Jismoniy tarbiya bilan miya": "Miya — barcha harakatlarni boshqaradi. Jismoniy tarbiya — miya faoliyatini oshiradi, diqqat, xotira, koordinatsiyani yaxshilaydi.",
+            "Jismoniy tarbiya bilan nerv sistemasi": "Nerv sistemasi — harakat, reaksiya, diqqat, koordinatsiya, refleksni boshqaradi. Mashq nervlarni kuchaytiradi.",
+            "Jismoniy tarbiya bilan gormonlar": "Jismoniy tarbiya — endorfin, serotonin, dopamin — ijobiy his-tuyg'u hormonlarini ajratadi.",
+            "Jismoniy tarbiya bilan ovqatlanish": "To'g'ri ovqatlanish — sport, mashq, sog'liq uchun asos. Protеin, karbohidrat, yog' — muvozanatli bo'lishi kerak.",
+            "Jismoniy tarbiya bilan suv": "Suv — jismda suv almashinuvi, terlash, isishni nazorat qilish uchun zarur. Kuniga 1.5–2 litr suv ichish tavsiya etiladi.",
+            "Jismoniy tarbiya bilan vitamin": "Vitaminlar — A, C, D, E, B guruhlari jismoniy tarbiya uchun muhim. Meva, sabzavot, go'sht, baliq — manbai.",
+            "Jismoniy tarbiya bilan protеin": "Protеin — mushaklarni qurish, tiklash uchun kerak. Go'sht, baliq, tuxum, sut, no'xat, soya — manbalari.",
+            "Jismoniy tarbiya bilan karbo": "Karbohidratlar — energiya manbai. Non, don, kartoshka, guruch, meva — manbalari. Murakkab karbo — uzun muddat energiya beradi.",
+            "Jismoniy tarbiya bilan yog'": "Yog'lar — energiya manbai, lekin ortiqchaligi — semizlikka olib keladi. Tabiiy yog'lar afzal: badem, zeytun, baliq yog'i.",
+            "Jismoniy tarbiya bilan tanaffus": "Tanaffus — jismoniy tarbiya darslarida har 10–15 daqiqada bir marta. Nafas olish, suv ichish, mushaklarni dam olish.",
+            "Jismoniy tarbiya bilan rejim": "Rejim — kun tartibi, mashq, ovqat, uku, dam olish, sport, darslar. Rejim — sog'liq, rivojlanish kaliti.",
+            "Jismoniy tarbiya bilan kun tartibi": "Kun tartibi — tunda erta uku, ertalab mashq, regulyar ovqat, dars, jismoniy tarbiya, dam olish.",
+            "Jismoniy tarbiya bilan dam olish": "Dam olish — mashqdan keyin mushaklarni dam olish, nafas olish, suv ichish, sovuq suv bilan yuvish.",
+            "Jismoniy tarbiya bilan sport": "Sport — jismoniy tarbiyaning bir turi. Raqobat, g'alaba, rekor, mehnat, intizom, jamoa, mehnat — sport asoslari.",
+            "Jismoniy tarbiya bilan olimpiada": "Olimpiada — eng yirik xalqaro sport tadbiri. Har 4 yilda o'tkaziladi. Yunonistonda boshlangan.",
+            "Jismoniy tarbiya bilan FIFA": "FIFA — xalqaro futbol assotsiatsiyasi. Jahon chempionatini tashkil qiladi.",
+            "Jismoniy tarbiya bilan NBA": "NBA — professional basketbol ligasi. Dunyoning eng kuchli o'yinchilari o'ynaydi.",
+            "Jismoniy tarbiya bilan ATP": "ATP — xalqaro tennis bo'yicha ayollar liga. Tennis o'yinchilari uchun.",
+            "Jismoniy tarbiya bilan FIA": "FIA — xalqaro avtomobillar assotsiatsiyasi. Formula 1, ralli kabi.",
+            "Jismoniy tarbiya bilan O'zbekiston": "O'zbekistonda jismoniy tarbiya — umumta'limning muhim qismi. Milliy sportlar: kurash, futbol, voleybol, suzish.",
+            "Jismoniy tarbiya bilan AQSH": "AQSHda jismoniy tarbiya — maktablarda kuchli rivojlangan. Jamoa sportlari: amerikan futboli, basketbol, baseball.",
+            "Jismoniy tarbiya bilan Rossiya": "Rossiyada jismoniy tarbiya — juda kuchli. Gimnastika, kurash, shaxmat — kuchli.",
+            "Jismoniy tarbiya bilan Yevropa": "Yevropada jismoniy tarbiya — futbol, basketbol, yengil atletika, suzishda rivojlangan.",
+            "Jismoniy tarbiya bilan Osiyo": "Osiyoda — karate, judo, sumo, yoga, tai-chi, kung-fu kabi jangovar san'atlar kuchli.",
+            "Jismoniy tarbiya bilan Afrika": "Afrikada futbol, yugurish, sakrashda jahon rekordlari. Usmon Ahmed, Mo Farah — mashhur sportchilar.",
+            "Jismoniy tarbiya bilan Amerika": "Amerikada — NBA, NFL, MLB, NHL, MLS — katta ligalar. Sport — karyera, mehnat, daromad.",
+            "Jismoniy tarbiya bilan Avstraliya": "Avstraliyada suzish, surf, kriket, rugby kuchi. Okean, tabiat — sportga qulay.",
+            "Jismoniy tarbiya bilan dunyo": "Dunyoda jismoniy tarbiya — barcha mamlakatlarda, barcha yoshlarda o'qitiladi. Bu — global fenomen.",
+            "Jismoniy tarbiya bilan kosmos": "Kosmonavtlar — kosmosda jismoniy tarbiya bilan shug'ullanadi. Ayniqsa, mikrogravitatsiyada.",
+            "Jismoniy tarbiya bilan sayohat": "Sayohatda piyoda yurish, tog'ga chiqish, velosiped, suzish — jismoniy tarbiya elementlari.",
+            "Jismoniy tarbiya bilan transport": "Velosiped, skuter, skate — transport ham jismoniy tarbiya. Har kuni 30 daqiqa — 5000 qadam.",
+            "Jismoniy tarbiya bilan televizor": "Televizorda sport, musobaqa, o'quv dasturlari. Lekin ko'p qaramaslik kerak.",
+            "Jismoniy tarbiya bilan telefon": "Telefon — fitnes ilovalari, puls, qadam, masofa, kaloriya hisoblaydi. Lekin darsda o'chirish kerak.",
+            "Jismoniy tarbiya bilan kompyuter": "Kompyuterda sport, jismoniy tarbiya darslari, videolar, testlar, reja. Lekin ko'p o'tirmaslik.",
+            "Jismoniy tarbiya bilan internet": "Internet — sport yangiliklari, mashqlar, dasturlar, videolar, kurslar. Biroq, jismoniy tarbiya — haqiqiy harakat.",
+            "Jismoniy tarbiya bilan ijtimoiy tarmoq": "Instagram, TikTok — sport, fitness, mashq, natijalar. Ijobiy motivatsiya manbai. Lekin taqqoslamaslik.",
+            "Jismoniy tarbiya bilan YouTube": "YouTube — bepul mashq, trenirovka, sport, fitnes, yoga, streching uchun video manbai.",
+            "Jismoniy tarbiya bilan TikTok": "TikTok — qisqa sport, fitnes, chaqiruv (challenge) platformasi. #fitness, #workout.",
+            "Jismoniy tarbiya bilan Instagram": "Instagram — sport, fitnes, jismoniy tarbiya, kiyim, natijalar. Fitnes modelar, inspiratsiya.",
+            "Jismoniy tarbiya bilan Telegram": "Telegram — fitnes, sport, sog'liq, jismoniy tarbiya kanallari. Bevosita aloqa.",
+            "Jismoniy tarbiya bilan WhatsApp": "WhatsApp — sport guruhi, motivatsiya, natijalarni ulashish, guruh mashqlari.",
+            "Jismoniy tarbiya bilan elektron kitob": "Elektron kitob — jismoniy tarbiya, sport, sog'liq, ovqatlanish haqida. Brauzerda, telefonda.",
+            "Jismoniy tarbiya bilan audiokitob": "Audiokitob — mashq qilishda tinglash uchun. Motivatsion, musiqa, podcast.",
+            "Jismoniy tarbiya bilan podkast": "Podkast — sport, sog'liq, fitnes, jismoniy tarbiya haqida. Tinglash — mashqda, sayrda.",
+            "Jismoniy tarbiya bilan radio": "Radio — sport, fitnes, motivatsion dasturlar. Radioda tinglash — mashqda yaxshi.",
+            "Jismoniy tarbiya bilan gazeta": "Gazetalarda sport yangiliklari, natijalar, o'yinlar, rejalari bor.",
+            "Jismoniy tarbiya bilan jurnal": "Jurnallar — fitnes, sport, sog'liq, ovqatlanish, mashq dasturlari haqida.",
+            "Jismoniy tarbiya bilan reklama": "Reklama — fitnes, sport, jihozlar, kiyim, ovqatlanish, vitaminlar haqida. E'tiboringizni jalb qiladi.",
+            "Jismoniy tarbiya bilan marketing": "Marketing — sport tadbirlari, fitnes, brend, kiyim, jihozlar targ'iboti.",
+            "Jismoniy tarbiya bilan jamoat fikri": "Jismoniy tarbiya — jamoat sog'lig'ini oshirish, semizlikni kamaytirish, farovonlikni oshirish.",
+            "Jismoniy tarbiya bilan axborot": "Axborot — sport, sog'liq, fitnes, mashq, ovqatlanish, xavfsizlik haqida.",
+            "Jismoniy tarbiya bilan yangilik": "Yangilik — sportda, jismoniy tarbiyada, fitnesda. Televizor, radio, internet, gazeta, jurnal.",
+            "Jismoniy tarbiya bilan sun'iy intellekt": "Sun'iy intellekt — fitnes ilovalari, puls, harakat tahlili, mashq reja, natijalarni bashorat qilish.",
+            "Jismoniy tarbiya bilan robot": "Robotlar — sport zal, fitnes markazlarida mashq boshqarish, trenajorlar.",
+            "Jismoniy tarbiya bilan dron": "Dron — sport tadbirlarini, piyoda yurish, sayr, trekkingni suratga olish, kuzatish.",
+            "Jismoniy tarbiya bilan avtomobil": "Avtomobil — sportga, sayrga, lekin piyoda yurish, velosiped — afzal.",
+            "Jismoniy tarbiya bilan velosiped": "Velosiped — jismoniy tarbiya, transport, sog'liq. Kuniga 30 daqiqa — yurak, o'pka, mushaklar uchun ajoyib.",
+            "Jismoniy tarbiya bilan skuter": "Skuter — transport, lekin uni yurish, velosiped, skate bilan almashtirish yaxshiroq.",
+            "Jismoniy tarbiya bilan samolyot": "Samolyotda uzoq o'tirish — mushaklarda qotish, shakillanish. Har 1 soatda turish, cho'zish tavsiya etiladi.",
+            "Jismoniy tarbiya bilan kem": "Kemda — suzish, qanoq, yelk, kem sudralish — jismoniy tarbiya.",
+            "Jismoniy tarbiya bilan parashyut": "Parashyut — jismoniy tarbiya, jangovar san'at, xavfsizlik bilan bajariladi.",
+            "Jismoniy tarbiya bilan havo sharlari": "Havo sharlari — sport, tomosha, bayram. Lekin jismoniy tarbiya emas.",
+            "Jismoniy tarbiya bilan kross": "Kross — tuproq, o't, tog' bo'ylab yugurish. Chidamlilik, jismoniy sog'likni oshiradi.",
+            "Jismoniy tarbiya bilan marafon": "Marafon — 42.195 km. Butun jismoniy, ruhiy chidamlilikni talab qiladi.",
+            "Jismoniy tarbiya bilan sprint": "Sprint — 100 m, 200 m, 400 m. Eng katta tezlik, kuch, itarish.",
+            "Jismoniy tarbiya bilan uzoq masofaga yugurish": "Uzoq masofaga yugurish — 5 km, 10 km, 21 km. Chidamlilik, bardoshlilik, iroda.",
+            "Jismoniy tarbiya bilan chang'ichi": "Chang'ichi — yugurish, sakrash, itarish, tortish uchun ishlatiladi. Xavfsizlik — muhim.",
+            "Jismoniy tarbiya bilan futbol": "Futbol — jamoa sporti. 11 kishi, 90 daqiqa. Strategiya, hamkorlik, tezlik, kuch.",
+            "Jismoniy tarbiya bilan basketbol": "Basketbol — 5 kishi, 100 ballgacha. Tezlik, balandlik, taktika, hamkorlik.",
+            "Jismoniy tarbiya bilan voleybol": "Voleybol — 6 kishi, 3 setgacha. Balandlik, refleks, hamkorlik.",
+            "Jismoniy tarbiya bilan tennis": "Tennis — 1 yoki 2 kishi, 2 to'p, 2 to'r. Refleks, tezlik, strategiya.",
+            "Jismoniy tarbiya bilan gimnastika": "Gimnastika — jismni plastikligi, chiroyi, koordinatsiyasi. Oddiy, sport, artistik.",
+            "Jismoniy tarbiya bilan suzish": "Suzish — jismning barcha mushaklarini ishlatadi. Xavfsizlik — dastlabki shart.",
+            "Jismoniy tarbiya bilan yengil atletika": "Yengil atletika — yugurish, sakrash, uloqtirish. Rekor, mehnat, intizom.",
+            "Jismoniy tarbiya bilan og'ir atletika": "Og'ir atletika — og'ir ko'tarish. Kuch, texnika, xavfsizlik — barcha.",
+            "Jismoniy tarbiya bilan kurash": "Kurash — jismoniy, aqlli, taktik. An'anaviy (Kopkari), xalqaro (erkin, greko-rim), jangovar san'atlar.",
+            "Jismoniy tarbiya bilan jangovar san'at": "Jangovar san'at — karate, judo, taekvondo, boks. Muay thai, capoeira ham kiradi.",
+            "Jismoniy tarbiya bilan judo": "Judo — jismoniy, ruhiy tarbiya. Japoniya. Ag'dar, tutish, itarish. Iroda, intizom.",
+            "Jismoniy tarbiya bilan karate": "Karate — qo'l, oyoq urish, blokirovka. Japoniya. Iroda, intizom, tinchlik.",
+            "Jismoniy tarbiya bilan boks": "Boks — qo'l urish, blokirovka, dodirlik. Jismoniy, ruhiy kuch.",
+            "Jismoniy tarbiya bilan shaxmatchi": "Shaxmatchi ham jismoniy tarbiya. Miya, iroda, diqqat, taktika, strategiya — jismoniy tarbiya elementlari.",
+            "Jismoniy tarbiya bilan sport haykarchiligi": "Ba'zi sportchilar haykarchilikda — jismoniy go'zallik, ideal jism.",
+            "Jismoniy tarbiya bilan sport rasmlari": "Rasmlar — sport, g'alaba, jismoniy go'zallik, g'oya. Fotografiya, grafika.",
+            "Jismoniy tarbiya bilan sport filmi": "Sport filmlari — mehnat, g'alaba, mag'lubiyat, sabr, izzat.",
+            "Jismoniy tarbiya bilan sport seriali": "Seriallar — sport, jismoniy tarbiya, hayot, mehnat, g'alaba.",
+            "Jismoniy tarbiya bilan sport aktyori": "Aktyorlar — sport, fitnes, jismoniy tarbiya, haykarchilik, fitness brend.",
+            "Jismoniy tarbiya bilan sport musiqasi": "Musiqalar — mashq, mototsiya, energiya. Sportda — g'ayrat, harakat.",
+            "Jismoniy tarbiya bilan sport himoyachisi": "Himoyachi — sportchilarni, qoidalarni, sportni himoya qiladi.",
+            "Jismoniy tarbiya bilan sport arbitri": "Arbitr — o'yinda qoida, adolat, intizomni saqlaydi.",
+            "Jismoniy tarbiya bilan trener": "Trener — jismoniy tayyorgarlik, taktika, reja, tahlil, motivatsiya.",
+            "Jismoniy tarbiya bilan murabbiy": "Murabbiy — o'quvchi, sportchi, jamoa ruhini tarbiyalaydi.",
+            "Jismoniy tarbiya bilan sovrin": "Sovrin — g'alaba, rekor, yutuq, kuch, chidamlilik, iroda.",
+            "Jismoniy tarbiya bilan taqdirlash": "Taqdirlash — yutuq, g'alaba, mehnat, iroda, intizom.",
+            "Jismoniy tarbiya bilan marosim": "Marosim — sport, g'alaba, bayram, bayonnoma, taqdirlash.",
+            "Jismoniy tarbiya bilan bayram": "Bayram — sport, jismoniy tarbiya, o'yin, g'alaba, jamoa.",
+            "Jismoniy tarbiya bilan ramazon": "Ramazonda — roza, sabr, intizom, jismoniy tarbiya — ruhiy kuch, iroda.",
+            "Jismoniy tarbiya bilan navruz": "Navruzdagi sport, o'yin, kurash, uloqtirish — milliy an'analarga mos.",
+            "Jismoniy tarbiya bilan mustaqillik": "Mustaqillik kuni — bayroq ko'tarish, sport musobaqalari, bayram.",
+            "Jismoniy tarbiya bilan xotira kuni": "Xotira kuni — jismoniy tarbiya, bayroq, marosim, sabr, intizom.",
+            "Jismoniy tarbiya bilan ona kuni": "Ona kuni — oila bilan sport, sayr, piyoda yurish, suzish.",
+            "Jismoniy tarbiya bilan bobo kuni": "Bobo kuni — katta kishilarga sport, sayr, piyoda yurish, velosiped tavsiya etiladi.",
+            "Jismoniy tarbiya bilan bemor": "Bemorlarga jismoniy tarbiya — reabilitatsiya, tiklanish, sog'liqni mustahkamlash.",
+            "Jismoniy tarbiya bilan kasallik": "Kasallikda jismoniy tarbiya — doktor tavsiyasida, reabilitatsiyada muhim.",
+            "Jismoniy tarbiya bilan sog'liqni tiklash": "Sog'liqni tiklash — jismoniy tarbiya, dori, ovqat, dam olish, psixologik qo'llab-quvvatlash.",
+            "Jismoniy tarbiya bilan reabilitatsiya": "Reabilitatsiya — kasallik, jarohatdan keyin jismoniy tarbiya, mashq, tiklanish.",
+            "Jismoniy tarbiya bilan profilaktika": "Profilaktika — kasalliklarni oldindan saqlash. Jismoniy tarbiya — yurak, o'pka, semizlik, diabet, depressiyaga qarshi.",
+            "Jismoniy tarbiya bilan dorilar": "Dorilar — jismoniy tarbiya bilan birgalikda. Steroidlar — sog'liq uchun xavfli.",
+            "Jismoniy tarbiya bilan dorixona": "Dorixonadan — sport, fitnes, vitaminkalar, mineral, proteinlar.",
+            "Jismoniy tarbiya bilan poliklinika": "Poliklinikada — jismoniy tekshiruv, sport aravtasi, sport sog'lig'i.",
+            "Jismoniy tarbiya bilan shifokor": "Shifokor — jismoniy tarbiya, sport, sog'liq, reja, cheklovlar.",
+            "Jismoniy tarbiya bilan terapevt": "Terapevt — jismoniy tarbiya, sog'liq, kasallik, tekshiruvlar.",
+            "Jismoniy tarbiya bilan travmatolog": "Travmatolog — sport jarohatlari, shik, buzilish, davolash.",
+            "Jismoniy tarbiya bilan kardiolog": "Kardiolog — yurak, qon tomirlar, jismoniy tarbiya, sport, puls.",
+            "Jismoniy tarbiya bilan nevrolog": "Nevrolog — miya, nerv sistemasi, jismoniy tarbiya, stress, uku, diqqat.",
+            "Jismoniy tarbiya bilan psixolog": "Psixolog — sport, jismoniy tarbiya, stress, motivatsiya, iroda, intizom.",
+            "Jismoniy tarbiya bilan sport tibbiyoti": "Sport tibbiyoti — sportchilarni sog'lig'ini saqlash, jarohatlarni oldini olish, tiklash.",
+            "Jismoniy tarbiya bilan massaj": "Massaj — mushaklarni dam olish, jarohatlarni oldini olish, tiklanish.",
+            "Jismoniy tarbiya bilan gimnastika": "Gimnastika — jismni chiroyli, plastik, kuchli qilish. O'zbekistonda rivojlangan.",
+            "Jismoniy tarbiya bilan yoga": "Yoga — jism, ruh, nafas, plastiklik, tinchlik. Hindistonda paydo bo'ldi.",
+            "Jismoniy tarbiya bilan pilates": "Pilates — jismni kuchaytirish, postura, muvozanat, plastiklik.",
+            "Jismoniy tarbiya bilan streching": "Streching — mushaklarni cho'zish, plastiklik, jarohatlarni oldini olish.",
+            "Jismoniy tarbiya bilan kardio": "Kardio — yurak, o'pka, chidamlilik. Yugurish, suzish, velosiped.",
+            "Jismoniy tarbiya bilan kuch mashqlari": "Kuch mashqlari — push-up, tirbandlik, squats, pull-up. Mushaklarni qurish.",
+            "Jismoniy tarbiya bilan plyometrika": "Plyometrika — sakrash, qulayish, tezlik, kuch. Sportchilarga.",
+            "Jismoniy tarbiya bilan interval trenirovka": "Interval — tez-masta, dam olish. Yaxshi chidamlilik, yurak, o'pka.",
+            "Jismoniy tarbiya bilan krossfit": "Krossfit — aralash mashq, kuch, tezlik, chidamlilik. Kuchli, lekin xavfli.",
+            "Jismoniy tarbiya bilan parkour": "Parkour — shahar bo'ylab sakrash, o'tish, sakrash. Fransiyada paydo bo'ldi.",
+            "Jismoniy tarbiya bilan sport salomatligi": "Salomatlik — sport, jismoniy tarbiya, sog'liq, farovonlik. Sport — salomatlik asosi.",
+            "Jismoniy tarbiya bilan sog'liq": "Sog'liq — jismoniy, ruhiy, ijtimoiy tinchlik. Jismoniy tarbiya — sog'liqning kaliti.",
+            "Jismoniy tarbiya bilan farovonlik": "Farovonlik — jismoniy, ruhiy, ijtimoiy tinchlik. Sport — farovonlik manbai.",
+            "Jismoniy tarbiya bilan tinchlik": "Tinchlik — jismoniy tarbiya, yoga, meditatsiya, nafas, tabiat. Tinchlik — ruhiy sog'lik.",
+            "Jismoniy tarbiya bilan ruhiy tinish": "Ruhiy tinish — sport, mashq, tabiat, suhbat, dam olish. Jismoniy tarbiya — ruhiy tinish kaliti.",
+            "Jismoniy tarbiya bilan mehnat": "Mehnat ham jismoniy tarbiya, jismoniy tarbiya ham mehnat. Ikkalasi ham — natijaga erishish.",
+            "Jismoniy tarbiya bilan talim": "Ta'limda jismoniy tarbiya — jismoniy, ruhiy, ijtimoiy rivojlanish uchun zarur.",
+            "Jismoniy tarbiya bilan ilm-fan": "Ilm-fan ham jismoniy tarbiya. Ilm — jismoniy tarbiya, jismoniy tarbiya — ilm. Ikkalasi ham — inson rivojlanishining asoslari."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf Jismoniy tarbiya darsligi bo'yicha AI yordamchiman. Savollaringiz bo'lsa, tugmalardan birini bosing! 💪", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
