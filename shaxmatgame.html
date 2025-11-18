@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaxmat Botga Qarshi — FERKAVEKA</title>
+<style>
+body{margin:0;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:#1e1e2f;color:#fff;transition:background 0.5s;min-height:100vh;padding:10px;overflow:hidden;}
+h1{color:#39a9db;margin:10px 0;font-size:28px;text-align:center;text-shadow:0 0 8px #39a9db;}
+#chessboard{display:grid;grid-template-columns:repeat(8,60px);grid-template-rows:repeat(8,60px);border:3px solid #39a9db;margin:20px 0;box-shadow:0 0 20px rgba(0,0,0,0.6);touch-action:none;position:relative;}
+.cell{width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;transition:background 0.3s,transform 0.2s,box-shadow 0.3s;user-select:none;}
+.cell.white{background:#f0f0f0;}
+.cell.black{background:#333;}
+.cell.highlight{background:#ffd700 !important;transform:scale(1.1);box-shadow:0 0 15px #ffd700;}
+button{background:#39a9db;color:#fff;border:none;padding:10px 20px;font-weight:bold;margin:5px;cursor:pointer;border-radius:8px;transition:transform 0.2s, box-shadow 0.2s;}
+button:hover{transform:scale(1.05);box-shadow:0 0 10px #39a9db;}
+#status{margin-top:10px;color:#fff;font-weight:bold;font-size:16px;text-align:center;}
+@media(max-width:500px){
+#chessboard{grid-template-columns:repeat(8,40px);grid-template-rows:repeat(8,40px);}
+.cell{font-size:24px;width:40px;height:40px;}}
+/* Loading overlay */
+#loadingOverlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;background:#1e1e2f;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:999;
+}
+.loader-text{font-size:28px;color:#39a9db;margin-bottom:20px;opacity:0;animation:fadeIn 1s forwards;}
+@keyframes fadeIn{to{opacity:1;}}
+.loader-bar{width:200px;height:10px;background:#333;border-radius:5px;overflow:hidden;position:relative;}
+.loader-fill{height:100%;width:0%;background:#39a9db;transition:width 0.2s;}
+</style>
+</head>
+<body>
+<div id="loadingOverlay">
+  <div class="loader-text">Yuklanmoqda...</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<h1>Shaxmat Botga Qarshi</h1>
+<div>
+<button id="startBtn" disabled>Start</button>
+<button id="resetBtn" disabled>Reset</button>
+<button id="undoBtn" disabled>Undo</button>
+</div>
+<div id="status">O'yin kutmoqda...</div>
+<div id="chessboard"></div>
+
+<script>
+const overlay=document.getElementById('loadingOverlay');
+const fill=document.querySelector('.loader-fill');
+
+let loadProgress=0;
+const loadInterval=setInterval(()=>{
+  loadProgress+=5;
+  fill.style.width=loadProgress+'%';
+  if(loadProgress>=100){clearInterval(loadInterval); overlay.style.display='none'; enableButtons();}
+},100);
+
+function enableButtons(){
+  document.getElementById('startBtn').disabled=false;
+  document.getElementById('resetBtn').disabled=false;
+  document.getElementById('undoBtn').disabled=false;
+}
+
+const boardEl=document.getElementById('chessboard');
+const startBtn=document.getElementById('startBtn');
+const resetBtn=document.getElementById('resetBtn');
+const undoBtn=document.getElementById('undoBtn');
+const statusEl=document.getElementById('status');
+
+let board=[], cells=[], selected=null, turn='white', history=[];
+
+const pieceUnicode = {
+  'P':'♙','R':'♖','N':'♘','B':'♗','Q':'♕','K':'♔',
+  'p':'♟','r':'♜','n':'♞','b':'♝','q':'♛','k':'♚'
+};
+
+const initialSetup = [
+  ['r','n','b','q','k','b','n','r'],
+  ['p','p','p','p','p','p','p','p'],
+  ['','','','','','','',''],
+  ['','','','','','','',''],
+  ['','','','','','','',''],
+  ['','','','','','','',''],
+  ['P','P','P','P','P','P','P','P'],
+  ['R','N','B','Q','K','B','N','R']
+];
+
+function createBoard(){
+  boardEl.innerHTML=''; cells=[]; board=JSON.parse(JSON.stringify(initialSetup)); selected=null; turn='white'; history=[];
+  statusEl.textContent='O\'yin boshlandi. Siz oq bilan boshlaysiz.';
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
+      const cell=document.createElement('div');
+      cell.classList.add('cell');
+      cell.classList.add((i+j)%2===0?'white':'black');
+      cell.dataset.row=i; cell.dataset.col=j;
+      cell.textContent=pieceUnicode[board[i][j]]||'';
+      boardEl.appendChild(cell); cells.push(cell);
+      cell.addEventListener('click',()=>handleClick(cell));
+    }
+  }
+}
+
+function handleClick(cell){
+  const row=parseInt(cell.dataset.row), col=parseInt(cell.dataset.col);
+  const piece=board[row][col];
+  if(selected){
+    if(movePiece(selected.row,selected.col,row,col)){
+      clearHighlights(); selected=null;
+      if(checkGameEnd()) return;
+      setTimeout(botMove,300);
+    } else {selected=null; clearHighlights();}
+  } else if(piece && pieceColor(piece)===turn){
+    selected={row,col}; highlightMoves(row,col);
+  }
+}
+
+function pieceColor(p){return p===p.toUpperCase()?'white':'black';}
+
+function highlightMoves(row,col){
+  clearHighlights();
+  cells[row*8+col].classList.add('highlight');
+  const moves=getValidMoves(row,col);
+  moves.forEach(m=> cells[m[0]*8+m[1]].classList.add('highlight'));
+}
+
+function clearHighlights(){cells.forEach(c=>c.classList.remove('highlight'));}
+
+function movePiece(fromRow,fromCol,toRow,toCol){
+  const valid=getValidMoves(fromRow,fromCol);
+  if(!valid.some(m=>m[0]===toRow && m[1]===toCol)) return false;
+  history.push(JSON.parse(JSON.stringify(board)));
+  const fromCell=cells[fromRow*8+fromCol];
+  const toCell=cells[toRow*8+toCol];
+  animateMove(fromCell,toCell);
+  board[toRow][toCol]=board[fromRow][fromCol];
+  board[fromRow][fromCol]='';
+  if(board[toRow][toCol]==='P' && toRow===0) board[toRow][toCol]='Q';
+  if(board[toRow][toCol]==='p' && toRow===7) board[toRow][toCol]='q';
+  updateBoard();
+  turn=turn==='white'?'black':'white';
+  return true;
+}
+
+function animateMove(fromCell,toCell){
+  const piece=fromCell.textContent;
+  fromCell.textContent='';
+  toCell.style.transform='scale(1.5)';
+  setTimeout(()=>{toCell.textContent=piece; toCell.style.transform='scale(1)';},150);
+}
+
+function updateBoard(){for(let i=0;i<8;i++){for(let j=0;j<8;j++){cells[i*8+j].textContent=pieceUnicode[board[i][j]]||'';}}}
+
+function getValidMoves(r,c){
+  const p=board[r][c], color=pieceColor(p), moves=[];
+  if(!p) return moves;
+  const directions={
+    'P':[[ -1,0],[-2,0],[-1,-1],[-1,1]],
+    'p':[[ 1,0],[ 2,0],[1,-1],[1,1]],
+    'R':[[1,0],[-1,0],[0,1],[0,-1]], 'r':[[1,0],[-1,0],[0,1],[0,-1]],
+    'B':[[1,1],[1,-1],[-1,1],[-1,-1]], 'b':[[1,1],[1,-1],[-1,1],[-1,-1]],
+    'N':[[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2],[1,-2],[2,-1]], 'n':[[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2],[1,-2],[2,-1]],
+    'Q':[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]], 'q':[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]],
+    'K':[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]], 'k':[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]
+  };
+  const step=(p==='P'||p==='p')?1:8;
+  directions[p].forEach(d=>{
+    for(let s=1;s<=step;s++){
+      const nr=r+d[0]*s, nc=c+d[1]*s;
+      if(nr<0||nr>7||nc<0||nc>7) break;
+      if(p.toUpperCase()==='P'){
+        if(d[1]===0){if(board[nr][nc]==='') moves.push([nr,nc]); else break;}
+        else if(board[nr][nc] && pieceColor(board[nr][nc])!==color) moves.push([nr,nc]);
+      } else {
+        if(board[nr][nc]==='') moves.push([nr,nc]);
+        else {if(pieceColor(board[nr][nc])!==color) moves.push([nr,nc]); break;}
+      }
+      if(p.toUpperCase()==='N'||p.toUpperCase()==='K') break;
+    }
+  });
+  return moves;
+}
+
+function botMove(){
+  const allMoves=[];
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
+      if(board[i][j] && pieceColor(board[i][j])==='black'){
+        const moves=getValidMoves(i,j);
+        moves.forEach(m=> allMoves.push({from:[i,j],to:m}));
+      }
+    }
+  }
+  if(allMoves.length===0) return;
+  const choice=allMoves[Math.floor(Math.random()*allMoves.length)];
+  movePiece(choice.from[0],choice.from[1],choice.to[0],choice.to[1]);
+  checkGameEnd();
+}
+
+function checkGameEnd(){
+  const flat=board.flat();
+  if(!flat.includes('K')) {statusEl.textContent='Bot yutdi!'; alert('Bot yutdi!'); return true;}
+  if(!flat.includes('k')) {statusEl.textContent='Siz yutdingiz!'; alert('Siz yutdingiz!'); return true;}
+  return false;
+}
+
+undoBtn.addEventListener('click',()=>{
+  if(history.length>0){
+    board=history.pop();
+    updateBoard();
+    turn=turn==='white'?'black':'white';
+    statusEl.textContent='O\'yin avvalgi holatga qaytarildi';
+  }
+});
+
+startBtn.addEventListener('click',()=>createBoard());
+resetBtn.addEventListener('click',()=>createBoard());
+</script>
+</body>
+</html>
