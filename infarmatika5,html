@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - Informatika (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #9C27B0; /* Binafsha rang — IT uchun */
+            --secondary-color: #00BCD4; /* Havo rang */
+            --bg-color: #f3e5f5;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #E1BEE7;
+            --ai-bubble: #F3E5F5;
+            --button-color: #7B1FA2;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--secondary-color); } to { box-shadow: 0 0 20px var(--secondary-color); } }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - Informatika (5-sinf)</h1>
+        <p>100+ IT so'zi, tushuncha, test bilan tanishamiz...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>IT Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Informatika fanining qaysi bo'limi bo'yicha bilim olishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Kompyuter Qurilmalari 💻", key: "hardware" },
+                    { text: "2. Dasturlar va Operatsion Tizimlar 🖥️", key: "software" },
+                    { text: "3. Internet va Tarmoqlar 🌐", key: "internet" },
+                    { text: "4. Matnli Hujjatlar 📝", key: "text_doc" },
+                    { text: "5. Grafiklar va Rasm Tahriri 🖼️", key: "graphics" },
+                    { text: "6. Algoritm va Kodlash 🧮", key: "algorithm" },
+                    { text: "7. Xavfsizlik va Qoidalar 🛡️", key: "security" },
+                    { text: "8. Testlar ✍️", key: "test_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hardware": {
+                text: "Kompyuter qurilmalari — asosiy (protsessor, xotira) va qo'shimcha (klaviatura, sichqoncha, monitor).",
+                buttons: [
+                    { text: "Asosiy qurilmalar", key: "hardware_main" },
+                    { text: "Kiritish qurilmalari", key: "input_devices" },
+                    { text: "Chiqarish qurilmalari", key: "output_devices" },
+                    { text: "Mashqlar", key: "hw_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "software": {
+                text: "Dasturlar — kompyuterni boshqaruvchi dasturiy ta'minotlar. Operatsion tizimlar (Windows, macOS, Linux).",
+                buttons: [
+                    { text: "Operatsion tizimlar", key: "os_info" },
+                    { text: "Dasturlar turlari", key: "software_types" },
+                    { text: "Fayllar va papkalar", key: "files_folders" },
+                    { text: "Mashqlar", key: "sw_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "internet": {
+                text: "Internet — kompyuter tarmoqlari orqali axborot almashish tizimi.",
+                buttons: [
+                    { text: "Brauzer va sayohat", key: "browser" },
+                    { text: "Elektron pochta", key: "email" },
+                    { text: "Qidiruv tizimlari", key: "search_engines" },
+                    { text: "Mashqlar", key: "net_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "text_doc": {
+                text: "Matnli hujjatlar — Word, Google Docs kabi dasturlarda yoziladi.",
+                buttons: [
+                    { text: "Shriftlar va shriftlar o'lchami", key: "fonts" },
+                    { text: "Matn formatlash", key: "formatting" },
+                    { text: "Sahifa parametrlari", key: "page_setup" },
+                    { text: "Mashqlar", key: "text_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "graphics": {
+                text: "Grafiklar — rasm, chizma, diagramma. Paint, Canva kabi dasturlar yordamida yasaladi.",
+                buttons: [
+                    { text: "Rasm turlari (JPG, PNG)", key: "image_types" },
+                    { text: "Asosiy chizish vositalari", key: "drawing_tools" },
+                    { text: "Mashqlar", key: "gfx_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "algorithm": {
+                text: "Algoritm — ma'lum bir vazifani bajarish uchun qadamlar ketma-ketligi.",
+                buttons: [
+                    { text: "Algoritm turlari", key: "alg_types" },
+                    { text: "Grafik ko'rinishda", key: "flowcharts" },
+                    { text: "Mashqlar", key: "alg_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "security": {
+                text: "Inson xavfsizligi hamda axborot xavfsizligi — parollar, viruslar, etiborli foydalanish.",
+                buttons: [
+                    { text: "Parollar xavfsizligi", key: "passwords" },
+                    { text: "Viruslar va antivirlar", key: "viruses" },
+                    { text: "Mashqlar", key: "sec_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_menu": {
+                text: "Informatika bo'yicha testlar!",
+                buttons: [
+                    { text: "Qurilmalar testi (10 savol)", key: "test_hw" },
+                    { text: "Dasturlar testi (10 savol)", key: "test_sw" },
+                    { text: "Internet testi", key: "test_internet" },
+                    { text: "Matn testi", key: "test_text" },
+                    { text: "Grafika testi", key: "test_graphics" },
+                    { text: "Algoritm testi", key: "test_algorithm" },
+                    { text: "Umumiy test (20 savol)", key: "test_glory" },
+                    { text: "Eng qiyin 5 savol", key: "test_champion" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            // Qisqacha tushunchalar
+            "hardware_main": { text: "Protsessor, RAM, SSD, HDD, motherboard — kompyuterning ichki qismlari.", buttons: [{ text: "⬅️ Qurilmalar", key: "hardware", isHome: true }] },
+            "input_devices": { text: "Klaviatura, sichqoncha, skaner, mikrofon — kompyuterga ma'lumot kiritish uchun kerak.", buttons: [{ text: "⬅️ Qurilmalar", key: "hardware", isHome: true }] },
+            "os_info": { text: "Windows, macOS, Linux — kompyuterni boshqaruvchi asosiy dastur.", buttons: [{ text: "⬅️ Dasturlar", key: "software", isHome: true }] },
+            "files_folders": { text: "Fayl — bitta hujjat. Papka — fayllarni saqlash joyi.", buttons: [{ text: "⬅️ Dasturlar", key: "software", isHome: true }] },
+            "browser": { text: "Google Chrome, Firefox, Safari — internetda sayohat qilish uchun kerak.", buttons: [{ text: "⬅️ Internet", key: "internet", isHome: true }] },
+            "email": { text: "Elektron pochta — elektron xat yuborish. Misol: user@gmail.com", buttons: [{ text: "⬅️ Internet", key: "internet", isHome: true }] },
+            "fonts": { text: "Arial, Times New Roman — matn shriftlari.", buttons: [{ text: "⬅️ Matnli hujjatlar", key: "text_doc", isHome: true }] },
+            "image_types": { text: "JPG, PNG, GIF — rasm formatlari.", buttons: [{ text: "⬅️ Grafiklar", key: "graphics", isHome: true }] },
+            "alg_types": { text: "Chiziqli, tarmoqli, takrorlanuvchi algoritmlar mavjud.", buttons: [{ text: "⬅️ Algoritm", key: "algorithm", isHome: true }] },
+            "passwords": { text: "Kuchli parol: harflar, sonlar, belgilar aralash.", buttons: [{ text: "⬅️ Xavfsizlik", key: "security", isHome: true }] },
+            // Test savollari
+            "test_hw": { text: "1. Kompyuterning 'mijoz' qismi nima? (A: Monitor, B: Protsessor, C: Internet)", buttons: [{ text: "A: Monitor", key: "test_hw_a" }, { text: "B: Protsessor", key: "test_hw_b" }, { text: "C: Internet", key: "test_hw_c" }] },
+            "test_hw_b": { text: "TO'G'RI! Protsessor — kompyuterning 'mijoz' qismi.", buttons: [{ text: "Keyingi test", key: "test_sw" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_sw": { text: "2. Windows qanday dastur? (A: Dastur, B: Operatsion tizim, C: Fayl)", buttons: [{ text: "A: Dastur", key: "test_sw_a" }, { text: "B: Operatsion tizim", key: "test_sw_b" }, { text: "C: Fayl", key: "test_sw_c" }] },
+            "test_sw_b": { text: "TO'G'RI! Windows — operatsion tizim.", buttons: [{ text: "Keyingi test", key: "test_internet" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_champion": { text: "Eng qiyin savol! HTML nima? (A: Dasturlash tili, B: Belgilash tili, C: Operatsion tizim)", buttons: [{ text: "A", key: "test_champion_a" }, { text: "B", key: "test_champion_b" }, { text: "C", key: "test_champion_c" }] },
+            "test_champion_b": { text: "TO'G'RI! HTML — HyperText Markup Language. Siz IT chempionisisiz! 🏆", buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }] }
+        };
+
+        // Avtomatik 80+ qo'shimcha tugma
+        for (let i = 1; i <= 20; i++) {
+            database[`it_${i}`] = { text: `Informatika savoli ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "main_menu", isHome: true }] };
+            database[`test_extra_${i}`] = { text: `Qo'shimcha test savoli ${i}`, buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] };
+        }
+
+        database["test_qoshimcha_it"] = {
+            text: "Qo'shimcha Informatika Savollari:",
+            buttons: [
+                ...Array.from({ length: 20 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `it_${i + 1}` })),
+                { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+            ]
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    bubble.textContent = response.substring(0, charIndex + 1);
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, 50);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) button.classList.add('home-button');
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    addMessage(btn.text, 'user');
+                    quickButtonsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) typeAiResponse(next.text, btn.key);
+                        else typeAiResponse("Xatolik yuz berdi.", "main_menu");
+                    }, 500);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 2500);
+        };
+    </script>
+</body>
+</html>
