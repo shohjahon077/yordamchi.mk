@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biologiya AI Bot — 7-sinf</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1b5e20, #2e7d32, #388e3c);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d1b2a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: #a5d6a7;
+            text-align: center;
+            padding: 20px;
+            animation: fadeOut 2.5s forwards 3.5s;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23a5d6a7"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+            color: #a5d6a7;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+            color: #c8e6c9;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Asosiy sahifa */
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            height: 92vh;
+            background: rgba(13, 19, 33, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(165, 214, 167, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #a5d6a7;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(165, 214, 167, 0.3);
+            text-shadow: 0 0 10px rgba(165, 214, 167, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #1b5e20, #a5d6a7);
+            color: white;
+            align-self: flex-start;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #a5d6a7;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        /* Tugmalar */
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(165, 214, 167, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #a5d6a7 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #a5d6a7;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(30, 90, 50, 0.4);
+            color: #a5d6a7;
+            border: 1px solid rgba(165, 214, 167, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(165, 214, 167, 0.2);
+            border-color: #a5d6a7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(165, 214, 167, 0.2);
+        }
+
+        /* BIOLOGIK KALKULYATOR */
+        .bio-calculator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #a5d6a7;
+            border-radius: 15px;
+            padding: 10px;
+            width: 240px;
+            box-shadow: 0 0 15px rgba(165, 214, 167, 0.3);
+            z-index: 10;
+        }
+
+        .calc-title {
+            color: #a5d6a7;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #c8e6c9;
+            border: 1px solid #a5d6a7;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .calc-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-input-group label {
+            font-size: 0.85rem;
+            color: #c8e6c9;
+        }
+
+        .calc-input-group input {
+            width: 100px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: 1px solid #388e3c;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(56, 142, 60, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: rgba(56, 142, 60, 0.8);
+        }
+
+        .calc-result {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #4fc3f7;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .ai-agent {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .bio-calculator {
+                width: 190px;
+                padding: 8px;
+            }
+            .calc-input-group input {
+                width: 75px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kirish ekran -->
+    <div class="splash-screen">
+        <div class="ai-icon"></div>
+        <div class="splash-text">Biologiya AI + Kalkulyator</div>
+        <div class="splash-subtext">7-sinf o'quvchilari uchun 100+ biologiya savoli va ilmiy hisoblovchi kalkulyator</div>
+    </div>
+
+    <!-- Asosiy interfeys -->
+    <div class="container">
+        <div class="header">🔬 7-sinf Biologiya AI Bot</div>
+
+        <!-- BIOLOGIK KALKULYATOR -->
+        <div class="bio-calculator">
+            <div class="calc-title">Biologik Kalkulyator</div>
+            <select class="calc-select" id="bio-formula">
+                <option value="dna">DNK nukleotidlar soni</option>
+                <option value="population">Organizmlar soni</option>
+                <option value="energy">Ekologik zanjir energiyasi</option>
+                <option value="mitosis">Mitoz bo'linish natijasi</option>
+                <option value="photosynthesis">Fotosintez natijasi</option>
+            </select>
+
+            <div class="calc-inputs" id="calc-inputs">
+                <!-- Inputlar JavaScript orqali qo'shiladi -->
+            </div>
+
+            <button class="calc-btn" onclick="calculateBiology()">Hisobla</button>
+            <div class="calc-result" id="calc-result">Natija</div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapman...</div>
+
+        <div class="buttons-container" id="buttons-container">
+            <!-- Savollar JavaScript orqali qo'shiladi -->
+        </div>
+    </div>
+
+    <script>
+        // ✅ Biologik kalkulyator
+        const formulaSelect = document.getElementById('bio-formula');
+        const inputsContainer = document.getElementById('calc-inputs');
+        const resultDiv = document.getElementById('calc-result');
+
+        const inputConfigs = {
+            "dna": [
+                { label: "Zanjir uzunligi (nukleotid):", id: "dnaLength", placeholder: "1000" }
+            ],
+            "population": [
+                { label: "Boshlang'ich son:", id: "initialPop", placeholder: "10" },
+                { label: "Ko'payish koeffitsienti:", id: "growthRate", placeholder: "2" },
+                { label: "Davrlar soni:", id: "generations", placeholder: "3" }
+            ],
+            "energy": [
+                { label: "Ishlab chiqaruvchilardagi energiya (kJ):", id: "producerEnergy", placeholder: "10000" }
+            ],
+            "mitosis": [
+                { label: "Boshlang'ich hujayralar soni:", id: "initialCells", placeholder: "1" },
+                { label: "Bo'linishlar soni:", id: "divisions", placeholder: "3" }
+            ],
+            "photosynthesis": [
+                { label: "Karbonat angidrid (mol):", id: "co2", placeholder: "6" }
+            ]
+        };
+
+        function updateInputs() {
+            const formula = formulaSelect.value;
+            inputsContainer.innerHTML = '';
+            const config = inputConfigs[formula];
+            
+            config.forEach(input => {
+                const div = document.createElement('div');
+                div.className = 'calc-input-group';
+                div.innerHTML = `
+                    <label>${input.label}</label>
+                    <input type="number" id="${input.id}" placeholder="${input.placeholder}" step="any">
+                `;
+                inputsContainer.appendChild(div);
+            });
+        }
+
+        function calculateBiology() {
+            const formula = formulaSelect.value;
+            try {
+                let result = "";
+                const parseIntSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseInt(val);
+                    if (isNaN(num) || num < 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+                const parseFloatSafe = (id) => {
+                    const val = document.getElementById(id)?.value;
+                    const num = parseFloat(val);
+                    if (isNaN(num) || num < 0) throw new Error("Noto'g'ri qiymat");
+                    return num;
+                };
+
+                if (formula === "dna") {
+                    const n = parseIntSafe("dnaLength");
+                    const complement = n;
+                    result = `DNK zanjirida ${n} ta nukleotid, komplementar zanjirda ham ${complement} ta. Jami: ${2*n} ta nukleotid.`;
+                }
+                else if (formula === "population") {
+                    const initial = parseIntSafe("initialPop");
+                    const rate = parseFloatSafe("growthRate");
+                    const gens = parseIntSafe("generations");
+                    const final = initial * Math.pow(rate, gens);
+                    result = `Yakuniy son: ${final.toFixed(0)} ta organizm`;
+                }
+                else if (formula === "energy") {
+                    const energy = parseFloatSafe("producerEnergy");
+                    const consumer1 = energy * 0.1;
+                    const consumer2 = consumer1 * 0.1;
+                    result = `Ishlab chiqaruvchilar: ${energy} kJ\nBirinchi iste'molchilar: ${consumer1.toFixed(0)} kJ\nIkkinchi iste'molchilar: ${consumer2.toFixed(0)} kJ`;
+                }
+                else if (formula === "mitosis") {
+                    const initial = parseIntSafe("initialCells");
+                    const divs = parseIntSafe("divisions");
+                    const final = initial * Math.pow(2, divs);
+                    result = `Yakuniy hujayralar soni: ${final}`;
+                }
+                else if (formula === "photosynthesis") {
+                    const co2 = parseIntSafe("co2");
+                    const glucose = co2 / 6;
+                    const oxygen = co2;
+                    result = `Glukoza: ${glucose} mol\nKislorod: ${oxygen} mol\nReaksiya: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂`;
+                }
+
+                resultDiv.textContent = result;
+            } catch (e) {
+                resultDiv.textContent = "Xatolik: " + e.message;
+                setTimeout(() => { resultDiv.textContent = "Natija"; }, 2000);
+            }
+        }
+
+        // Dastlabki inputlarni yuklash
+        updateInputs();
+        formulaSelect.addEventListener('change', updateInputs);
+
+        // ✅ 100+ biologiya savollari (7-sinf darslik asosida)
+        const questions = [
+            "Biologiya nima?", "Nima uchun biologiyani o'rganamiz?", "Hayotning asosiy xossalari", "Hujayra nima?",
+            "Hujayraning tuzilishi", "Sitoplazma nima?", "Yadro nima?", "Ribosoma nima?", "Mitoxondriya nima?",
+            "Xloroplast nima?", "Vakuol nima?", "Lizosoma nima?", "Organoidlar nima?", "Prokariot hujayralar",
+            "Eukariot hujayralar", "O'simlik hujayrasining xususiyatlari", "Hayvon hujayrasining xususiyatlari",
+            "Bakteriyalar nima?", "Zamburug'lar nima?", "O'simliklar nima?", "Hayvonlar nima?",
+            "Hayotning darajalari", "Tur nima?", "Turlar evolyutsiyasi", "Tabiiy tanlanish nima?",
+            "DNK nima?", "RNK nima?", "Gen nima?", "Xromosoma nima?", "Nukleotidlar nima?",
+            "Genetik kod nima?", "Mitoz nima?", "Meoz nima?", "Gametogenez nima?",
+            "Urug'lanish nima?", "Fotosintez nima?", "Nafas olish nima?", "Fermentlar nima?",
+            "Oqsillar nima?", "Uglevodlar nima?", "Yog'lar nima?", "Nuklein kislotalar nima?",
+            "Ekologiya nima?", "Ekotizim nima?", "Populyatsiya nima?", "Biosfera nima?",
+            "Ishlab chiqaruvchilar kimlar?", "Iste'molchilar kimlar?", "Parchalanuvchilar kimlar?",
+            "Tuzilish zanjiri nima?", "Oziqlanish zanjiri nima?", "Energiya oqimi qanday?",
+            "Suktsessiya nima?", "Biodiverstitet nima?", "Qizil kitob nima?", "Atrof-muhitni muhofaza qilish",
+            "Hujayra bo'linishi qanday amalga oshadi?", "Mitoz bosqichlari", "Meoz bosqichlari",
+            "Genetikaning asoschisi kim?", "G. Mendelning qonunlari", "Gomozigota nima?",
+            "Geterozigota nima?", "Dominant belgi nima?", "Repressiv belgi nima?",
+            "Fenotip nima?", "Genotip nima?", "Monogibrid chatishtirish nima?",
+            "Digibrid chatishtirish nima?", "Xromosoma nazariyasi", "Mutatsiyalar nima?",
+            "Kombinativ o'zgaruvchanlik", "Modifikatsion o'zgaruvchanlik", "Seleksiya nima?",
+            "Gibridlar nima?", "Chatishtirish nima?", "Inbred chiziq nima?",
+            "Geterozis nima?", "Biologik xavfsizlik", "Laboratoriya xavfsizligi",
+            "Mikroskop tuzilishi", "Mikroskopdan foydalanish", "Preparat tayyorlash",
+            "Hujayralarni bo'yash", "Hayotning kelib chiqishi", "Abiogenez nima?",
+            "Biogenez nima?", "Oparin gipotezasi", "Milr-Uori tajribasi",
+            "Hayotning evolyutsiyasi", "Lamarck nazariyasi", "Darvin nazariyasi",
+            "Antropogenez nima?", "Insonning kelib chiqishi", "Hominidlar nima?",
+            "Australopitek nima?", "Homo habilis nima?", "Homo erectus nima?",
+            "Neandertal nima?", "Homo sapiens nima?", "Ras va irqlar",
+            "Ekologik omillar", "Abiotik omillar", "Biotik omillar", "Antropogen omillar",
+            "Temperatura omili", "Yorug'lik omili", "Namlik omili", "Tuproq omili",
+            "Turlararo munosabatlar", "Konkurensiya nima?", "Xish (simbioz) nima?",
+            "Parazitizm nima?", "Xish (mutualizm) nima?", "Komensalizm nima?",
+            "Neytralizm nima?", "Ammensalizm nima?", "O'zaro yordam",
+            "O'zaro kurash", "Adaptatsiya nima?", "Mimikriya nima?",
+            "Kamuflyaj nima?", "Fiziologik adaptatsiyalar", "Xulq-atvor adaptatsiyalari",
+            "Ekologik nik nima?", "Populyatsiya zichligi", "Tug'ilish va o'lish me'yori",
+            "Migratsiya nima?", "Ekotizim turlari", "O'rmon ekotizimi",
+            "Cho'l ekotizimi", "Suv ekotizimi", "Oqangli hayvonlar",
+            "Sut emizuvchilar", "Qushlar", "Sudralib yuruvchilar", "Amfibiyalar",
+            "Baliqlar", "Hasharotlar", "Pauk qo'rqqizlar", "Mollyuskalar",
+            "Bo'g'im oyoqlilar", "Sut emizuvchilarning xususiyatlari", "Qushlarning xususiyatlari"
+        ];
+
+        // ✅ Javoblar — 7-sinf biologiya darsligi asosida (batafsil)
+        const responses = {
+            "Biologiya nima?": "Biologiya — tirik tabiatni, ya'ni hayot hodisalarini, tirik mavjudotlarning tuzilishini, rivojlanishini, o'zaro bog'liqligini o'rganuvchi fan. Bu so'z yunoncha 'bios' (hayot) va 'logos' (so'z, o'rganish) so'zlaridan olingan.",
+            "Nima uchun biologiyani o'rganamiz?": "Biologiyani o'rganish orqali atrofimizdagi tirik dunyoni tushunamiz, sog'lig'imizni asrash, qishloq xo'jaligini rivojlantirish, atrof-muhitni muhofaza qilish kabi muhim masalalarni hal qilishga yordam beramiz. Shuningdek, biologiya tibbiyot, farmatsevtika, ekologiya sohalarida asos bo'lib xizmat qiladi.",
+            "Hayotning asosiy xossalari": "Tirik mavjudotlarning asosiy xossalari quyidagilardan iborat: 1) Metabolizm (modda va energiya almashinuvi), 2) O'sish va rivojlanish, 3) Ko'payish, 4) Irritatsiya (tashqi ta'sirlarga javob berish), 5) Nisbiy barqarorlik (gomeostaz), 6) O'zgaruvchanlik va irsiylik, 7) Moslashuvchanlik (adaptatsiya).",
+            "Hujayra nima?": "Hujayra — tirik mavjudotlarning tuzilish va hayot faoliyatining asosiy birlikdir. Barcha tirik mavjudotlar bitta yoki ko'p hujayradan tashkil topgan. Hujayra orqali hayotning barcha asosiy xossalari namoyon bo'ladi.",
+            "Hujayraning tuzilishi": "Hujayra quyidagi asosiy qismlardan tashkil topgan: 1) Hujayra pufagi (membrana) — hujayrani tashqi muhitdan ajratib turadi va moddalarning o'tishini nazorat qiladi; 2) Sitoplazma — hujayra ichidagi suyuq modda; 3) Yadro — irsiy axborotni saqlaydi va hujayra faoliyatini boshqaradi; 4) Organoidlar — hujayraning ichki organlari (mitoxondriya, ribosoma, xloroplast va boshqalar).",
+            "Sitoplazma nima?": "Sitoplazma — hujayra pufagi va yadro orasidagi shaffof, suyuq moddadir. Unda hujayra organoidlari joylashgan bo'lib, ular orqali moddalar almashtiriladi. Sitoplazma hujayraning ichki muhitini tashkil qiladi va unda turli kimyoviy jarayonlar sodir bo'ladi.",
+            "Yadro nima?": "Yadro — eukariot hujayraning eng katta va muhim organoididir. U hujayra faoliyatini boshqaradi, irsiy axborotni saqlaydi va organizmning rivojlanishini nazorat qiladi. Yadroda xromosomalar (DNK va oqsillardan tashkil topgan) joylashgan bo'ladi.",
+            "Ribosoma nima?": "Ribosoma — hujayraning eng maydon organoididir. U oqsil sintezini amalga oshiradi. Ribosomalar yadrochada hosil bo'lib, sitoplazmaga chiqadi yoki endoplazmatik to'rda joylashadi. Barcha tirik hujayralarda (prokariot va eukariot) ribosomalar mavjud.",
+            "Mitoxondriya nima?": "Mitoxondriya — hujayraning 'energetik stansiyasi' deb ataladi. Bu organoid nafas olish jarayonida energiya (ATF) ishlab chiqaradi. Mitoxondriya o'z DNK ga ega bo'lib, yadro bilan mustaqil ishlaydi. Faqat hayvon va o'simlik hujayralarida uchraydi.",
+            "Xloroplast nima?": "Xloroplast — faqat o'simlik hujayralarida uchraydigan organoid bo'lib, unda fotosintez jarayoni sodir bo'ladi. Xloroplastlar xlorofill deb ataladigan yashil pigmentga ega bo'lib, quyosh nurlarini so'rab, ularni kimyoviy energiyaga aylantiradi.",
+            "Vakuol nima?": "Vakuol — o'simlik hujayralarida katta bo'lib, suv, minerallar, oziq moddalar va chiqindi moddalarni saqlaydi. U hujayraning turgor bosimini saqlashda ham muhim rol o'ynaydi. Hayvon hujayralarida vakuollar maydon va vaqtinchalik bo'ladi.",
+            "Lizosoma nima?": "Lizosoma — hayvon hujayralarida uchraydigan organoid bo'lib, unda turli fermentlar saqlanadi. Bu fermentlar hujayra ichiga tushgan chet moddalarni parchalaydi yoki o'lik hujayra qismlarini yo'q qiladi. Shuning uchun lizosomani 'hujayra pufagi' deb ham atashadi.",
+            "Organoidlar nima?": "Organoidlar — hujayraning ichki 'organlari' bo'lib, ularning har biri o'ziga xos vazifani bajaradi. Asosiy organoidlar: yadro, mitoxondriya, ribosoma, xloroplast, vakuol, lizosoma, endoplazmatik to'r, Goldji apparati.",
+            "Prokariot hujayralar": "Prokariot hujayralar — yadrosi bo'lmagan, oddiy tuzilishga ega hujayralardir. Ularda membranali organoidlar (mitoxondriya, xloroplast) ham yo'q. Bunday hujayralarga bakteriyalar va ko'k-yashil suvo'tlari kiradi.",
+            "Eukariot hujayralar": "Eukariot hujayralar — yadrosi va membranali organoidlari bo'lgan murakkab tuzilishga ega hujayralardir. Ularga o'simliklar, hayvonlar, zamburug'lar va ba'zi bir hujayrali organizmlar kiradi.",
+            "O'simlik hujayrasining xususiyatlari": "O'simlik hujayrasida quyidagi xususiyatlar bor: 1) Hujayra devori — pufaqdan tashqari qattiq qobiq; 2) Xloroplast — fotosintez uchun; 3) Katta markaziy vakuol — suv saqlash; 4) Plastidalar — oziq moddalarni saqlash.",
+            "Hayvon hujayrasining xususiyatlari": "Hayvon hujayrasida quyidagi xususiyatlar bor: 1) Hujayra devori yo'q, faqat pufaq; 2) Xloroplast yo'q; 3) Vakuollar maydon va ko'p; 4) Lizosomalar ko'p; 5) Sentriolar — bo'linishda rol oynaydi.",
+            "Bakteriyalar nima?": "Bakteriyalar — prokariot, bir hujayrali mikroorganizmlardir. Ularning shakli turli: shar, tayoqcha, spiralsimon. Ba'zi bakteriyalar foydali (sut kislota bakteriyalari), ba'zilari kasallik qo'zg'atuvchi (salmonella, streptokokk).",
+            "Zamburug'lar nima?": "Zamburug'lar — eukariot organizmlar bo'lib, ular o'simliklar ham, hayvonlar ham emas. Ular oziq moddalarni tashqaridan so'rab olish orqali oziqlanadi (geterotrof). Misollar: achitqi, qo'ziqorin, pichan zamburugi.",
+            "O'simliklar nima?": "O'simliklar — avtotrof organizmlar bo'lib, ular fotosintez jarayoni orqali oziq modda ishlab chiqaradi. Ularning hujayrasida xloroplastlar bo'ladi. O'simliklar har qanday ekotizimda ishlab chiqaruvchi rolida ishtirok etadi.",
+            "Hayvonlar nima?": "Hayvonlar — geterotrof organizmlar bo'lib, ular oziq moddalarni tashqaridan olib, hazm qilish orqali oziqlanadi. Hayvonlar harakat qilish qobiliyatiga ega va nerv sistemasi orqali tashqi ta'sirlarga tez javob beradi.",
+            "Hayotning darajalari": "Hayot tizimli ravishda tashkil topgan: 1) Molekulyar daraja, 2) Hujayra darajasi, 3) To'qima darajasi, 4) Organ darajasi, 5) Organizm darajasi, 6) Populyatsiya darajasi, 7) Ekotizim darajasi, 8) Biosfera darajasi.",
+            "Tur nima?": "Tur — bir-biri bilan urug'lanib, o'zgina nasl beradigan, bir xil irsiy belgilarga ega bo'lgan organizmlar guruhi. Tur — biologik tizimlashtirishning eng kichik birligidir.",
+            "Turlar evolyutsiyasi": "Evolyutsiya — tirik mavjudotlarning vaqt o'tishi bilan tuzilishi va xususiyatlarining o'zgarib borishi. Evolyutsiya natijasida yangi turlar paydo bo'ladi. Asosiy mexanizmi — tabiiy tanlanish.",
+            "Tabiiy tanlanish nima?": "Tabiiy tanlanish — atrof-muhit sharoitiga yaxshi moslashgan organizmlar tirik qolish va nasl qoldirish ehtimoli yuqori bo'lgan hodisa. Bu evolyutsiyaning asosiy harakatlanish kuchi hisoblanadi.",
+            "DNK nima?": "DNK (dezoksiribonuklein kislota) — irsiy axborotni saqlash va uzatish vazifasini bajaruvchi nuklein kislota. DNK ikki zanjirli spiral shaklida bo'lib, uning tarkibiga 4 ta nukleotid kiradi: adenin (A), timin (T), guanin (G), sitozin (C).",
+            "RNK nima?": "RNK (ribonuklein kislota) — DNK dagi irsiy axborotni oqsil sintez qilish joyiga yetkazuvchi nuklein kislota. RNK bir zanjirli bo'ladi va unda uratsil (U) timin o'rniga ishtirok etadi.",
+            "Gen nima?": "Gen — DNK ning irsiy belgini belgilovchi qismi. Har bir gen oqsil molekulasini sintez qilish uchun zarur bo'lgan axborotni o'z ichiga oladi. Gen turlar: strukturaviy genlar (oqsil sintezi), regulator genlar (boshqa genlarni boshqaruvchi).",
+            "Xromosoma nima?": "Xromosoma — DNK va oqsillardan tashkil topgan, irsiy axborotni saqlash va uzatish uchun mo'ljallangan tuzilma. Inson hujayrasida 46 ta (23 juft) xromosoma mavjud.",
+            "Nukleotidlar nima?": "Nukleotidlar — nuklein kislotalarning (DNK va RNK) monomerlari. Har bir nukleotid 3 qismdan tashkil topgan: 1) azotli asos (A, T, G, C yoki U), 2) pentoz qand (dezoksiriboza yoki riboza), 3) fosfat guruhi.",
+            "Genetik kod nima?": "Genetik kod — DNK dagi nukleotidlar ketma-ketligi orqali oqsil tarkibidagi aminokislotalar ketma-ketligini belgilash qoidalari to'plami. U triplеt (uchlik) asosida ishlaydi: har 3 ta nukleotid bir aminokislotani belgilaydi.",
+            "Mitoz nima?": "Mitoz — somatik (jismoniy) hujayralarning bo'linish usuli bo'lib, unda bitta hujayradan xromosoma soni bir xil bo'lgan ikkita qiz hujayra hosil bo'ladi. Mitoz o'sish, rivojlanish va shikastlangan to'qimalarni tiklash uchun kerak.",
+            "Meoz nima?": "Meoz — jinsiy hujayralar (gametalar) hosil bo'lishi uchun sodir bo'ladigan maxsus bo'linish turi. Meozda bitta hujayradan xromosoma soni ikki marta kamaygan to'rtta qiz hujayra hosil bo'ladi.",
+            "Gametogenez nima?": "Gametogenez — jinsiy bezlarda (tuxumdon va urug'lik) meyoz orqali jinsiy hujayralar (tuxum hujayrasi va spermatozoid) hosil bo'lish jarayoni.",
+            "Urug'lanish nima?": "Urug'lanish — erkak va ayol jinsiy hujayralarining birlashib, zigota (urug'langan tuxum hujayrasi) hosil qilish jarayonidir. Zigotada ona va otasining xromosomalar to'plami birlashadi.",
+            "Fotosintez nima?": "Fotosintez — o'simliklarda xloroplastlarda quyosh nurlari ta'sirida karbonat angidrid va suvdan glukoza va kislorod hosil bo'lish jarayonidir. Reaksiya: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂.",
+            "Nafas olish nima?": "Nafas olish — hujayralarda oksidlanish jarayoni orqali oziq moddalardan energiya ajratib olish. Aerob nafas olishda: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + energiya.",
+            "Fermentlar nima?": "Fermentlar — oqsil tabiatli katalizatorlar bo'lib, kimyoviy reaksiyalarni tezlashtiradi. Har bir ferment o'ziga xos substratga ta'sir qiladi. Fermentlarning faolligi temperatura hamda pH ga bog'liq.",
+            "Oqsillar nima?": "Oqsillar — aminokislotalardan tashkil topgan murakkab organik moddalar. Ular hujayra tuzilishida, ferment sifatida, gormon sifatida, immunitetda muhim rol oynaydi. Oqsillar DNK orqali kodlangan.",
+            "Uglevodlar nima?": "Uglevodlar — uglerod, vodorod va kislorod atomlaridan tashkil topgan organik moddalar. Asosiy manbai — o'simliklar. Ular energiya manbai (glukoza) va strukturaviy komponent (sellyuloza) sifatida ishlatiladi.",
+            "Yog'lar nima?": "Yog'lar — glyutserin va yuqori molekulyar yog' kislotalaridan tashkil topgan moddalar. Ular energiya zaxirasi, issiqni saqlash, hujayra pufaqlarini tashkil qilishda ishtirok etadi.",
+            "Nuklein kislotalar nima?": "Nuklein kislotalar — DNK va RNK lardan iborat bo'lib, ular irsiy axborotni saqlash, ko'chirish va ifodalashda ishtirok etadi. Ular nukleotidlar polimeridir.",
+            "Ekologiya nima?": "Ekologiya — tirik organizmlar bilan ularning atrof-muhiti orasidagi o'zaro munosabatlarni o'rganuvchi biologiya sohasidir. So'z yunoncha 'oikos' (uy) va 'logos' (so'z) so'zlaridan olingan.",
+            "Ekotizim nima?": "Ekotizim — ma'lum hududda bir-biri bilan o'zaro bog'langan tirik organizmlar (biotsenoz) va ularning yashash muhiti (biotop) dan tashkil topgan tizim. Misol: ko'l, o'rmon, cho'l.",
+            "Populyatsiya nima?": "Populyatsiya — ma'lum hududda yashaydigan, bir tur vakillarining to'plami. Populyatsiya ichida organizmlar bir-biri bilan jinsiy jihatdan urug'lanib, irsiy axborot almashinadi.",
+            "Biosfera nima?": "Biosfera — Yer sharida hayot mavjud bo'lgan qism. U atmosferaning pastki qismi, gidrosfera va litosferaning yuqori qismidan iborat.",
+            "Ishlab chiqaruvchilar kimlar?": "Ishlab chiqaruvchilar (avtotroflar) — quyosh energiyasidan foydalanib, oziq modda ishlab chiqaruvchi organizmlar. Asosan o'simliklar, ko'k-yashil suvo'tlar va ba'zi bakteriyalar.",
+            "Iste'molchilar kimlar?": "Iste'molchilar (geterotroflar) — tayyor oziq moddalarni iste'mol qiluvchi organizmlar. Hayvonlar, zamburug'lar, ko'pchilik bakteriyalar.",
+            "Parchalanuvchilar kimlar?": "Parchalanuvchilar — o'lik organizmlar qoldiqlarini soddaroq moddalarga parchalovchi organizmlar. Asosan zamburug'lar va bakteriyalar.",
+            "Tuzilish zanjiri nima?": "Tuzilish zanjiri — ekotizim tarkibidagi organizmlar ketma-ketligi: ishlab chiqaruvchilar → birinchi darajali iste'molchilar → ikkinchi darajali iste'molchilar → parchalanuvchilar.",
+            "Oziqlanish zanjiri nima?": "Oziqlanish zanjiri — ekotizimda oziq modda va energiyaning bir organizmdan ikkinchisiga o'tish ketma-ketligi. Misol: o't → chumchuq → ilon → burgut.",
+            "Energiya oqimi qanday?": "Energiya ekotizimda chiziqli oqadi: quyosh → ishlab chiqaruvchilar → iste'molchilar. Har bir bosqichda energiyaning 90% yo'qoladi (10% qoidasi).",
+            "Suktsessiya nima?": "Suktsessiya — ekotizimning vaqt o'tishi bilan o'zgarib borish jarayoni. Bir ekotizimning boshqasiga almashtirilishi. Misol: ko'l qurib, cho'lga aylanadi.",
+            "Biodiverstitet nima?": "Biodiverstitet — tirik mavjudotlarning turli xil turlari, ularning genetik xilma-xilligi va ekotizimlarning ko'pligi. Bu biosferaning barqarorligi uchun juda muhim.",
+            "Qizil kitob nima?": "Qizil kitob — yo'qolish arafasidagi yoki yo'qolgan tirik mavjudotlar turlari ro'yxati. U ularni muhofaza qilish maqsadida tuzilgan.",
+            "Atrof-muhitni muhofaza qilish": "Atrof-muhitni muhofaza qilish — tirik mavjudotlarning yashash sharoitini saqlash, tabiiy resurslarni oqilona foydalanish, ifloslantirishni kamaytirish choralarini ko'rish.",
+            "Hujayra bo'linishi qanday amalga oshadi?": "Hujayra bo'linishi ikki usulda amalga oshadi: 1) Mitoz — somatik hujayralar uchun, 2) Meoz — jinsiy hujayralar uchun. Prokariot hujayralar esa ikki bo'linish yo'li bilan ko'payadi.",
+            "Mitoz bosqichlari": "Mitoz 4 bosqichdan iborat: 1) Profaza — xromosomalar ko'rinib chiqadi, yadro pufagi eriydi; 2) Metafaza — xromosomalar ekvatorga yig'iladi; 3) Anafaza — xromatidalar ajralib qutblarga harakat qiladi; 4) Telofaza — yangi yadro pufaqlari hosil bo'ladi.",
+            "Meoz bosqichlari": "Meoz ikki marta bo'linishdan iborat: Meoz I va Meoz II. Meoz I — gomolog xromosomalar ajraladi, Meoz II — xromatidalar ajraladi. Natijada 4 ta gaptoid hujayra hosil bo'ladi.",
+            "Genetikaning asoschisi kim?": "Genetikaning asoschisi — avstriyalik monax G. Mendel (1822-1884). U no'xat ustida o'tkazgan tajribalari orqali irsiyat qonunlarini kashf etdi.",
+            "G. Mendelning qonunlari": "1) Bir jinsli belgilarning chatishtirilishi qonuni (dominatsiya qonuni); 2) Belgilarning ajralish qonuni; 3) Belgilarning mustaqil ajralish qonuni (dihibrid chatishtirish).",
+            "Gomozigota nima?": "Gomozigota — juft allel genlarning bir xil bo'lishi (AA yoki aa). Gomozigota organizm chatishtirishda bir xil gametalar hosil qiladi.",
+            "Geterozigota nima?": "Geterozigota — juft allel genlarning turli bo'lishi (Aa). Geterozigota organizm ikki xil gametalar hosil qiladi.",
+            "Dominant belgi nima?": "Dominant belgi — gomozigota (AA) va geterozigota (Aa) holatlarda ifodalanadigan belgi. Dominant allel katta harf bilan belgilanadi (A).",
+            "Repressiv belgi nima?": "Repressiv belgi — faqat gomozigota (aa) holatda ifodalanadigan belgi. Repressiv allel kichik harf bilan belgilanadi (a).",
+            "Fenotip nima?": "Fenotip — organizmning tashqi ko'rinishi va fiziologik xususiyatlari to'plami. U genotip va atrof-muhit ta'siri natijasida shakllanadi.",
+            "Genotip nima?": "Genotip — organizmdagi barcha genlar to'plami. Bu irsiy axborotning asosiy ombori bo'lib, fenotipni shakllantirishda asosiy rol oynaydi.",
+            "Monogibrid chatishtirish nima?": "Monogibrid chatishtirish — organizmlarning bitta belgisi bo'yicha chatishtirilishi. Misol: sariq urug'li no'xatni yashil urug'li no'xat bilan chatishtirish.",
+            "Digibrid chatishtirish nima?": "Digibrid chatishtirish — organizmlarning ikkita belgisi bo'yicha bir vaqtda chatishtirilishi. Mendel bu usul orqali belgilarning mustaqil ajralish qonunini kashf qildi.",
+            "Xromosoma nazariyasi": "Xromosoma nazariyasi — irsiy belgilar xromosomalarda joylashgan genlar orqali uzatiladi degan fikr. Bu nazariya Sutton va Boveri tomonidan ishlab chiqilgan.",
+            "Mutatsiyalar nima?": "Mutatsiyalar — DNK tarkibidagi o'zgarishlar natijasida organizmning irsiy xususiyatlarining o'zgarishi. Mutatsiyalar: gen mutatsiyalari, xromosoma mutatsiyalari, genom mutatsiyalari.",
+            "Kombinativ o'zgaruvchanlik": "Kombinativ o'zgaruvchanlik — meyoz va urug'lanish jarayonlarida yangi gen kombinatsiyalari hosil bo'lishi natijasida organizmlarning irsiy xususiyatlarining o'zgarishi.",
+            "Modifikatsion o'zgaruvchanlik": "Modifikatsion o'zgaruvchanlik — atrof-muhit ta'siri ostida organizmning tashqi ko'rinishining o'zgarishi, lekin irsiy materialga ta'sir qilmaydi. Bu o'zgarishlar naslga o'tmaydi.",
+            "Seleksiya nima?": "Seleksiya — inson tomonidan qishloq xo'jaligi ekinlari va hayvonlarini foydali xususiyatlari bo'yicha sun'iy tanlash orqali yaxshilash. Seleksiya natijasida yangi navlar va zotlar yaratiladi.",
+            "Gibridlar nima?": "Gibridlar — turli nav yoki zotlarning chatishtirilishi natijasida hosil bo'lgan organizmlar. Gibridlar ko'pincha geterozis (gidrid kuch) hodisasini namoyon qiladi.",
+            "Chatishtirish nima?": "Chatishtirish — turli genotipga ega bo'lgan organizmlarni sun'iy ravishda urug'lanishga majburlash. Bu seleksiyada yangi navlar yaratish uchun ishlatiladi.",
+            "Inbred chiziq nima?": "Inbred chiziq — bir necha avlod davomida yaqin qarindoshlar orasida chatishtirish natijasida olingan, genetik jihatdan bir xil (gomozigota) organizmlar guruhi.",
+            "Geterozis nima?": "Geterozis — gibridlarning ota-onalariga nisbatan o'sish tezligi, hosildorligi, barqarorligi kabi xususiyatlari bo'yicha ustun kelishi hodisasi.",
+            "Biologik xavfsizlik": "Biologik xavfsizlik — laboratoriya ishlarida patogen mikroorganizmlar, zaharli moddalar bilan ishlashda qat'iy qoida va me'yoriylarga rioya qilish.",
+            "Laboratoriya xavfsizligi": "Laboratoriya xavfsizligi — mikroskop, skalyar, pipetka kabi asboblardan to'g'ri foydalanish, ish joyini tozaligini saqlash, shisha idishlarga ehtimoyot bilan munosabatda bo'lish.",
+            "Mikroskop tuzilishi": "Mikroskop quyidagi qismlardan tashkil topgan: 1) Okulyar — ko'rish uchun, 2) Ob'ektiv — preparatni kattalashtirish, 3) Revolver — ob'ektivlarni o'zgartirish, 4) Stolcha — preparatni qo'yish, 5) Diafragma — yorug'likni sozlash, 6) Yoritgich — preparatni yoritish.",
+            "Mikroskopdan foydalanish": "Mikroskopdan foydalanish tartibi: 1) Mikroskopni yorug'lik manbai oldiga qo'yish, 2) Okulyarga qarab, diаfrаgmа orqаli yorug'likni sozlаsh, 3) Preparаtni stolchаgа qo'yish, 4) Kattаlаshtirishni sozlаsh (avvаl kichik, kеyin kаttа ob'yеktivdаn foydаlаnish).",
+            "Preparat tayyorlash": "Preparat tayyorlash: 1) Ob'ektni lamga qo'yish, 2) Uni suv yoki boshqa eritma bilan tomizlash, 3) Ustini lammul bilan yopish, 4) Chetidagi ortiqcha suvni so'rib olish.",
+            "Hujayralarni bo'yash": "Hujayralarni bo'yash — hujayra tuzilishini yaxshiroq ko'rish uchun maxsus rangli eritmalardan (metilen ko'k, yod eritmasi) foydalanish. Bo'yash hujayra pufaq, yadro, organoidlarni ajratib ko'rsatadi.",
+            "Hayotning kelib chiqishi": "Hayotning kelib chiqishi haqida ikki asosiy fikr mavjud: 1) Abiogenez — tirik bo'lmagan moddalardan tirik mavjudotlar paydo bo'ldi; 2) Biogenez — tirik mavjudotlar faqat tirik mavjudotlardan kelib chiqadi.",
+            "Abiogenez nima?": "Abiogenez — tirik bo'lmagan moddalardan tirik mavjudotlar o'z-o'zidan paydo bo'lishi haqidagi gipoteza. Zamonaviy fan bu gipotezani qabul qilmaydi, lekin hayotning dastlabki kelib chiqishini tushuntirishda ishlatiladi.",
+            "Biogenez nima?": "Biogenez — tirik mavjudotlar faqat tirik mavjudotlardan kelib chiqadi degan qonun. Bu qonun L. Paster tajribasi orqali ilmiy asoslangan.",
+            "Oparin gipotezasi": "Oparin gipotezasi — hayotning Yerda kimyoviy evolyutsiya orqali paydo bo'lganligi haqida. Dastlab oddiy organik moddalar, keyin murakkab moddalar, so'ngra dastlabki hujayralar paydo bo'ldi.",
+            "Milr-Uori tajribasi": "Milr-Uori tajribasi — 1953-yilda S. Milr va H. Uori dastlabki Yer atmosferasini qayta yaratib, unda elektr razryadlar ta'sirida aminokislotalar hosil bo'lishini ko'rsatdi. Bu Oparin gipotezasini ilmiy asoslab berdi.",
+            "Hayotning evolyutsiyasi": "Hayotning evolyutsiyasi — Yerda hayotning paydo bo'lishidan boshlab hozirgacha bo'lgan rivojlanish tarixi. Dastlab prokariotlar, keyin eukariotlar, so'ngra ko'p hujayrali organizmlar paydo bo'ldi.",
+            "Lamarck nazariyasi": "Lamarck nazariyasi — tirik mavjudotlar atrof-muhit ta'sirida o'zgaradi va bu o'zgarishlar naslga o'tadi degan fikr. Misol: jirafaning bo'yni uzunligi oziq moddalarga yetishish uchun uzunaydi va bu xususiyat bolalarga o'tadi.",
+            "Darvin nazariyasi": "Darvin nazariyasi — tirik mavjudotlarning rivojlanishida tabiiy tanlanish asosiy rol oynaydi degan fikr. Atrof-muhitga yaxshi moslashgan organizmlar tirik qoladi va nasl qoldiradi.",
+            "Antropogenez nima?": "Antropogenez — insonning evolyutsion rivojlanish tarixi. Bu jarayonda maymun kabi ajdodlardan boshlab, zamonaviy inson (Homo sapiens) gacha bo'lgan bosqichlar o'tilgan.",
+            "Insonning kelib chiqishi": "Insonning kelib chiqishi — Afrika qit'asida, 6-7 million yil oldin maymun kabi ajdodlardan ajralib chiqqan. Dastlabki inson sifatida Australopitek qabul qilinadi.",
+            "Hominidlar nima?": "Hominidlar — inson va uning evolyutsion ajdodlariga kiruvchi primatlar oilasi. Ular to'g'ri yurish, katta miya hajmi, mehnat qurollaridan foydalanish xususiyatlariga ega.",
+            "Australopitek nima?": "Australopitek — 4-2 million yil oldin yashagan dastlabki inson ajdodi. U to'g'ri yura olgan, lekin miya hajmi kichik (400-500 sm³) bo'lgan.",
+            "Homo habilis nima?": "'Homo habilis' (mahoratli inson) — 2.4-1.4 million yil oldin yashagan. U dastlabki mehnat qurollarini yasagan inson hisoblanadi. Miya hajmi 600 sm³ atrofida.",
+            "Homo erectus nima?": "'Homo erectus' (to'g'ri yuruvchi inson) — 1.9 million - 140 ming yil oldin yashagan. U olovni boshqara olgan, kiyim kiygan, katta hududlarga tarqagan.",
+            "Neandertal nima?": "Neandertal — 400-40 ming yil oldin Yevropa va Osiyoda yashagan inson turidir. U ular zamonaviy inson bilan chatishtirilgan. Neandertallar dafn marosimlarini o'tkazishgan.",
+            "Homo sapiens nima?": "'Homo sapiens' (aqlli inson) — zamonaviy insonning ilmiy nomi. U 300 ming yil oldin Afrikada paydo bo'lib, butun dunyoga tarqagan.",
+            "Ras va irqlar": "Insonning barcha zamonaviy vakillari bitta tur — Homo sapiensga kiradi. Irqlar — insonlarning tashqi ko'rinishidagi (teri rangi, soch shakli) farqlar, lekin ular genetik jihatdan deyarli bir xil.",
+            "Ekologik omillar": "Ekologik omillar — organizmga ta'sir qiluvchi barcha sharoitlar. Ular uch guruhga bo'linadi: abiotik, biotik, antropogen.",
+            "Abiotik omillar": "Abiotik omillar — tirik bo'lmagan tabiat omillari: yorug'lik, temperatura, namlik, shamol, tuproq, suv va h.k.",
+            "Biotik omillar": "Biotik omillar — tirik organizmlar orasidagi o'zaro ta'sirlar: oziqlanish, raqobat, parazitizm, simbioz va h.k.",
+            "Antropogen omillar": "Antropogen omillar — inson faoliyati natijasida atrof-muhitga ta'sir qiluvchi omillar: sanoat, qishloq xo'jaligi, shahar qurilishi, ifloslantirish.",
+            "Temperatura omili": "Harorat organizmlarning taqsimlanishiga, faoliyatiga, o'sishiga katta ta'sir qiladi. Har bir tur ma'lum harorat oralig'ida yashaydi.",
+            "Yorug'lik omili": "Yorug'lik — o'simliklarning fotosintezi uchun zarur, hayvonlarning faoliyati ritmiga ta'sir qiladi. Yorug'likning miqdori, davomiyligi va intensivligi ahamiyatga ega.",
+            "Namlik omili": "Namlik — organizmlarning suv almashinuvi, o'sish, ko'payishiga ta'sir qiladi. Cho'l va o'rmon ekotizimlaridagi organizmlar namlikka turli xil moslashgan.",
+            "Tuproq omili": "Tuproq — o'simliklar uchun oziq modda manbai, hayvonlar uchun yashash muhiti. Tuproq tarkibi, tuzilishi, namligi ekotizimga ta'sir qiladi.",
+            "Turlararo munosabatlar": "Turlararo munosabatlar — ikki yoki undan ko'p tur o'rtasidagi o'zaro ta'sirlar. Ular: raqobat, xish, parazitizm, o'zaro yordam, o'zaro kurash.",
+            "Konkurensiya nima?": "Konkurensiya (raqobat) — bir xil resurslarni (oziq, yashash joyi) qo'lga kiritish uchun bir tur yoki turli turlar o'rtasidagi kurash.",
+            "Xish (simbioz) nima?": "Xish (simbioz) — ikki tur o'rtasidagi uzun muddatli, yaqin o'zaro munosabat. U turli shakllarda bo'ladi: mutualizm, komensalizm, parazitizm.",
+            "Parazitizm nima?": "Parazitizm — bir organizm (parazit) boshqa organizm (xudbin) hisobiga yashaydi va unga zarar yetkazadi. Misol: qurtlar, vashi.",
+            "Xish (mutualizm) nima?": "Mutualizm — ikkala organizm ham foyda ko'radigan xish. Misol: asalarilar va gul, rizobium bakteriyalari va no'xat.",
+            "Komensalizm nima?": "Komensalizm — bir organizm foyda ko'radi, ikkinchisiga zarar ham, foyda ham yetmaydi. Misol: orkidelyalar va daraxtlar.",
+            "Neytralizm nima?": "Neytralizm — ikki tur bir-biriga ta'sir qilmaydi. Ular bir ekotizimda yashaydi, lekin o'zaro aloqasi yo'q.",
+            "Ammensalizm nima?": "Ammensalizm — bir organizm boshqasiga zarar yetkazadi, o'zi esa ta'sir qilmaydi. Misol: penitsillin zamburugi bakteriyalarga zarar yetkazadi.",
+            "O'zaro yordam": "O'zaro yordam — bir tur vakillari o'rtasidagi hamkorlik. Bu jamiyatdagi hayvonlarda (asalarilar, arilar) yoki o'simliklarda uchraydi.",
+            "O'zaro kurash": "O'zaro kurash — bir tur vakillari o'rtasidagi raqobat. Bu resurslarni qo'lga kiritish uchun sodir bo'ladi.",
+            "Adaptatsiya nima?": "Adaptatsiya — organizmlarning atrof-muhit sharoitiga moslashuvi. U morfologik, fiziologik, xulq-atvor jihatlaridan namoyon bo'ladi.",
+            "Mimikriya nima?": "Mimikriya — bir organizmning boshqa xavfli organizmga o'xshashligi orqali himoyalanishi. Misol: beparvo kapalak xavfli kapalakka o'xshaydi.",
+            "Kamuflyaj nima?": "Kamuflyaj — organizmning atrof-muhit rangiga mos kelishi orqali yashirinib qolish. Misol: yashil kaptar barglar orasida.",
+            "Fiziologik adaptatsiyalar": "Fiziologik adaptatsiyalar — organizmning ichki jarayonlari orqali moslashuvi. Misol: o'rtaga chiqqanda terlash, sovuqda qaltirash.",
+            "Xulq-atvor adaptatsiyalari": "Xulq-atvor adaptatsiyalari — organizmning harakati orqali moslashuvi. Misol: quyonning qochish, qushlarning qishda janubga uchish.",
+            "Ekologik nik nima?": "Ekologik nik — organizmning ekotizimdagi 'kasbi', ya'ni u qanday oziqlanadi, qayerda yashaydi, qanday rolni oynaydi.",
+            "Populyatsiya zichligi": "Populyatsiya zichligi — ma'lum hududda yashaydigan organizmlar soni. Zichlik resurslarga, predatsiyaga, kasalliklarga bog'liq.",
+            "Tug'ilish va o'lish me'yori": "Tug'ilish me'yori — birlik vaqt davomida tug'ilgan individlar soni. O'lish me'yori — o'sha davrda o'lik individlar soni. Ular populyatsiya sonini nazorat qiladi.",
+            "Migratsiya nima?": "Migratsiya — individlarning bir hududdan ikkinchisiga ko'chib ketishi. Bu populyatsiya sonini o'zgartiradi.",
+            "Ekotizim turlari": "Ekotizimlar tabiiy va sun'iy bo'ladi. Tabiiylari: o'rmon, cho'l, dengiz, ko'l. Sun'iylari: bog', bog'cha, sug'oriladigan maydon.",
+            "O'rmon ekotizimi": "O'rmon ekotizimi — o'simliklar (daraxtlar) asosiy ishlab chiqaruvchilardir. Unda ko'p qavatli tuzilma mavjud: ko'chalar, butalar, o'tlar. Hayvonlar: qushlar, kemiruvchilar, yirtqichlar.",
+            "Cho'l ekotizimi": "Cho'l ekotizimi — namlik kam, harorat kuchli o'zgarib turadi. O'simliklar: kaktus, saksovul — suvni saqlash xususiyatiga ega. Hayvonlar: ilon, qush, kemiruvchilar — suvsizlikka chidamli.",
+            "Suv ekotizimi": "Suv ekotizimi — dengiz, ko'l, daryo, botqoq kabi suvli muhitlarda mavjud. Ishlab chiqaruvchilar — suv o'tlari, fitoplankton. Iste'molchilar — baliqlar, mollyuskalar.",
+            "Oqangli hayvonlar": "Oqangli hayvonlar — qon aylanish tizimiga ega bo'lgan hayvonlar. Ularga sudralib yuruvchilar, qushlar, sut emizuvchilar kiradi.",
+            "Sut emizuvchilar": "Sut emizuvchilar — bolalarini sut bilan boqadigan, tanasi jun bilan qoplangan, issiqqonli hayvonlar. Ularda rivojlangan nerv sistemasi mavjud.",
+            "Qushlar": "Qushlar — tanasi qalqonchalar bilan qoplangan, qanoti bor, issiqqonli hayvonlar. Ular tuxum qo'yadi. Ko'pchiligi uchish qobiliyatiga ega.",
+            "Sudralib yuruvchilar": "Sudralib yuruvchilar — tanasi to'qimalar bilan qoplangan, sovuqqonli hayvonlar. Ular tuxum qo'yadi. Misol: ilon, kaltakesak, timsoh.",
+            "Amfibiyalar": "Amfibiyalar — suv ham, quruqlik ham yashaydigan hayvonlar. Bolaligi suvda, kattaligi quruqlikda o'tadi. Misol: qurbaqa, kalamush.",
+            "Baliqlar": "Baliqlar — suvda yashaydigan, sovuqqonli, jabra nafas oladigan hayvonlar. Tanasi o'rtacha shaklda, suzish uchun moslashgan.",
+            "Hasharotlar": "Hasharotlar — eng ko'p tarqalgan bo'g'imoyoqlilar. Ularning 3 juft oyoq, 2 juft qanoti, bo'linmagan boshi bor. Misol: pashsha, kapalak, qo'ng'iz.",
+            "Pauk qo'rqqizlar": "Pauk qo'rqqizlar — 4 juft oyoqqa ega bo'lgan bo'g'imoyoqlilar. Ularning qanoti yo'q. Misol: o'rgimchak, qo'rqqiz, skorpion.",
+            "Mollyuskalar": "Mollyuskalar — yumshoq tanali, ko'pincha qobiqqa ega bo'lgan hayvonlar. Misol: suv qo'ng'izi, kaftan, osminoq.",
+            "Bo'g'im oyoqlilar": "Bo'g'im oyoqlilar — tanasi segmentli, oyoqlari bo'g'imli hayvonlar. Ular qattiq xitindan tashkil topgan tashqi skeletga ega. Misol: hasharotlar, pauk qo'rqqizlar, qisqichbaqasimonlar.",
+            "Sut emizuvchilarning xususiyatlari": "Sut emizuvchilarning asosiy xususiyatlari: 1) Bolalarni sut bilan boqish; 2) Tanasi jun bilan qoplangan; 3) Issiqqonli; 4) Rivojlangan miya; 5) Diafragma orqali nafas olish.",
+            "Qushlarning xususiyatlari": "Qushlarning asosiy xususiyatlari: 1) Tanasi qalqonchalar bilan qoplangan; 2) Qanoti bor; 3) Tuxum qo'yadi; 4) Issiqqonli; 5) Ko'pchiligi uchish qobiliyatiga ega."
+        };
+
+        // DOM
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        // Boshlang'ich xabar
+        setTimeout(() => {
+            addMessage("Salom! Men 7-sinf biologiya darsligi bo'yicha AI yordamchiman. Savollarga batafsil javob beraman va biologik hisob-kitoblarni amalga oshiraman! 🌿", 'bot-message');
+        }, 4200);
+
+        // Tugmalar
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        // Xabar qo'shish
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.textContent = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Savolga javob berish
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozir javob bera olmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+
+</body>
+</html>
