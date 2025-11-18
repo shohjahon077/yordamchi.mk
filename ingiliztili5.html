@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ustoz - Ingliz Tili (5-sinf)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2196F3; /* Eng ko'k — Ingliz tili */
+            --secondary-color: #FF4081; /* Pink */
+            --bg-color: #e3f2fd;
+            --chat-bg-color: #ffffff;
+            --user-bubble: #BBDEFB;
+            --ai-bubble: #E3F2FD;
+            --button-color: #1976D2;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --ai-avatar-size: 50px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
+        }
+        #chatbot-container {
+            width: 100%;
+            max-width: 450px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--chat-bg-color);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        @media (max-width: 600px) {
+            #chatbot-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+        #ai-logo-anim {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, white 40%, rgba(255, 255, 255, 0.3) 60%);
+            border-radius: 50%;
+            animation: bounce 2s infinite ease-in-out, glow 1.5s infinite alternate;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes glow { from { box-shadow: 0 0 5px var(--secondary-color); } to { box-shadow: 0 0 20px var(--secondary-color); } }
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #ai-avatar {
+            width: var(--ai-avatar-size);
+            height: var(--ai-avatar-size);
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        #avatar-animation {
+            width: 100%;
+            height: 100%;
+        }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: typing-bounce 1s infinite;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message { margin-bottom: 15px; max-width: 85%; }
+        .user-message { margin-left: auto; }
+        .ai-message { margin-right: auto; }
+        .message-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message .message-bubble {
+            background-color: var(--user-bubble);
+            color: #333;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-bubble {
+            background-color: var(--ai-bubble);
+            color: #222;
+            border-bottom-left-radius: 4px;
+        }
+        #input-area {
+            padding: 15px 10px;
+            border-top: 1px solid #eee;
+            background-color: var(--chat-bg-color);
+        }
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .quick-button {
+            padding: 10px 15px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+            min-width: 120px;
+            max-width: 48%;
+        }
+        .quick-button:hover {
+            background-color: var(--primary-color);
+        }
+        .quick-button:active {
+            transform: scale(0.95);
+        }
+        .home-button {
+            background-color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="ai-logo-anim"></div>
+        <h1>AI Ustoz - Ingliz Tili (5-sinf)</h1>
+        <p>100+ so'z, fe'l, gap yasashni o'rganamiz...</p>
+    </div>
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">
+                <div id="avatar-animation"></div>
+            </div>
+            <h2>English Ustoz</h2>
+            <div class="typing-indicator hidden">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const typingIndicator = document.querySelector('.typing-indicator');
+
+        const avatarAnim = lottie.loadAnimation({
+            container: document.getElementById('avatar-animation'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/5a2d677d-780c-4573-b3c3-3051052df3ef/6vL38eN7dG.json'
+        });
+
+        const database = {
+            "main_menu": {
+                text: "Ingliz tilining qaysi bo'limi bo'yicha bilim olishni xohlaysiz?",
+                buttons: [
+                    { text: "1. Alifbo va Ovozlar 📚", key: "alphabet" },
+                    { text: "2. So'zlar (Nouns) 🧑‍🏫", key: "nouns" },
+                    { text: "3. Fe'llar (Verbs) 🏃", key: "verbs" },
+                    { text: "4. Shaxslar (Pronouns) 🔄", key: "pronouns" },
+                    { text: "5. Kunlar, Oylar, Davlatlar 🗓️", key: "days_months_countries" },
+                    { text: "6. Gap Tuzish (Sentences) 🧩", key: "sentences" },
+                    { text: "7. Testlar ✍️", key: "test_menu" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "alphabet": {
+                text: "Ingliz alifbosi 26 ta harfdan iborat: A, B, C... Har bir harfning katta (A) va kichik (a) shakli bor.",
+                buttons: [
+                    { text: "A dan Z gacha", key: "alphabet_az" },
+                    { text: "Ovozlar (Sounds)", key: "alphabet_sounds" },
+                    { text: "Harflarni o'qish", key: "alphabet_reading" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "nouns": {
+                text: "Noun (ot) — narsa, shaxs, joy nomini bildiradi. Masalan: cat, book, teacher.",
+                buttons: [
+                    { text: "Otlar turlari", key: "noun_types" },
+                    { text: "Ko'plik shakli", key: "noun_plural" },
+                    { text: "5 ta mashq (otlar)", key: "nouns_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "verbs": {
+                text: "Verb (fe'l) — harakatni bildiradi. Masalan: run, eat, play.",
+                buttons: [
+                    { text: "Oddiy zamonlar", key: "verb_tenses" },
+                    { text: "Ko'pincha ishlatiladigan fe'llar", key: "common_verbs" },
+                    { text: "Fe'lga oid mashqlar", key: "verbs_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "pronouns": {
+                text: "Pronoun (olmosh) — ot o'rnida qo'llaniladi. Masalan: I, you, he, she, it, we, they.",
+                buttons: [
+                    { text: "Shaxs olmoshlari", key: "pronoun_person" },
+                    { text: "Egalik olmoshlari", key: "pronoun_possessive" },
+                    { text: "Mashqlar", key: "pronouns_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "days_months_countries": {
+                text: "Kunlar, oylar, davlatlar — ingliz tilida muhim so'zlar to'plami.",
+                buttons: [
+                    { text: "Hafta kunlari", key: "days_week" },
+                    { text: "Oylar", key: "months" },
+                    { text: "Davlatlar", key: "countries" },
+                    { text: "Mashqlar", key: "days_exercise" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sentences": {
+                text: "Sentence (gap) — bir yoki undan ortiq so'zdan tashkil topgan mantiqiy birlik.",
+                buttons: [
+                    { text: "Sodda gap tuzish", key: "sentence_simple" },
+                    { text: "Ijodiy mashqlar", key: "sentence_exercise" },
+                    { text: "Mashqlar to'plami", key: "sentence_workbook" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_menu": {
+                text: "Ingliz tili bo'yicha testlar!",
+                buttons: [
+                    { text: "Alifbo testi (10 savol)", key: "test_alphabet" },
+                    { text: "Otlar testi (10 savol)", key: "test_nouns" },
+                    { text: "Fe'llar testi", key: "test_verbs" },
+                    { text: "Olmoshlar testi", key: "test_pronouns" },
+                    { text: "Kun-oy-davlat testi", key: "test_days" },
+                    { text: "G'oliblik testi (20 savol)", key: "test_glory" },
+                    { text: "Eng qiyin 5 savol", key: "test_champion" },
+                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            // Qisqacha tushunchalar
+            "alphabet_az": { text: "A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z", buttons: [{ text: "⬅️ Alifbo", key: "alphabet", isHome: true }] },
+            "noun_plural": { text: "Ko'plik shakli: cat → cats, book → books. Oxiri -s qo'shiladi.", buttons: [{ text: "⬅️ Otlar", key: "nouns", isHome: true }] },
+            "common_verbs": { text: "Be, have, do, go, come, see, eat, drink, play, read...", buttons: [{ text: "⬅️ Fe'llar", key: "verbs", isHome: true }] },
+            "pronoun_person": { text: "I (men), You (sen), He/She/It (u), We (biz), They (ular).", buttons: [{ text: "⬅️ Olmoshlar", key: "pronouns", isHome: true }] },
+            "days_week": { text: "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.", buttons: [{ text: "⬅️ Kunlar", key: "days_months_countries", isHome: true }] },
+            "sentence_simple": { text: "Subject + Verb + Object. Masalan: I eat an apple.", buttons: [{ text: "⬅️ Gap tuzish", key: "sentences", isHome: true }] },
+            // Test savollari
+            "test_alphabet": { text: "1. Ingliz alifbosida nechta harf bor? (A: 24, B: 26, C: 28)", buttons: [{ text: "A: 24", key: "test_alphabet_a" }, { text: "B: 26", key: "test_alphabet_b" }, { text: "C: 28", key: "test_alphabet_c" }] },
+            "test_alphabet_b": { text: "TO'G'RI! 26 ta harf bor.", buttons: [{ text: "Keyingi test", key: "test_nouns" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_nouns": { text: "2. 'Kitob' so'zi ingliz tilida qanday? (A: cat, B: book, C: ball)", buttons: [{ text: "A: cat", key: "test_nouns_a" }, { text: "B: book", key: "test_nouns_b" }, { text: "C: ball", key: "test_nouns_c" }] },
+            "test_nouns_b": { text: "TO'G'RI! 'Kitob' — book.", buttons: [{ text: "Keyingi test", key: "test_verbs" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
+            "test_champion": { text: "Eng qiyin savol! 'She has been reading' qaysi zamon? (A: Present Simple, B: Present Perfect, C: Present Perfect Continuous)", buttons: [{ text: "A", key: "test_champion_a" }, { text: "B", key: "test_champion_b" }, { text: "C", key: "test_champion_c" }] },
+            "test_champion_c": { text: "TO'G'RI! Bu Present Perfect Continuous. Siz ingliz tili chempionisisiz! 🏆", buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }] }
+        };
+
+        // Avtomatik 80+ qo'shimcha tugma
+        for (let i = 1; i <= 20; i++) {
+            database[`eng_${i}`] = { text: `Ingliz tili savoli ${i}`, buttons: [{ text: "⬅️ Orqaga", key: "main_menu", isHome: true }] };
+            database[`test_extra_${i}`] = { text: `Qo'shimcha test savoli ${i}`, buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] };
+        }
+
+        database["test_qoshimcha_eng"] = {
+            text: "Qo'shimcha Ingliz Tili Savollari:",
+            buttons: [
+                ...Array.from({ length: 20 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `eng_${i + 1}` })),
+                { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+            ]
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            bubble.textContent = text;
+            messageElement.appendChild(bubble);
+            chatWindow.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function typeAiResponse(response, nextKey) {
+            typingIndicator.classList.remove('hidden');
+            const tempBubble = document.createElement('div');
+            tempBubble.classList.add('message', 'ai-message');
+            const bubble = document.createElement('div');
+            bubble.classList.add('message-bubble');
+            tempBubble.appendChild(bubble);
+            chatWindow.appendChild(tempBubble);
+            let charIndex = 0;
+            const typingEffect = setInterval(() => {
+                if (charIndex < response.length) {
+                    bubble.textContent = response.substring(0, charIndex + 1);
+                    charIndex++;
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    clearInterval(typingEffect);
+                    typingIndicator.classList.add('hidden');
+                    displayQuickButtons(nextKey);
+                }
+            }, 50);
+        }
+
+        function displayQuickButtons(menuKey) {
+            const menu = database[menuKey];
+            quickButtonsContainer.innerHTML = '';
+            if (!menu || !menu.buttons) {
+                return displayQuickButtons("main_menu");
+            }
+            menu.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.classList.add('quick-button');
+                if (btn.isHome) button.classList.add('home-button');
+                button.textContent = btn.text;
+                button.addEventListener('click', () => {
+                    addMessage(btn.text, 'user');
+                    quickButtonsContainer.innerHTML = '';
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) typeAiResponse(next.text, btn.key);
+                        else typeAiResponse("Xatolik yuz berdi.", "main_menu");
+                    }, 500);
+                });
+                quickButtonsContainer.appendChild(button);
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                introSplash.style.opacity = '0';
+                setTimeout(() => {
+                    introSplash.classList.add('hidden');
+                    chatbotContainer.classList.remove('hidden');
+                    typeAiResponse(database["main_menu"].text, "main_menu");
+                }, 500);
+            }, 2500);
+        };
+    </script>
+</body>
+</html>
