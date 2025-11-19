@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Fizika (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B00;
+            --secondary: #1976D2;
+            --accent: #E91E63;
+            --light: #FFFFFF;
+            --bg: #FFF8F0;
+            --text: #212121;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(255, 107, 0, 0.15);
+            --border: #FFD1B3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff8f0, #ffe8d6);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #FF6B00, #D84315);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #atom-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #atom-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #FFF3E0;
+            color: #E65100;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #FDF6F0;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === FORMULA STYLE === */
+        .formula {
+            background: #FFECB3;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #BF360C;
+            font-weight: 600;
+        }
+
+        /* === EXPERIMENT EXAMPLE === */
+        .experiment {
+            margin: 12px 0;
+            padding: 10px;
+            background: #FBE9E7;
+            border: 1px solid #FFAB91;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #D84315;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(255,107,0,0.2);
+        }
+
+        .quick-button:hover {
+            background: #D84315;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(216, 67, 21, 0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="atom-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="2" fill="white"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="white" stroke-width="1.5" fill="none"/>
+                <path d="M5 12C5 8 8 4 12 4C16 4 19 8 19 12C19 16 16 20 12 20C8 20 5 16 5 12Z" stroke="white" stroke-width="1.5" fill="none"/>
+                <path d="M12 6L13.5 9L17 10L13.5 11L12 14L10.5 11L7 10L10.5 9L12 6Z" fill="white"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Fizika</h1>
+        <p>8-sinf uchun: mexanika, issiqlik, elektr, magnit — tabiat qonunlari tushunarli!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">⚡</div>
+            <h2>Fizika Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — harakat, issiqlik, elektr, magnit hodisalari</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Fizika ma'lumotlar bazasi (8-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Fizikaning qaysi bo'limi qiziqarli?",
+                buttons: [
+                    { text: "⚡ Mexanika", key: "mexanika" },
+                    { text: "🔥 Issiqlik", key: "issiqlik" },
+                    { text: "⚡ Elektr", key: "elektr" },
+                    { text: "🧲 Magnit", key: "magnit" },
+                    { text: "💡 Optika", key: "optika" },
+                    { text: "🧪 Tajribalar", key: "tajriba" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mexanika": {
+                text: "Mexanika — jismlarning harakati va kuchlar haqida. Asosiy tushunchalar: tezlik, tezlanish, kuch.",
+                buttons: [
+                    { text: "Harakat qonunlari", key: "harakat" },
+                    { text: "Nyuton qonunlari", key: "nyuton" },
+                    { text: "Kuch turlari", key: "kuch_turlari" },
+                    { text: "Formula", key: "mex_formula" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "harakat": {
+                text: "Harakat — jismning vaqtga qarab o'rnini o'zgartirishi.\n\n<code class='formula'>Tezlik: v = s / t</code>\n\ns — yo'l (m), t — vaqt (s), v — tezlik (m/s)",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "nyuton": {
+                text: "Nyutonning 1-qonuni: agar jismga ta'sir qiluvchi kuch bo'lmasa, u to'g'ri chiziq bo'ylab tekis harakat qiladi yoki tinch turadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "kuch_turlari": {
+                text: "Kuch turlari:\n- Og'irlik kuchi: F = mg\n- Ishqalanish kuchi\n- Elastiklik kuchi\n- Arximed kuchi",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "mex_formula": {
+                text: "Mexanika formulalari:\n\n<code class='formula'>F = ma</code> — Nyutonning 2-qonuni\n<code class='formula'>p = mv</code> — Impuls\n<code class='formula'>A = F·s</code> — Ish\n<code class='formula'>N = A/t</code> — Quvvat",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "issiqlik": {
+                text: "Issiqlik — jismlarning ichki energiyasidir. Harorat, issiqlik o'tkazuvchanlik, fazaviy o'tishlar.",
+                buttons: [
+                    { text: "Harorat", key: "harorat" },
+                    { text: "Issiqlik miqdori", key: "issiqlik_miqdori" },
+                    { text: "Agregat holatlar", key: "agregat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "harorat": {
+                text: "Harorat — jismlarning issiqlik darajasini ko'rsatadi. Birligi — °C (Selsiy).\n\nSoatdagi suyuqlik — spirt yoki simob.",
+                buttons: [{ text: "⬅️ Orqaga", key: "issiqlik", isHome: true }]
+            },
+            "issiqlik_miqdori": {
+                text: "Issiqlik miqdori:\n\n<code class='formula'>Q = cm(t₂ - t₁)</code>\n\nc — solishtirma issiqlik sig'imi\nm — mass (kg)\nt₂ - t₁ — harorat o'zgarishi",
+                buttons: [{ text: "⬅️ Orqaga", key: "issiqlik", isHome: true }]
+            },
+            "agregat": {
+                text: "Agregat holatlari: qattiq → suyuq → gaz.\n\nQattiqdan suyuqqa: erish\nSuyuqdan gazga: bug'lanish\nGazdan suyuqqa: kondensatsiya",
+                buttons: [{ text: "⬅️ Orqaga", key: "issiqlik", isHome: true }]
+            },
+            "elektr": {
+                text: "Elektr — zaryadli zarralar harakati. Tok, kuchlanish, qarshilik.",
+                buttons: [
+                    { text: "Elektr zaryadi", key: "zaryad" },
+                    { text: "Tok kuchi", key: "tok" },
+                    { text: "Om qonuni", key: "om" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "zaryad": {
+                text: "Zaryad — musbat (+) yoki manfiy (–). Bir xil zaryadlar — toladi, turli xillari — tortishadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "tok": {
+                text: "Tok kuchi — zaryad o'tish tezligi.\n\n<code class='formula'>I = q / t</code>\n\nI — tok kuchi (A), q — zaryad (C), t — vaqt (s)",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "om": {
+                text: "Om qonuni:\n\n<code class='formula'>I = U / R</code>\n\nI — tok kuchi (A)\nU — kuchlanish (V)\nR — qarshilik (Ω)",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "magnit": {
+                text: "Magnit — temir, po'latni tortuvchi jism. Elektr tok ham magnit maydon yuzaga keltiradi.",
+                buttons: [
+                    { text: "Magnit maydon", key: "maydon" },
+                    { text: "Elektromagnit", key: "elektromagnit" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "maydon": {
+                text: "Magnit maydon — magnit atrofida ta'sir qiluvchi soha. Maydon chiziqlari — shimoldan janubga.",
+                buttons: [{ text: "⬅️ Orqaga", key: "magnit", isHome: true }]
+            },
+            "elektromagnit": {
+                text: "O'tkazgichdan tok o'tganda atrofida magnit maydon hosil bo'ladi. Buni rulon qilib, temir o'zak qo'ysak — elektromagnit.",
+                buttons: [{ text: "⬅️ Orqaga", key: "magnit", isHome: true }]
+            },
+            "optika": {
+                text: "Optika — yorug'lik hodisalari. Nur, soya, ko'zgu, linzalar.",
+                buttons: [
+                    { text: "Nur va soya", key: "nur" },
+                    { text: "Ko'zgular", key: "kozgu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "nur": {
+                text: "Yorug'lik — to'g'ri chiziq bo'ylab tarqaladi. To'siqqa tushsa — soya hosil qiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "optika", isHome: true }]
+            },
+            "kozgu": {
+                text: "Yassi ko'zgu — aks simmetrik bo'ladi. Masofa — jism va aks bir xil masofada.",
+                buttons: [{ text: "⬅️ Orqaga", key: "optika", isHome: true }]
+            },
+            "tajriba": {
+                text: "Soddaroq tajribalar — fizikani tushunishning eng yaxshi yo'li!",
+                buttons: [
+                    { text: "Suv bilan shar", key: "taj_suv" },
+                    { text: "Batareykali magnit", key: "taj_magnit" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "taj_suv": {
+                text: "<span class='experiment'>Tajriba: Plastmassa stakanga suv quyib, ichiga qalam soling. Qalam 'egilgan' ko'rinadi — yorug'likning sindirilishi!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "tajriba", isHome: true }]
+            },
+            "taj_magnit": {
+                text: "<span class='experiment'>Tajriba: Mis simni rulon qiling, batareykaga ulang va temir maydoklarni yaqin keltiring. Magnit hosil bo'ladi!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "tajriba", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Mexanika", key: "test_mex" },
+                    { text: "Issiqlik", key: "test_iss" },
+                    { text: "Elektr", key: "test_el" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_mex": {
+                text: "1. Tezlikning birligi?\nA) kg   B) m/s   C) N",
+                buttons: [
+                    { text: "A) kg", key: "test_mex_a" },
+                    { text: "B) m/s", key: "test_mex_b" },
+                    { text: "C) N", key: "test_mex_c" }
+                ]
+            },
+            "test_mex_b": {
+                text: "✅ To'g'ri! Tezlik — yo'l / vaqt → m/s",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_iss": {
+                text: "2. Qattiqdan suyuq holatga o'tish?\nA) Bug'lanish   B) Muzlash   C) Erish",
+                buttons: [
+                    { text: "A) Bug'lanish", key: "test_iss_a" },
+                    { text: "B) Muzlash", key: "test_iss_b" },
+                    { text: "C) Erish", key: "test_iss_c" }
+                ]
+            },
+            "test_iss_c": {
+                text: "✅ Ajoyib! Qattiq → suyuq = erish. Muz — suvga aylanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_el": {
+                text: "3. Om qonuni?\nA) I = U·R   B) I = U/R   C) U = I/R",
+                buttons: [
+                    { text: "A) I = U·R", key: "test_el_a" },
+                    { text: "B) I = U/R", key: "test_el_b" },
+                    { text: "C) U = I/R", key: "test_el_c" }
+                ]
+            },
+            "test_el_b": {
+                text: "✅ To'g'ri! I = U / R — Om qonuni. Tok = kuchlanish / qarshilik.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<code class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/code>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
