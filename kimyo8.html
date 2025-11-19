@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Kimyo (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #D32F2F;
+            --secondary: #1976D2;
+            --accent: #FF9800;
+            --light: #FFFFFF;
+            --bg: #FFF8F7;
+            --text: #333333;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(211, 47, 47, 0.15);
+            --border: #FFCDD2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff8f7, #ffebee);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #B71C1C);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #flask-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #flask-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #FFEBEE;
+            color: #C62828;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #FDF6F0;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === FORMULA & REACTION STYLE === */
+        .reaction {
+            background: #FBE9E7;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #D32F2F;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E3F2FD;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #0D47A1;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(211,47,47,0.2);
+        }
+
+        .quick-button:hover {
+            background: #B71C1C;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(183,28,28,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="flask-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 22L8.45455 16L15.5455 16L19 22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 5C6.55228 3.34315 7.90341 2 9.5 2C11.0966 2 12.4477 3.34315 13 5V10H6V5Z" fill="white"/>
+                <path d="M3 10V16H21V10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Kimyo</h1>
+        <p>8-sinf uchun: atom, valentlik, reaksiya, eritma, kislota — moddalarning sirli dunyosi!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">⚗️</div>
+            <h2>Kimyo Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — atom, valentlik, reaksiya, eritma, kislota-asos</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Kimyo ma'lumotlar bazasi (8-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Moddalarning sirli dunyosiga xush kelibsiz! Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "⚛️ Atom tuzilishi", key: "atom" },
+                    { text: "🧮 Valentlik", key: "valentlik" },
+                    { text: "🔥 Reaksiyalar", key: "reaksiya" },
+                    { text: "💧 Eritmalar", key: "eritma" },
+                    { text: "🧪 Kislota-asos", key: "kislota" },
+                    { text: "⚖️ Modda miqdori", key: "molekula" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "atom": {
+                text: "Atom — moddaning eng maydaroq zarrasi. U elektron, proton va neytrondan tashkil topgan.",
+                buttons: [
+                    { text: "Proton & Neytron", key: "proton" },
+                    { text: "Elektron qavatlari", key: "elektron" },
+                    { text: "Periodik jadval", key: "jadval" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "proton": {
+                text: "Proton — yadroni tashkil qiladi, zaryadi musbat (+). Neytron — zaryadsiz. Elektronlar — manfiy zaryadli, yadrodan tashqari.",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "elektron": {
+                text: "Elektronlar qavatlarda joylashadi:\n1-qavatda – 2 ta,\n2-qavatda – 8 ta,\n3-qavatda – 18 ta elektron.",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "jadval": {
+                text: "<span class='fact'>Qiziq fakt: D.I. Mendeleyev 1869-yilda elementlar jadvalini yaratdi. Bugun 118 ta element ma'lum.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "valentlik": {
+                text: "Valentlik — elementning boshqa elementlar bilan birikish qobiliyati.",
+                buttons: [
+                    { text: "Vodorod (I)", key: "vodorod" },
+                    { text: "Kislorod (II)", key: "kislorod" },
+                    { text: "Formulalar", key: "formula_val" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "vodorod": {
+                text: "Vodorod — har doim I valentli. Masalan: HCl, H₂O.",
+                buttons: [{ text: "⬅️ Orqaga", key: "valentlik", isHome: true }]
+            },
+            "kislorod": {
+                text: "Kislorod — deyarli har doim II valentli. Masalan: H₂O, CO₂, Fe₂O₃.",
+                buttons: [{ text: "⬅️ Orqaga", key: "valentlik", isHome: true }]
+            },
+            "formula_val": {
+                text: "Agar Al (III) va O (II) biriksa:\n\n<span class='reaction'>Al₂O₃</span>\n\nUmumiy valentlik: 3×2 = 2×3 = 6",
+                buttons: [{ text: "⬅️ Orqaga", key: "valentlik", isHome: true }]
+            },
+            "reaksiya": {
+                text: "Kimyoviy reaksiya — moddalarning o'zgarishi. Yangi moddalar hosil bo'ladi.",
+                buttons: [
+                    { text: "Almashinish", key: "almashinish" },
+                    { text: "Qo'shilish", key: "qoshilish" },
+                    { text: "Ajralish", key: "ajralish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "almashinish": {
+                text: "Almashinish reaksiyasi:\n\n<span class='reaction'>Zn + 2HCl → ZnCl₂ + H₂↑</span>\n\n↑ — gaz ajralaydi!",
+                buttons: [{ text: "⬅️ Orqaga", key: "reaksiya", isHome: true }]
+            },
+            "qoshilish": {
+                text: "Qo'shilish reaksiyasi:\n\n<span class='reaction'>2H₂ + O₂ → 2H₂O</span>\n\nIkki oddiy modda → bir murakkab modda.",
+                buttons: [{ text: "⬅️ Orqaga", key: "reaksiya", isHome: true }]
+            },
+            "ajralish": {
+                text: "Ajralish reaksiyasi:\n\n<span class='reaction'>2H₂O → 2H₂ + O₂</span>\n\nBitta modda → ikkita yoki undan ko'p moddaga.",
+                buttons: [{ text: "⬅️ Orqaga", key: "reaksiya", isHome: true }]
+            },
+            "eritma": {
+                text: "Eritma — erituvchi (masalan, suv) + erigan modda (masalan, tuz).",
+                buttons: [
+                    { text: "Erituvchanlik", key: "erituv" },
+                    { text: "Mass ulushi", key: "mass_ulus" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "erituv": {
+                text: "Harorat oshganda, ko'p moddalarning erituvchanligi ortadi. Lekin gazlarniki kamayadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "mass_ulus": {
+                text: "Mass ulushi:\n\n<span class='reaction'>w = (m_erigan / m_eritma) × 100%</span>\n\nMasalan: 20g tuz + 180g suv → w = (20/200)×100% = 10%",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "kislota": {
+                text: "Kislota — H⁺ ionlari beradigan modda. Asos — OH⁻ ionlari beradi.",
+                buttons: [
+                    { text: "Kislotalar", key: "kisl_misol" },
+                    { text: "Neytrallash", key: "neytral" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kisl_misol": {
+                text: "Kislotalar: HCl (xlorid), H₂SO₄ (sulfat), HNO₃ (nitrat).\n\nAsoslar: NaOH, KOH, Ca(OH)₂.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kislota", isHome: true }]
+            },
+            "neytral": {
+                text: "Neytrallash reaksiyasi:\n\n<span class='reaction'>HCl + NaOH → NaCl + H₂O</span>\n\nTuz + suv hosil bo'ladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kislota", isHome: true }]
+            },
+            "molekula": {
+                text: "Modda miqdori — mollarda o'lchanadi. 1 mol = 6×10²³ zarracha (Avogadro soni).",
+                buttons: [
+                    { text: "Molyar mass", key: "molar_mass" },
+                    { text: "Hisoblash", key: "mol_hisob" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "molar_mass": {
+                text: "Molyar mass = atom massalar yig'indisi.\n\nMasalan: H₂O = 1×2 + 16 = 18 g/mol",
+                buttons: [{ text: "⬅️ Orqaga", key: "molekula", isHome: true }]
+            },
+            "mol_hisob": {
+                text: "Agar 36g suv bo'lsa:\n\n<span class='reaction'>n = m / M = 36 / 18 = 2 mol</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "molekula", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Atom", key: "test_atom" },
+                    { text: "Valentlik", key: "test_val" },
+                    { text: "Reaksiya", key: "test_reak" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_atom": {
+                text: "1. Atomning markazi nima deyiladi?\nA) Elektron   B) Proton   C) Yadro",
+                buttons: [
+                    { text: "A) Elektron", key: "test_atom_a" },
+                    { text: "B) Proton", key: "test_atom_b" },
+                    { text: "C) Yadro", key: "test_atom_c" }
+                ]
+            },
+            "test_atom_c": {
+                text: "✅ To'g'ri! Atomning markazi — yadro.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_val": {
+                text: "2. Kislorodning valentligi nechaga teng?\nA) I   B) II   C) III",
+                buttons: [
+                    { text: "A) I", key: "test_val_a" },
+                    { text: "B) II", key: "test_val_b" },
+                    { text: "C) III", key: "test_val_c" }
+                ]
+            },
+            "test_val_b": {
+                text: "✅ To'g'ri! Kislorod deyarli har doim II valentli.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_reak": {
+                text: "3. 2H₂ + O₂ → 2H₂O — qanday reaksiya?\nA) Ajralish   B) Qo'shilish   C) Almashinish",
+                buttons: [
+                    { text: "A) Ajralish", key: "test_reak_a" },
+                    { text: "B) Qo'shilish", key: "test_reak_b" },
+                    { text: "C) Almashinish", key: "test_reak_c" }
+                ]
+            },
+            "test_reak_b": {
+                text: "✅ Ajoyib! Ikki oddiy modda birlashib murakkab modda hosil qiladi — bu qo'shilish reaksiyasi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
