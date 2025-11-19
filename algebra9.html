@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Algebra (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2C5F2D;
+            --secondary: #388E3C;
+            --accent: #E65100;
+            --light: #F8FDF7;
+            --bg: #F0F9F1;
+            --text: #1B3A1D;
+            --card: #FFFFFF;
+            --shadow: 0 12px 35px rgba(44, 95, 45, 0.18);
+            --border: #C8E6C9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9f1, #e0f4e1);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #2C5F2D, #1B3A1D);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #E8F5E9;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #C8E6C9;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(44, 95, 45, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #E8F5E9;
+            color: #E65100;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #C8E6C9;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFFFFF;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-style: normal;
+            font-weight: 500;
+            border-top-left-radius: 22px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(230, 81, 0, 0.35);
+        }
+
+        .home-button {
+            background: #388E3C !important;
+        }
+
+        .home-button:hover {
+            background: #2C5F2D !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #6B8E23;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* MATEMATIK TA’RIFLAR UCHUN */
+        .formula {
+            font-family: 'Cormorant Garamond', serif;
+            background: #F1F8E9;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border-left: 3px solid var(--accent);
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2E7D32;
+        }
+
+        .example {
+            background: #FFF8E1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 14px 0;
+            font-style: italic;
+            color: #5D4037;
+        }
+
+        .answer {
+            background: #E8F5E9;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Algebra</h1>
+        <p>9-sinf o‘quvchilari uchun kvadrat tenglamalar, funksiyalar, progressiyalar, ehtimollar — barchasi tushunarli, qadam-qadam tahlil qilingan holda</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📊</div>
+            <h2>Algebra Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — Masalova, Qayumov, Rahimqoriyev</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF ALGEBRA MAVZULARI — Darslikka mos (kvadrat tenglamalar, funksiyalar, progressiyalar, ehtimollar)
+        const database = {
+            "main_menu": {
+                text: "Salom! Siz 9-sinf algebra faniga bag‘ishlangan AI Ustozdasiz. Qaysi mavzu bo‘yicha yordam kerak?",
+                buttons: [
+                    { text: "📈 Kvadrat tenglamalar", key: "kv_tenglamalar" },
+                    { text: "📉 Funksiyalar", key: "funksiyalar" },
+                    { text: "🔢 Arifmetik progressiya", key: "arif_prog" },
+                    { text: "🔢 Geometrik progressiya", key: "geom_prog" },
+                    { text: "🎲 Ehtimollar nazariyasi", key: "ehtimollar" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kv_tenglamalar": {
+                text: "Kvadrat tenglamalar — ax² + bx + c = 0 ko‘rinishidagi tenglamalardir. Ularni yechish uchun diskriminant (D) hisoblanadi.\n\n🔹 Diskriminant: D = b² − 4ac\n🔹 Ildizlar: x₁,₂ = (−b ± √D) / 2a\n\nAgar D:\n• D > 0 → 2 ta ildiz\n• D = 0 → 1 ta ildiz\n• D < 0 → haqiqiy ildiz yo‘q",
+                buttons: [
+                    { text: "Misol yechish", key: "kv_misol" },
+                    { text: "Viet teoremasi", key: "kv_viet" },
+                    { text: "Grafik tahlil", key: "kv_grafik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kv_misol": {
+                text: "Misol: x² − 5x + 6 = 0\n\n1. a=1, b=−5, c=6\n2. D = (−5)² − 4·1·6 = 25 − 24 = 1\n3. √D = 1\n4. x₁ = (5 + 1)/2 = 3\n   x₂ = (5 − 1)/2 = 2\n\n✅ Javob: x₁=3, x₂=2\n\n💡 Tekshirish: (x−2)(x−3) = x²−5x+6",
+                buttons: [{ text: "⬅️ Orqaga", key: "kv_tenglamalar", isHome: true }]
+            },
+            "kv_viet": {
+                text: "Viet teoremasi — kvadrat tenglamaning ildizlari va koeffitsiyentlari orasidagi bog‘lanish.\n\nAgar tenglama: x² + px + q = 0\n• x₁ + x₂ = −p\n• x₁ · x₂ = q\n\nMisol: x² − 7x + 12 = 0\n• x₁ + x₂ = 7\n• x₁ · x₂ = 12\n\nJavob: 3 va 4 (chunki 3+4=7, 3·4=12)",
+                buttons: [{ text: "⬅️ Orqaga", key: "kv_tenglamalar", isHome: true }]
+            },
+            "kv_grafik": {
+                text: "Kvadrat funksiya grafigi — parabola.\n\ny = ax² + bx + c\n\n🔹 a > 0 → parabola yuqoriga qaragan\n🔹 a < 0 → pastga qaragan\n🔹 Uchi: x = −b/(2a)\n\nMisol: y = x² − 4x + 3\n• Uch: x = 4/(2) = 2\n• y = 2² − 8 + 3 = −1\n• Nuqtalar: (0,3), (1,0), (3,0)\n\nGrafik — uch (2,−1), x o‘qini (1,0) va (3,0) nuqtalarda kesadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kv_tenglamalar", isHome: true }]
+            },
+            "funksiyalar": {
+                text: "Funksiya — har bir x ga aniq y mos keladi. 9-sinfda: y = kx + b, y = ax², y = k/x funksiyalari o‘rganiladi.\n\n🔹 Chiziqli funksiya: y = kx + b — to‘g‘ri chiziq\n🔹 Kvadrat funksiya: y = ax² — parabola\n🔹 Teskari proporsionallik: y = k/x — giperbola",
+                buttons: [
+                    { text: "Chiziqli funksiya", key: "funk_chiziq" },
+                    { text: "Kvadrat funksiya", key: "funk_kvadrat" },
+                    { text: "Giperbola", key: "funk_giperbola" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "funk_chiziq": {
+                text: "y = kx + b — chiziqli funksiya.\n\n🔹 k — burchak koeffitsienti (qiyalik)\n• k > 0 → o‘suvchi\n• k < 0 → kamayuvchi\n\n🔹 b — y o‘qini kesish nuqtasi\n\nMisol: y = 2x − 3\n• k = 2 → o‘suvchi\n• b = −3 → (0,−3)\n• Nuqtalar: (0,−3), (1,−1), (2,1)",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "funk_kvadrat": {
+                text: "y = ax² + bx + c — kvadrat funksiya.\n\n🔹 Grafik — parabola\n🔹 Uchi: (−b/(2a), f(−b/(2a)))\n\nMisol: y = −x² + 4\n• a = −1 → pastga qaragan\n• Uch: (0, 4)\n• Nuqtalar: (−2,0), (0,4), (2,0)\n\nGrafik — yuqori nuqtasi (0,4), x o‘qini −2 va 2 da kesadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "arif_prog": {
+                text: "Arifmetik progressiya — har bir had oldingisidan doim bir xil d (ayirma) ga farq qiladi.\n\n🔹 Umumiy had: aₙ = a₁ + (n−1)d\n🔹 Yig‘indi: Sₙ = (a₁ + aₙ)·n / 2\n\nMisol: 3, 7, 11, 15...\n• a₁ = 3, d = 4\n• a₅ = 3 + 4·4 = 19\n• S₅ = (3 + 19)·5 / 2 = 55",
+                buttons: [
+                    { text: "Misol yechish", key: "arif_misol" },
+                    { text: "N-had topish", key: "arif_nhad" },
+                    { text: "Yig‘indini topish", key: "arif_yigindi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "arif_misol": {
+                text: "Misol: d = 5, a₁ = 2. a₁₀ va S₁₀ ni toping.\n\n1. a₁₀ = 2 + (10−1)·5 = 2 + 45 = 47\n2. S₁₀ = (2 + 47)·10 / 2 = 49·5 = 245\n\n✅ Javob: a₁₀ = 47, S₁₀ = 245",
+                buttons: [{ text: "⬅️ Orqaga", key: "arif_prog", isHome: true }]
+            },
+            "geom_prog": {
+                text: "Geometrik progressiya — har bir had oldingisidan doim bir xil q (nisa) ga ko‘paytiriladi.\n\n🔹 Umumiy had: bₙ = b₁·qⁿ⁻¹\n🔹 Yig‘indi: Sₙ = b₁·(qⁿ − 1)/(q − 1), q ≠ 1\n\nMisol: 2, 6, 18, 54...\n• b₁ = 2, q = 3\n• b₄ = 2·3³ = 54\n• S₄ = 2·(81−1)/(3−1) = 2·80/2 = 80",
+                buttons: [
+                    { text: "Misol yechish", key: "geom_misol" },
+                    { text: "Cheksiz yig‘indi", key: "geom_cheksiz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "geom_misol": {
+                text: "Misol: b₁ = 5, q = 2. b₆ va S₆ ni toping.\n\n1. b₆ = 5·2⁵ = 5·32 = 160\n2. S₆ = 5·(2⁶ − 1)/(2 − 1) = 5·(64 − 1) = 5·63 = 315\n\n✅ Javob: b₆ = 160, S₆ = 315",
+                buttons: [{ text: "⬅️ Orqaga", key: "geom_prog", isHome: true }]
+            },
+            "geom_cheksiz": {
+                text: "Agar |q| < 1 bo‘lsa, cheksiz geometrik progressiya yig‘indisi mavjud:\n\n🔹 S = b₁ / (1 − q)\n\nMisol: 1, 1/2, 1/4, 1/8...\n• b₁ = 1, q = 1/2\n• S = 1 / (1 − 1/2) = 1 / (1/2) = 2\n\n💡 Natija: Cheksiz qo‘shilsa ham, yig‘indi cheklangan!",
+                buttons: [{ text: "⬅️ Orqaga", key: "geom_prog", isHome: true }]
+            },
+            "ehtimollar": {
+                text: "Ehtimollar nazariyasi — hodisaning sodir bo‘lish ehtimolini hisoblash.\n\n🔹 Ehtimollik: P = (qulay hodisalar soni) / (barcha hodisalar soni)\n🔹 0 ≤ P ≤ 1\n\nMisol: Tanga otilganda «gerb» tushish ehtimoli?\n• Qulay: 1 («gerb»)\n• Barcha: 2 («gerb», «son»)\n• P = 1/2 = 0.5",
+                buttons: [
+                    { text: "Misol yechish", key: "eht_misol" },
+                    { text: "Qo‘shish qoidasi", key: "eht_qoshish" },
+                    { text: "Ko‘paytirish qoidasi", key: "eht_kopaytirish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "eht_misol": {
+                text: "Misol: 6 ta shar bor: 2 qizil, 3 yashil, 1 ko‘k. Tasodifiy bitta shar olinsa, yashil bo‘lish ehtimoli?\n\n• Qulay: 3 (yashil)\n• Barcha: 6\n• P = 3/6 = 1/2 = 0.5\n\n✅ Javob: 0.5 yoki 50%",
+                buttons: [{ text: "⬅️ Orqaga", key: "ehtimollar", isHome: true }]
+            },
+            "eht_qoshish": {
+                text: "Agar hodisalar **bir vaqtda sodir bo‘lolmasa**, ularning bittasining sodir bo‘lish ehtimoli:\n\n🔹 P(A yoki B) = P(A) + P(B)\n\nMisol: Qutida 1–10 raqamlar. Toq yoki 8 bo‘lish ehtimoli?\n• Toq: 1,3,5,7,9 → P = 5/10\n• 8 → P = 1/10\n• Umumiy: P = 5/10 + 1/10 = 6/10 = 0.6",
+                buttons: [{ text: "⬅️ Orqaga", key: "ehtimollar", isHome: true }]
+            },
+            "eht_kopaytirish": {
+                text: "Agar hodisalar **bog‘liq bo‘lmasa**, ularning hammasi sodir bo‘lish ehtimoli:\n\n🔹 P(A va B) = P(A) · P(B)\n\nMisol: Tanga ikki marta otilsin. Ikkalasida ham «gerb» tushish ehtimoli?\n• Bir marta: P = 1/2\n• Ikki marta: P = (1/2)·(1/2) = 1/4",
+                buttons: [{ text: "⬅️ Orqaga", key: "ehtimollar", isHome: true }]
+            },
+            "test_menu": {
+                text: "Algebra bo‘yicha testlar. Qaysi mavzuda sinov qilmoqchisiz?",
+                buttons: [
+                    { text: "Kvadrat tenglamalar", key: "test_kv" },
+                    { text: "Funksiyalar", key: "test_funk" },
+                    { text: "Progressiyalar", key: "test_prog" },
+                    { text: "Ehtimollar", key: "test_eht" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_kv": {
+                text: "1. x² − 4x + 3 = 0 tenglamaning ildizlari?\nA) 1 va 3\nB) −1 va −3\nC) 0 va 4",
+                buttons: [
+                    { text: "A) 1 va 3", key: "test_kv_a" },
+                    { text: "B) −1 va −3", key: "test_kv_b" },
+                    { text: "C) 0 va 4", key: "test_kv_c" }
+                ]
+            },
+            "test_kv_a": {
+                text: "✅ To‘g‘ri! x² − 4x + 3 = (x−1)(x−3) → ildizlar: 1 va 3.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_funk": {
+                text: "1. y = −2x + 4 funksiyaning grafigi qanday?\nA) Yuqoriga qaragan parabola\nB) Pastga qaragan parabola\nC) Kamayuvchi to‘g‘ri chiziq",
+                buttons: [
+                    { text: "A) Parabola yuqori", key: "test_funk_a" },
+                    { text: "B) Parabola past", key: "test_funk_b" },
+                    { text: "C) Kamayuvchi chiziq", key: "test_funk_c" }
+                ]
+            },
+            "test_funk_c": {
+                text: "✅ To‘g‘ri! y = −2x + 4 — chiziqli funksiya, k = −2 < 0 → kamayuvchi to‘g‘ri chiziq.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_prog": {
+                text: "1. Arifmetik progressiya: a₁ = 5, d = 3. a₇ = ?\nA) 20\nB) 23\nC) 26",
+                buttons: [
+                    { text: "A) 20", key: "test_prog_a" },
+                    { text: "B) 23", key: "test_prog_b" },
+                    { text: "C) 26", key: "test_prog_c" }
+                ]
+            },
+            "test_prog_b": {
+                text: "✅ To‘g‘ri! a₇ = 5 + (7−1)·3 = 5 + 18 = 23.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_eht": {
+                text: "1. Qutida 5 ta qizil, 3 ta yashil shar. Tasodifiy yashil tanlash ehtimoli?\nA) 3/8\nB) 5/8\nC) 1/3",
+                buttons: [
+                    { text: "A) 3/8", key: "test_eht_a" },
+                    { text: "B) 5/8", key: "test_eht_b" },
+                    { text: "C) 1/3", key: "test_eht_c" }
+                ]
+            },
+            "test_eht_a": {
+                text: "✅ To‘g‘ri! P = 3 / (5+3) = 3/8.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
