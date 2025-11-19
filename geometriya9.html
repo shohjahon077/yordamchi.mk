@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Geometriya (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A148C;
+            --secondary: #7B1FA2;
+            --accent: #F57C00;
+            --light: #FDF6FD;
+            --bg: #FAF0FA;
+            --text: #311B92;
+            --card: #FFFFFF;
+            --shadow: 0 12px 35px rgba(74, 20, 140, 0.18);
+            --border: #E1BEE7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #faf0fa, #f3e5f5);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #4A148C, #311B92);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #EDE7F6;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #D1C4E9;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 20, 140, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #F3E5F5;
+            color: #F57C00;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #E1BEE7;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFFFFF;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-weight: 500;
+            border-top-left-radius: 22px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(123, 31, 162, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(245, 124, 0, 0.35);
+        }
+
+        .home-button {
+            background: #7B1FA2 !important;
+        }
+
+        .home-button:hover {
+            background: #4A148C !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #7E57C2;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* GEOMETRIK TA’RIFLAR UCHUN */
+        .formula {
+            font-family: 'Cormorant Garamond', serif;
+            background: #F3E5F5;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border-left: 3px solid var(--accent);
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4A148C;
+        }
+
+        .example {
+            background: #FFF8E1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 14px 0;
+            font-style: italic;
+            color: #5D4037;
+        }
+
+        .answer {
+            background: #F3E5F5;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Geometriya</h1>
+        <p>9-sinf o‘quvchilari uchun uchburchaklar, aylana, vektorlar, ko‘pburchaklar, yuzalar va hajmlar — barchasi aniq, tushunarli, chizmalar bilan tushuntirilgan</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📐</div>
+            <h2>Geometriya Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — Masalova, Rahimqoriyev</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF GEOMETRIYA MAVZULARI — darslikka mos
+        const database = {
+            "main_menu": {
+                text: "Salom! Siz 9-sinf geometriya faniga bag‘ishlangan AI Ustozdasiz. Qaysi mavzu bo‘yicha yordam kerak?",
+                buttons: [
+                    { text: "🔺 Uchburchaklar", key: "uchburchak" },
+                    { text: "⭕ Aylana va doira", key: "aylana" },
+                    { text: "➡️ Vektorlar", key: "vektor" },
+                    { text: "🔷 Ko‘pburchaklar", key: "kopburchak" },
+                    { text: "📐 Yuzalar", key: "yuzalar" },
+                    { text: "📦 Hajm (kiritish)", key: "hajm" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "uchburchak": {
+                text: "Uchburchak — eng oddiy ko‘pburchak. 9-sinfda Pifagor teoremasi, kosinuslar va sinuslar teoremasi, o‘xshashlik o‘rganiladi.",
+                buttons: [
+                    { text: "Pifagor teoremasi", key: "pifagor" },
+                    { text: "Kosinuslar teoremasi", key: "kosinus" },
+                    { text: "Sinuslar teoremasi", key: "sinus" },
+                    { text: "O‘xshash uchburchaklar", key: "oxshash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "pifagor": {
+                text: "Pifagor teoremasi — to‘g‘ri burchakli uchburchakda:\n\n🔹 a² + b² = c²\n   (katetlar kvadratlari yig‘indisi gipotenuza kvadratiga teng)\n\nMisol: a=3, b=4 → c² = 9 + 16 = 25 → c = 5\n\n💡 Foydalanish: To‘g‘ri burchak bor-yo‘qligini tekshirish uchun ham ishlatiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "kosinus": {
+                text: "Kosinuslar teoremasi — istalgan uchburchak uchun:\n\n🔹 c² = a² + b² − 2ab·cosγ\n   (γ — a va b orasidagi burchak)\n\nAgar γ = 90°, cos90° = 0 → c² = a² + b² → Pifagor!\n\nMisol: a=5, b=7, γ=60° → c² = 25 + 49 − 2·5·7·0.5 = 74 − 35 = 39 → c ≈ 6.24",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "sinus": {
+                text: "Sinuslar teoremasi:\n\n🔹 a / sinα = b / sinβ = c / sinγ = 2R\n   (R — tashqi chizilgan aylana radiusi)\n\nFoydalanish: Agar 2 burchak va 1 tomon ma’lum bo‘lsa, qolgan tomonlarni topish mumkin.\n\nMisol: α=30°, β=45°, a=10 → sinγ = sin(105°) ≈ 0.9659 → b = 10·sin45°/sin30° ≈ 14.14",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "oxshash": {
+                text: "Uchburchaklar o‘xshash bo‘ladi, agar:\n\n1. 3 ta burchagi teng bo‘lsa (AAA)\n2. 2 tomon nisbati teng hamda ular orasidagi burchak teng bo‘lsa (SAS)\n3. 3 tomon nisbati teng bo‘lsa (SSS)\n\nO‘xshashlik koeffitsienti k = a₁/a₂\nYuzlar nisbati = k²",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "aylana": {
+                text: "Aylana — berilgan nuqtadan (markaz) bir xil masofadagi nuqtalar to‘plami.",
+                buttons: [
+                    { text: "Aylana elementlari", key: "aylana_el" },
+                    { text: "Markaziy va ichki burchaklar", key: "aylana_bur" },
+                    { text: "Yoy uzunligi", key: "aylana_yoy" },
+                    { text: "Doira yuzi", key: "doira_yuz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "aylana_el": {
+                text: "Aylana elementlari:\n\n🔹 Radius (R) — markazdan chetgacha\n🔹 Diametr (D) — 2R\n🔹 Vatar — aylana ichidagi kesma\n🔹 Yoy — aylananing qismi\n🔹 Sektor — radiuslar va yoy orasidagi qism\n🔹 Segment — vatar va yoy orasidagi qism",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "aylana_bur": {
+                text: "🔹 Markaziy burchak — uchi markazda, yoyga tayanadi. O‘lchovi yoyga teng.\n\n🔹 Ichki burchak — aylana nuqtasida, vatarlar orqali. O‘lchovi yoyning yarmiga teng.\n\nMisol: Yoy = 80° → markaziy = 80°, ichki = 40°",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "aylana_yoy": {
+                text: "Yoy uzunligi: L = (πRα) / 180°\n\nMisol: R = 10, α = 90° → L = (π·10·90)/180 = 5π ≈ 15.7\n\nSektor yuzi: S = (πR²α) / 360°",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "doira_yuz": {
+                text: "Doira yuzi: S = πR²\n\nAylana uzunligi: C = 2πR\n\nMisol: R = 7 → S = 49π ≈ 153.94, C = 14π ≈ 43.98",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "vektor": {
+                text: "Vektor — yo‘nalishli kesma. 9-sinfda vektorlarning qo‘shilishi, ayirilishi, koordinatalari o‘rganiladi.",
+                buttons: [
+                    { text: "Vektor koordinatalari", key: "vektor_koord" },
+                    { text: "Qo‘shish va ayirish", key: "vektor_qosh" },
+                    { text: "Skalyar ko‘paytma", key: "vektor_skal" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "vektor_koord": {
+                text: "Agar A(x₁,y₁), B(x₂,y₂) bo‘lsa:\n\n🔹 Vektor AB = {x₂−x₁, y₂−y₁}\n\nMisol: A(2,3), B(5,7) → AB = {3, 4}",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "vektor_qosh": {
+                text: "Vektorlarni qo‘shish:\n\n🔹 {a,b} + {c,d} = {a+c, b+d}\n\nVektorlarni ayirish:\n\n🔹 {a,b} − {c,d} = {a−c, b−d}\n\nMisol: {2,5} + {−1,3} = {1,8}",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "vektor_skal": {
+                text: "Skalyar ko‘paytma:\n\n🔹 a·b = |a||b|cosθ\n   yoki\n🔹 a·b = aₓbₓ + aᵧbᵧ\n\nAgar a·b = 0 → vektorlar perpendikulyar\n\nMisol: a={3,4}, b={1,2} → a·b = 3·1 + 4·2 = 11",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "kopburchak": {
+                text: "Muntazam ko‘pburchak — barcha tomonlari va burchaklari teng.",
+                buttons: [
+                    { text: "Ichki burchak", key: "kopb_ichki" },
+                    { text: "Tashqi chizilgan aylana", key: "kopb_tashqi" },
+                    { text: "Ichki chizilgan aylana", key: "kopb_ichki_aylana" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kopb_ichki": {
+                text: "Ichki burchak: α = (n−2)·180° / n\n\nMisol: n=6 (oltiburchak) → α = 4·180/6 = 120°\n\nYig‘indi: (n−2)·180°",
+                buttons: [{ text: "⬅️ Orqaga", key: "kopburchak", isHome: true }]
+            },
+            "kopb_tashqi": {
+                text: "Tashqi chizilgan aylana radiusi:\n\n🔹 R = a / (2·sin(180°/n))\n\nMisol: a=6, n=3 → R = 6 / (2·sin60°) = 6 / (2·√3/2) = 6/√3 = 2√3",
+                buttons: [{ text: "⬅️ Orqaga", key: "kopburchak", isHome: true }]
+            },
+            "kopb_ichki_aylana": {
+                text: "Ichki chizilgan aylana (apofema):\n\n🔹 r = a / (2·tg(180°/n))\n\nMisol: a=4, n=4 → r = 4 / (2·tg45°) = 4 / 2 = 2",
+                buttons: [{ text: "⬅️ Orqaga", key: "kopburchak", isHome: true }]
+            },
+            "yuzalar": {
+                text: "9-sinfda ko‘pburchaklar va ularning yuzlarini hisoblash o‘rganiladi.",
+                buttons: [
+                    { text: "Uchburchak yuzi", key: "yuz_uch" },
+                    { text: "To‘rtburchaklar", key: "yuz_tort" },
+                    { text: "Muntazam ko‘pburchak", key: "yuz_kopb" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "yuz_uch": {
+                text: "Uchburchak yuzi:\n\n🔹 Asosiy: S = (a·h)/2\n🔹 Ikki tomon va burchak: S = (ab·sinγ)/2\n🔹 Geron: S = √[p(p−a)(p−b)(p−c)], p = (a+b+c)/2\n\nMisol: a=6, h=4 → S = 12",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuzalar", isHome: true }]
+            },
+            "yuz_tort": {
+                text: "To‘rtburchaklar:\n\n🔹 To‘g‘ri to‘rtburchak: S = a·b\n🔹 Kvadrat: S = a²\n🔹 Parallelogramm: S = a·h\n🔹 Rom: S = (d₁·d₂)/2\n🔹 Trapetsiya: S = (a+b)·h / 2",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuzalar", isHome: true }]
+            },
+            "yuz_kopb": {
+                text: "Muntazam n-burchak yuzi:\n\n🔹 S = (n·a²) / (4·tg(180°/n))\n   yoki\n🔹 S = (P·r)/2 (P — perimetr, r — apofema)\n\nMisol: n=6, a=2 → S = (6·4) / (4·tg30°) = 24 / (4·√3/3) = 6√3",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuzalar", isHome: true }]
+            },
+            "hajm": {
+                text: "9-sinfda hajm — faqat **kiritish** darajasida (asosan 10–11-sinfda o‘rganiladi), ammo quyidagilar bilinadi:",
+                buttons: [
+                    { text: "Parallelepiped", key: "hajm_para" },
+                    { text: "Prizma", key: "hajm_prizma" },
+                    { text: "Asosiy formulalar", key: "hajm_form" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hajm_para": {
+                text: "To‘g‘ri burchakli parallelepiped hajmi:\n\n🔹 V = a·b·c\n\nMisol: a=2, b=3, c=4 → V = 24",
+                buttons: [{ text: "⬅️ Orqaga", key: "hajm", isHome: true }]
+            },
+            "hajm_prizma": {
+                text: "Prizma hajmi:\n\n🔹 V = Sₐₛₒₛ · H\n\nMisol: Asos yuzi = 10, balandlik = 5 → V = 50",
+                buttons: [{ text: "⬅️ Orqaga", key: "hajm", isHome: true }]
+            },
+            "hajm_form": {
+                text: "Asosiy hajm formulalari:\n\n🔹 Kub: V = a³\n🔹 Shar: V = (4/3)πR³\n🔹 Silindr: V = πR²H\n🔹 KONUS: V = (1/3)πR²H\n\n💡 9-sinfdan keyin chuqur o‘rganiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "hajm", isHome: true }]
+            },
+            "test_menu": {
+                text: "Geometriya bo‘yicha testlar. Qaysi mavzuda sinov qilmoqchisiz?",
+                buttons: [
+                    { text: "Uchburchaklar", key: "test_uch" },
+                    { text: "Aylana", key: "test_aylana" },
+                    { text: "Vektorlar", key: "test_vektor" },
+                    { text: "Yuzalar", key: "test_yuz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_uch": {
+                text: "1. To‘g‘ri burchakli uchburchakda katetlar 6 va 8. Gipotenuza?\nA) 10\nB) 14\nC) 100",
+                buttons: [
+                    { text: "A) 10", key: "test_uch_a" },
+                    { text: "B) 14", key: "test_uch_b" },
+                    { text: "C) 100", key: "test_uch_c" }
+                ]
+            },
+            "test_uch_a": {
+                text: "✅ To‘g‘ri! c = √(6² + 8²) = √(36+64) = √100 = 10.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_aylana": {
+                text: "1. Aylana uzunligi 20π. Radius?\nA) 10\nB) 20\nC) 5",
+                buttons: [
+                    { text: "A) 10", key: "test_aylana_a" },
+                    { text: "B) 20", key: "test_aylana_b" },
+                    { text: "C) 5", key: "test_aylana_c" }
+                ]
+            },
+            "test_aylana_a": {
+                text: "✅ To‘g‘ri! C = 2πR → 20π = 2πR → R = 10.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_vektor": {
+                text: "1. A(1,2), B(4,6). Vektor AB koordinatalari?\nA) {3,4}\nB) {5,8}\nC) {−3,−4}",
+                buttons: [
+                    { text: "A) {3,4}", key: "test_vektor_a" },
+                    { text: "B) {5,8}", key: "test_vektor_b" },
+                    { text: "C) {−3,−4}", key: "test_vektor_c" }
+                ]
+            },
+            "test_vektor_a": {
+                text: "✅ To‘g‘ri! AB = {4−1, 6−2} = {3,4}.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_yuz": {
+                text: "1. Trapetsiya asoslari 5 va 7, balandlik 4. Yuz?\nA) 24\nB) 12\nC) 48",
+                buttons: [
+                    { text: "A) 24", key: "test_yuz_a" },
+                    { text: "B) 12", key: "test_yuz_b" },
+                    { text: "C) 48", key: "test_yuz_c" }
+                ]
+            },
+            "test_yuz_a": {
+                text: "✅ To‘g‘ri! S = (5+7)·4 / 2 = 12·2 = 24.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
