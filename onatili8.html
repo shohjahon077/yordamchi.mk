@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Onatili Adabiyot (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5D4037;
+            --secondary: #8D6E63;
+            --accent: #C62828;
+            --light: #FFF5F0;
+            --bg: #F9F2F0;
+            --text: #3E2723;
+            --card: #FFF8F5;
+            --shadow: 0 10px 30px rgba(93, 64, 55, 0.15);
+            --border: #E0B2A8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9f2f0, #f4e8e5);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #5D4037, #3E2723);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: #FFEBEE;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.9;
+            color: #FFECB3;
+        }
+
+        #book-logo {
+            width: 140px;
+            height: 140px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 20px auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+            position: relative;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: 1.4rem;
+            letter-spacing: -0.2px;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .user-message .message-bubble {
+            background: #F9E6E6;
+            color: #C62828;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+            border: 1px solid #F5C5C5;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFF8F5;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--accent);
+            font-style: italic;
+            border-top-left-radius: 20px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 3px 8px rgba(141, 110, 99, 0.2);
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(198, 40, 40, 0.3);
+        }
+
+        .home-button {
+            background: #8D6E63 !important;
+        }
+
+        .home-button:hover {
+            background: #6D4C41 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #7B5D52;
+            margin-top: 12px;
+            padding: 4px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION: PAGE FADE IN */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Onatili Adabiyot</h1>
+        <p>8-sinf o‘quvchilari uchun she’riyat, roman, hikoya va asarlarni tahlil qiluvchi do‘st</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📖</div>
+            <h2>Adabiyot Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — “Qo‘shchinchor o‘g‘li”, “Sarvinoz”, “O‘tgan kunlar” va boshqalar</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Onatili Adabiyot ma'lumotlar bazasi (8-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom, do‘stim! Onatili adabiyotga xush kelibsiz. Qaysi asar haqida gaplashaylik?",
+                buttons: [
+                    { text: "📚 Qo‘shchinchor o‘g‘li", key: "qoshchinchor" },
+                    { text: "🌸 Sarvinoz", key: "sarvinoz" },
+                    { text: "🕰️ O‘tgan kunlar", key: "otgan_kunlar" },
+                    { text: "🕊️ 20-asr she’riyati", key: "she'riyat" },
+                    { text: "🎭 Hikoyalar", key: "hikoyalar" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "qoshchinchor": {
+                text: "‘Qo‘shchinchor o‘g‘li’ — O‘zbek adabiyotining eng buyuk asarlaridan biri. Bu qanday asar? Qanday g‘oyalar bilan yaratilgan?",
+                buttons: [
+                    { text: "Asarning mazmuni", key: "qosh_mazmuni" },
+                    { text: "Asosiy qahramonlar", key: "qosh_qahramon" },
+                    { text: "G‘oya va xulosa", key: "qosh_g'oya" },
+                    { text: "Mashqlar", key: "mashq_qosh" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "qosh_mazmuni": {
+                text: "‘Qo‘shchinchor o‘g‘li’ — qishloq hayotidagi insoniyat, adolat, qo‘rqoqlik va qahramonlik haqida. O‘g‘li — o‘zining o‘ziga qo‘ygan qonuniy qarorlar bilan hayotga qarshi kurashadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qoshchinchor", isHome: true }]
+            },
+            "qosh_qahramon": {
+                text: "Asarda: Qo‘shchinchor — qo‘rqoq, qat’iy, o‘zining o‘g‘li — go‘zal ruhli, o‘zini qurbon qiluvchi. O‘g‘li — o‘zining qarorlarini qo‘yib, hayotga qarshi kurashadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qoshchinchor", isHome: true }]
+            },
+            "qosh_g'oya": {
+                text: "Asarning g‘oyasi: O‘zgacha odam — qo‘rqoq emas, balki o‘zini qurbon qiluvchi. Adolat — insoniyatning eng yuqori qadriyatidir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qoshchinchor", isHome: true }]
+            },
+            "mashq_qosh": {
+                text: "1. Qo‘shchinchor o‘g‘li qanday qahramon? 2. Asarning asosiy g‘oyasini yozing.\n\n💡 Javoblar: 1. O‘zining qarorlarini qo‘yib, hayotga qarshi kurashuvchi. 2. Adolat — insoniyatning eng yuqori qadriyatidir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qoshchinchor", isHome: true }]
+            },
+            "sarvinoz": {
+                text: "‘Sarvinoz’ — Muhammadiy Olimiyning she’riy asari. Bu qanday she’riyat? Qanday hissiyotlarni ifodalaydi?",
+                buttons: [
+                    { text: "She’riy tahlil", key: "sarv_tahlil" },
+                    { text: "Shoir haqida", key: "sarv_shoir" },
+                    { text: "Mashqlar", key: "mashq_sarv" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sarv_tahlil": {
+                text: "‘Sarvinoz’ — muhabbat, qayg‘u, o‘zgarish va yodgorlik haqida. She’rda sarv daraxti — o‘zgarmas muhabbat, yodgorlik, o‘zgarmas qadriyatni anglatadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sarvinoz", isHome: true }]
+            },
+            "sarv_shoir": {
+                text: "Muhammadiy Olimiy — 19-asr oxiri, 20-asr boshlarida faoliyat olib borgan. O‘zbek adabiyotida she’riyatni rivojlantirgan yirik shoir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sarvinoz", isHome: true }]
+            },
+            "otgan_kunlar": {
+                text: "‘O‘tgan kunlar’ — Abdulla Qodiriyning romanidir. Bu asarda qanday tarixiy muhit, insoniy qiyinchiliklar va o‘zgarishlar tasvirlangan?",
+                buttons: [
+                    { text: "Asarning tarixiy asosi", key: "otgan_tarix" },
+                    { text: "Asosiy qahramonlar", key: "otgan_qahramon" },
+                    { text: "Mashqlar", key: "mashq_otgan" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "otgan_tarix": {
+                text: "Roman 19-asr oxirida, qo‘shma qo‘shinlar davrida bo‘lib o‘tadi. O‘zbekiston xalqining milliy ma’naviyatini saqlashga urinishlar tasvirlangan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "otgan_kunlar", isHome: true }]
+            },
+            "otgan_qahramon": {
+                text: "Asarda: O‘tbek — o‘zining milliy qadriyatlarini saqlashga harakat qiluvchi, Shohmurod — o‘zgacha fikrli, O‘tbekning do‘sti. O‘zbegim — qadriyatli ayol.",
+                buttons: [{ text: "⬅️ Orqaga", key: "otgan_kunlar", isHome: true }]
+            },
+            "she'riyat": {
+                text: "20-asr boshlarida O‘zbek she’riyati — o‘zgacha shoirlar, yangi g‘oyalar, insoniyat, erkinlik, o‘zgarish haqida.",
+                buttons: [
+                    { text: "Abdulla Qodiriy", key: "sheir_qodiriy" },
+                    { text: "Said Ahmad", key: "sheir_ahmad" },
+                    { text: "G‘afur G‘ulom", key: "sheir_gulom" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sheir_qodiriy": {
+                text: "Abdulla Qodiriy — ‘O‘tgan kunlar’, ‘O‘tgan kunlar’ — romanlari bilan mashhur. She’riyati — insoniyat, tarix, milliy ma’naviyatga bag‘ishlangan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "she'riyat", isHome: true }]
+            },
+            "sheir_gulom": {
+                text: "G‘afur G‘ulom — ‘Birinchi qo‘shiq’, ‘Yozgi kundalik’ — she’rlari bilan tanilgan. She’riyati — tabiat, inson, sevgi, hayot haqida.",
+                buttons: [{ text: "⬅️ Orqaga", key: "she'riyat", isHome: true }]
+            },
+            "hikoyalar": {
+                text: "Hikoyalar — qisqa, ammo chuqur. Masalan: ‘Ko‘zlar’, ‘Tirik o‘lmasin’, ‘Birinchi qo‘shiq’.",
+                buttons: [
+                    { text: "Ko‘zlar", key: "hikoya_kozlar" },
+                    { text: "Tirik o‘lmasin", key: "hikoya_tirik" },
+                    { text: "Birinchi qo‘shiq", key: "hikoya_birinchi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hikoya_kozlar": {
+                text: "‘Ko‘zlar’ — o‘g‘il qizlar orasidagi muhabbat, o‘zgarish va hayotning qisqa vaqti haqida. Ko‘zlar — hissiyotlarni ifodalovchi simvol.",
+                buttons: [{ text: "⬅️ Orqaga", key: "hikoyalar", isHome: true }]
+            },
+            "test_menu": {
+                text: "Onatili adabiyot testlari. Qaysi mavzuni sinab ko‘rasiz?",
+                buttons: [
+                    { text: "Qo‘shchinchor", key: "test_qosh" },
+                    { text: "Sarvinoz", key: "test_sarv" },
+                    { text: "O‘tgan kunlar", key: "test_otgan" },
+                    { text: "She’riyat", key: "test_sheir" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_qosh": {
+                text: "1. Qo‘shchinchor o‘g‘li qanday qahramon?\nA) Qo‘rqoq  B) O‘zini qurbon qiluvchi  C) O‘ziga ishonmaydigan\n\nJavobni tanlang:",
+                buttons: [
+                    { text: "A) Qo‘rqoq", key: "test_qosh_a" },
+                    { text: "B) O‘zini qurbon qiluvchi", key: "test_qosh_b" },
+                    { text: "C) O‘ziga ishonmaydigan", key: "test_qosh_c" }
+                ]
+            },
+            "test_qosh_b": {
+                text: "✅ Ajoyib! Qo‘shchinchor o‘g‘li — o‘zining qarorlarini qo‘yib, hayotga qarshi kurashuvchi qahramon.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_qosh_a": {
+                text: "❌ Xato. Qo‘shchinchor o‘g‘li — qo‘rqoq emas, balki o‘zini qurbon qiluvchi qahramon.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_qosh_c": {
+                text: "❌ Xato. U o‘ziga ishonmaydigan emas, aksincha, o‘z qarorlarini qo‘yadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
