@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Geometriya (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1976D2;
+            --secondary: #FFC107;
+            --accent: #4CAF50;
+            --light: #FFFFFF;
+            --bg: #F5F9FC;
+            --text: #1A1A1A;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(25, 118, 210, 0.1);
+            --border: #E0E0E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f9fc, #e8f0f7);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        #compass-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #compass-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #1565C0;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* === FORMULA STYLE === */
+        .formula {
+            background: #ECEFF1;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #1A237E;
+        }
+
+        /* === FIGURE EXAMPLE === */
+        .figure {
+            margin: 12px 0;
+            padding: 10px;
+            background: #F0F4F8;
+            border: 1px dashed #B0BEC5;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #546E7A;
+            text-align: center;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(25,118,210,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="compass-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/>
+                <path d="M12 3L12 12L18 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 12L12 15" stroke="#FFC107" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="2" fill="white"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Geometriya</h1>
+        <p>8-sinf uchun: uchburchaklar, yuz, Pifagor, aylana, simmetriya va testlar!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📐</div>
+            <h2>Geometriya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — Pifagor, uchburchak, yuz, aylana</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Geometriya ma'lumotlar bazasi (8-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Geometriyaning qaysi mavzusida yordam kerak?",
+                buttons: [
+                    { text: "🔺 Uchburchak", key: "uchburchak" },
+                    { text: "📊 Yuz va perimetr", key: "yuz" },
+                    { text: "📏 Pifagor teoremasi", key: "pifagor" },
+                    { text: "⭕ Aylana", key: "aylana" },
+                    { text: "🔄 O'xshashlik", key: "oxshashlik" },
+                    { text: "⚖️ Simmetriya", key: "simmetriya" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "uchburchak": {
+                text: "Uchburchak — 3 ta tomon, 3 ta burchak. Yig'indisi 180°. Turli turlari bor.",
+                buttons: [
+                    { text: "Teng tomonli", key: "teng_tomonli" },
+                    { text: "Teng yonli", key: "teng_yonli" },
+                    { text: "To'g'ri burchakli", key: "togri_burchakli" },
+                    { text: "Yuzi formula", key: "yuz_uchb" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "teng_tomonli": {
+                text: "Hamma tomoni teng, hamma burchagi 60°.\n\n<code class='formula'>P = 3a</code>\n\n<code class='figure'>△ ABC: AB = BC = AC</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "teng_yonli": {
+                text: "Ikki tomoni teng. Asosdagi burchaklar ham teng.\n\n<code class='formula'>∠B = ∠C</code>\n\n<code class='figure'>AB = AC → ∠B = ∠C</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "togri_burchakli": {
+                text: "Bitta burchagi 90°. Katetlar — gipotenuza — Pifagor.\n\n<code class='formula'>a² + b² = c²</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "yuz_uchb": {
+                text: "Uchburchak yuzi:\n\n<code class='formula'>S = ½ × a × h</code>\n\na — asos, h — balandlik.\n\nMasalan: a=6, h=4 → S = ½×6×4 = 12",
+                buttons: [{ text: "⬅️ Orqaga", key: "uchburchak", isHome: true }]
+            },
+            "yuz": {
+                text: "Shakllarning yuzi va perimetri — juda muhim!",
+                buttons: [
+                    { text: "To'rtburchak", key: "tortburchak" },
+                    { text: "Parallelogramm", key: "parall" },
+                    { text: "Trapetsiya", key: "trapetsiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tortburchak": {
+                text: "To'rtburchak:\n\n<code class='formula'>S = a × b</code>\n<code class='formula'>P = 2(a + b)</code>\n\nMasalan: a=5, b=3 → S=15, P=16",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuz", isHome: true }]
+            },
+            "parall": {
+                text: "Parallelogramm:\n\n<code class='formula'>S = a × h</code>\n\na — asos, h — balandlik.\n\n<code class='figure'>□ ABCD: AB || CD, AD || BC</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuz", isHome: true }]
+            },
+            "trapetsiya": {
+                text: "Trapetsiya — ikki tomoni parallel.\n\n<code class='formula'>S = ½ × (a + b) × h</code>\n\na, b — asoslar, h — balandlik",
+                buttons: [{ text: "⬅️ Orqaga", key: "yuz", isHome: true }]
+            },
+            "pifagor": {
+                text: "Pifagor teoremasi — to‘g‘ri burchakli uchburchakda:\n\n<code class='formula'>katet₁² + katet₂² = gipotenuza²</code>\n\nMasalan: 3, 4, 5 — eng mashhur uchlik!",
+                buttons: [
+                    { text: "Misol", key: "pif_misol" },
+                    { text: "Isbot", key: "pif_isbot" },
+                    { text: "Mashqlar", key: "pif_mashq" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "pif_misol": {
+                text: "Katetlar 6 va 8. Gipotenuza?\n\n<code class='formula'>c² = 6² + 8² = 36 + 64 = 100</code>\n→ c = √100 = 10",
+                buttons: [{ text: "⬅️ Orqaga", key: "pifagor", isHome: true }]
+            },
+            "pif_isbot": {
+                text: "Isbot: kvadrat ichida to'rtta uchburchak. Maydonni ikki usulda hisoblab, tenglama hosil qilinadi.\n\nBu yerda rasmsiz, lekin o'ylab ko'ring!",
+                buttons: [{ text: "⬅️ Orqaga", key: "pifagor", isHome: true }]
+            },
+            "pif_mashq": {
+                text: "1. Katetlar 5 va 12 → gipotenuza? (Javob: 13)\n2. Gipotenuza 10, katet 6 → ikkinchi katet? (Javob: 8)",
+                buttons: [{ text: "⬅️ Orqaga", key: "pifagor", isHome: true }]
+            },
+            "aylana": {
+                text: "Aylana — markazdan bir xil masofadagi nuqtalar to'plami.",
+                buttons: [
+                    { text: "Radius & Diametr", key: "radius" },
+                    { text: "Uzunlik", key: "uzunlik" },
+                    { text: "Yuzi", key: "aylana_yuz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "radius": {
+                text: "Radius (r) — markazdan chetigacha.\nDiametr (d) = 2r.\n\n<code class='figure'>O — markaz, OA = r</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "uzunlik": {
+                text: "Aylananing uzunligi:\n\n<code class='formula'>L = 2πr</code>\n\nπ ≈ 3.14\n\nMasalan: r=5 → L ≈ 31.4",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "aylana_yuz": {
+                text: "Aylana yuzi:\n\n<code class='formula'>S = πr²</code>\n\nr=4 → S = 3.14×16 ≈ 50.24",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "oxshashlik": {
+                text: "O'xshashlik — burchaklari teng, tomonlari proporsional.",
+                buttons: [
+                    { text: "Nisbat", key: "nisbat" },
+                    { text: "Misol", key: "oxsh_misol" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "nisbat": {
+                text: "Agar uchburchaklar o'xshash bo'lsa:\n\n<code class='formula'>AB/A'B' = BC/B'C' = k</code>\n\nk — o'xshashlik koeffitsienti",
+                buttons: [{ text: "⬅️ Orqaga", key: "oxshashlik", isHome: true }]
+            },
+            "oxsh_misol": {
+                text: "△ABC ~ △A'B'C'\nAB=6, A'B'=3 → k=2\nBC=8 → B'C' = 8/2 = 4",
+                buttons: [{ text: "⬅️ Orqaga", key: "oxshashlik", isHome: true }]
+            },
+            "simmetriya": {
+                text: "Simmetriya — narsaning akslanishi. Ikki turi: o'q va markaz.",
+                buttons: [
+                    { text: "O'q simmetriyasi", key: "oq_sim" },
+                    { text: "Markaziy simmetriya", key: "markaz_sim" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "oq_sim": {
+                text: "O'q simmetriyasi — figura o'q atrofida akslanadi.\n\nMasalan: kvadrat — 4 ta simmetriya o'qi",
+                buttons: [{ text: "⬅️ Orqaga", key: "simmetriya", isHome: true }]
+            },
+            "markaz_sim": {
+                text: "Markaziy simmetriya — markazga nisbatan 180° burilish.\n\nMasalan: parallelogramm — markaziy simmetrik",
+                buttons: [{ text: "⬅️ Orqaga", key: "simmetriya", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Uchburchak", key: "test_uchb" },
+                    { text: "Pifagor", key: "test_pif" },
+                    { text: "Yuz", key: "test_yuz" },
+                    { text: "Aylana", key: "test_aylana" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_uchb": {
+                text: "1. Uchburchak burchaklari yig'indisi nechaga teng?\nA) 90°   B) 180°   C) 360°",
+                buttons: [
+                    { text: "A) 90°", key: "test_uchb_a" },
+                    { text: "B) 180°", key: "test_uchb_b" },
+                    { text: "C) 360°", key: "test_uchb_c" }
+                ]
+            },
+            "test_uchb_b": {
+                text: "✅ To'g'ri! Har qanday uchburchakning burchaklari yig'indisi 180° ga teng.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_uchb_a": {
+                text: "❌ Xato. 90° — faqat to'g'ri burchak. Umumiy yig'indi 180°.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_uchb_c": {
+                text: "❌ Xato. 360° — to'rtburchak uchun.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_pif": {
+                text: "2. Agar katetlar 9 va 12 bo'lsa, gipotenuza?\nA) 15   B) 14   C) 13",
+                buttons: [
+                    { text: "A) 15", key: "test_pif_a" },
+                    { text: "B) 14", key: "test_pif_b" },
+                    { text: "C) 13", key: "test_pif_c" }
+                ]
+            },
+            "test_pif_a": {
+                text: "✅ Ajoyib! 9² + 12² = 81 + 144 = 225 → √225 = 15",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_pif_b": {
+                text: "❌ Xato. Hisoblang: 9² + 12² = 81 + 144 = 225 → √225 = 15",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_pif_c": {
+                text: "❌ Xato. 5-12-13 — boshqa uchlik. Bu yerda 9-12-15.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text.replace(/<code class='([^']+)'>/g, '<span class="$1">').replace(/<\/code>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
