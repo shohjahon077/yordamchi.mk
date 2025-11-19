@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Русский язык (8 класс)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #C62828; /* qizil */
+            --secondary: #0D47A1; /* ko'k */
+            --accent: #212121; /* qora */
+            --light: #F5F5F5;
+            --bg: #E8E8E8;
+            --text: #1A1A1A;
+            --card: #FFFFFF;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --border: #BDBDBD;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #E8E8E8, #D0D0D0);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #C62828, #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: #FFF;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.9;
+            color: #FFEB3B;
+        }
+
+        #flag-logo {
+            width: 140px;
+            height: 140px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMCAxOCIgZmlsbD0ibm9uZSI+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjE4IiBmaWxsPSJ3aGl0ZSIvPjxyZWN0IHdpZHRoPSIzMCIgaGVpZ2h0PSI2IiB5PSI2IiBmaWxsPSJibHVlIi8+PHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjYiIHk9IjEyIiBmaWxsPSJyZWQiLz48L3N2Zz4=") no-repeat center;
+            background-size: contain;
+            margin: 20px auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--accent);
+            color: white;
+            position: relative;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 26px;
+            color: var(--primary);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        #header h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 500;
+            font-size: 1.4rem;
+            letter-spacing: -0.2px;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 15px;
+            font-family: 'Roboto', sans-serif;
+            position: relative;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            white-space: pre-wrap;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #1565C0;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+            border: 1px solid #BBDEFB;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFF3E0;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            letter-spacing: -0.1px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            font-family: 'Roboto', sans-serif;
+            box-shadow: 0 3px 8px rgba(13, 71, 161, 0.2);
+        }
+
+        .quick-button:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(198, 40, 40, 0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+            font-style: italic;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* RUSSIAN TEXT HIGHLIGHT */
+        .rus-text {
+            font-family: 'Roboto Mono', monospace;
+            color: var(--accent);
+            background: #FFF3E0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .rule {
+            color: var(--primary);
+            font-weight: 600;
+            margin: 10px 0 5px;
+        }
+
+        .example {
+            margin-left: 15px;
+            padding-left: 10px;
+            border-left: 2px solid var(--secondary);
+            color: #333;
+            font-style: italic;
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="flag-logo"></div>
+        <h1>AI Ustoz — Русский язык</h1>
+        <p>8-синф учун махсус яратилган рус тили ёрдамчиси. Грамматика, сўзлар, вақтлар, тестлар!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📝</div>
+            <h2>Русский Язык</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-синф дарслиги бўйича: глаголы, падежи, времена, предлоги, местоимения</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Рус тили маълумотлар базаси (8-синф дарслиги бўйича)
+        const database = {
+            "main_menu": {
+                text: "Привет! Добро пожаловать в мир русского языка. Какую тему изучаем сегодня?",
+                buttons: [
+                    { text: "📚 Глаголы", key: "glagoly" },
+                    { text: "📖 Падежи", key: "padegi" },
+                    { text: "⏰ Времена", key: "vremena" },
+                    { text: "📝 Предлоги", key: "predlogi" },
+                    { text: "🗣️ Местоимения", key: "mestoim" },
+                    { text: "📝 Тесты", key: "test_menu" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "glagoly": {
+                text: "Глаголы — это действия. В русском языке они изменяются по лицам, числам и временам. Главное: спряжение!",
+                buttons: [
+                    { text: "1-е спряжение", key: "spreg1" },
+                    { text: "2-е спряжение", key: "spreg2" },
+                    { text: "Неправильные глаголы", key: "nepravil" },
+                    { text: "Упражнения", key: "upr_glag" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "spreg1": {
+                text: "1-е спряжение — глаголы на -ЕТЬ, -АТЬ, -ЯТЬ. Пример: говорить → я говор**ю**, ты говор**ишь**, он говор**ит**.\n\n❗ Правило: Если в инфинитиве последняя буква — Е, А, Я — это 1-е спряжение.",
+                buttons: [{ text: "⬅️ Назад", key: "glagoly", isHome: true }]
+            },
+            "spreg2": {
+                text: "2-е спряжение — глаголы на -ИТЬ. Пример: читать → я чита**ю**, ты чита**ешь**, он чита**ет**.\n\n❗ Исключения: брить, стелить, зыкать — 1-е спряжение!",
+                buttons: [{ text: "⬅️ Назад", key: "glagoly", isHome: true }]
+            },
+            "nepravil": {
+                text: "Неправильные глаголы: быть, идти, дать, хотеть.\n\n- быть: я **есть**, ты **есть**, он **есть** → я **был**, ты **была**, он **был**\n- идти: я **иду**, ты **идёшь**, он **идёт**",
+                buttons: [{ text: "⬅️ Назад", key: "glagoly", isHome: true }]
+            },
+            "upr_glag": {
+                text: "Переведи на русский:\n1. Я читаю книгу → я ___ книгу.\n2. Он говорит по-русски → он ___ по-русски.\n\n💡 Ответы: 1. читаю, 2. говорит",
+                buttons: [{ text: "⬅️ Назад", key: "glagoly", isHome: true }]
+            },
+            "padegi": {
+                text: "Падежи — это формы существительных, которые показывают их роль в предложении. Всего 6 падежей!",
+                buttons: [
+                    { text: "Именительный", key: "imen" },
+                    { text: "Родительный", key: "rod" },
+                    { text: "Дательный", key: "dat" },
+                    { text: "Винительный", key: "vin" },
+                    { text: "Творительный", key: "tvor" },
+                    { text: "Предложный", key: "pred" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "imen": {
+                text: "Именительный падеж (кто? что?) — это основная форма.\nПример: \n- <span class=\"rus-text\">книга</span> (кто? — книга)\n- <span class=\"rus-text\">студент</span> (что? — студент)",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "rod": {
+                text: "Родительный падеж (кого? чего?) — отсутствие, принадлежность.\nПример: \n- <span class=\"rus-text\">нет книги</span>\n- <span class=\"rus-text\">дом отца</span>",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "dat": {
+                text: "Дательный падеж (кому? чему?) — получатель.\nПример: \n- <span class=\"rus-text\">я дал книгу другу</span>\n- <span class=\"rus-text\">он помог мне</span>",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "vin": {
+                text: "Винительный падеж (кого? что?) — прямой объект.\nПример: \n- <span class=\"rus-text\">я читаю книгу</span>\n- <span class=\"rus-text\">он видит студента</span>",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "tvor": {
+                text: "Творительный падеж (кем? чем?) — инструмент, сопровождение.\nПример: \n- <span class=\"rus-text\">я пишу ручкой</span>\n- <span class=\"rus-text\">он идёт с другом</span>",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "pred": {
+                text: "Предложный падеж (о ком? о чём?) — о чём-то.\nПример: \n- <span class=\"rus-text\">я думаю о книге</span>\n- <span class=\"rus-text\">он живёт в Москве</span>",
+                buttons: [{ text: "⬅️ Назад", key: "padegi", isHome: true }]
+            },
+            "vremena": {
+                text: "Времена глаголов: настоящее, прошедшее, будущее. Важно: глаголы меняются по лицам и числам!",
+                buttons: [
+                    { text: "Настоящее время", key: "nast" },
+                    { text: "Прошедшее время", key: "prosh" },
+                    { text: "Будущее время", key: "bud" },
+                    { text: "Упражнения", key: "upr_vrem" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "nast": {
+                text: "Настоящее время — действие сейчас.\nГлаголы 1-го спряжения: -ю, -ешь, -ет, -ем, -ете, -ют\nГлаголы 2-го спряжения: -ю, -ешь, -ет, -ем, -ете, -ат\n\nПример: \n- я <span class=\"rus-text\">читаю</span>\n- ты <span class=\"rus-text\">слушаешь</span>",
+                buttons: [{ text: "⬅️ Назад", key: "vremena", isHome: true }]
+            },
+            "prosh": {
+                text: "Прошедшее время — действие в прошлом.\nФорма: глагол + -л, -ла, -ло, -ли\n\nПример: \n- я <span class=\"rus-text\">читал</span> (м.)\n- она <span class=\"rus-text\">читала</span> (ж.)\n- они <span class=\"rus-text\">читали</span>",
+                buttons: [{ text: "⬅️ Назад", key: "vremena", isHome: true }]
+            },
+            "bud": {
+                text: "Будущее время — два типа:\n1. Простое: быть + инфинитив → я <span class=\"rus-text\">буду читать</span>\n2. Совершенный вид: глагол в форме настоящего → я <span class=\"rus-text\">прочитаю</span>",
+                buttons: [{ text: "⬅️ Назад", key: "vremena", isHome: true }]
+            },
+            "upr_vrem": {
+                text: "Переведи:\n1. Я читал книгу → я ___ книгу.\n2. Они будут писать → они ___ писать.\n\n💡 Ответы: 1. читал, 2. будут писать",
+                buttons: [{ text: "⬅️ Назад", key: "vremena", isHome: true }]
+            },
+            "predlogi": {
+                text: "Предлоги — это слова, которые показывают отношения между словами. Важно: после предлога — падеж!",
+                buttons: [
+                    { text: "в/на", key: "pred_vna" },
+                    { text: "с/у", key: "pred_s" },
+                    { text: "для/о", key: "pred_dla" },
+                    { text: "Упражнения", key: "upr_pred" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "pred_vna": {
+                text: "В — внутри, на — поверхность.\n- <span class=\"rus-text\">в комнате</span> (предложный)\n- <span class=\"rus-text\">на столе</span> (предложный)\n- <span class=\"rus-text\">в Москву</span> (винительный)\n- <span class=\"rus-text\">на улицу</span> (винительный)",
+                buttons: [{ text: "⬅️ Назад", key: "predlogi", isHome: true }]
+            },
+            "pred_s": {
+                text: "С — сопровождение или инструмент.\n- <span class=\"rus-text\">с другом</span> (творительный)\n- <span class=\"rus-text\">с ручкой</span> (творительный)\n\nУ — около, у двери.\n- <span class=\"rus-text\">у окна</span> (родительный)",
+                buttons: [{ text: "⬅️ Назад", key: "predlogi", isHome: true }]
+            },
+            "pred_dla": {
+                text: "Для — для кого? / О — о чём?\n- <span class=\"rus-text\">для меня</span> (родительный)\n- <span class=\"rus-text\">о книге</span> (предложный)",
+                buttons: [{ text: "⬅️ Назад", key: "predlogi", isHome: true }]
+            },
+            "upr_pred": {
+                text: "Выбери правильный предлог:\n1. Я живу ___ Москве. (в / на)\n2. Она идёт ___ школы. (с / у)\n\n💡 Ответы: 1. в, 2. с",
+                buttons: [{ text: "⬅️ Назад", key: "predlogi", isHome: true }]
+            },
+            "mestoim": {
+                text: "Местоимения — слова, которые заменяют существительные: я, ты, он, она, мы, вы, они.",
+                buttons: [
+                    { text: "Личные", key: "lich" },
+                    { text: "Притяжательные", key: "prity" },
+                    { text: "Вопросительные", key: "vopros" },
+                    { text: "Упражнения", key: "upr_mest" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "lich": {
+                text: "Личные местоимения:\n- я, ты, он, она, оно\n- мы, вы, они\n\nПример: \n- <span class=\"rus-text\">Я люблю русский язык</span>\n- <span class=\"rus-text\">Они учатся</span>",
+                buttons: [{ text: "⬅️ Назад", key: "mestoim", isHome: true }]
+            },
+            "prity": {
+                text: "Притяжательные местоимения:\n- мой, твой, его, её, наш, ваш, их\n\nПример: \n- <span class=\"rus-text\">Это моя книга</span>\n- <span class=\"rus-text\">Это их дом</span>",
+                buttons: [{ text: "⬅️ Назад", key: "mestoim", isHome: true }]
+            },
+            "vopros": {
+                text: "Вопросительные местоимения:\n- кто? что?\n- какой? чей?\n- где? когда?\n\nПример: \n- <span class=\"rus-text\">Кто это?</span>\n- <span class=\"rus-text\">Чей это рюкзак?</span>",
+                buttons: [{ text: "⬅️ Назад", key: "mestoim", isHome: true }]
+            },
+            "upr_mest": {
+                text: "Заполни пропуск:\n1. Это ___ книга? (моя / мой)\n2. ___ ты? (кто / что)\n\n💡 Ответы: 1. моя, 2. Кто",
+                buttons: [{ text: "⬅️ Назад", key: "mestoim", isHome: true }]
+            },
+            "test_menu": {
+                text: "Выбери тест по теме:",
+                buttons: [
+                    { text: "Глаголы", key: "test_glag" },
+                    { text: "Падежи", key: "test_pad" },
+                    { text: "Времена", key: "test_vrem" },
+                    { text: "Предлоги", key: "test_pred" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_glag": {
+                text: "1. Какое спряжение у глагола «читать»?\nA) 1-е   B) 2-е   C) Неправильное\n\nВыбери ответ:",
+                buttons: [
+                    { text: "A) 1-е", key: "test_glag_a" },
+                    { text: "B) 2-е", key: "test_glag_b" },
+                    { text: "C) Неправильное", key: "test_glag_c" }
+                ]
+            },
+            "test_glag_b": {
+                text: "✅ Правильно! «Читать» — глагол 2-го спряжения.\n\nЧитаю, читаешь, читает — окончания -ю, -ешь, -ет",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_glag_a": {
+                text: "❌ Неверно. Глагол «читать» — 2-го спряжения. 1-е спряжение: говорить, писать.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_glag_c": {
+                text: "❌ Неверно. «Читать» — правильный глагол, 2-го спряжения.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_pad": {
+                text: "2. В предложении «Я вижу книгу» — какое падеж?\nA) Именительный   B) Винительный   C) Родительный\n\nВыбери ответ:",
+                buttons: [
+                    { text: "A) Именительный", key: "test_pad_a" },
+                    { text: "B) Винительный", key: "test_pad_b" },
+                    { text: "C) Родительный", key: "test_pad_c" }
+                ]
+            },
+            "test_pad_b": {
+                text: "✅ Правильно! «Книгу» — винительный падеж (что? — книгу).",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_pad_a": {
+                text: "❌ Неверно. Именительный — «книга». Здесь — «книгу» — винительный.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_pad_c": {
+                text: "❌ Неверно. Родительный — «нет книги». Здесь — «вижу книгу» — винительный.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Эта тема пока не доступна. Вернитесь в главное меню.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
