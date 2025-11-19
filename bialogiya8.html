@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Biologiya (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --secondary: #8BC34A;
+            --accent: #4CAF50;
+            --light: #FFFFFF;
+            --bg: #F1F8E9;
+            --text: #1B5E20;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(46, 125, 50, 0.15);
+            --border: #C8E6C9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #1B5E20);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #cell-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #cell-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E8F5E9;
+            color: #1B5E20;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F9FBE7;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === TERM STYLE === */
+        .term {
+            background: #DCEDC8;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #1B5E20;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #F1F8E9;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2E7D32;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(46,125,50,0.2);
+        }
+
+        .quick-button:hover {
+            background: #1B5E20;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(27,94,32,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="cell-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="12" r="3" fill="white"/>
+                <path d="M12 6L13 8L16 9L13 10L12 12L11 10L8 9L11 8L12 6Z" fill="white"/>
+                <path d="M18 12L16 13L15 16L14 13L12 12L14 11L15 8L16 11L18 12Z" fill="white"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Biologiya</h1>
+        <p>8-sinf uchun: hujayra, o'zimiz, o'simliklar, hayvonlar, ekologiya — tirik tabiat sirli!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🌿</div>
+            <h2>Biologiya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — hujayra, organizm, ekologiya, inson tanasi</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Biologiya ma'lumotlar bazasi (8-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Tirik tabiat qanday ajoyib, to'g'rimi? Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "🧫 Hujayra", key: "hujayra" },
+                    { text: "🌱 O'zimiz", key: "ozimiz" },
+                    { text: "🌳 O'simliklar", key: "osimliklar" },
+                    { text: "🐾 Hayvonlar", key: "hayvonlar" },
+                    { text: "🌍 Ekologiya", key: "ekologiya" },
+                    { text: "🧬 DNK & Irsiylik", key: "irs" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hujayra": {
+                text: "Hujayra — tirik mavjudotlarning asosiy qurilish birligi. Ikki turi bor.",
+                buttons: [
+                    { text: "O'simlik hujayrasi", key: "osimlik_huj" },
+                    { text: "Hayvon hujayrasi", key: "hayvon_huj" },
+                    { text: "Organoidlar", key: "organoidlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "osimlik_huj": {
+                text: "O'simlik hujayrasida bor, lekin hayvonda yo'q:\n- <span class='term'>Xloroplast</span> (fotosintez qiladi)\n- <span class='term'>Hujayra devori</span> (qattiq parda)\n- <span class='term'>Vakuol</span> (suv saqlaydi)",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "hayvon_huj": {
+                text: "Hayvon hujayrasida:\n- Xloroplast yo'q\n- Hujayra devori yo'q\n- Maydaroq vakuollar\n\nBiroq, <span class='term'>mitoxondriya</span> — energiya ishlab chiqaradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "organoidlar": {
+                text: "<span class='fact'>Qiziq fakt: Hujayra ichidagi “organlar” — organoidlar. Mitoxondriya — “elektr stansiyasi”!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "ozimiz": {
+                text: "Inson — eng murakkab organizm. Tanamiz qanday ishlaydi?",
+                buttons: [
+                    { text: "Nerv tizimi", key: "nerv" },
+                    { text: "Qon aylanish", key: "qon" },
+                    { text: "Nafas olish", key: "nafas" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "nerv": {
+                text: "Nerv tizimi — miya, orqa miya, nervlar. Axborotni tez uzatadi.\n\n<span class='fact'>Impuls tezligi — 120 m/s!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "ozimiz", isHome: true }]
+            },
+            "qon": {
+                text: "Qon aylanish tizimi:\n- Yurak — nasos\n- Arteriyalar — qonni uzatadi\n- Venalar — qonni qaytaradi\n\nQon qizil — chunki gemoglobin bor.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ozimiz", isHome: true }]
+            },
+            "nafas": {
+                text: "Nafas olish — oksigen kiradi, karbonat angidrid chiqadi.\n\n<span class='term'>Alveollar</span> — o'pkaning maydaroq qismlari.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ozimiz", isHome: true }]
+            },
+            "osimliklar": {
+                text: "O'simliklar — nurlanish, suv, CO₂ orqali oziqlanadi. Fotosintez — hayot manbai!",
+                buttons: [
+                    { text: "Fotosintez", key: "fotosintez" },
+                    { text: "Ildiz tizimi", key: "ildiz" },
+                    { text: "Gullar", key: "gullar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "fotosintez": {
+                text: "Fotosintez tenglamasi:\n\n<span class='fact'>CO₂ + H₂O + nur → C₆H₁₂O₆ + O₂</span>\n\nO'simlik — atmosferaga kislorod beradi!",
+                buttons: [{ text: "⬅️ Orqaga", key: "osimliklar", isHome: true }]
+            },
+            "ildiz": {
+                text: "Ildiz — suv va minerallarni so'rash, o'simlikni mustahkam ushlab turish.",
+                buttons: [{ text: "⬅️ Orqaga", key: "osimliklar", isHome: true }]
+            },
+            "gullar": {
+                text: "Gullar — o'simlikning ko'payish organi. Changlanish — chang donalari ko'chishi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "osimliklar", isHome: true }]
+            },
+            "hayvonlar": {
+                text: "Hayvonlar — heterotroflar (o'z oziqlanmaydi). Ikki guruh: umurtqali va umurtqasiz.",
+                buttons: [
+                    { text: "Umurtqali", key: "umurtqali" },
+                    { text: "Umurtqasiz", key: "umurtqasiz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "umurtqali": {
+                text: "Umurtqali hayvonlar:\n- Baliqlar\n- Amfibiyalar (baqa)\n- Suddalilar (ilon)\n- Qushlar\n- Sut emizuvchilar",
+                buttons: [{ text: "⬅️ Orqaga", key: "hayvonlar", isHome: true }]
+            },
+            "umurtqasiz": {
+                text: "Umurtqasizlar:\n- O'rgimchaklar\n- Hasharotlar\n- Mollyuskalar (chivin)\n- Halqumtoshlar (meduza)",
+                buttons: [{ text: "⬅️ Orqaga", key: "hayvonlar", isHome: true }]
+            },
+            "ekologiya": {
+                text: "Ekologiya — organizmlar va ularning atrof-muhiti o'rtasidagi munosabatlar.",
+                buttons: [
+                    { text: "Eko-tizim", key: "eko_tizim" },
+                    { text: "Zanjir", key: "zanjir" },
+                    { text: "Inson ta'siri", key: "inson_tasir" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "eko_tizim": {
+                text: "Eko-tizim — o'simliklar, hayvonlar, tuproq, suv, havo o'zaro ta'sirda.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekologiya", isHome: true }]
+            },
+            "zanjir": {
+                text: "Oziqlanish zanjiri:\n<span class='fact'>O't → quyon → tulki → burgut</span>\n\nSuv o'ti → baliq → delfin",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekologiya", isHome: true }]
+            },
+            "inson_tasir": {
+                text: "<span class='fact'>Qiziq fakt: Inson har kuni 1000 ga yaqin turlarni yo'q qilyapti! Tabiatni asraylik.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekologiya", isHome: true }]
+            },
+            "irs": {
+                text: "DNK — irsiy ma'lumotlarni saqlaydi. Xromosomalar — DNK o'ramlari.",
+                buttons: [
+                    { text: "Genlar", key: "genlar" },
+                    { text: "Mutatsiya", key: "mutatsiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "genlar": {
+                text: "Gen — DNKning bir qismi. Ko'z rangi, soch rangi — genlar orqali o'tadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "irs", isHome: true }]
+            },
+            "mutatsiya": {
+                text: "<span class='fact'>Mutatsiya — DNKdagi o'zgarish. Ba'zan foydali (odamlar ergashish qobiliyati), ba'zida zararli.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "irs", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Hujayra", key: "test_huj" },
+                    { text: "O'simliklar", key: "test_os" },
+                    { text: "Ekologiya", key: "test_eko" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_huj": {
+                text: "1. O'simlik hujayrasida hayvonda bo'lmagan nima bor?\nA) Mitoxondriya   B) Xloroplast   C) Yadro",
+                buttons: [
+                    { text: "A) Mitoxondriya", key: "test_huj_a" },
+                    { text: "B) Xloroplast", key: "test_huj_b" },
+                    { text: "C) Yadro", key: "test_huj_c" }
+                ]
+            },
+            "test_huj_b": {
+                text: "✅ To'g'ri! Xloroplast — faqat o'simliklarda bor. Fotosintez qiladi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_os": {
+                text: "2. Fotosintezda nima hosil bo'ladi?\nA) CO₂   B) O₂   C) H₂",
+                buttons: [
+                    { text: "A) CO₂", key: "test_os_a" },
+                    { text: "B) O₂", key: "test_os_b" },
+                    { text: "C) H₂", key: "test_os_c" }
+                ]
+            },
+            "test_os_b": {
+                text: "✅ Ajoyib! Fotosintezda <span class='term'>kislorod (O₂)</span> ajralib chiqadi. Biz unisiz yashay olmaymiz!",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_eko": {
+                text: "3. Oziqlanish zanjirida kim birinchi?\nA) Tulki   B) O't   C) Quyon",
+                buttons: [
+                    { text: "A) Tulki", key: "test_eko_a" },
+                    { text: "B) O't", key: "test_eko_b" },
+                    { text: "C) Quyon", key: "test_eko_c" }
+                ]
+            },
+            "test_eko_b": {
+                text: "✅ To'g'ri! O't — ishlab chiqaruvchi. Hamma zanjir o'simliklardan boshlanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
