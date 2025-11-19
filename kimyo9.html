@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Kimyo (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #B71C1C;
+            --secondary: #D32F2F;
+            --accent: #FF6F00;
+            --light: #FFF8F5;
+            --bg: #FFEBEE;
+            --text: #8E0000;
+            --card: #FFFFFF;
+            --shadow: 0 12px 35px rgba(183, 28, 28, 0.18);
+            --border: #FFCDD2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #B71C1C, #8E0000);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #FFEBEE;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #FFCCBC;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(183, 28, 28, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #FFEBEE;
+            color: #B71C1C;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #FFCDD2;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFFFFF;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-weight: 500;
+            border-top-left-radius: 22px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(255, 111, 0, 0.35);
+        }
+
+        .home-button {
+            background: #D32F2F !important;
+        }
+
+        .home-button:hover {
+            background: #B71C1C !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #E57373;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* KIMYO TA’RIFLAR UCHUN */
+        .reaction {
+            font-family: 'Cormorant Garamond', serif;
+            background: #FFF3E0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #E65100;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .formula {
+            font-family: 'Cormorant Garamond', serif;
+            background: #FFEBEE;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 16px;
+            color: #B71C1C;
+        }
+
+        .example {
+            background: #E8F5E9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 14px 0;
+            font-style: italic;
+            color: #2E7D32;
+        }
+
+        .answer {
+            background: #FFF3E0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-weight: 600;
+            color: #E65100;
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Kimyo</h1>
+        <p>9-sinf o‘quvchilari uchun moddalar tuzilishi, reaksiyalar, eritmalar, elektroliz, metallar — barchasi aniq, tushunarli, interaktiv</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🧪</div>
+            <h2>Kimyo Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — Masalov, Tursunov, Xolmirzayev</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF KIMYO MAVZULARI — darslikka to'liq mos
+        const database = {
+            "main_menu": {
+                text: "Salom! Siz 9-sinf kimyo faniga bag‘ishlangan AI Ustozdasiz. Qaysi mavzu bo‘yicha yordam kerak?",
+                buttons: [
+                    { text: "🔬 Moddalar tuzilishi", key: "tuzilish" },
+                    { text: "⚖️ Kimyoviy reaksiyalar", key: "reaksiya" },
+                    { text: "💧 Eritmalar", key: "eritma" },
+                    { text: "⚡ Elektroliz", key: "elektroliz" },
+                    { text: "🪙 Metallar", key: "metallar" },
+                    { text: "🌍 Noorganik birikmalar", key: "noorganik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tuzilish": {
+                text: "Molekulyar tuzilish — moddalarning qanday atomlardan tashkil topganligi. 9-sinfda valentlik, oksidlanish darajasi, kimyoviy bog‘lar o‘rganiladi.",
+                buttons: [
+                    { text: "Valentlik", key: "valent" },
+                    { text: "Oksidlanish darajasi", key: "oksid" },
+                    { text: "Kimyoviy bog‘lar", key: "bog" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "valent": {
+                text: "Valentlik — atomning boshqa atomlar bilan birikish qobiliyati.\n\n🔹 Masalan: H — I valentli, O — II valentli, N — III yoki V valentli.\n\nMisol: H₂O — vodorod I, kislorod II",
+                buttons: [{ text: "⬅️ Orqaga", key: "tuzilish", isHome: true }]
+            },
+            "oksid": {
+                text: "Oksidlanish darajasi — shartli elektr zaryadi.\n\nQoidalar:\n1. Oddiy moddalarda = 0 (O₂, H₂, Fe)\n2. Vodorod = +1 (gidridlarda −1)\n3. Kislorod = −2 (peroksidlarda −1)\n\nMisol: H₂SO₄\n• H: +1 × 2 = +2\n• O: −2 × 4 = −8\n• S: ? → +2 + x − 8 = 0 → x = +6",
+                buttons: [{ text: "⬅️ Orqaga", key: "tuzilish", isHome: true }]
+            },
+            "bog": {
+                text: "Kimyoviy bog‘lar:\n\n1. **Kovalent bog‘** — elektron jufti hisobiga (H₂O, CO₂)\n2. **Ion bog‘** — elektron almashinuvi (NaCl, CaO)\n3. **Metall bog‘** — metallarda elektron dengizi\n\n🔹 Elektrmanfiylik farqi:\n• < 0.4 → kovalent\n• > 1.7 → ion",
+                buttons: [{ text: "⬅️ Orqaga", key: "tuzilish", isHome: true }]
+            },
+            "reaksiya": {
+                text: "Kimyoviy reaksiyalar — moddalarning o‘zgarishi. 9-sinfda reaksiya turlari va tenglamalarni to‘g‘rilash o‘rganiladi.",
+                buttons: [
+                    { text: "Reaksiya turlari", key: "reak_turlar" },
+                    { text: "Tenglamani to‘g‘rilash", key: "reak_teng" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "reak_turlar": {
+                text: "Asosiy reaksiya turlari:\n\n1. **Qo‘shilish**: A + B → AB\n   (2H₂ + O₂ → 2H₂O)\n\n2. **Ajralish**: AB → A + B\n   (2H₂O → 2H₂ + O₂)\n\n3. **Almashinish**: AB + CD → AD + CB\n   (Zn + 2HCl → ZnCl₂ + H₂)\n\n4. **Oksidlanish-qaytarilish**: elektron almashinuvi sodir bo‘ladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "reaksiya", isHome: true }]
+            },
+            "reak_teng": {
+                text: "Tenglamani to‘g‘rilash — atomlar soni teng bo‘lishi kerak.\n\nMisol: Fe + O₂ → Fe₂O₃\n\n1. Fe: chapda 1, o‘ngda 2 → 2Fe\n2. O: chapda 2, o‘ngda 3 → 3O₂ → 2Fe₂O₃\n3. Natija: 4Fe + 3O₂ → 2Fe₂O₃",
+                buttons: [{ text: "⬅️ Orqaga", key: "reaksiya", isHome: true }]
+            },
+            "eritma": {
+                text: "Eritma — eruvchi + erituvchi (masalan, tuzli suv). 9-sinfda konsentratsiya, massa ulushi o‘rganiladi.",
+                buttons: [
+                    { text: "Massa ulushi", key: "eritma_massa" },
+                    { text: "Molyar konsentratsiya", key: "eritma_mol" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "eritma_massa": {
+                text: "Massa ulushi (ω):\n\n🔹 ω = (eruvchi massasi / eritma massasi) × 100%\n\nMisol: 20 g tuz 180 g suvda eritildi. ω = ?\n• Eritma massasi = 20 + 180 = 200 g\n• ω = (20 / 200) × 100% = 10%",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "eritma_mol": {
+                text: "Molyar konsentratsiya (C):\n\n🔹 C = n / V (mol/l)\n   (n — modda miqdori, V — hajm litrda)\n\nMisol: 0.5 mol tuz 2 l eritmada → C = 0.5 / 2 = 0.25 mol/l",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "elektroliz": {
+                text: "Elektroliz — elektr toki ta’sirida moddalarning parchalanishi.",
+                buttons: [
+                    { text: "Suvning elektrolizi", key: "elek_suv" },
+                    { text: "Tuz eritmasi", key: "elek_tuz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "elek_suv": {
+                text: "Suvning elektrolizi:\n\n🔹 Katod (−): 2H₂O + 2e⁻ → H₂↑ + 2OH⁻\n🔹 Anod (+): 2H₂O → O₂↑ + 4H⁺ + 4e⁻\n\nUmumiy: 2H₂O → 2H₂↑ + O₂↑\n\n💡 Gazlar: katodda — vodorod, anodda — kislorod",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektroliz", isHome: true }]
+            },
+            "elek_tuz": {
+                text: "NaCl eritmasining elektrolizi:\n\n🔹 Katod: 2H₂O + 2e⁻ → H₂↑ + 2OH⁻\n🔹 Anod: 2Cl⁻ → Cl₂↑ + 2e⁻\n\nMahsulotlar: H₂, Cl₂, NaOH\n\n❗ Metall aktiv bo‘lsa (Na, K, Ca), katodda H₂ ajraladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektroliz", isHome: true }]
+            },
+            "metallar": {
+                text: "Metallar — elektr o‘tkazuvchan, yaltiroq, plastik. 9-sinfda metallar qatori, reaksiyalari o‘rganiladi.",
+                buttons: [
+                    { text: "Metallar qatori", key: "met_qator" },
+                    { text: "Metallarning reaksiyalari", key: "met_reak" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "met_qator": {
+                text: "Metallar qatori (kuchli → sust):\n\nK, Na, Ca, Mg, Al, Zn, Fe, Ni, Sn, Pb, (H), Cu, Ag, Au\n\n🔹 Vodoroddan oldingi metallar kislotalardan vodorod ajratadi\n🔹 Chapdagi metall o‘ngdakini eritmasidan chiqarib beradi",
+                buttons: [{ text: "⬅️ Orqaga", key: "metallar", isHome: true }]
+            },
+            "met_reak": {
+                text: "Reaksiyalar:\n\n1. Metall + Kislota → Tuz + H₂↑\n   Zn + H₂SO₄ → ZnSO₄ + H₂↑\n\n2. Metall + Suv → Asos + H₂↑\n   2Na + 2H₂O → 2NaOH + H₂↑\n\n3. Metall + Tuz → Yangi metall + Yangi tuz\n   Fe + CuSO₄ → FeSO₄ + Cu",
+                buttons: [{ text: "⬅️ Orqaga", key: "metallar", isHome: true }]
+            },
+            "noorganik": {
+                text: "Noorganik birikmalar — metallar va metall emaslar aralashmasi.",
+                buttons: [
+                    { text: "Oksidlar", key: "noorg_oksid" },
+                    { text: "Kislotalar", key: "noorg_kislota" },
+                    { text: "Asoslar", key: "noorg_asos" },
+                    { text: "Tuzlar", key: "noorg_tuz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "noorg_oksid": {
+                text: "Oksidlar — kislorodli birikmalar.\n\n1. **Asosiy**: metall + O (CaO)\n2. **Kislotali**: metall emas + O (CO₂, SO₃)\n3. **Amfoter**: ikkala xossaga ega (Al₂O₃, ZnO)",
+                buttons: [{ text: "⬅️ Orqaga", key: "noorganik", isHome: true }]
+            },
+            "noorg_kislota": {
+                text: "Kislotalar — H⁺ ionlarini beradi.\n\n🔹 Kuchli: HCl, H₂SO₄, HNO₃\n🔹 Sust: H₂CO₃, CH₃COOH\n\nReaksiyasi:\nKislota + Metall → Tuz + H₂\nKislota + Asos → Tuz + Suv",
+                buttons: [{ text: "⬅️ Orqaga", key: "noorganik", isHome: true }]
+            },
+            "noorg_asos": {
+                text: "Asoslar — OH⁻ ionlarini beradi.\n\n🔹 Kuchli: NaOH, KOH\n🔹 Sust: Fe(OH)₃, Al(OH)₃\n\nAmfoter asoslar: Al(OH)₃ + NaOH → Na[Al(OH)₄]",
+                buttons: [{ text: "⬅️ Orqaga", key: "noorganik", isHome: true }]
+            },
+            "noorg_tuz": {
+                text: "Tuzlar — metall + kislota qoldig‘i.\n\nTurlari:\n• O‘rta: NaCl\n• Kislotali: NaHSO₄\n• Asosli: Mg(OH)Cl\n\nGidroliz: tuz + suv → kislota yoki asos",
+                buttons: [{ text: "⬅️ Orqaga", key: "noorganik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Kimyo bo‘yicha testlar. Qaysi mavzuda sinov qilmoqchisiz?",
+                buttons: [
+                    { text: "Moddalar tuzilishi", key: "test_tuz" },
+                    { text: "Reaksiyalar", key: "test_reak" },
+                    { text: "Eritmalar", key: "test_erit" },
+                    { text: "Metallar", key: "test_met" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_tuz": {
+                text: "1. H₂SO₄ dagi S ning oksidlanish darajasi?\nA) +4\nB) +6\nC) −2",
+                buttons: [
+                    { text: "A) +4", key: "test_tuz_a" },
+                    { text: "B) +6", key: "test_tuz_b" },
+                    { text: "C) −2", key: "test_tuz_c" }
+                ]
+            },
+            "test_tuz_b": {
+                text: "✅ To‘g‘ri! H₂SO₄: 2·(+1) + x + 4·(−2) = 0 → x = +6.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_reak": {
+                text: "1. Qaysi reaksiya ajralish turiga kiradi?\nA) Zn + CuSO₄ → ZnSO₄ + Cu\nB) 2H₂O → 2H₂ + O₂\nC) CaO + H₂O → Ca(OH)₂",
+                buttons: [
+                    { text: "A) Zn + CuSO₄", key: "test_reak_a" },
+                    { text: "B) 2H₂O → ...", key: "test_reak_b" },
+                    { text: "C) CaO + H₂O", key: "test_reak_c" }
+                ]
+            },
+            "test_reak_b": {
+                text: "✅ To‘g‘ri! 2H₂O → 2H₂ + O₂ — bir modda ikkiga ajralmoqda → ajralish.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_erit": {
+                text: "1. 50 g tuz 450 g suvda eritildi. Massa ulushi?\nA) 10%\nB) 11.1%\nC) 5%",
+                buttons: [
+                    { text: "A) 10%", key: "test_erit_a" },
+                    { text: "B) 11.1%", key: "test_erit_b" },
+                    { text: "C) 5%", key: "test_erit_c" }
+                ]
+            },
+            "test_erit_a": {
+                text: "✅ To‘g‘ri! Eritma = 500 g, ω = (50/500)×100% = 10%.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_met": {
+                text: "1. Qaysi metall kislotalardan vodorod ajratmaydi?\nA) Zn\nB) Fe\nC) Cu",
+                buttons: [
+                    { text: "A) Zn", key: "test_met_a" },
+                    { text: "B) Fe", key: "test_met_b" },
+                    { text: "C) Cu", key: "test_met_c" }
+                ]
+            },
+            "test_met_c": {
+                text: "✅ To‘g‘ri! Cu — vodoroddan keyin, shuning uchun H⁺ ni qaytarolmaydi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
