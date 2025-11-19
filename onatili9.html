@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Ona Tili Adabiyot (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3E2723;
+            --secondary: #5D4037;
+            --accent: #C62828;
+            --light: #FFF5F0;
+            --bg: #F9F2F0;
+            --text: #2E1B17;
+            --card: #FFF8F5;
+            --shadow: 0 12px 35px rgba(62, 39, 35, 0.18);
+            --border: #D6B8A8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f9f2f0, #f0e7e2);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #3E2723, #2E1B17);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #FFEBEE;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #FFECB3;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(62, 39, 35, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #F9E6E6;
+            color: #C62828;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #F5C5C5;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFF8F5;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-style: italic;
+            border-top-left-radius: 22px;
+            font-weight: 500;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(198, 40, 40, 0.35);
+        }
+
+        .home-button {
+            background: #6D4C41 !important;
+        }
+
+        .home-button:hover {
+            background: #5D4037 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #7B5D52;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION: PAGE FADE IN */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === 9-SINF MOHSATLARI UCHUN QO‘SHIMCHA STIL === */
+        .deep-analysis {
+            font-style: italic;
+            color: #5D4037;
+            border-left: 3px solid #C62828;
+            padding-left: 16px;
+            margin: 16px 0;
+            font-size: 14px;
+            font-weight: 400;
+            background: #FFF3F0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .highlight {
+            background: #FFF0E6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #C62828;
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+                padding: 12px 14px;
+            }
+            #chat-window {
+                padding: 18px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Ona Tili Adabiyot</h1>
+        <p>9-sinf o‘quvchilari uchun chuqur tahlil, tarixiy kontekst, adabiy analiz va testlar — hech qanday qo‘llanma emas, faqat ilmiy yondashuv</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📚</div>
+            <h2>Adabiyot Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — “Toshkentdan Toshkentgacha”, “Birinchi qo‘shiq”, “Yozgi kundalik”, “Tirik o‘lmasin”</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF O‘QUVCHILARI UCHON MOHSATLASHIRILGAN MA’LUMOTLAR BAZASI
+        const database = {
+            "main_menu": {
+                text: "Assalomu alaykum! Siz 9-sinf ona tili adabiyot darsligi uchun AI tahlilchisida sizdasiz. Qaysi asar haqida chuqur tahlil qilishni xohlaysiz?",
+                buttons: [
+                    { text: "📖 Toshkentdan Toshkentgacha", key: "toshkent" },
+                    { text: "🕊️ Birinchi qo‘shiq", key: "birinchi_qoshiq" },
+                    { text: "🌿 Yozgi kundalik", key: "yozgi_kundalik" },
+                    { text: "🩸 Tirik o‘lmasin", key: "tirik_olmasin" },
+                    { text: "🎭 Hikoyalar (Qodiriy)", key: "hikoyalar" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🔍 Tahlil usullari", key: "tahlil_usullari" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "toshkent": {
+                text: "'Toshkentdan Toshkentgacha' — Abdulla Qodiriy tomonidan yozilgan roman. Bu asarda qanday tarixiy muhit, shaxsiy qiyinchiliklar va milliy ma’naviyat saqlanishga urinishlar tasvirlangan?",
+                buttons: [
+                    { text: "Tarixiy kontekst", key: "tosh_tarix" },
+                    { text: "Asosiy qahramonlar", key: "tosh_qahramon" },
+                    { text: "Asarning g‘oyasi", key: "tosh_g'oya" },
+                    { text: "Adabiy uslub", key: "tosh_uslub" },
+                    { text: "Mashqlar", key: "mashq_tosh" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tosh_tarix": {
+                text: "Roman 1910-1920-yillar, O‘zbekistonda sovet hokimiyati o‘rnatilgan davrda bo‘lib o‘tadi. Asarda milliy ma’naviyat, diniy qadriyatlar, qadimiy o‘zbek madaniyati va yangi ideologiyalar o‘rtasidagi qiyosiy to‘qnashuvlar aks etgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "toshkent", isHome: true }]
+            },
+            "tosh_qahramon": {
+                text: "Asarda: O‘tbek — milliy qadriyatlarini saqlashga urinuvchi, O‘zbegim — o‘zgacha fikrli ayol, Shohmurod — o‘zgarishlarga qarshilik bildiruvchi. Har biri — o‘z davrining ruhini aks ettiradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "toshkent", isHome: true }]
+            },
+            "tosh_g'oya": {
+                text: "Asarning g‘oyasi: Milliy ma’naviyat — o‘zgarmas qadriyatdir. Tarixiy o‘zgarishlar — insoniyatni sinash, lekin ruhni yo‘qotish emas. Qodiriy — o‘z mamlakatining o‘ziga xos shaklida o‘zgarmaslikni himoya qiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "toshkent", isHome: true }]
+            },
+            "tosh_uslub": {
+                text: "Qodiriyning uslubi: realistik, psixologik, simvolik. U asarda qadimiy o‘zbek tilini, iboralarini, maqollarini keng qo‘llaydi. Bu — adabiyotda ‘milliy identifikatsiya’ning eng chuqur ifodasi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "toshkent", isHome: true }]
+            },
+            "mashq_tosh": {
+                text: "1. Qodiriyning ‘Toshkentdan Toshkentgacha’ asarida tarixiy reallik va adabiy ifoda qanday bog‘langan?\n2. O‘tbek qahramonining ruhiy inqirozi nima bilan bog‘liq?\n\n💡 Javoblar: 1. Tarixiy voqealar — qahramonlarning ichki dunyosini shakllantiradi. 2. Milliy qadriyatlar bilan sovet ideologiyasi orasidagi qiyosiy to‘qnashuv.",
+                buttons: [{ text: "⬅️ Orqaga", key: "toshkent", isHome: true }]
+            },
+            "birinchi_qoshiq": {
+                text: "'Birinchi qo‘shiq' — G‘afur G‘ulomning she’riy asari. Bu she’rda tabiat, sevgi, o‘zgarish va insoniy hissiyotlar qanday birlashgan?",
+                buttons: [
+                    { text: "She’rning mazmuni", key: "birinchi_mazmuni" },
+                    { text: "Simvolik tahlil", key: "birinchi_simvol" },
+                    { text: "Shoirning uslubi", key: "birinchi_uslub" },
+                    { text: "Mashqlar", key: "mashq_birinchi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "birinchi_mazmuni": {
+                text: "She’r — yozgi kundalik, tabiat, sevgi va o‘zgarish haqida. Birinchi qo‘shiq — insoniy hissiyotlarning eng ochiq, toza ifodasi. Tabiat — insoniy hissiyotlarning aksiyasi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "birinchi_qoshiq", isHome: true }]
+            },
+            "birinchi_simvol": {
+                text: "Simvollar: 'Qo‘shiq' — hayotning boshlanishi, 'Yoz' — o‘zgarish, 'Tirik o‘lmasin' — doimiylik. She’rda tabiat — insoniy hissiyotlarning eng chiroyli aksiyasi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "birinchi_qoshiq", isHome: true }]
+            },
+            "yozgi_kundalik": {
+                text: "'Yozgi kundalik' — G‘afur G‘ulomning she’riy asari. Bu asarda tabiat, insoniy hissiyotlar va tarixiy o‘zgarishlar qanday birlashgan?",
+                buttons: [
+                    { text: "Asarning mazmuni", key: "yozgi_mazmuni" },
+                    { text: "Simvolik tahlil", key: "yozgi_simvol" },
+                    { text: "Adabiy uslub", key: "yozgi_uslub" },
+                    { text: "Mashqlar", key: "mashq_yozgi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "yozgi_mazmuni": {
+                text: "She’r — yozgi kundalik, tabiat, insoniy hissiyotlar va tarixiy o‘zgarishlar haqida. Asarda tabiat — insoniy hissiyotlarning aksiyasi. Har bir nafas — hayotning o‘zgarishini aks ettiradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "yozgi_kundalik", isHome: true }]
+            },
+            "tirik_olmasin": {
+                text: "'Tirik o‘lmasin' — Abdulla Qodiriyning hikoyasi. Bu asarda qanday insoniy qiyinchiliklar, milliy ma’naviyat va hayotning o‘zgarishlari aks etgan?",
+                buttons: [
+                    { text: "Hikoyaning mazmuni", key: "tirik_mazmuni" },
+                    { text: "Qahramonlar tahlili", key: "tirik_qahramon" },
+                    { text: "Asarning g‘oyasi", key: "tirik_g'oya" },
+                    { text: "Mashqlar", key: "mashq_tirik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tirik_mazmuni": {
+                text: "Hikoya — o‘zgacha odam, o‘zining o‘ziga qo‘ygan qonuniy qarorlar bilan hayotga qarshi kurashuvchi qahramon haqida. U o‘zining qadriyatlarini himoya qilish uchun o‘zini qurbon qiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tirik_olmasin", isHome: true }]
+            },
+            "tirik_qahramon": {
+                text: "Asarda: O‘tbek — o‘zining qadriyatlarini himoya qiluvchi, O‘zbegim — o‘zgacha fikrli ayol, O‘g‘il — o‘zining qarorlarini qo‘yib, hayotga qarshi kurashuvchi. Har biri — o‘z davrining ruhini aks ettiradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tirik_olmasin", isHome: true }]
+            },
+            "tirik_g'oya": {
+                text: "Asarning g‘oyasi: Insoniyat — o‘zining qadriyatlarini himoya qilishga qodir. O‘zini qurbon qilish — o‘zini yo‘qotish emas, balki o‘zini saqlashdir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tirik_olmasin", isHome: true }]
+            },
+            "hikoyalar": {
+                text: "Abdulla Qodiriyning hikoyalariga kirish: 'Ko‘zlar', 'Tirik o‘lmasin', 'Qo‘shchinchor o‘g‘li' — ular 8-sinfda. 9-sinfda — 'Tirik o‘lmasin', 'Ko‘zlar' — eng chuqur hikoyalar.",
+                buttons: [
+                    { text: "Ko‘zlar", key: "hikoya_kozlar" },
+                    { text: "Tirik o‘lmasin", key: "tirik_olmasin" },
+                    { text: "Qo‘shchinchor o‘g‘li (8-sinf)", key: "qoshchinchor", isHome: true },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hikoya_kozlar": {
+                text: "'Ko‘zlar' — o‘g‘il-qizlar orasidagi muhabbat, o‘zgarish va hayotning qisqa vaqti haqida. Ko‘zlar — hissiyotlarni ifodalovchi simvol. Bu — insoniy hissiyotlarning eng so‘nggi, eng toza ifodasi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "hikoyalar", isHome: true }]
+            },
+            "tahlil_usullari": {
+                text: "Adabiy tahlil usullari: 1. Tarixiy kontekst, 2. Qahramonlarning psixologiyasi, 3. Simvolika, 4. Adabiy uslub, 5. Asarning g‘oyasi. Qaysi usulni tushunishni xohlaysiz?",
+                buttons: [
+                    { text: "Tarixiy kontekst", key: "tahlil_tarix" },
+                    { text: "Psixologik tahlil", key: "tahlil_psycho" },
+                    { text: "Simvolika", key: "tahlil_simvol" },
+                    { text: "Adabiy uslub", key: "tahlil_uslub" },
+                    { text: "G‘oya tahlili", key: "tahlil_g'oya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tahlil_tarix": {
+                text: "Tarixiy kontekst — asarning yaratilgan davrini, ijtimoiy-shaxsiy sharoitlarni tushunish. Masalan: 'Toshkentdan Toshkentgacha' — sovet hokimiyati o‘rnatilgan davr. Bu — milliy ma’naviyatga qarshi kurashning davri.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tahlil_usullari", isHome: true }]
+            },
+            "tahlil_psycho": {
+                text: "Psixologik tahlil — qahramonlarning ichki dunyosini, hissiyotlarini, qarorlarini tahlil qilish. Masalan: O‘tbek — o‘zining qadriyatlarini himoya qilishga qodir, lekin o‘zini yo‘qotishga qo‘rqadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tahlil_usullari", isHome: true }]
+            },
+            "tahlil_simvol": {
+                text: "Simvolika — obyektlar, ranglar, so‘zlarning ma’nolarini chuqur tushunish. Masalan: 'Ko‘zlar' — hissiyotlar, 'Tirik o‘lmasin' — doimiylik, 'Qo‘shiq' — hayotning boshlanishi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tahlil_usullari", isHome: true }]
+            },
+            "tahlil_uslub": {
+                text: "Adabiy uslub — shoir yoki yozuvchining so‘z tanlovi, jumlalar tuzilishi, metaforalar, maqollar. Qodiriy — qadimiy o‘zbek tilini, iboralarini keng qo‘llaydi. G‘ulom — simvolik, poetik, toza til.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tahlil_usullari", isHome: true }]
+            },
+            "tahlil_g'oya": {
+                text: "G‘oya — asarning asosiy fikri. Masalan: 'Tirik o‘lmasin' — o‘zini qurbon qilish — o‘zini yo‘qotish emas, balki o‘zini saqlashdir. 'Birinchi qo‘shiq' — hayotning doimiyligi, tabiatning qadriyati.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tahlil_usullari", isHome: true }]
+            },
+            "test_menu": {
+                text: "9-sinf ona tili adabiyot testlari. Qaysi asar bo‘yicha sinovni bering?",
+                buttons: [
+                    { text: "Toshkentdan Toshkentgacha", key: "test_tosh" },
+                    { text: "Birinchi qo‘shiq", key: "test_birinchi" },
+                    { text: "Yozgi kundalik", key: "test_yozgi" },
+                    { text: "Tirik o‘lmasin", key: "test_tirik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_tosh": {
+                text: "1. 'Toshkentdan Toshkentgacha' asarida tarixiy muhit qanday tasvirlangan?\nA) So‘nggi qo‘shma qo‘shinlar davri\nB) So‘vet hokimiyati o‘rnatilgan davr\nC) Mustaqillik davri\n\nJavobni tanlang:",
+                buttons: [
+                    { text: "A) So‘nggi qo‘shma", key: "test_tosh_a" },
+                    { text: "B) So‘vet hokimiyati", key: "test_tosh_b" },
+                    { text: "C) Mustaqillik", key: "test_tosh_c" }
+                ]
+            },
+            "test_tosh_b": {
+                text: "✅ To‘g‘ri! 'Toshkentdan Toshkentgacha' — so‘vet hokimiyati o‘rnatilgan davrda bo‘lib o‘tadi. Asarda milliy ma’naviyat va yangi ideologiya o‘rtasidagi to‘qnashuv aks etgan.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_tosh_a": {
+                text: "❌ Xato. So‘nggi qo‘shma qo‘shinlar davri — 'O‘tgan kunlar' asarining muhitidir. 'Toshkentdan Toshkentgacha' — so‘vet hokimiyati o‘rnatilgan davr.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_tosh_c": {
+                text: "❌ Xato. Mustaqillik davri — 1991-yildan keyin. Bu asar 1920-yillar davrida yozilgan.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_birinchi": {
+                text: "1. 'Birinchi qo‘shiq' she’rida asosiy simvol nima?\nA) Ko‘zlar\nB) Qo‘shiq\nC) O‘limga o‘tish\n\nJavobni tanlang:",
+                buttons: [
+                    { text: "A) Ko‘zlar", key: "test_birinchi_a" },
+                    { text: "B) Qo‘shiq", key: "test_birinchi_b" },
+                    { text: "C) O‘limga o‘tish", key: "test_birinchi_c" }
+                ]
+            },
+            "test_birinchi_b": {
+                text: "✅ To‘g‘ri! 'Birinchi qo‘shiq' — hayotning boshlanishi, sevgining toza ifodasi. Qo‘shiq — hayotning eng toza, eng chiroyli simvoli.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_birinchi_a": {
+                text: "❌ Xato. 'Ko‘zlar' — hikoyada simvol. 'Birinchi qo‘shiq' — qo‘shiq simvoli.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_yozgi": {
+                text: "1. 'Yozgi kundalik' she’rida tabiat qanday funktsiyani bajaradi?\nA) Faqat o‘zgarishni aks ettiradi\nB) Insoniy hissiyotlarning aksiyasi sifatida\nC) O‘limga tayyorgarlik\n\nJavobni tanlang:",
+                buttons: [
+                    { text: "A) O‘zgarish", key: "test_yozgi_a" },
+                    { text: "B) His siyotlarning aksiyasi", key: "test_yozgi_b" },
+                    { text: "C) O‘limga tayyorgarlik", key: "test_yozgi_c" }
+                ]
+            },
+            "test_yozgi_b": {
+                text: "✅ To‘g‘ri! G‘afur G‘ulomda tabiat — insoniy hissiyotlarning eng chiroyli, toza aksiyasi. U — hayot, sevgi, o‘zgarishning simvoli.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_tirik": {
+                text: "1. 'Tirik o‘lmasin' hikoyasining asosiy g‘oyasi nima?\nA) O‘zini qurbon qilish — o‘zini yo‘qotish\nB) O‘zini qurbon qilish — o‘zini saqlash\nC) Qo‘rqoqlik — insoniyatning eng yuqori qadriyati\n\nJavobni tanlang:",
+                buttons: [
+                    { text: "A) O‘zini yo‘qotish", key: "test_tirik_a" },
+                    { text: "B) O‘zini saqlash", key: "test_tirik_b" },
+                    { text: "C) Qo‘rqoqlik", key: "test_tirik_c" }
+                ]
+            },
+            "test_tirik_b": {
+                text: "✅ To‘g‘ri! 'Tirik o‘lmasin' — o‘zini qurbon qilish — o‘zini yo‘qotish emas, balki o‘zini saqlashdir. Bu — adabiyotdagi eng chuqur g‘oya.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
