@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Fizika (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #1976D2;
+            --accent: #D32F2F;
+            --light: #F5FBFF;
+            --bg: #E3F2FD;
+            --text: #0B3D91;
+            --card: #FFFFFF;
+            --shadow: 0 12px 35px rgba(13, 71, 161, 0.18);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0D47A1, #0B3D91);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #E3F2FD;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #B3E5FC;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #D32F2F;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #BBDEFB;
+        }
+
+        .ai-message .message-bubble {
+            background: #FFFFFF;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-weight: 500;
+            border-top-left-radius: 22px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(211, 47, 47, 0.35);
+        }
+
+        .home-button {
+            background: #1976D2 !important;
+        }
+
+        .home-button:hover {
+            background: #0D47A1 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #64B5F6;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* FIZIKA TA’RIFLAR UCHUN */
+        .formula {
+            font-family: 'Cormorant Garamond', serif;
+            background: #E3F2FD;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border-left: 3px solid var(--accent);
+            font-size: 16px;
+            line-height: 1.6;
+            color: #0D47A1;
+        }
+
+        .example {
+            background: #FFF8E1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 14px 0;
+            font-style: italic;
+            color: #5D4037;
+        }
+
+        .answer {
+            background: #E3F2FD;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Fizika</h1>
+        <p>9-sinf o‘quvchilari uchun kinematika, dinamika, energiya, elektr zaryad, magnit maydon — barchasi aniq, tushunarli, qadam-qadam tahlil qilingan holda</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">⚡</div>
+            <h2>Fizika Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — Masalov, Ismatov, Xolmirzayev</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF FIZIKA MAVZULARI — darslikka mos
+        const database = {
+            "main_menu": {
+                text: "Salom! Siz 9-sinf fizika faniga bag‘ishlangan AI Ustozdasiz. Qaysi mavzu bo‘yicha yordam kerak?",
+                buttons: [
+                    { text: "🏃‍♂️ Kinematika", key: "kinematika" },
+                    { text: "⚖️ Dinamika", key: "dinamika" },
+                    { text: "🔥 Energia", key: "energiya" },
+                    { text: "⚡ Elektr zaryad", key: "elektr" },
+                    { text: "🧲 Magnit maydon", key: "magnit" },
+                    { text: "🌡️ Issiqlik hodisalari", key: "issiqlik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kinematika": {
+                text: "Kinematika — jismlarning harakatini sababsiz o‘rganadi (tezlik, yo‘l, vaqt).",
+                buttons: [
+                    { text: "Tekis harakat", key: "kin_tekis" },
+                    { text: "Tekis tezlanuvchan", key: "kin_tezlan" },
+                    { text: "Aylana bo‘ylab harakat", key: "kin_aylana" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kin_tekis": {
+                text: "Tekis harakat — tezlik doimiy.\n\n🔹 Yo‘l: s = v·t\n🔹 Tezlik: v = s/t\n\nMisol: v = 5 m/s, t = 10 s → s = 50 m",
+                buttons: [{ text: "⬅️ Orqaga", key: "kinematika", isHome: true }]
+            },
+            "kin_tezlan": {
+                text: "Tekis tezlanuvchan harakat — tezlanish doimiy.\n\n🔹 Tezlik: v = v₀ + a·t\n🔹 Yo‘l: s = v₀·t + (a·t²)/2\n🔹 v² = v₀² + 2as\n\nMisol: v₀=0, a=2 m/s², t=3 s → s = 0 + (2·9)/2 = 9 m",
+                buttons: [{ text: "⬅️ Orqaga", key: "kinematika", isHome: true }]
+            },
+            "kin_aylana": {
+                text: "Aylana bo‘ylab harakat:\n\n🔹 Burchak tezlik: ω = φ/t (rad/s)\n🔹 Chiziqli tezlik: v = ω·R\n🔹 Markazga intilma tezlanish: a = v²/R = ω²·R\n\nMisol: R=2 m, ω=3 rad/s → v = 6 m/s, a = 18 m/s²",
+                buttons: [{ text: "⬅️ Orqaga", key: "kinematika", isHome: true }]
+            },
+            "dinamika": {
+                text: "Dinamika — harakatning sabablarini (kuchlar) o‘rganadi.",
+                buttons: [
+                    { text: "Nyuton qonunlari", key: "din_nyuton" },
+                    { text: "Og‘irlik kuchi", key: "din_ogirlik" },
+                    { text: "Ishqalanish kuchi", key: "din_ishq" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "din_nyuton": {
+                text: "Nyutonning uchta qonuni:\n\n1. Inersiya qonuni — kuch ta’siri bo‘lmaganda, jism tinch yoki tekis harakatda qoladi.\n\n2. F = m·a — tezlanish kuchga to‘g‘ri, massaga teskari proporsional.\n\n3. Harakat va qarshilik — har bir harakatga teng va qarama-qarshi qarshilik bor.",
+                buttons: [{ text: "⬅️ Orqaga", key: "dinamika", isHome: true }]
+            },
+            "din_ogirlik": {
+                text: "Og‘irlik kuchi: F = m·g\n\n🔹 g ≈ 9.8 m/s² (Yerda)\n\nMisol: m = 5 kg → F = 5·9.8 = 49 N",
+                buttons: [{ text: "⬅️ Orqaga", key: "dinamika", isHome: true }]
+            },
+            "din_ishq": {
+                text: "Ishqalanish kuchi: Fᵢₛₕ = μ·N\n\n🔹 μ — ishqalanish koeffitsienti\n🔹 N — normal bosim (odatda N = mg)\n\nMisol: m=10 kg, μ=0.3 → Fᵢₛₕ = 0.3·10·9.8 = 29.4 N",
+                buttons: [{ text: "⬅️ Orqaga", key: "dinamika", isHome: true }]
+            },
+            "energiya": {
+                text: "Energiya — jismning ish bajara olish qobiliyati. 9-sinfda kinetik va potensial energiya o‘rganiladi.",
+                buttons: [
+                    { text: "Kinetik energiya", key: "en_kin" },
+                    { text: "Potensial energiya", key: "en_pot" },
+                    { text: "Energiya saqlanish", key: "en_saqlanish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "en_kin": {
+                text: "Kinetik energiya — harakatdagi jismning energiyasi.\n\n🔹 Eₖ = (m·v²)/2\n\nMisol: m=2 kg, v=3 m/s → Eₖ = (2·9)/2 = 9 J",
+                buttons: [{ text: "⬅️ Orqaga", key: "energiya", isHome: true }]
+            },
+            "en_pot": {
+                text: "Potensial energiya — balandlikdagi jismning energiyasi.\n\n🔹 Eₚ = m·g·h\n\nMisol: m=5 kg, h=10 m → Eₚ = 5·9.8·10 = 490 J",
+                buttons: [{ text: "⬅️ Orqaga", key: "energiya", isHome: true }]
+            },
+            "en_saqlanish": {
+                text: "Yopiq tizimda to‘liq energiya doim saqlanadi:\n\n🔹 Eₖ₁ + Eₚ₁ = Eₖ₂ + Eₚ₂\n\nMisol: Jism h balandlikdan tushsa, Eₚ → Eₖ aylanadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "energiya", isHome: true }]
+            },
+            "elektr": {
+                text: "Elektr zaryad — moddalarning asosiy xossasi. 9-sinfda Kulon qonuni, elektr maydon o‘rganiladi.",
+                buttons: [
+                    { text: "Kulon qonuni", key: "el_kulon" },
+                    { text: "Elektr maydon kuchlanganligi", key: "el_maydon" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "el_kulon": {
+                text: "Kulon qonuni — ikki zaryad orasidagi kuch:\n\n🔹 F = k·|q₁q₂| / r²\n   (k ≈ 9·10⁹ N·m²/C²)\n\nMisol: q₁=q₂=1 μC, r=1 m → F = 9·10⁹·(10⁻⁶)²/1 = 9·10⁻³ N",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "el_maydon": {
+                text: "Elektr maydon kuchlanganligi:\n\n🔹 E = F/q = k·|Q|/r²\n\nBirlik: V/m yoki N/C\n\nMisol: Q=2·10⁻⁶ C, r=0.5 m → E = 9·10⁹·2·10⁻⁶ / 0.25 = 72 000 N/C",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "magnit": {
+                text: "Magnit maydon — magnitlar va tokli o‘tkazgichlar atrofida vujudga keladi.",
+                buttons: [
+                    { text: "Amper kuchi", key: "mag_amper" },
+                    { text: "Lorens kuchi", key: "mag_lorens" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mag_amper": {
+                text: "Amper kuchi — tokli o‘tkazgichga ta’sir etuvchi kuch:\n\n🔹 F = B·I·L·sinα\n\n🔹 B — magnit induksiyasi (T)\n🔹 I — tok kuchi (A)\n🔹 L — uzunlik (m)\n\nMisol: B=0.5 T, I=2 A, L=0.3 m, α=90° → F = 0.5·2·0.3·1 = 0.3 N",
+                buttons: [{ text: "⬅️ Orqaga", key: "magnit", isHome: true }]
+            },
+            "mag_lorens": {
+                text: "Lorens kuchi — harakatdagi zaryadga ta’sir etuvchi kuch:\n\n🔹 F = q·v·B·sinα\n\nMisol: q=1.6·10⁻¹⁹ C, v=10⁶ m/s, B=0.1 T → F = 1.6·10⁻¹⁴ N",
+                buttons: [{ text: "⬅️ Orqaga", key: "magnit", isHome: true }]
+            },
+            "issiqlik": {
+                text: "Issiqlik hodisalari — harorat, issiqlik miqdori, issiqlik o‘tkazuvchanlik.",
+                buttons: [
+                    { text: "Issiqlik miqdori", key: "iss_mi" },
+                    { text: "Solishtirma issiqlik sig‘imi", key: "iss_sigim" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "iss_mi": {
+                text: "Issiqlik miqdori:\n\n🔹 Q = c·m·Δt\n\n🔹 c — solishtirma issiqlik sig‘imi (J/kg·°C)\n\nMisol: suv uchun c = 4200 J/kg·°C, m=2 kg, Δt=10°C → Q = 4200·2·10 = 84 000 J",
+                buttons: [{ text: "⬅️ Orqaga", key: "issiqlik", isHome: true }]
+            },
+            "iss_sigim": {
+                text: "Solishtirma issiqlik sig‘imi — 1 kg moddaning haroratini 1°C ga oshirish uchun kerak bo‘lgan energiya.\n\n🔹 Suv: 4200 J/kg·°C\n🔹 Temir: 460 J/kg·°C\n\nDemak, suv — issiqlikni yaxshi saqlaydi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "issiqlik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Fizika bo‘yicha testlar. Qaysi mavzuda sinov qilmoqchisiz?",
+                buttons: [
+                    { text: "Kinematika", key: "test_kin" },
+                    { text: "Dinamika", key: "test_din" },
+                    { text: "Energiya", key: "test_en" },
+                    { text: "Elektr", key: "test_el" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_kin": {
+                text: "1. Jism 4 m/s² tezlanish bilan 5 s harakat qildi. Bosib o‘tgan yo‘li? (boshlang‘ich tezlik 0)\nA) 20 m\nB) 50 m\nC) 100 m",
+                buttons: [
+                    { text: "A) 20 m", key: "test_kin_a" },
+                    { text: "B) 50 m", key: "test_kin_b" },
+                    { text: "C) 100 m", key: "test_kin_c" }
+                ]
+            },
+            "test_kin_b": {
+                text: "✅ To‘g‘ri! s = (a·t²)/2 = (4·25)/2 = 50 m.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_din": {
+                text: "1. 10 kg jismga 20 N kuch ta’sir etmoqda. Tezlanish?\nA) 2 m/s²\nB) 0.5 m/s²\nC) 200 m/s²",
+                buttons: [
+                    { text: "A) 2 m/s²", key: "test_din_a" },
+                    { text: "B) 0.5 m/s²", key: "test_din_b" },
+                    { text: "C) 200 m/s²", key: "test_din_c" }
+                ]
+            },
+            "test_din_a": {
+                text: "✅ To‘g‘ri! a = F/m = 20/10 = 2 m/s².",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_en": {
+                text: "1. 2 kg jism 10 m/s tezlikda harakat qilyapti. Kinetik energiyasi?\nA) 20 J\nB) 100 J\nC) 200 J",
+                buttons: [
+                    { text: "A) 20 J", key: "test_en_a" },
+                    { text: "B) 100 J", key: "test_en_b" },
+                    { text: "C) 200 J", key: "test_en_c" }
+                ]
+            },
+            "test_en_b": {
+                text: "✅ To‘g‘ri! Eₖ = (2·10²)/2 = 100 J.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_el": {
+                text: "1. Ikki bir xil zaryad (1 μC) 1 m masofada. Kulon kuchi?\nA) 9·10⁹ N\nB) 9·10⁻³ N\nC) 1 N",
+                buttons: [
+                    { text: "A) 9·10⁹ N", key: "test_el_a" },
+                    { text: "B) 9·10⁻³ N", key: "test_el_b" },
+                    { text: "C) 1 N", key: "test_el_c" }
+                ]
+            },
+            "test_el_b": {
+                text: "✅ To‘g‘ri! F = 9·10⁹·(10⁻⁶)²/1² = 9·10⁻³ N.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
