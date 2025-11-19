@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — O‘zbek Tili & Adabiyot (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A148C; /* To'q binafsha rang (Mor) */
+            --secondary: #6A1B9A; /* Ochroq binafsha */
+            --accent: #FFC107; /* Sariq rang (Uyg'onishni ifodalaydi) */
+            --light: #F3E5F5;
+            --bg: #FAFAFC;
+            --text: #311B92; /* To'q ko'k/binafsha matn */
+            --card: #FFFFFF;
+            --shadow: 0 10px 30px rgba(74, 20, 140, 0.15);
+            --border: #E1BEE7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f7f7fa, #efeef5);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #311B92);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: #E1BEE7;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.9;
+            color: #FFECB3;
+        }
+
+        #book-logo {
+            width: 140px;
+            height: 140px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 20px auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+            position: relative;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: 1.4rem;
+            letter-spacing: -0.2px;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .user-message .message-bubble {
+            background: #FFECB3; /* Och sariq */
+            color: #795548; /* To'q jigarrang */
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+            border: 1px solid #FFEBEE;
+        }
+
+        .ai-message .message-bubble {
+            background: #E1BEE7; /* Binafsha rangni ochiq toni */
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--accent);
+            font-style: italic;
+            border-top-left-radius: 20px;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 3px 8px rgba(106, 27, 154, 0.2);
+        }
+
+        .quick-button:hover {
+            background: #FFC107; /* Sariq rang */
+            color: #311B92;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(255, 193, 7, 0.5);
+        }
+
+        .home-button {
+            background: #311B92 !important; /* To'q ko'k rang */
+        }
+
+        .home-button:hover {
+            background: #1A237E !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #795548;
+            margin-top: 12px;
+            padding: 4px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION: PAGE FADE IN */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — O‘zbek Tili & Adabiyot</h1>
+        <p>10-sinf o‘quvchilari uchun: O‘tkan kunlar, Cho‘lpon, G‘afur G‘ulom, Morfologiya va boshqalar</p>
+    </div>
+
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">💡</div>
+            <h2>Adabiyot Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — “O‘tkan kunlar”, Cho‘lpon, Morfologiya va boshqa mavzular</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 10-SINF MA'LUMOTLAR BAZASI
+        const database = {
+            "main_menu": {
+                text: "Salom! 10-sinf o'quvchilari uchun O'zbek tili va Adabiyot yordamchisiga xush kelibsiz. Qaysi mavzu bo'yicha yordam kerak?",
+                buttons: [
+                    { text: "📖 O'tkan kunlar", key: "otkan_kunlar" },
+                    { text: "🕊 Cho'lpon she'riyati", key: "cholpon_sheriy" },
+                    { text: "👨‍🏫 G'afur G'ulom", key: "gafur_gulom" },
+                    { text: "🗣 Ona tili (Morfologiya)", key: "ona_tili_10" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+
+            // --- Adabiyot bo'limi ---
+            "otkan_kunlar": {
+                text: "Abdulla Qodiriyning “O'tkan kunlar” asari. Bu o'zbek romanining boshlanishi. Asar g'oyasi nima?",
+                buttons: [
+                    { text: "Asar syujeti", key: "ok_syujet" },
+                    { text: "Otabek va Kumush", key: "ok_qahramon" },
+                    { text: "Roman g‘oyasi", key: "ok_goya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ok_syujet": {
+                text: "Syujet: Otabekning Marg'ilonda Kumush bilan tanishuvi, ularning sevgisi, Zaynabning kiritilishi va fojiaviy yakun. O'sha davrning ijtimoiy muammolari aks etgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "otkan_kunlar", isHome: true }]
+            },
+            "ok_goya": {
+                text: "Roman g‘oyasi: Milliy birlik va mustaqillik g'oyalari, feodalizmning ayanchli oqibatlari, shaxs erkinligi. Fojia — millat birligi buzilganidan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "otkan_kunlar", isHome: true }]
+            },
+
+            "cholpon_sheriy": {
+                text: "Cho'lpon (Abdulhamid Cho'lpon) — jadid adabiyotining yirik namoyandasi. Uning she'riyatida qanday mavzular ustunlik qiladi?",
+                buttons: [
+                    { text: "Asosiy mavzular", key: "cholpon_mavzu" },
+                    { text: "Uslubi va ramzlari", key: "cholpon_uslub" },
+                    { text: "Eng mashhur she'ri", key: "cholpon_mashhur" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "cholpon_mavzu": {
+                text: "Cho'lpon she'riyatining asosiy mavzulari — **Ozodlik**, Vatanga muhabbat, zulmga qarshi isyon, shaxs erkinligi va ruhiy yolg'izlik.",
+                buttons: [{ text: "⬅️ Orqaga", key: "cholpon_sheriy", isHome: true }]
+            },
+
+            "gafur_gulom": {
+                text: "G'afur G'ulom — O'zbek xalq shoiri va yirik prozaik. Uning nasrida nimalar aks etgan?",
+                buttons: [
+                    { text: "Nasr xususiyatlari", key: "gg_nasr" },
+                    { text: "Mashhur asarlari", key: "gg_asar" },
+                    { text: "Insoniy g‘oyalar", key: "gg_goya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "gg_nasr": {
+                text: "G'afur G'ulomning nasri: hajviya, yumor, hayotiy voqealarning haqqoniy tasviri, oddiy mehnatkash insonlar qahramonlari. Masalan, 'Shum bola'.",
+                buttons: [{ text: "⬅️ Orqaga", key: "gafur_gulom", isHome: true }]
+            },
+
+
+            // --- Ona tili bo'limi ---
+            "ona_tili_10": {
+                text: "10-sinf ona tili (Morfologiya) mavzulari. Qaysi so'z turkumiga oid ma'lumot kerak?",
+                buttons: [
+                    { text: "Harf va tovush", key: "harf_tovush" },
+                    { text: "Ot so‘z turkumi", key: "ot_turkumi" },
+                    { text: "Fe'l va uning shakllari", key: "fel_shakllari" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ot_turkumi": {
+                text: "Ot so'z turkumi: shaxs, narsa, joy yoki hodisani bildiradi. Egacha, egalik, kelishik qo'shimchalari bor.\n\nMasalan: 'Kitob' (kim/nima?), 'Qalamim' (egalik), 'Uyga' (yo'nalish kelishigi).",
+                buttons: [{ text: "⬅️ Orqaga", key: "ona_tili_10", isHome: true }]
+            },
+            "fel_shakllari": {
+                text: "Fe'lning asosiy shakllari: **sifatdosh** ('o'qigan bola'), **ravishdosh** ('kulib qaradi') va **harakat nomi** ('kelish').",
+                buttons: [{ text: "⬅️ Orqaga", key: "ona_tili_10", isHome: true }]
+            },
+            "harf_tovush": {
+                text: "Harf — yozma belgi, Tovush — talaffuz birligi. O'zbek tilida 29 harf bor. Unli va undosh tovushlarga bo'linadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ona_tili_10", isHome: true }]
+            },
+
+            // --- Testlar bo'limi ---
+            "test_menu": {
+                text: "Testlar. Qaysi mavzuni sinab ko'rasiz?",
+                buttons: [
+                    { text: "O'tkan kunlar", key: "test_ok" },
+                    { text: "Cho'lpon", key: "test_cholpon" },
+                    { text: "Fe'l shakllari", key: "test_fel" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_ok": {
+                text: "1. “O'tkan kunlar” romanining asosiy qahramoni kim?\nA) Zaynab\nB) Otabek\nC) Hasanali\n\nTo'g'ri javobni tanlang:",
+                buttons: [
+                    { text: "A", key: "test_ok_a" },
+                    { text: "B", key: "test_ok_b" },
+                    { text: "C", key: "test_ok_c" }
+                ]
+            },
+            "test_ok_b": {
+                text: "✅ To'g'ri! Otabek roman markaziy qahramoni hisoblanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_ok_a": {
+                text: "❌ Noto'g'ri. Zaynab faqat yordamchi qahramon.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_ok_c": {
+                text: "❌ Noto'g'ri. Hasanali yordamchi qahramon.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+
+            "test_fel": {
+                text: "2. Qaysi gapda **ravishdosh** mavjud?\nA) Kulayotgan bola keldi.\nB) U yugurib ketdi.\nC) Borishni xohlayman.\n\nTo'g'ri javobni tanlang:",
+                buttons: [
+                    { text: "A", key: "test_fel_a" },
+                    { text: "B", key: "test_fel_b" },
+                    { text: "C", key: "test_fel_c" }
+                ]
+            },
+            "test_fel_b": {
+                text: "✅ To'g'ri! 'Yugurib' — '-ib' qo'shimchasi bilan hosil bo'lgan ravishdosh.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+             "test_fel_a": {
+                text: "❌ Noto'g'ri. 'Kulayotgan' — sifatdosh.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+             "test_fel_c": {
+                text: "❌ Noto'g'ri. 'Borishni' — harakat nomi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+             "test_cholpon": {
+                text: "3. Cho'lpon she'riyatining asosiy g'oyasi?\nA) Oila qadriyatlari\nB) Ilohiy ishq\nC) Ozodlik va Vatan\n\nTo'g'ri javobni tanlang:",
+                buttons: [
+                    { text: "A", key: "test_cholpon_a" },
+                    { text: "B", key: "test_cholpon_b" },
+                    { text: "C", key: "test_cholpon_c" }
+                ]
+            },
+             "test_cholpon_c": {
+                text: "✅ To'g'ri! Cho'lpon asarlarida ozodlik va milliy mustaqillik g'oyalari ustunlik qiladi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+             "test_cholpon_a": {
+                text: "❌ Noto'g'ri. Bu mavzu G'afur G'ulom nasrida ko'proq uchraydi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+             "test_cholpon_b": {
+                text: "❌ Noto'g'ri. Ilohiy ishq asosan Navoiy va Hofiz ijodida asosiy o'rin tutadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar (9-sinf botidan o'zgarishsiz olinadi, faqat keyslar yangilangan)
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas. Iltimos, bosh menyu orqali qayting.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            // Intro splash 3 soniyadan keyin o'chadi va chat bot paydo bo'ladi
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500); // FADE IN animatsiyasini tugatish uchun biroz kechikish
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
