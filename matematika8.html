@@ -1,124 +1,109 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Ustoz — Matematika (8-sinf)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — 8-sinf Matematika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2C3E50;
-            --secondary: #3498DB;
-            --accent: #E74C3C;
-            --light: #ECF0F1;
-            --dark: #2C3E50;
-            --success: #27AE60;
-            --warning: #F39C12;
-            --text: #2C3E50;
-            --bg: #F8F9FA;
+            --primary: #1E88E5;
+            --secondary: #0D47A1;
+            --accent: #4CAF50;
+            --light: #FFFFFF;
+            --bg: #F0F8FF;
+            --text: #212121;
             --card: #FFFFFF;
-            --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            --border: #E0E0E0;
+            --shadow: 0 10px 30px rgba(30, 136, 229, 0.2);
+            --border: #B3E5FC;
+            --danger: #FF6B6B;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Tajawal', 'Roboto', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background-color: var(--bg);
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
             color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 10px;
-            overflow: hidden;
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         /* === INTRO SPLASH === */
         #intro-splash {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), #1A2530);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            z-index: 1000;
-            transition: opacity 1s ease-out;
-            padding: 20px;
-            font-size: 16px;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
         }
 
         #intro-splash h1 {
-            font-size: 2.2rem;
-            font-weight: 300;
-            margin-bottom: 10px;
+            font-size: 2.1rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
             letter-spacing: -0.5px;
-            background: linear-gradient(to right, #3498DB, #3498DB);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
         }
 
         #intro-splash p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 1.1rem;
             max-width: 85%;
-            line-height: 1.6;
+            line-height: 1.5;
+            opacity: 0.95;
         }
 
-        #ai-logo {
-            width: 150px;
-            height: 150px;
+        #math-logo {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 20px auto;
-            position: relative;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
 
-        #ai-logo path {
-            fill: #3498DB;
-            transition: all 0.5s ease;
-        }
-
-        #ai-logo:hover path {
-            fill: #E74C3C;
+        #math-logo svg {
+            width: 80px;
+            height: 80px;
+            fill: var(--primary);
         }
 
         /* === CHATBOT CONTAINER === */
         #chatbot-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             height: 95vh;
-            max-height: 800px;
-            background-color: var(--card);
-            border-radius: 24px;
+            background: var(--card);
+            border-radius: 28px;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative;
-            border: 1px solid var(--border);
-        }
-
-        @media (max-width: 600px) {
-            #chatbot-container {
-                height: 100vh;
-                max-width: 100%;
-                border-radius: 0;
-                border: none;
-            }
+            border: 2px solid var(--border);
         }
 
         /* === HEADER === */
@@ -126,88 +111,45 @@
             display: flex;
             align-items: center;
             padding: 18px 20px;
-            background-color: var(--primary);
+            background: var(--primary);
             color: white;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
             position: relative;
-            z-index: 10;
         }
 
         #ai-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-color: var(--secondary);
-            margin-right: 18px;
+            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        #ai-avatar::before {
-            content: "🤖";
-            font-size: 24px;
+            margin-right: 16px;
+            font-size: 26px;
         }
 
         #header h2 {
+            font-weight: 600;
             font-size: 1.4rem;
-            font-weight: 500;
-            margin: 0;
-            letter-spacing: -0.3px;
-        }
-
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            margin: 0 2px;
-            background-color: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            animation: typing-bounce 1.4s infinite;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing-bounce {
-            0%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-4px); }
         }
 
         /* === CHAT WINDOW === */
         #chat-window {
-            flex-grow: 1;
+            flex: 1;
             padding: 20px;
             overflow-y: auto;
-            scroll-behavior: smooth;
+            line-height: 1.6;
             font-size: 15px;
-            line-height: 1.7;
-            position: relative;
         }
 
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             max-width: 85%;
-            display: flex;
-            flex-direction: column;
         }
 
         .user-message {
             margin-left: auto;
+            text-align: right;
         }
 
         .ai-message {
@@ -215,43 +157,30 @@
         }
 
         .message-bubble {
-            padding: 16px 22px;
-            border-radius: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            animation: fadeIn 0.4s ease-out;
-            word-wrap: break-word;
+            padding: 14px 20px;
+            border-radius: 20px;
+            display: inline-block;
             position: relative;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .user-message .message-bubble {
-            background-color: #E3F2FD;
-            color: #1565C0;
+            background: var(--accent);
+            color: white;
             border-bottom-right-radius: 4px;
-            font-weight: 500;
-            border: 1px solid #BBDEFB;
         }
 
         .ai-message .message-bubble {
-            background-color: var(--light);
+            background: #E3F2FD;
             color: var(--text);
             border-bottom-left-radius: 4px;
-            border-left: 3px solid var(--secondary);
-            font-weight: 400;
+            border-left: 3px solid var(--primary);
         }
 
         /* === INPUT AREA === */
         #input-area {
-            padding: 20px 15px;
-            border-top: 1px solid var(--border);
-            background-color: var(--card);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
         }
 
         #quick-buttons {
@@ -262,106 +191,87 @@
         }
 
         .quick-button {
-            padding: 12px 16px;
-            background-color: var(--primary);
-            color: white;
+            padding: 12px 14px;
             border: none;
-            border-radius: 28px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            flex-grow: 1;
-            min-width: 110px;
-            max-width: 48%;
+            border-radius: 24px;
+            background: var(--primary);
+            color: white;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
             text-align: center;
-            letter-spacing: -0.1px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            box-shadow: 0 3px 8px rgba(30,136,229,0.2);
         }
 
         .quick-button:hover {
-            background-color: var(--secondary);
+            background: var(--secondary);
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
-        }
-
-        .quick-button:active {
-            transform: translateY(0);
+            box-shadow: 0 5px 12px rgba(13,71,161,0.3);
         }
 
         .home-button {
-            background-color: var(--accent);
+            background: var(--danger) !important;
         }
 
         .home-button:hover {
-            background-color: #C0392B;
+            background: #d32f2f !important;
         }
 
-        /* === CUSTOM SCROLLBAR === */
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #616161;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
         #chat-window::-webkit-scrollbar {
             width: 6px;
         }
-
-        #chat-window::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
         #chat-window::-webkit-scrollbar-thumb {
-            background: var(--secondary);
+            background: var(--primary);
             border-radius: 10px;
         }
 
-        /* === ICONS === */
-        .math-icon {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            margin-right: 4px;
-            vertical-align: middle;
-            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzNDk4REIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTkgNkgxNXYtMkgxM3YySDl2LTJIN3YySDV2Mkgxdi41Yy41IDAgMSAwIDAgMS41VjIyYzAgLjUgMCAxIC41IDEgMS41IDAgMSAwIDEgMCAxLjV2LjVIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LTJIMTJ2LT......");
-            background-repeat: no-repeat;
-            background-size: contain;
-        }
-
-        /* === FOOTER NOTE === */
-        .footer-note {
-            text-align: center;
-            font-size: 12px;
-            color: #7F8C8D;
-            margin-top: 10px;
-            padding: 5px;
-            opacity: 0.7;
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- INTRO SPLASH -->
     <div id="intro-splash">
-        <div id="ai-logo">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4Z" stroke="#3498DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12 8V16" stroke="#3498DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M8 12H16" stroke="#3498DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <div id="math-logo">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 14H9v-2h2v2zm0-4H9v-2h2v2zm0-4H9V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
             </svg>
         </div>
-        <h1>AI Ustoz — Matematika (8-sinf)</h1>
-        <p>Butun sonlar, tenglamalar, funksiyalar, geometriya va O'QTM testlari — barcha mavzular bitta joyda!</p>
+        <h1>AI Ustoz — Matematika</h1>
+        <p>8-sinf uchun maxsus yaratilgan interaktiv matematika yordamchisi</p>
     </div>
 
+    <!-- CHATBOT -->
     <div id="chatbot-container" class="hidden">
         <div id="header">
-            <div id="ai-avatar"></div>
-            <h2>Matematika Ustoz</h2>
-            <div class="typing-indicator hidden">
-                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
+            <div id="ai-avatar">🧠</div>
+            <h2>Matematika Yordamchisi</h2>
         </div>
         <div id="chat-window"></div>
         <div id="input-area">
             <div id="quick-buttons"></div>
-            <div class="footer-note">AI Ustoz — 8-sinf matematika dasturiga moslashtirilgan</div>
+            <div class="footer-note">8-sinf darsliklariga mos — algebra, geometriya, O'QTM tayyorgarligi</div>
         </div>
     </div>
 
@@ -370,237 +280,164 @@
         const quickButtonsContainer = document.getElementById('quick-buttons');
         const introSplash = document.getElementById('intro-splash');
         const chatbotContainer = document.getElementById('chatbot-container');
-        const typingIndicator = document.querySelector('.typing-indicator');
 
+        // ✅ Sodda ma'lumotlar bazasi (8-sinfga mos)
         const database = {
             "main_menu": {
-                text: "Matematika fanining qaysi bo'limi bo'yicha bilim olishni xohlaysiz?",
+                text: "Salom! Matematikaning qaysi mavzusida yordam kerak?",
                 buttons: [
-                    { text: "1. Butun sonlar 📊", key: "butun_sonlar" },
-                    { text: "2. Ratsional sonlar 🧮", key: "ratsional_sonlar" },
-                    { text: "3. Kvadrat ildizlar √", key: "kvadrat_ildizlar" },
-                    { text: "4. Tenglama va tengsizliklar ⚖️", key: "tenglama" },
-                    { text: "5. Funksiyalar va grafigi 📈", key: "funksiya" },
-                    { text: "6. Geometriya 📐", key: "geometriya" },
-                    { text: "7. Testlar (O'QTM) ✅", key: "test_menu" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "🔢 Butun sonlar", key: "butun_sonlar" },
+                    { text: "➗ Ratsional sonlar", key: "ratsional_sonlar" },
+                    { text: "√ Kvadrat ildiz", key: "kvadrat_ildizlar" },
+                    { text: "⚖️ Tenglamalar", key: "tenglama" },
+                    { text: "📈 Funksiyalar", key: "funksiya" },
+                    { text: "📐 Geometriya", key: "geometriya" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
             },
             "butun_sonlar": {
-                text: "Butun sonlar — natural sonlar, manfiy sonlar va nol. Modul, qarama-qarshi sonlar, qo'shish, ayirish, ko'paytirish va bo'lish qoidalari.",
+                text: "Butun sonlar — (..., -3, -2, -1, 0, 1, 2, 3, ...). Qo'shish, ayirish, modul va qarama-qarshi sonlar haqida.",
                 buttons: [
-                    { text: "Modul va qarama-qarshi son", key: "modul" },
-                    { text: "Qo'shish va ayirish", key: "qoshish_ayirish" },
-                    { text: "Ko'paytirish va bo'lish", key: "kopaytirish_bo'lish" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_butun" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Modul nima?", key: "modul" },
+                    { text: "Amallar qoidalari", key: "qoidalar" },
+                    { text: "Mashqlar", key: "mashq_butun" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "modul": {
+                text: "Modul — sonning noldan masofasi. |–7| = 7, |5| = 5. Har doim musbat!",
+                buttons: [{ text: "⬅️ Orqaga", key: "butun_sonlar", isHome: true }]
+            },
+            "qoidalar": {
+                text: "–8 + 5 = –3 (kattasi manfiy). –4 × –6 = 24 (ikkita manfiy — musbat)!",
+                buttons: [{ text: "⬅️ Orqaga", key: "butun_sonlar", isHome: true }]
+            },
+            "mashq_butun": {
+                text: "1) –12 + 18 = ? 2) (–7) × 3 = ?\nJavoblar: 6, –21",
+                buttons: [{ text: "⬅️ Orqaga", key: "butun_sonlar", isHome: true }]
             },
             "ratsional_sonlar": {
-                text: "Ratsional sonlar — a/b ko'rinishidagi sonlar. Kasrlarning soddalashtirilishi, qo'shish, ayirish, ko'paytirish, bo'lish, takroriy kasrlar.",
+                text: "Kasr shaklidagi sonlar: 3/4, –2/5. Qo'shish uchun umumiy maxraj kerak!",
                 buttons: [
-                    { text: "Kasrlarni qo'shish", key: "ratsional_qoshish" },
-                    { text: "Kasrlarni ayirish", key: "ratsional_ayirish" },
-                    { text: "Ko'paytirish va bo'lish", key: "ratsional_kopaytirish" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_ratsional" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Qo'shish", key: "rats_qosh" },
+                    { text: "Ko'paytirish", key: "rats_kop" },
+                    { text: "Mashqlar", key: "mashq_rat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "rats_qosh": {
+                text: "1/2 + 1/3 = 3/6 + 2/6 = 5/6. Maxrajni 6 qildik!",
+                buttons: [{ text: "⬅️ Orqaga", key: "ratsional_sonlar", isHome: true }]
+            },
+            "mashq_rat": {
+                text: "1) 2/5 + 3/10 = ? 2) 4/7 × 21/8 = ?\nJavoblar: 7/10, 3/2",
+                buttons: [{ text: "⬅️ Orqaga", key: "ratsional_sonlar", isHome: true }]
             },
             "kvadrat_ildizlar": {
-                text: "Kvadrat ildiz — sonning kvadrati qanday son bo'lganini topish. Ildizli ifodalarni soddalashtirish, taxminiy qiymatlar, butun sonlardan ildiz chiqarish.",
+                text: "√25 = 5, lekin √–25 — mavjud emas! Ildizdan chiqarish — kvadratga teskari.",
                 buttons: [
-                    { text: "Kvadrat ildiz nima?", key: "kvadrat_nima" },
-                    { text: "Soddalashtirish usullari", key: "soddalashtirish" },
-                    { text: "Taxminiy ildizlar", key: "taxminiy_ildiz" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_ildiz" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Soddalashtirish", key: "soddalash" },
+                    { text: "Mashqlar", key: "mashq_ildiz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "soddalash": {
+                text: "√50 = √(25×2) = 5√2. Kvadrat ko‘paytuvchini ildizdan tashlab yubor!",
+                buttons: [{ text: "⬅️ Orqaga", key: "kvadrat_ildizlar", isHome: true }]
             },
             "tenglama": {
-                text: "Tenglama — o'zgaruvchini topish. Chiziqli tenglamalar, ikki o'zgaruvchili tenglamalar, tengsizliklar, tenglamalar tizimi.",
+                text: "Chiziqli tenglama: 2x + 3 = 11 → 2x = 8 → x = 4.",
                 buttons: [
-                    { text: "Chiziqli tenglamalar", key: "chiziqli_tenglama" },
-                    { text: "Tengsizliklar", key: "tengsizlik" },
-                    { text: "Tenglama tizimi", key: "tenglama_tizimi" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_tenglama" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Yechish usullari", key: "tenglama_yech" },
+                    { text: "Mashqlar", key: "mashq_teng" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "tenglama_yech": {
+                text: "Agar –3x = 9 bo‘lsa, x = –3. Ikki tomonni –3 ga bo‘ldik!",
+                buttons: [{ text: "⬅️ Orqaga", key: "tenglama", isHome: true }]
             },
             "funksiya": {
-                text: "Funksiya — kiritilgan qiymatga qanday qiymat mos kelish. Chiziqli funksiya, grafigi, o'zgarish tezligi, koordinata tekisligi.",
+                text: "y = 2x + 1 — chiziqli funksiya. Har bir x ga bitta y mos keladi.",
                 buttons: [
-                    { text: "Funksiya tushunchasi", key: "funksiya_tushuncha" },
-                    { text: "Chiziqli funksiya", key: "chiziqli_funksiya" },
-                    { text: "Grafigini chizish", key: "grafik_chizish" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_funksiya" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Grafik chizish", key: "grafik" },
+                    { text: "Mashqlar", key: "mashq_funk" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "grafik": {
+                text: "x = 0 → y = 1; x = 1 → y = 3. Nuqtalarni koordinata tekisligida ulang!",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiya", isHome: true }]
             },
             "geometriya": {
-                text: "Geometriya — tekislikdagi shakllar, ularning xossalari. Ko'pburchaklar, Pifagor teoremasi, o'xshashlik, perimetr va yuz.",
+                text: "Pifagor teoremasi: a² + b² = c². To‘g‘ri burchakli uchburchakda ishlaydi.",
                 buttons: [
-                    { text: "Ko'pburchaklar", key: "kopburchaklar" },
-                    { text: "Pifagor teoremasi", key: "pifagor" },
-                    { text: "O'xshashlik", key: "oxshashlik" },
-                    { text: "Yuzni hisoblash", key: "yuz_hisoblash" },
-                    { text: "Mashqlar (10 ta)", key: "mashq_geometriya" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Yuz hisoblash", key: "yuz" },
+                    { text: "Pifagor", key: "pifagor" },
+                    { text: "Mashqlar", key: "mashq_geom" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
+            },
+            "pifagor": {
+                text: "Katetlar 3 va 4 bo‘lsa, gipotenuza = √(9+16) = √25 = 5.",
+                buttons: [{ text: "⬅️ Orqaga", key: "geometriya", isHome: true }]
             },
             "test_menu": {
-                text: "Matematika testlari bo'limi. Qaysi mavzuni sinab ko'rasiz?",
+                text: "Test tanlang:",
                 buttons: [
-                    { text: "Butun sonlar (10 savol)", key: "test_butun" },
-                    { text: "Ratsional sonlar (10 savol)", key: "test_ratsional" },
-                    { text: "Kvadrat ildizlar (10 savol)", key: "test_ildiz" },
-                    { text: "Tenglama (10 savol)", key: "test_tenglama" },
-                    { text: "Funksiya (10 savol)", key: "test_funksiya" },
-                    { text: "Geometriya (10 savol)", key: "test_geometriya" },
-                    { text: "O'QTM (20 savol)", key: "test_oqtm" },
-                    { text: "Eng qiyin 5 savol 🧠", key: "test_qiyin" },
-                    { text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }
+                    { text: "Butun sonlar", key: "test1" },
+                    { text: "Kasrlar", key: "test2" },
+                    { text: "Tenglamalar", key: "test3" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
                 ]
             },
-            // Batafsil bo'limlar
-            "modul": { text: "Modul — sonning noldan masofasi. |–5| = 5, |3| = 3. Qarama-qarshi sonlar: 7 va –7. Modul xossasi: |a| ≥ 0.", buttons: [{ text: "⬅️ Butun sonlar", key: "butun_sonlar", isHome: true }] },
-            "qoshish_ayirish": { text: "Butun sonlarni qo'shish: 1) Bir xil belgili — qo'shamiz, belgi saqlanadi. 2) Har xil belgili — kattasidan kichigini ayiramiz, katta son belgisini qo'yamiz.", buttons: [{ text: "⬅️ Butun sonlar", key: "butun_sonlar", isHome: true }] },
-            "kopaytirish_bo'lish": { text: "Ko'paytirish: (+)×(+) = (+), (–)×(–) = (+), (+)×(–) = (–). Bo'lish — shu qoida bilan bir xil. Masalan: –12 ÷ 3 = –4.", buttons: [{ text: "⬅️ Butun sonlar", key: "butun_sonlar", isHome: true }] },
-            "mashq_butun": { text: "1) –15 + 23 = ? 2) –8 × (–4) = ? 3) 45 ÷ (–9) = ? (Javoblar: 8, 32, –5)", buttons: [{ text: "⬅️ Butun sonlar", key: "butun_sonlar", isHome: true }] },
-            "ratsional_qoshish": { text: "Kasrlarni qo'shish: 1/3 + 2/5 = (5+6)/15 = 11/15. Umumiy maxraj topish kerak. Soddalashtirishni unutmang!", buttons: [{ text: "⬅️ Ratsional sonlar", key: "ratsional_sonlar", isHome: true }] },
-            "ratsional_ayirish": { text: "7/8 – 3/4 = 7/8 – 6/8 = 1/8. Soddalashtirishni unutmang! 1/8 = 0.125.", buttons: [{ text: "⬅️ Ratsional sonlar", key: "ratsional_sonlar", isHome: true }] },
-            "ratsional_kopaytirish": { text: "2/5 × 3/7 = 6/35. Bo'lish: 3/4 ÷ 2/5 = 3/4 × 5/2 = 15/8 = 1 7/8.", buttons: [{ text: "⬅️ Ratsional sonlar", key: "ratsional_sonlar", isHome: true }] },
-            "mashq_ratsional": { text: "1) 3/4 + 1/6 = ? 2) 5/6 × 3/10 = ? (Javoblar: 11/12, 1/4)", buttons: [{ text: "⬅️ Ratsional sonlar", key: "ratsional_sonlar", isHome: true }] },
-            "kvadrat_nima": { text: "Kvadrat ildiz — sonning kvadrati 16 bo'lgan son. √16 = 4. Manfiy sonning ildizi mavjud emas. √0 = 0.", buttons: [{ text: "⬅️ Kvadrat ildizlar", key: "kvadrat_ildizlar", isHome: true }] },
-            "soddalashtirish": { text: "√75 = √(25×3) = 5√3. Sonni kvadrat ko'paytuvchilarga ajratamiz. √128 = √(64×2) = 8√2.", buttons: [{ text: "⬅️ Kvadrat ildizlar", key: "kvadrat_ildizlar", isHome: true }] },
-            "taxminiy_ildiz": { text: "√2 ≈ 1.41, √3 ≈ 1.73. √20 ≈ 4.47. Qo'shish/ayirishda taxminiy qiymatlar bilan ishlaymiz: √2 + √3 ≈ 1.41 + 1.73 = 3.14.", buttons: [{ text: "⬅️ Kvadrat ildizlar", key: "kvadrat_ildizlar", isHome: true }] },
-            "mashq_ildiz": { text: "1) √49 = ? 2) √50 = ? 3) √(4×9) = ? (Javoblar: 7, ≈7.07, 6)", buttons: [{ text: "⬅️ Kvadrat ildizlar", key: "kvadrat_ildizlar", isHome: true }] },
-            "chiziqli_tenglama": { text: "Chiziqli tenglama: ax + b = 0. Masalan: 3x – 7 = 11 → 3x = 18 → x = 6. Qo'shish/ayirish, ko'paytirish/bo'lish bilan yechiladi.", buttons: [{ text: "⬅️ Tenglama va tengsizliklar", key: "tenglama", isHome: true }] },
-            "tengsizlik": { text: "Tengsizlik: 2x + 5 > 11 → 2x > 6 → x > 3. Agar manfiy songa ko'paytirsak, belgi o'zgaradi! Masalan: –2x > 6 → x < –3.", buttons: [{ text: "⬅️ Tenglama va tengsizliklar", key: "tenglama", isHome: true }] },
-            "tenglama_tizimi": { text: "Tenglama tizimi: 2x + y = 8, x – y = 1. Qo'shish usuli: 3x = 9 → x = 3. Keyin y = 2. Javob: (3,2).", buttons: [{ text: "⬅️ Tenglama va tengsizliklar", key: "tenglama", isHome: true }] },
-            "mashq_tenglama": { text: "1) 5x – 12 = 23 → x = ? 2) 3(x + 2) = 21 → x = ? (Javoblar: 7, 5)", buttons: [{ text: "⬅️ Tenglama va tengsizliklar", key: "tenglama", isHome: true }] },
-            "funksiya_tushuncha": { text: "Funksiya — har bir x ga biror y mos keladi. Masalan: y = 2x. x=1 → y=2, x=2 → y=4. Funksiya f(x) ko'rinishida yoziladi.", buttons: [{ text: "⬅️ Funksiyalar", key: "funksiya", isHome: true }] },
-            "chiziqli_funksiya": { text: "Chiziqli funksiya: y = kx + b. Grafigi — to'g'ri chiziq. k — burchak koeffitsienti (tezlik), b — Oy o'qini kesish nuqtasi.", buttons: [{ text: "⬅️ Funksiyalar", key: "funksiya", isHome: true }] },
-            "grafik_chizish": { text: "y = 2x + 1. x=0 → y=1; x=1 → y=3. Nuqtalarni ulab to'g'ri chiziq chizamiz. Grafik Oy o'qini (0,1) nuqtada kesadi.", buttons: [{ text: "⬅️ Funksiyalar", key: "funksiya", isHome: true }] },
-            "mashq_funksiya": { text: "1) y = –x + 4. x=2 bo'lsa y=? 2) y = 3x. x=–1 bo'lsa y=? (Javoblar: 2, –3)", buttons: [{ text: "⬅️ Funksiyalar", key: "funksiya", isHome: true }] },
-            "kopburchaklar": { text: "Ko'pburchak — 3 yoki undan ko'p tomonli shakl. To'rtburchaklar: kvadrat, to'rtburchak, parallelogramm, romb. Katta tomoni — asos, kichigi — balandlik.", buttons: [{ text: "⬅️ Geometriya", key: "geometriya", isHome: true }] },
-            "pifagor": { text: "Pifagor teoremasi: a² + b² = c². To'g'ri burchakli uchburchakda katetlar kvadratlari yig'indisi gipotenuzaning kvadratiga teng. 3-4-5 — eng mashhur uchlik.", buttons: [{ text: "⬅️ Geometriya", key: "geometriya", isHome: true }] },
-            "oxshashlik": { text: "O'xshashlik — burchaklari teng, tomonlari proporsional. Masalan: 3-4-5 va 6-8-10 uchburchaklar o'xshash. Nisbat 2:1.", buttons: [{ text: "⬅️ Geometriya", key: "geometriya", isHome: true }] },
-            "yuz_hisoblash": { text: "Uchburchak: S = ½×a×h. Parallelogramm: S = a×h. Trapetsiya: S = ½×(a+b)×h. Romb: S = ½×d₁×d₂.", buttons: [{ text: "⬅️ Geometriya", key: "geometriya", isHome: true }] },
-            "mashq_geometriya": { text: "1) Katetlar 3 va 4. Gipotenuza? 2) Trapetsiya asoslari 6 va 10, balandligi 5. Yuzi? (Javoblar: 5, 40)", buttons: [{ text: "⬅️ Geometriya", key: "geometriya", isHome: true }] },
-            // TESTLAR
-            "test_butun": { text: "1. –17 + 25 = ? (A: –42, B: 8, C: –8)", buttons: [{ text: "A: –42", key: "test_butun_a" }, { text: "B: 8", key: "test_butun_b" }, { text: "C: –8", key: "test_butun_c" }] },
-            "test_butun_b": { text: "✅ TO'G'RI! –17 + 25 = 8. Qo'shish qoidasi: katta sonning belgisini qo'yamiz.", buttons: [{ text: "Keyingi test", key: "test_ratsional" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_butun_a": { text: "❌ Xato. To'g'ri javob: 8. (25 – 17 = 8). Qo'shish qoidasini qayta eslang!", buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_butun_c": { text: "❌ Xato. To'g'ri javob: 8. Manfiy sonni qo'shish — ayirishga o'xshaydi.", buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_ratsional": { text: "2. 2/3 + 3/4 = ? (A: 5/7, B: 17/12, C: 6/12)", buttons: [{ text: "A: 5/7", key: "test_ratsional_a" }, { text: "B: 17/12", key: "test_ratsional_b" }, { text: "C: 6/12", key: "test_ratsional_c" }] },
-            "test_ratsional_b": { text: "✅ TO'G'RI! 2/3 + 3/4 = 8/12 + 9/12 = 17/12. Umumiy maxraj 12 bo'lishi kerak.", buttons: [{ text: "Keyingi test", key: "test_ildiz" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_ratsional_a": { text: "❌ Xato. Umumiy maxraj 12 bo'lishi kerak. To'g'ri javob: 17/12.", buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_ratsional_c": { text: "❌ Xato. 6/12 = 1/2, bu 2/3 + 3/4 emas. Soddalashtirishni unutmang!", buttons: [{ text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_ildiz": { text: "3. √144 = ? (A: 12, B: 14, C: 11)", buttons: [{ text: "A: 12", key: "test_ildiz_a" }, { text: "B: 14", key: "test_ildiz_b" }, { text: "C: 11", key: "test_ildiz_c" }] },
-            "test_ildiz_a": { text: "✅ TO'G'RI! √144 = 12. Chunki 12×12=144.", buttons: [{ text: "Keyingi test", key: "test_tenglama" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_tenglama": { text: "4. 5x – 7 = 18 → x = ? (A: 5, B: 4, C: 6)", buttons: [{ text: "A: 5", key: "test_tenglama_a" }, { text: "B: 4", key: "test_tenglama_b" }, { text: "C: 6", key: "test_tenglama_c" }] },
-            "test_tenglama_a": { text: "✅ TO'G'RI! 5x = 25 → x = 5. Qo'shish va bo'lish qoidalarini qo'lladingiz!", buttons: [{ text: "Keyingi test", key: "test_funksiya" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_funksiya": { text: "5. y = 3x – 1. x = 2 bo'lsa y = ? (A: 5, B: 6, C: 7)", buttons: [{ text: "A: 5", key: "test_funksiya_a" }, { text: "B: 6", key: "test_funksiya_b" }, { text: "C: 7", key: "test_funksiya_c" }] },
-            "test_funksiya_a": { text: "✅ TO'G'RI! y = 3×2 – 1 = 6 – 1 = 5. Funksiya tushunchasini tushungansiz!", buttons: [{ text: "Keyingi test", key: "test_geometriya" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_geometriya": { text: "6. To'g'ri burchakli uchburchakda katetlar 6 va 8. Gipotenuza? (A: 10, B: 12, C: 14)", buttons: [{ text: "A: 10", key: "test_geometriya_a" }, { text: "B: 12", key: "test_geometriya_b" }, { text: "C: 14", key: "test_geometriya_c" }] },
-            "test_geometriya_a": { text: "✅ TO'G'RI! 6² + 8² = 36 + 64 = 100 → √100 = 10. Pifagor teoremasini qo'lladingiz!", buttons: [{ text: "Keyingi test", key: "test_oqtm" }, { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }] },
-            "test_oqtm": { text: "O'QTM (O'zbekiston Milliy Testi) — 20 savol. Tayyormisiz?", buttons: [{ text: "Ha, boshlaymiz!", key: "oqtm_1" }, { text: "Keyin", key: "test_menu" }] },
-            "oqtm_1": { text: "1. 2x – 5 = 11. x = ? (A: 8, B: 6, C: 3)", buttons: [{ text: "A: 8", key: "oqtm_1_a" }, { text: "B: 6", key: "oqtm_1_b" }, { text: "C: 3", key: "oqtm_1_c" }] },
-            "oqtm_1_a": { text: "✅ TO'G'RI! 2x = 16 → x = 8. Siz tenglamani to'g'ri yechdingiz!", buttons: [{ text: "Keyingi savol", key: "oqtm_2" }] },
-            "oqtm_2": { text: "2. √(16×9) = ? (A: 12, B: 24, C: 48)", buttons: [{ text: "A: 12", key: "oqtm_2_a" }, { text: "B: 24", key: "oqtm_2_b" }, { text: "C: 48", key: "oqtm_2_c" }] },
-            "oqtm_2_a": { text: "✅ TO'G'RI! √(16×9) = √144 = 12. Kvadrat ildizni soddalashtirishni bilasiz!", buttons: [{ text: "Juda yaxshi! Test yakunlandi.", key: "main_menu" }] },
-            "test_qiyin": { text: "Eng qiyin test! 0.(6) + 0.(3) = ? (A: 0.(9), B: 1, C: 0.999)", buttons: [{ text: "A: 0.(9)", key: "test_qiyin_a" }, { text: "B: 1", key: "test_qiyin_b" }, { text: "C: 0.999", key: "test_qiyin_c" }] },
-            "test_qiyin_b": { text: "🏆 TO'G'RI! 0.(6) = 2/3, 0.(3) = 1/3 → 2/3 + 1/3 = 1. Siz — matematika chempioni! 🎓", buttons: [{ text: "Siz — 8-sinf matematikasi! 🏅", key: "main_menu" }] }
-        };
-
-        // Qo'shimcha mashqlar
-        for (let i = 1; i <= 15; i++) {
-            database[`mashq_${i}`] = {
-                text: `Mashq ${i}: Ratsional sonlar, tenglamalar yoki geometriya bo'yicha savol.`,
-                buttons: [{ text: "⬅️ Asosiy Menyu", key: "main_menu", isHome: true }]
-            };
-        }
-
-        database["test_qoshimcha"] = {
-            text: "Qo'shimcha testlar:",
-            buttons: [
-                ...Array.from({ length: 15 }, (_, i) => ({ text: `${i + 1}. Savol`, key: `mashq_${i + 1}` })),
-                { text: "⬅️ Test Menyu", key: "test_menu", isHome: true }
-            ]
+            "test1": { text: "–5 + 12 = ?\nA) –17  B) 7  C) –7", buttons: [{ text: "B) 7", key: "test1_ok" }] },
+            "test1_ok": { text: "✅ To‘g‘ri! –5 + 12 = 7", buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }] }
         };
 
         // Funksiyalar
         function addMessage(text, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', `${sender}-message`);
-            const bubble = document.createElement('div');
-            bubble.classList.add('message-bubble');
-            bubble.textContent = text;
-            messageElement.appendChild(bubble);
-            chatWindow.appendChild(messageElement);
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        function typeAiResponse(response, nextKey) {
-            typingIndicator.classList.remove('hidden');
-            const tempBubble = document.createElement('div');
-            tempBubble.classList.add('message', 'ai-message');
-            const bubble = document.createElement('div');
-            bubble.classList.add('message-bubble');
-            tempBubble.appendChild(bubble);
-            chatWindow.appendChild(tempBubble);
-            let charIndex = 0;
-            const typingInterval = 25;
-            const typingEffect = setInterval(() => {
-                if (charIndex < response.length) {
-                    bubble.textContent = response.substring(0, charIndex + 1);
-                    charIndex++;
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                } else {
-                    clearInterval(typingEffect);
-                    typingIndicator.classList.add('hidden');
-                    displayQuickButtons(nextKey);
-                }
-            }, typingInterval);
-        }
-
-        function displayQuickButtons(menuKey) {
-            const menu = database[menuKey];
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
             quickButtonsContainer.innerHTML = '';
-            if (!menu || !menu.buttons) {
-                return displayQuickButtons("main_menu");
-            }
             menu.buttons.forEach(btn => {
-                const button = document.createElement('button');
-                button.classList.add('quick-button');
-                if (btn.isHome) button.classList.add('home-button');
-                button.textContent = btn.text;
-                button.addEventListener('click', () => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
                     addMessage(btn.text, 'user');
-                    quickButtonsContainer.innerHTML = '';
                     setTimeout(() => {
                         const next = database[btn.key];
                         if (next) {
-                            typeAiResponse(next.text, btn.key);
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
                         } else {
-                            typeAiResponse("Xatolik yuz berdi. Iltimos, asosiy menyuga qayting.", "main_menu");
+                            addMessage("Mavjud emas. Bosh menyu qayting.", 'ai');
+                            showButtons('main_menu');
                         }
-                    }, 500);
-                });
-                quickButtonsContainer.appendChild(button);
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
             });
         }
 
-        window.onload = () => {
+        // Boshlash
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                introSplash.style.opacity = '0';
-                setTimeout(() => {
-                    introSplash.classList.add('hidden');
-                    chatbotContainer.classList.remove('hidden');
-                    typeAiResponse(database["main_menu"].text, "main_menu");
-                }, 500);
-            }, 2500);
-        };
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                addMessage(database.main_menu.text, 'ai');
+                showButtons('main_menu');
+            }, 3000);
+        });
     </script>
 </body>
 </html>
