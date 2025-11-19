@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Rus Tili (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3A5F;
+            --secondary: #2C5282;
+            --accent: #E63946;
+            --light: #F0F7FF;
+            --bg: #E6F0FF;
+            --text: #1E2A38;
+            --card: #F8FBFF;
+            --shadow: 0 12px 35px rgba(26, 58, 95, 0.18);
+            --border: #C0D4E8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e6f0ff, #d0e2ff);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1A3A5F, #1E2A38);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3.5s forwards;
+            padding: 20px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin: 20px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #FFEBEE;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        #intro-splash p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            max-width: 85%;
+            line-height: 1.7;
+            opacity: 0.9;
+            color: #FFECB3;
+            font-weight: 400;
+        }
+
+        #book-logo {
+            width: 160px;
+            height: 160px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjUiPjxwYXRoIGQ9Ik00IDJoMTZ2MTZINnYtMkg0djE0aDE0VjJ6IiBzdHJva2U9IiNGRkVCRUUiLz48cGF0aCBkPSJNNSA2aDE0djEwSDFWNmgtMnYxMmgydjEwSDZ2LTEwSDVWNjoiIGZpbGw9IiNGRkVCRUUiLz48cGF0aCBkPSJNMjAgMTJIMTJ2MWgxMnYtMXoiIGZpbGw9IiNGRkVCRUUiLz48L3N2Zz4=") no-repeat center;
+            background-size: 80%;
+            border-radius: 50%;
+            margin: 25px auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 580px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--primary);
+            color: white;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(26, 58, 95, 0.2);
+        }
+
+        #ai-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            font-size: 30px;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            font-weight: 600;
+        }
+
+        #header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            line-height: 1.9;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            font-weight: 400;
+        }
+
+        .message {
+            margin-bottom: 22px;
+            max-width: 88%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 18px 24px;
+            border-radius: 26px;
+            display: inline-block;
+            position: relative;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .user-message .message-bubble {
+            background: #E6F0FF;
+            color: #1A3A5F;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+            border: 1px solid #C0D4E8;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8FBFF;
+            color: var(--text);
+            border-bottom-left-radius: 6px;
+            border-left: 5px solid var(--accent);
+            font-style: italic;
+            border-top-left-radius: 22px;
+            font-weight: 500;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 18px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .quick-button {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 30px;
+            background: var(--secondary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 110px;
+            max-width: 48%;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 12px rgba(44, 82, 130, 0.25);
+            font-size: 14px;
+        }
+
+        .quick-button:hover {
+            background: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(230, 57, 70, 0.35);
+        }
+
+        .home-button {
+            background: #2C5282 !important;
+        }
+
+        .home-button:hover {
+            background: #1A3A5F !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #7B5D52;
+            margin-top: 14px;
+            padding: 5px;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 7px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 12px;
+        }
+
+        /* ANIMATION: PAGE FADE IN */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === 9-SINF MOHSATLARI UCHUN QO‘SHIMCHA STIL === */
+        .deep-analysis {
+            font-style: italic;
+            color: #1A3A5F;
+            border-left: 3px solid #E63946;
+            padding-left: 16px;
+            margin: 16px 0;
+            font-size: 14px;
+            font-weight: 400;
+            background: #F0F7FF;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .highlight {
+            background: #FFF0E6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #C62828;
+        }
+
+        .russian-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            color: #1A3A5F;
+            font-weight: 500;
+            margin: 12px 0;
+            text-align: left;
+        }
+
+        /* MOBIL UCHUN */
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            #header h2 {
+                font-size: 1.3rem;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+                padding: 12px 14px;
+            }
+            #chat-window {
+                padding: 18px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="book-logo"></div>
+        <h1>AI Ustoz — Rus Tili</h1>
+        <p>9-sinf o‘quvchilari uchun grammatika, leksika, stilistik tahlil va testlar — hech qanday qo‘llanma emas, faqat ilmiy yondashuv</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📚</div>
+            <h2>Rus Tili Tahlilchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligi asosida — «Русский язык» (9 класс), М.М. Разумовская</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ 9-SINF RUS TILI DARSIGA MOS MA’LUMOTLAR BAZASI («Русский язык», 9 кл., Разумовская)
+        const database = {
+            "main_menu": {
+                text: "Здравствуйте! Вы находитесь в AI-помощнике по русскому языку для 9 класса. Что хотите изучить сегодня?",
+                buttons: [
+                    { text: "📚 Грамматика", key: "grammar" },
+                    { text: "📖 Лексика", key: "lexicon" },
+                    { text: "🎭 Стили речи", key: "styles" },
+                    { text: "📝 Текстовый анализ", key: "text_analysis" },
+                    { text: "🧠 Тесты", key: "test_menu" },
+                    { text: "🔍 Правописание", key: "spelling" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "grammar": {
+                text: "Грамматика 9 класса: сложные темы, которые часто вызывают трудности. Что именно вас интересует?",
+                buttons: [
+                    { text: "Повторение частей речи", key: "grammar_parts" },
+                    { text: "Синтаксис и пунктуация", key: "grammar_syntax" },
+                    { text: "Сложноподчинённые предложения", key: "grammar_complex" },
+                    { text: "Наречия и их функции", key: "grammar_adverbs" },
+                    { text: "Согласование времён", key: "grammar_tenses" },
+                    { text: "⬅️ Назад", key: "main_menu", isHome: true }
+                ]
+            },
+            "grammar_parts": {
+                text: "Повторим части речи с примерами:\n\n🔹 Прилагательные — изменяются по родам, числам, падежам (красивый, красивая)\n🔹 Местоимения — заменяют существительные (я, ты, он, она)\n🔹 Глаголы — выражают действие (писать, читать, учиться)\n🔹 Наречия — характеризуют действие (быстро, тихо, хорошо)\n\n💡 Важно: Как определить часть речи? По вопросу и значению!",
+                buttons: [{ text: "⬅️ Назад", key: "grammar", isHome: true }]
+            },
+            "grammar_syntax": {
+                text: "Синтаксис и пунктуация — ключ к пониманию текста.\n\n🔹 Простое предложение — один глагол-сказуемое.\n🔹 Сложное — два и более.\n🔹 Запятые ставятся:\n   — между частями сложного предложения\n   — при однородных членах\n   — при вводных словах (например, к сожалению, вероятно)\n\nПример: \n«Он пришёл домой, и сразу начал уроки.» — запятая перед «и».",
+                buttons: [{ text: "⬅️ Назад", key: "grammar", isHome: true }]
+            },
+            "grammar_complex": {
+                text: "Сложноподчинённые предложения (СПП) — это предложения с главной и придаточной частями.\n\n🔹 Союзы: что, чтобы, если, когда, потому что, хотя, как, где\n🔹 Порядок: главная — придаточная\n\nПримеры:\n\n1. Я знаю, что он придёт. → придаточное изъяснительное\n2. Если ты учишься, ты станешь лучше. → придаточное условия\n3. Он пришёл, когда все уже ушли. → придаточное времени\n\n💡 Подсказка: Задайте вопрос от главного к придаточному!",
+                buttons: [{ text: "⬅️ Назад", key: "grammar", isHome: true }]
+            },
+            "grammar_adverbs": {
+                text: "Наречия — это неизменяемые слова, которые отвечают на вопросы: как? где? когда? почему? зачем?\n\n🔹 Типы:\n   — Обстоятельства образа действия: быстро, тихо, громко\n   — Обстоятельства места: здесь, там, вверху\n   — Обстоятельства времени: сегодня, вчера, скоро\n\n🔹 Сравнительная и превосходная степени:\n   — Быстрее — сравнительная\n   — Самый быстрый — превосходная\n\n💡 Важно: Наречия не склоняются и не спрягаются!",
+                buttons: [{ text: "⬅️ Назад", key: "grammar", isHome: true }]
+            },
+            "grammar_tenses": {
+                text: "Согласование времён — это использование глаголов в соответствии с временем главного предложения.\n\n🔹 Прямая речь: «Я приду завтра», — сказал он.\n🔹 Косвенная речь: Он сказал, что придёт завтра.\n\n🔹 Правило:\n   — Настоящее → Прошедшее\n   — Будущее → Прошедшее (в косвенной речи)\n   — Прошедшее → Прошедшее совершенное\n\nПример:\nОна сказала: «Я люблю его». → Она сказала, что любила его.",
+                buttons: [{ text: "⬅️ Назад", key: "grammar", isHome: true }]
+            },
+            "lexicon": {
+                text: "Лексика — это словарный запас. В 9 классе изучают:\n\n🔹 Синонимы, антонимы\n🔹 Омонимы\n🔹 Фразеологизмы\n🔹 Историзмы и архаизмы\n🔹 Неологизмы\n\nПримеры:\n\n🔸 Синонимы: красивый — прекрасный\n🔸 Антонимы: свет — тьма\n🔸 Фразеологизм: «бить баклуши» — бездельничать\n🔸 Неологизм: «гуглить» — искать в Google\n\n💡 Задание: Найдите фразеологизм в предложении: «Он встал с утра и сразу взялся за дело».",
+                buttons: [
+                    { text: "Синонимы и антонимы", key: "lexicon_syn" },
+                    { text: "Фразеологизмы", key: "lexicon_phras" },
+                    { text: "Неологизмы", key: "lexicon_neo" },
+                    { text: "⬅️ Назад", key: "main_menu", isHome: true }
+                ]
+            },
+            "lexicon_syn": {
+                text: "Синонимы — слова с одинаковым или близким значением.\n\n🔹 Примеры:\n   — Добрый — милый, отзывчивый\n   — Быстрый — скорый, стремительный\n\nАнтонимы — слова с противоположным значением.\n\n🔹 Примеры:\n   — Свет — тьма\n   — Любовь — ненависть\n\n💡 Важно: Не все слова имеют антонимы! Например: «стол» — нет антонима.",
+                buttons: [{ text: "⬅️ Назад", key: "lexicon", isHome: true }]
+            },
+            "lexicon_phras": {
+                text: "Фразеологизмы — устойчивые сочетания, значение которых не выводится из значений отдельных слов.\n\n🔹 Примеры:\n   — «Вешать нос» — грустить\n   — «Сесть в калошу» — попасть в неловкое положение\n   — «Спустя рукава» — безответственно\n\n🔹 Как определить? Если заменить слово — смысл теряется!\n\n💡 Проверьте: «Он не может вынести критики — у него нервы на волоске». Это фразеологизм?",
+                buttons: [{ text: "⬅️ Назад", key: "lexicon", isHome: true }]
+            },
+            "lexicon_neo": {
+                text: "Неологизмы — новые слова, появившиеся в языке из-за развития техники, культуры, общества.\n\n🔹 Примеры:\n   — «гуглить» — искать в Google\n   — «фейк» — ложная информация\n   — «стрим» — онлайн-трансляция\n   — «мем» — виральный контент\n\n🔹 Неологизмы могут стать нормой, а могут исчезнуть.\n\n💡 Вопрос: Какой из этих слов — неологизм? «смартфон», «компьютер», «телефон»",
+                buttons: [{ text: "⬅️ Назад", key: "lexicon", isHome: true }]
+            },
+            "styles": {
+                text: "Стили речи — это способы подачи информации в зависимости от цели и аудитории.\n\n🔹 5 стилей:\n   1. Научный — точность, термины, логика\n   2. Официально-деловой — документы, заявления\n   3. Публицистический — статьи, речи, эссе\n   4. Художественный — образность, эмоции, метафоры\n   5. Разговорный — разговор, переписка\n\n🔹 Пример:\n   «Мы должны учитывать факторы, влияющие на экологию» — научный стиль\n   «Мам, я не пойду в школу!» — разговорный стиль",
+                buttons: [
+                    { text: "Научный стиль", key: "styles_scientific" },
+                    { text: "Публицистический", key: "styles_journalism" },
+                    { text: "Художественный", key: "styles_literary" },
+                    { text: "⬅️ Назад", key: "main_menu", isHome: true }
+                ]
+            },
+            "styles_scientific": {
+                text: "Научный стиль — используется в учебниках, диссертациях, научных статьях.\n\n🔹 Особенности:\n   — Точность, логичность\n   — Термины: «эксперимент», «гипотеза», «метод»\n   — Без эмоций, без метафор\n   — Пассивные конструкции: «было установлено»\n\n🔹 Пример: \n«Результаты эксперимента подтвердили гипотезу о влиянии света на фотосинтез.»",
+                buttons: [{ text: "⬅️ Назад", key: "styles", isHome: true }]
+            },
+            "styles_journalism": {
+                text: "Публицистический стиль — в газетах, журналах, выступлениях.\n\n🔹 Особенности:\n   — Эмоциональность + логика\n   — Использует тропы: метафоры, эпитеты\n   — Обращения: «Уважаемые читатели!»\n   — Вопросы, риторические конструкции\n\n🔹 Пример:\n   «Мы не можем молчать, пока дети страдают от голода!»",
+                buttons: [{ text: "⬅️ Назад", key: "styles", isHome: true }]
+            },
+            "styles_literary": {
+                text: "Художественный стиль — в романах, стихах, рассказах.\n\n🔹 Особенности:\n   — Образность: «солнце улыбалось»\n   — Эпитеты: «тихий вечер», «грустный взгляд»\n   — Сравнения, метафоры, олицетворения\n   — Личные чувства, внутренний монолог\n\n🔹 Пример:\n   «Она смотрела в окно, и ветер шептал ей старые сказки.»",
+                buttons: [{ text: "⬅️ Назад", key: "styles", isHome: true }]
+            },
+            "text_analysis": {
+                text: "Анализ текста — это умение определить стиль, тему, основную мысль, приёмы выразительности.\n\n🔹 Шаги:\n   1. Определите стиль речи\n   2. Найдите тему и основную мысль\n   3. Выделите приёмы: метафоры, эпитеты, сравнения\n   4. Оцените структуру: вступление, развитие, заключение\n\n🔹 Пример текста:\n   «Сегодняшний день был особенным. Солнце светило ярче, птицы пели громче, и даже ветер, казалось, шептал мне: «Пора начать всё сначала».»\n\nВопрос: Какой стиль? Какие приёмы?",
+                buttons: [
+                    { text: "Анализировать текст", key: "analyze_sample" },
+                    { text: "Тема и мысль", key: "text_theme" },
+                    { text: "Приёмы выразительности", key: "text_devices" },
+                    { text: "⬅️ Назад", key: "main_menu", isHome: true }
+                ]
+            },
+            "analyze_sample": {
+                text: "Анализ текста:\n\n«Сегодняшний день был особенным. Солнце светило ярче, птицы пели громче, и даже ветер, казалось, шептал мне: „Пора начать всё сначала“.»\n\n🔹 Стиль: художественный\n🔹 Тема: внутреннее перерождение\n🔹 Основная мысль: каждый день — возможность начать заново\n🔹 Приёмы:\n   — Олицетворение: «ветер шептал»\n   — Эпитет: «ярче», «громче»\n   — Сравнение: «казалось»\n\n💡 Это — образный, эмоциональный текст, написанный в стиле повествования.",
+                buttons: [{ text: "⬅️ Назад", key: "text_analysis", isHome: true }]
+            },
+            "text_theme": {
+                text: "Тема — о чём текст? (например: любовь, война, природа)\n\nОсновная мысль — что хотел сказать автор? (например: «Любовь сильнее смерти»)\n\n🔹 Пример:\n   Текст о детях, живущих в войне → Тема: война\n   Автор говорит: «Дети — жертвы взрослых конфликтов» → Основная мысль\n\n💡 Вопрос: Какая тема и мысль в этом тексте?\n«Он смотрел на старую фотографию и вспоминал, как раньше всё было проще.»",
+                buttons: [{ text: "⬅️ Назад", key: "text_analysis", isHome: true }]
+            },
+            "text_devices": {
+                text: "Приёмы выразительности — средства, которые делают текст ярче:\n\n🔹 Эпитет — «тёплый свет», «холодный ветер»\n🔹 Сравнение — «как лист на ветру»\n🔹 Олицетворение — «ветер шепчет», «солнце улыбается»\n🔹 Метафора — «время — река»\n🔹 Повтор — «мы пришли, мы увидели, мы победили»\n🔹 Риторический вопрос — «Кто не хочет мира?»\n\n💡 Упражнение: Найдите приём в предложении:\n«Её глаза были океаном, в котором я тонул.»",
+                buttons: [{ text: "⬅️ Назад", key: "text_analysis", isHome: true }]
+            },
+            "spelling": {
+                text: "Правописание — ключ к грамотности. 9 класс: сложные случаи!\n\n🔹 НЕ с прилагательными: пишется раздельно — если есть противопоставление:\n   — не красивый, а уродливый → раздельно\n   — некрасивый → слитно\n\n🔹 НЕ с глаголами: всегда раздельно — «не пришёл», «не делал»\n\n🔹 Правописание суффиксов:\n   — -Н- / -НН- в прилагательных: «написанное письмо» — НН\n   — «непривычный» — Н, потому что без НН\n\n🔹 Правописание НЕ с причастиями: раздельно, если есть зависимое слово:\n   — не прочитанная книга → слитно\n   — не прочитанная мной книга → раздельно",
+                buttons: [
+                    { text: "НЕ с прилагательными", key: "spelling_adj" },
+                    { text: "Н и НН", key: "spelling_nn" },
+                    { text: "Причастия", key: "spelling_participle" },
+                    { text: "⬅️ Назад", key: "main_menu", isHome: true }
+                ]
+            },
+            "spelling_adj": {
+                text: "НЕ с прилагательными:\n\n🔹 Слитно: если нет противопоставления и нельзя заменить синонимом без НЕ:\n   — невысокий, нелюбимый, неправильный\n\n🔹 Раздельно:\n   — Есть противопоставление: не красивый, а уродливый\n   — Есть зависимые слова: не очень красивый\n   — Есть наречия: совсем не красивый\n\n💡 Проверка: можно ли заменить на синоним? Если да — слитно, если нет — раздельно.",
+                buttons: [{ text: "⬅️ Назад", key: "spelling", isHome: true }]
+            },
+            "spelling_nn": {
+                text: "Н и НН в причастиях и прилагательных:\n\n🔹 Прилагательные — одно Н:\n   — ранний, синий, ветреный\n\n🔹 Причастия — два Н:\n   — написанный, прочитанный, выученный\n\n🔹 Исключения: кованый, жёваный, клёваный — с одним Н\n\n🔹 Правило: если есть зависимое слово — НН:\n   — написанное письмо → НН\n   — написанное мной письмо → НН\n\n💡 Запомните: Причастие = действие, прилагательное = свойство!",
+                buttons: [{ text: "⬅️ Назад", key: "spelling", isHome: true }]
+            },
+            "spelling_participle": {
+                text: "Правописание НЕ с причастиями:\n\n🔹 Слитно: если нет зависимых слов и нет противопоставления:\n   — непрочитанная книга\n\n🔹 Раздельно: если есть зависимые слова или противопоставление:\n   — не прочитанная мной книга\n   — не прочитанная, а просмотренная\n\n🔹 Проверка: задайте вопрос от существительного к причастию.\n   «Книга (какая?) — не прочитанная» → раздельно, если есть «мной»",
+                buttons: [{ text: "⬅️ Назад", key: "spelling", isHome: true }]
+            },
+            "test_menu": {
+                text: "Тесты по русскому языку для 9 класса. Выберите тему:",
+                buttons: [
+                    { text: "Грамматика", key: "test_grammar" },
+                    { text: "Лексика", key: "test_lexicon" },
+                    { text: "Правописание", key: "test_spelling" },
+                    { text: "Стили речи", key: "test_styles" },
+                    { text: "Текстовый анализ", key: "test_text" },
+                    { text: "🏠 Главное меню", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_grammar": {
+                text: "1. Какой тип предложения?\n«Он сказал, что придёт завтра.»\n\nA) Простое\nB) Сложносочинённое\nC) Сложноподчинённое\n\nВыберите ответ:",
+                buttons: [
+                    { text: "A) Простое", key: "test_grammar_a" },
+                    { text: "B) Сложносочинённое", key: "test_grammar_b" },
+                    { text: "C) Сложноподчинённое", key: "test_grammar_c" }
+                ]
+            },
+            "test_grammar_c": {
+                text: "✅ Верно! Это сложноподчинённое предложение: главное — «он сказал», придаточное — «что придёт завтра».\n\n🔹 Союз: «что»",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_grammar_a": {
+                text: "❌ Неверно. Простое предложение имеет одно сказуемое. Здесь два: «сказал» и «придёт».",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_grammar_b": {
+                text: "❌ Неверно. Сложносочинённое — союзы: и, а, но. Здесь — союз «что» — это подчинительный.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_lexicon": {
+                text: "1. Какое слово — фразеологизм?\n\nA) Старый дом\nB) Бить баклуши\nC) Синий карандаш\n\nВыберите ответ:",
+                buttons: [
+                    { text: "A) Старый дом", key: "test_lexicon_a" },
+                    { text: "B) Бить баклуши", key: "test_lexicon_b" },
+                    { text: "C) Синий карандаш", key: "test_lexicon_c" }
+                ]
+            },
+            "test_lexicon_b": {
+                text: "✅ Верно! «Бить баклуши» — значит бездельничать. Это устойчивое выражение, которое нельзя понять буквально.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_lexicon_a": {
+                text: "❌ Неверно. «Старый дом» — обычное сочетание, не фразеологизм.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_spelling": {
+                text: "1. В каком слове пишется НН?\n\nA) Непривычный\nB) Написанное письмо\nC) Не прочитанная книга\n\nВыберите ответ:",
+                buttons: [
+                    { text: "A) Непривычный", key: "test_spelling_a" },
+                    { text: "B) Написанное письмо", key: "test_spelling_b" },
+                    { text: "C) Не прочитанная книга", key: "test_spelling_c" }
+                ]
+            },
+            "test_spelling_b": {
+                text: "✅ Верно! «Написанное» — причастие, образованное от глагола совершенного вида → НН.\n\n🔹 Проверка: «письмо (какое?) — написанное» — НН",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_spelling_a": {
+                text: "❌ Неверно. «Непривычный» — прилагательное, без зависимых слов → Н",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_styles": {
+                text: "1. Какой стиль в этом тексте?\n«В результате эксперимента было установлено, что температура влияет на скорость реакции.»\n\nA) Художественный\nB) Публицистический\nC) Научный\n\nВыберите ответ:",
+                buttons: [
+                    { text: "A) Художественный", key: "test_styles_a" },
+                    { text: "B) Публицистический", key: "test_styles_b" },
+                    { text: "C) Научный", key: "test_styles_c" }
+                ]
+            },
+            "test_styles_c": {
+                text: "✅ Верно! Это научный стиль: точность, термины (эксперимент, скорость реакции), пассивные конструкции (было установлено), отсутствие эмоций.",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            },
+            "test_text": {
+                text: "1. Какова основная мысль этого текста?\n«Мы часто забываем, что природа — наш дом. Когда мы её разрушаем, мы разрушаем себя.»\n\nA) Люди любят природу\nB) Природа — наш дом, и её нужно беречь\nC) Природа красивая\n\nВыберите ответ:",
+                buttons: [
+                    { text: "A) Люди любят природу", key: "test_text_a" },
+                    { text: "B) Природа — наш дом, и её нужно беречь", key: "test_text_b" },
+                    { text: "C) Природа красивая", key: "test_text_c" }
+                ]
+            },
+            "test_text_b": {
+                text: "✅ Верно! Основная мысль — не просто «природа красивая», а «мы должны её беречь, потому что она — наш дом».\n\n🔹 Это — этический призыв!",
+                buttons: [{ text: "🏠 Главное меню", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Эта тема пока не доступна. Вернитесь в главное меню.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3500);
+        });
+    </script>
+</body>
+</html>
