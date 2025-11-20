@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — English (9th Grade)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — English</h1>
+        <p>9th Grade: Future tenses, passive voice, conditionals, global issues, technology, environment — all in one place!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📚</div>
+            <h2>English Language Helper</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">Based on 9th-grade curriculum — Grammar, vocabulary, reading, writing, global topics</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ ENGLISH LANGUAGE ma'lumotlar bazasi (9-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Hello! Let's improve your English skills. What topic would you like to learn today?",
+                buttons: [
+                    { text: "⏳ Future Tenses", key: "future_tenses" },
+                    { text: "🔄 Passive Voice", key: "passive_voice" },
+                    { text: "❓ Conditionals", key: "conditionals" },
+                    { text: "🔗 Relative Clauses", key: "relative_clauses" },
+                    { text: "🌍 Global Issues", key: "global_issues" },
+                    { text: "💻 Technology", key: "technology" },
+                    { text: "🌱 Environment", key: "environment" },
+                    { text: "📝 Tests", key: "test_menu" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "future_tenses": {
+                text: "Future tenses help us talk about plans, predictions, and promises. Which one do you want to learn?",
+                buttons: [
+                    { text: "Will future", key: "will_future" },
+                    { text: "Be going to", key: "be_going_to" },
+                    { text: "Present continuous for future", key: "present_continuous_future" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "will_future": {
+                text: "<span class='location'>Will future</span> — for decisions made at the moment of speaking, predictions, promises. Example: 'I will call you tomorrow.'",
+                buttons: [{ text: "⬅️ Back", key: "future_tenses", isHome: true }]
+            },
+            "be_going_to": {
+                text: "<span class='location'>Be going to</span> — for plans made before speaking and predictions based on evidence. Example: 'She is going to study medicine.'",
+                buttons: [{ text: "⬅️ Back", key: "future_tenses", isHome: true }]
+            },
+            "present_continuous_future": {
+                text: "<span class='location'>Present continuous for future</span> — for fixed arrangements. Example: 'We are meeting at 7 p.m. tomorrow.'",
+                buttons: [{ text: "⬅️ Back", key: "future_tenses", isHome: true }]
+            },
+            "passive_voice": {
+                text: "Passive voice is used when the focus is on the action, not the doer. Structure: <em>be + past participle</em>",
+                buttons: [
+                    { text: "Present simple passive", key: "present_passive" },
+                    { text: "Past simple passive", key: "past_passive" },
+                    { text: "Future passive", key: "future_passive" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "present_passive": {
+                text: "<span class='location'>Present simple passive</span> — 'am/is/are + past participle'. Example: 'English is spoken in many countries.'",
+                buttons: [{ text: "⬅️ Back", key: "passive_voice", isHome: true }]
+            },
+            "past_passive": {
+                text: "<span class='location'>Past simple passive</span> — 'was/were + past participle'. Example: 'The letter was sent yesterday.'",
+                buttons: [{ text: "⬅️ Back", key: "passive_voice", isHome: true }]
+            },
+            "future_passive": {
+                text: "<span class='location'>Future passive</span> — 'will be + past participle'. Example: 'The new bridge will be built next year.'",
+                buttons: [{ text: "⬅️ Back", key: "passive_voice", isHome: true }]
+            },
+            "conditionals": {
+                text: "Conditionals express hypothetical situations. There are 4 main types.",
+                buttons: [
+                    { text: "Zero conditional", key: "zero_conditional" },
+                    { text: "First conditional", key: "first_conditional" },
+                    { text: "Second conditional", key: "second_conditional" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "zero_conditional": {
+                text: "<span class='location'>Zero conditional</span> — for facts or general truths. Structure: 'If + present, present'. Example: 'If you heat ice, it melts.'",
+                buttons: [{ text: "⬅️ Back", key: "conditionals", isHome: true }]
+            },
+            "first_conditional": {
+                text: "<span class='location'>First conditional</span> — for real future possibilities. Structure: 'If + present, will + verb'. Example: 'If it rains, I will stay home.'",
+                buttons: [{ text: "⬅️ Back", key: "conditionals", isHome: true }]
+            },
+            "second_conditional": {
+                text: "<span class='location'>Second conditional</span> — for unreal or unlikely situations. Structure: 'If + past, would + verb'. Example: 'If I won the lottery, I would travel the world.'",
+                buttons: [{ text: "⬅️ Back", key: "conditionals", isHome: true }]
+            },
+            "relative_clauses": {
+                text: "Relative clauses give extra information about a noun. Use: who, which, that, whose, where.",
+                buttons: [
+                    { text: "Defining relative clauses", key: "defining" },
+                    { text: "Non-defining relative clauses", key: "non_defining" },
+                    { text: "Relative pronouns", key: "pronouns" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "defining": {
+                text: "<span class='location'>Defining relative clauses</span> — essential information. No commas. Example: 'The book that you gave me is amazing.'",
+                buttons: [{ text: "⬅️ Back", key: "relative_clauses", isHome: true }]
+            },
+            "non_defining": {
+                text: "<span class='location'>Non-defining relative clauses</span> — extra information. Use commas. Example: 'My brother, who lives in Tashkent, is a doctor.'",
+                buttons: [{ text: "⬅️ Back", key: "relative_clauses", isHome: true }]
+            },
+            "pronouns": {
+                text: "<span class='location'>Relative pronouns</span>: who (people), which (things), that (people/things), whose (possession), where (places).",
+                buttons: [{ text: "⬅️ Back", key: "relative_clauses", isHome: true }]
+            },
+            "global_issues": {
+                text: "Global issues affect everyone. Learn vocabulary and express your opinion.",
+                buttons: [
+                    { text: "Poverty", key: "poverty" },
+                    { text: "War and peace", key: "war_peace" },
+                    { text: "Human rights", key: "human_rights" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "poverty": {
+                text: "<span class='location'>Poverty</span> — lack of basic needs: food, clean water, shelter. 700 million people live in extreme poverty.",
+                buttons: [{ text: "⬅️ Back", key: "global_issues", isHome: true }]
+            },
+            "war_peace": {
+                text: "<span class='location'>War and peace</span> — conflicts cause suffering. Peace requires dialogue, education, and cooperation.",
+                buttons: [{ text: "⬅️ Back", key: "global_issues", isHome: true }]
+            },
+            "human_rights": {
+                text: "<span class='fact'>Fun fact: The Universal Declaration of Human Rights was adopted by the UN in 1948. It includes rights to education, freedom, and equality.</span>",
+                buttons: [{ text: "⬅️ Back", key: "global_issues", isHome: true }]
+            },
+            "technology": {
+                text: "Technology changes our lives. Learn vocabulary and discuss its impact.",
+                buttons: [
+                    { text: "Artificial Intelligence", key: "ai" },
+                    { text: "Social media", key: "social_media" },
+                    { text: "Automation", key: "automation" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ai": {
+                text: "<span class='location'>Artificial Intelligence (AI)</span> — machines that mimic human thinking. Used in chatbots, self-driving cars, medical diagnosis.",
+                buttons: [{ text: "⬅️ Back", key: "technology", isHome: true }]
+            },
+            "social_media": {
+                text: "<span class='location'>Social media</span> — platforms like Instagram, TikTok, YouTube. Benefits: connection. Risks: cyberbullying, addiction.",
+                buttons: [{ text: "⬅️ Back", key: "technology", isHome: true }]
+            },
+            "automation": {
+                text: "<span class='location'>Automation</span> — using machines to do jobs. Can increase efficiency but may cause job loss in some industries.",
+                buttons: [{ text: "⬅️ Back", key: "technology", isHome: true }]
+            },
+            "environment": {
+                text: "Environmental problems threaten our planet. Learn key terms and solutions.",
+                buttons: [
+                    { text: "Climate change", key: "climate_change" },
+                    { text: "Deforestation", key: "deforestation" },
+                    { text: "Renewable energy", key: "renewable_energy" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "climate_change": {
+                text: "<span class='location'>Climate change</span> — rising global temperatures due to greenhouse gases. Causes: burning fossil fuels, deforestation.",
+                buttons: [{ text: "⬅️ Back", key: "environment", isHome: true }]
+            },
+            "deforestation": {
+                text: "<span class='location'>Deforestation</span> — cutting down forests. Leads to loss of animal habitats and increased CO₂ levels.",
+                buttons: [{ text: "⬅️ Back", key: "environment", isHome: true }]
+            },
+            "renewable_energy": {
+                text: "<span class='fact'>Fun fact: Iceland gets 100% of its electricity from renewable sources — geothermal and hydropower!</span>",
+                buttons: [{ text: "⬅️ Back", key: "environment", isHome: true }]
+            },
+            "test_menu": {
+                text: "Choose a test:",
+                buttons: [
+                    { text: "Future Tenses", key: "test_future" },
+                    { text: "Passive Voice", key: "test_passive" },
+                    { text: "Conditionals", key: "test_conditionals" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_future": {
+                text: "1. Choose the correct sentence: \n'I think it ___ rain tomorrow.'\nA) is going to   B) will   C) is",
+                buttons: [
+                    { text: "A) is going to", key: "test_future_a" },
+                    { text: "B) will", key: "test_future_b" },
+                    { text: "C) is", key: "test_future_c" }
+                ]
+            },
+            "test_future_b": {
+                text: "✅ Correct! 'Will' is used for predictions without evidence. 'I think it will rain tomorrow.'",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "test_passive": {
+                text: "2. Rewrite in passive: 'They built this house in 1990.'\nA) This house was built in 1990.   B) This house is built in 1990.   C) This house will be built in 1990.",
+                buttons: [
+                    { text: "A) This house was built in 1990.", key: "test_passive_a" },
+                    { text: "B) This house is built in 1990.", key: "test_passive_b" },
+                    { text: "C) This house will be built in 1990.", key: "test_passive_c" }
+                ]
+            },
+            "test_passive_a": {
+                text: "✅ Perfect! Passive voice for past simple: 'was/were + past participle'.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "test_conditionals": {
+                text: "3. Complete: 'If I were rich, I ___ travel around the world.'\nA) will   B) would   C) am going to",
+                buttons: [
+                    { text: "A) will", key: "test_conditionals_a" },
+                    { text: "B) would", key: "test_conditionals_b" },
+                    { text: "C) am going to", key: "test_conditionals_c" }
+                ]
+            },
+            "test_conditionals_b": {
+                text: "✅ Correct! This is a second conditional — unreal situation. Structure: 'If + past, would + verb'.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("This topic is not available yet.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
