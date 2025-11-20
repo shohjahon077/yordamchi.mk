@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Kimyo (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Kimyo</h1>
+        <p>10-sinf uchun: Atom tuzilishi, kimyoviy bog‘lanish, eritma, elektroliz, organik kimyo — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🧪</div>
+            <h2>Kimyo Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Atom, bog‘lanish, eritma, redoks, organik kimyo, uglerod birikmalari</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ KIMYO ma'lumotlar bazasi (10-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Kimyo — moddalarning tuzilishi, xossalari va ular orasidagi o‘zgarishlarni o‘rganuvchi fan. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "⚛️ Atom tuzilishi", key: "atom" },
+                    { text: "🔗 Kimyoviy bog‘lanish", key: "boglanish" },
+                    { text: "💧 Eritma", key: "eritma" },
+                    { text: "⚡ Elektroliz", key: "elektroliz" },
+                    { text: "🔄 Oksidlanish-qaytarilish", key: "redoks" },
+                    { text: "🌿 Organik kimyo", key: "organik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "atom": {
+                text: "Atom — moddaning eng maydagi zarrasi, kimyoviy xossalarni saqlaydi. Qanday tuzilgan?",
+                buttons: [
+                    { text: "Proton, neytron, elektron", key: "atom_qismi" },
+                    { text: "Elektron qobiklari", key: "elektron_qobik" },
+                    { text: "Davriy jadval", key: "davriy_jadval" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "atom_qismi": {
+                text: "<span class='location'>Atom tarkibi</span>: <br>• Proton (+) — yadroni tashkil qiladi.<br>• Neytron (0) — yadroni tashkil qiladi.<br>• Elektron (–) — yadroni aylanadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "elektron_qobik": {
+                text: "<span class='location'>Elektron qobiklari</span> — energetik darajalar (K, L, M, N). Har bir darajada maksimal elektron soni: 2n² (n — daraja raqami).",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "davriy_jadval": {
+                text: "<span class='fact'>Qiziq fakt: Mendeleevning davriy jadvali 1869-yilda yaratilgan. U 63 ta elementni tartiblab, hali topilmagan elementlarni ham bashorat qilgan!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "atom", isHome: true }]
+            },
+            "boglanish": {
+                text: "Kimyoviy bog‘lanish — atomlarni birikish usullari. Qanday turlari bor?",
+                buttons: [
+                    { text: "Ionli bog‘lanish", key: "ionli" },
+                    { text: "Kovalent bog‘lanish", key: "kovalent" },
+                    { text: "Metall bog‘lanish", key: "metall" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ionli": {
+                text: "<span class='location'>Ionli bog‘lanish</span> — metall va nometall o‘rtasida elektron almashinuvi orqali. Masalan: NaCl (natriy xlorid).",
+                buttons: [{ text: "⬅️ Orqaga", key: "boglanish", isHome: true }]
+            },
+            "kovalent": {
+                text: "<span class='location'>Kovalent bog‘lanish</span> — ikki nometall atomi elektronni umumlashtiradi. Masalan: H₂O, O₂, CH₄.",
+                buttons: [{ text: "⬅️ Orqaga", key: "boglanish", isHome: true }]
+            },
+            "metall": {
+                text: "<span class='location'>Metall bog‘lanish</span> — metall atomlari elektron “dengiziga” ega. Bu ularni elektr tokini o‘tkazish qobiliyatini beradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "boglanish", isHome: true }]
+            },
+            "eritma": {
+                text: "Eritma — erituvchi va erigan moddaning aralashmasi. Qanday xossalarga ega?",
+                buttons: [
+                    { text: "Tushuncha", key: "eritma_tushuncha" },
+                    { text: "Erituvchanlik", key: "erituvchanlik" },
+                    { text: "Konsentratsiya", key: "konsentratsiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "eritma_tushuncha": {
+                text: "<span class='location'>Eritma</span> — bir jinsli aralashma. Masalan: tuzli suv (erituvchi — suv, erigan modda — tuz).",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "erituvchanlik": {
+                text: "<span class='location'>Erituvchanlik</span> — 100 g suvda eriydigan modda massasi. Harorat ortsa, erituvchanlik o‘zgaradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "konsentratsiya": {
+                text: "<span class='location'>Konsentratsiya</span> — eritmadagi erigan modda miqdori. Masalan: 10% li tuz eritmasi — 100 g eritmadagi 10 g tuz.",
+                buttons: [{ text: "⬅️ Orqaga", key: "eritma", isHome: true }]
+            },
+            "elektroliz": {
+                text: "Elektroliz — eritma yoki suyuq moddalarni elektr toki bilan parchalash jarayoni. Qanday amalga oshiriladi?",
+                buttons: [
+                    { text: "Tushuncha", key: "elektroliz_tushuncha" },
+                    { text: "Katod va anod", key: "katod_anod" },
+                    { text: "Qo‘llanilishi", key: "elektroliz_qollanish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "elektroliz_tushuncha": {
+                text: "<span class='location'>Elektroliz</span> — elektr toki yordamida kimyoviy reaksiya sodir bo‘ladi. Masalan: suvni elektrolizi — H₂ va O₂ ajralib chiqadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektroliz", isHome: true }]
+            },
+            "katod_anod": {
+                text: "<span class='location'>Katod (–)</span> — elektron qabul qiladi (qaytarilish).<br><span class='location'>Anod (+)</span> — elektron beradi (oksidlanish).",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektroliz", isHome: true }]
+            },
+            "elektroliz_qollanish": {
+                text: "<span class='fact'>Qiziq fakt: Elektroliz orqali metallarni tozalash (masalan, mis, aluminiy) va galvanoplastika (buyumlarni metall qoplam bilan qoplash) amalga oshiriladi.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektroliz", isHome: true }]
+            },
+            "redoks": {
+                text: "Oksidlanish-qaytarilish (redoks) reaksiyasi — elektron almashinuvi bilan kechadigan jarayon.",
+                buttons: [
+                    { text: "Oksidlanish", key: "oksidlanish" },
+                    { text: "Qaytarilish", key: "qaytarilish" },
+                    { text: "Redoks reaksiyasi", key: "redoks_reaksiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "oksidlanish": {
+                text: "<span class='location'>Oksidlanish</span> — atom elektron beradi. Valentslik darajasi ortadi. Masalan: Fe⁰ → Fe²⁺ + 2e⁻",
+                buttons: [{ text: "⬅️ Orqaga", key: "redoks", isHome: true }]
+            },
+            "qaytarilish": {
+                text: "<span class='location'>Qaytarilish</span> — atom elektron qabul qiladi. Valentslik darajasi kamayadi. Masalan: Cu²⁺ + 2e⁻ → Cu⁰",
+                buttons: [{ text: "⬅️ Orqaga", key: "redoks", isHome: true }]
+            },
+            "redoks_reaksiya": {
+                text: "<span class='location'>Redoks reaksiyasi</span> — oksidlanish va qaytarilish bir vaqtda sodir bo‘ladi. Masalan: Zn + CuSO₄ → ZnSO₄ + Cu",
+                buttons: [{ text: "⬅️ Orqaga", key: "redoks", isHome: true }]
+            },
+            "organik": {
+                text: "Organik kimyo — uglerodli birikmalarni o‘rganadi. Nima uchun muhim?",
+                buttons: [
+                    { text: "Uglerod xossalari", key: "uglerod" },
+                    { text: "Alkanlar", key: "alkanlar" },
+                    { text: "Alkenlar", key: "alkenlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "uglerod": {
+                text: "<span class='location'>Uglerod</span> — 4 valentli, zanjirli tuzilishga ega. Millionlab birikma hosil qiladi (masalan: DNK, oqsil, neft).",
+                buttons: [{ text: "⬅️ Orqaga", key: "organik", isHome: true }]
+            },
+            "alkanlar": {
+                text: "<span class='location'>Alkanlar</span> — to‘yingan uglevodorodlar. Umumiy formula: CₙH₂ₙ₊₂. Masalan: CH₄ (metan), C₂H₆ (etan).",
+                buttons: [{ text: "⬅️ Orqaga", key: "organik", isHome: true }]
+            },
+            "alkenlar": {
+                text: "<span class='location'>Alkenlar</span> — to‘yinmagan uglevodorodlar. Bir ikki bog‘li. Formula: CₙH₂ₙ. Masalan: C₂H₄ (etilen).",
+                buttons: [{ text: "⬅️ Orqaga", key: "organik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Atom tuzilishi", key: "test_atom" },
+                    { text: "Kimyoviy bog‘lanish", key: "test_boglanish" },
+                    { text: "Organik kimyo", key: "test_organik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_atom": {
+                text: "1. Yadroda qaysi zarralar mavjud?\nA) Faqat protonlar\nB) Proton va neytron\nC) Proton, neytron, elektron",
+                buttons: [
+                    { text: "A) Faqat protonlar", key: "test_atom_a" },
+                    { text: "B) Proton va neytron", key: "test_atom_b" },
+                    { text: "C) Proton, neytron, elektron", key: "test_atom_c" }
+                ]
+            },
+            "test_atom_b": {
+                text: "✅ To'g'ri! Yadroda protonlar (+) va neytronlar (0) mavjud. Elektronlar yadroni aylanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_boglanish": {
+                text: "2. NaCl qanday bog‘lanish orqali hosil bo‘ladi?\nA) Kovalent\nB) Ionli\nC) Metall",
+                buttons: [
+                    { text: "A) Kovalent", key: "test_boglanish_a" },
+                    { text: "B) Ionli", key: "test_boglanish_b" },
+                    { text: "C) Metall", key: "test_boglanish_c" }
+                ]
+            },
+            "test_boglanish_b": {
+                text: "✅ Ajoyib! NaCl — natriy (metall) va xlor (nometall) orasidagi ionli bog‘lanish natijasidir.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_organik": {
+                text: "3. Alkanlarning umumiy formulasini toping:\nA) CₙH₂ₙ\nB) CₙH₂ₙ₊₂\nC) CₙH₂ₙ₋₂",
+                buttons: [
+                    { text: "A) CₙH₂ₙ", key: "test_organik_a" },
+                    { text: "B) CₙH₂ₙ₊₂", key: "test_organik_b" },
+                    { text: "C) CₙH₂ₙ₋₂", key: "test_organik_c" }
+                ]
+            },
+            "test_organik_b": {
+                text: "✅ To'g'ri! Alkanlar — to‘yingan uglevodorodlar. Ularning umumiy formulasi CₙH₂ₙ₊₂.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
