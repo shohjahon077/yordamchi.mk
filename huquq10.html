@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Huquq (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Huquq (10-sinf)</h1>
+        <p>10-sinf uchun: Konstitutsiya, jinoyat huquqi, fuqarolik huquqi, adliya tizimi, jinoyat javobgarligi — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">⚖️</div>
+            <h2>Huquq Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Konstitutsiya, jinoyat huquqi, fuqarolik huquqi, adliya tizimi, jinoyat javobgarligi</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ HUQUQ ma'lumotlar bazasi (10-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Huquq — jamiyatning tartibini saqlash, inson huquqlarini himoya qilish fanidir. Qaysi mavzu qiziq?",
+                buttons: [
+                    { text: "📜 Konstitutsiya", key: "konstitutsiya" },
+                    { text: "⚖️ Jinoyat huquqi", key: "jinoyat_huquqi" },
+                    { text: "🤝 Fuqarolik huquqi", key: "fuqarolik_huquqi" },
+                    { text: "🏛️ Adliya tizimi", key: "adliya_tizimi" },
+                    { text: "👮‍♂️ Jinoyat javobgarligi", key: "jinoyat_javobgarlik" },
+                    { text: "👥 Inson huquqlari", key: "inson_huquqlari" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "konstitutsiya": {
+                text: "O'zbekiston Respublikasining Konstitutsiyasi — mamlakatimizning asosiy qonuni. 10-sinfda qanday tuzilishga ega?",
+                buttons: [
+                    { text: "Konstitutsiya tuzilishi", key: "konstitutsiya_tuzilish" },
+                    { text: "Asosiy tamoyillar", key: "asosiy_tamoyillar" },
+                    { text: "Huquqiy nazorat", key: "huquqiy_nazorat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "konstitutsiya_tuzilish": {
+                text: "<span class='location'>Konstitutsiya tuzilishi</span> — 10 bo'lim, 128 modda. Asosiy qismlar: asosiy tamoyillar, inson huquqlari, davlat tuzilishi, qonunchilik, adliya.",
+                buttons: [{ text: "⬅️ Orqaga", key: "konstitutsiya", isHome: true }]
+            },
+            "asosiy_tamoyillar": {
+                text: "<span class='location'>Asosiy tamoyillar</span>:<br>• Demokratiya va huquqiy davlat<br>• Inson huquqlari ustunligi<br>• Qonun oldida tenglik<br>• Jamiyat va davlatning ajralmasligi",
+                buttons: [{ text: "⬅️ Orqaga", key: "konstitutsiya", isHome: true }]
+            },
+            "huquqiy_nazorat": {
+                text: "<span class='location'>Huquqiy nazorat</span> — Konstitutsiya qonunlarning asosini tashkil qiladi. Barcha qonunlar Konstitutsiyaga mos bo'lishi kerak. Agar mos bo'lmasa, Oliy Sudi tomonidan bekor qilinadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "konstitutsiya", isHome: true }]
+            },
+            "jinoyat_huquqi": {
+                text: "Jinoyat huquqi — jinoyatlar va ular uchun javobgarlikni belgilaydi. Qanday tushunchalar mavjud?",
+                buttons: [
+                    { text: "Jinoyat nima?", key: "jinoyat_nima" },
+                    { text: "Jinoyat turlari", key: "jinoyat_turlari" },
+                    { text: "Javobgarlik chegarasi", key: "javobgarlik_chevarasi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "jinoyat_nima": {
+                text: "<span class='location'>Jinoyat</span> — qonunga zid, jamiyatga xavfli, jinoyat kodeksida belgilangan qonuniy jazoga tortiladigan xavfli harakat.",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_huquqi", isHome: true }]
+            },
+            "jinoyat_turlari": {
+                text: "<span class='location'>Jinoyat turlari</span>:<br>• O'zini o'g'irlash (158-modd)<br>• Kutilmagan o'lim (109-modd)<br>• O'g'rilik (159-modd)<br>• O'zini o'g'irlash (160-modd)",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_huquqi", isHome: true }]
+            },
+            "javobgarlik_chevarasi": {
+                text: "<span class='location'>Javobgarlik chegarasi</span> — 16 yoshdan boshlab jinoyat javobgarligi boshlanadi. Ba'zi jinoyatlar uchun — 14 yoshdan (masalan, o'zini o'g'irlash).",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_huquqi", isHome: true }]
+            },
+            "fuqarolik_huquqi": {
+                text: "Fuqarolik huquqi — shaxslar, korxonalarning mulk, shartnomalar, meros, shaxsiy non-mulk huquqlarini belgilaydi.",
+                buttons: [
+                    { text: "Shartnoma huquqi", key: "shartnoma_huquqi" },
+                    { text: "Mulk huquqi", key: "mulk_huquqi" },
+                    { text: "Meros huquqi", key: "meros_huquqi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "shartnoma_huquqi": {
+                text: "<span class='location'>Shartnoma huquqi</span> — ikki tomonlama kelishuv. Masalan: xizmat ko'rsatish, o'qish, ishga qabul qilish. Shartnoma qo'lyozma yoki elektron shaklda bo'lishi mumkin.",
+                buttons: [{ text: "⬅️ Orqaga", key: "fuqarolik_huquqi", isHome: true }]
+            },
+            "mulk_huquqi": {
+                text: "<span class='location'>Mulk huquqi</span> — insonning mulkga ega bo'lish, foydalanish, boshqarish, berish huquqi. Mulk — shaxsiy, jamoaviy, davlat.",
+                buttons: [{ text: "⬅️ Orqaga", key: "fuqarolik_huquqi", isHome: true }]
+            },
+            "meros_huquqi": {
+                text: "<span class='location'>Meros huquqi</span> — o'limdan keyin mulkning o'zlashtirilishi. 1-bolim — o'g'il, qiz, ota-onalar. 2-bolim — ukalar, singillar.",
+                buttons: [{ text: "⬅️ Orqaga", key: "fuqarolik_huquqi", isHome: true }]
+            },
+            "adliya_tizimi": {
+                text: "Adliya tizimi — jinoyatlar va fuqarolik muammolarini hal qiluvchi tizim. Qanday organlar mavjud?",
+                buttons: [
+                    { text: "Oliy Sudi", key: "oliy_sud" },
+                    { text: "Tuman Sudi", key: "tuman_sud" },
+                    { text: "Prokuratura", key: "prokuratura" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "oliy_sud": {
+                text: "<span class='location'>Oliy Sudi</span> — O'zbekiston Respublikasining eng yuqori sud organi. Konstitutsiyaga moslikni nazorat qiladi, qonunlarni tushuntiradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "adliya_tizimi", isHome: true }]
+            },
+            "tuman_sud": {
+                text: "<span class='location'>Tuman Sudi</span> — jinoyat va fuqarolik ishlari bo'yicha birinchi darajali sud. Barcha fuqarolar shu sudga murojaat qiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "adliya_tizimi", isHome: true }]
+            },
+            "prokuratura": {
+                text: "<span class='location'>Prokuratura</span> — jinoyatga qarshi kurashish, qonunlarni amalga oshirish, qonunchilikni nazorat qilish vazifasini bajaradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "adliya_tizimi", isHome: true }]
+            },
+            "jinoyat_javobgarlik": {
+                text: "Jinoyat javobgarligi — jinoyat qilgan kishiga qonun asosida jazolash. Qanday turdagi jazolar mavjud?",
+                buttons: [
+                    { text: "Jazolar turlari", key: "jazalar_turlari" },
+                    { text: "Javobgarlik shartlari", key: "javobgarlik_shartlari" },
+                    { text: "Javobgarlikdan ozod etish", key: "ozod_etish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "jazalar_turlari": {
+                text: "<span class='location'>Jazalar turlari</span>:<br>• O'zini o'g'irlash<br>• O'zini o'g'irlash<br>• Jarima<br>• Ishga qo'yish<br>• Qamoqda tutish<br>• Qamoqda tutish (o'zini o'g'irlash)",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_javobgarlik", isHome: true }]
+            },
+            "javobgarlik_shartlari": {
+                text: "<span class='location'>Javobgarlik shartlari</span>:<br>1) Jinoiy xarakterga ega harakat<br>2) Qonun bilan belgilangan jinoyat<br>3) Javobgarlik yoshi (14–16 yosh)<br>4) O'zini o'g'irlashga qarshi qaror",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_javobgarlik", isHome: true }]
+            },
+            "ozod_etish": {
+                text: "<span class='location'>Javobgarlikdan ozod etish</span> — jinoyat qilgan kishini jazodan ozod qilish. Masalan: qo'lda o'g'irlash, birinchi marta, yoshlik, qo'pol xatolik.",
+                buttons: [{ text: "⬅️ Orqaga", key: "jinoyat_javobgarlik", isHome: true }]
+            },
+            "inson_huquqlari": {
+                text: "Inson huquqlari — har bir insonga berilgan asosiy huquqlar. Konstitutsiyada qanday belgilangan?",
+                buttons: [
+                    { text: "Asosiy huquqlar", key: "asosiy_huquqlar" },
+                    { text: "Fikr va so'z erkinligi", key: "fikr_erkinlik" },
+                    { text: "Ta'lim huquqi", key: "ta'lim_huquqi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "asosiy_huquqlar": {
+                text: "<span class='location'>Asosiy huquqlar</span>:<br>• Tirik qolish huquqi<br>• Erkinlik huquqi<br>• Qonun oldida tenglik<br>• O'z fikrini aytish huquqi<br>• Ta'lim olish huquqi",
+                buttons: [{ text: "⬅️ Orqaga", key: "inson_huquqlari", isHome: true }]
+            },
+            "fikr_erkinlik": {
+                text: "<span class='location'>Fikr va so'z erkinligi</span> — 29-moddada belgilangan. Har qanday fikrni aytish, nashr qilish, axborot olish huquqi. Biroq, xalqga qarshi so'zlar taqiqlangan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "inson_huquqlari", isHome: true }]
+            },
+            "ta'lim_huquqi": {
+                text: "<span class='location'>Ta'lim huquqi</span> — 43-moddada belgilangan. Barcha fuqarolar o'rta ta'limni bepul olish huquqiga ega. O'zbekistonda 12 yillik ta'lim joriy etilgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "inson_huquqlari", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Konstitutsiya", key: "test_konstitutsiya" },
+                    { text: "Jinoyat huquqi", key: "test_jinoyat" },
+                    { text: "Fuqarolik huquqi", key: "test_fuqarolik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_konstitutsiya": {
+                text: "1. Konstitutsiyada asosiy tamoyillar qancha?\nA) 4 ta   B) 5 ta   C) 6 ta",
+                buttons: [
+                    { text: "A) 4 ta", key: "test_konstitutsiya_a" },
+                    { text: "B) 5 ta", key: "test_konstitutsiya_b" },
+                    { text: "C) 6 ta", key: "test_konstitutsiya_c" }
+                ]
+            },
+            "test_konstitutsiya_a": {
+                text: "✅ To'g'ri! Konstitutsiyada 4 ta asosiy tamoyil: demokratiya, inson huquqlari, qonun oldida tenglik, jamiyat va davlatning ajralmasligi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_jinoyat": {
+                text: "2. Jinoyat javobgarligi qanday yoshdan boshlanadi?\nA) 12 yoshdan   B) 14 yoshdan   C) 16 yoshdan",
+                buttons: [
+                    { text: "A) 12 yoshdan", key: "test_jinoyat_a" },
+                    { text: "B) 14 yoshdan", key: "test_jinoyat_b" },
+                    { text: "C) 16 yoshdan", key: "test_jinoyat_c" }
+                ]
+            },
+            "test_jinoyat_b": {
+                text: "✅ Ajoyib! Jinoyat javobgarligi 14 yoshdan boshlanadi. Ba'zi jinoyatlar (masalan, o'zini o'g'irlash) uchun 14 yoshdan.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_fuqarolik": {
+                text: "3. Fuqarolik huquqida meros qanday tartibda o'zlashtiriladi?\nA) 1-bolim: o'g'il, qiz, ota-onalar\nB) 1-bolim: ukalar, singillar\nC) 2-bolim: o'g'il, qiz, ota-onalar",
+                buttons: [
+                    { text: "A) 1-bolim: o'g'il, qiz, ota-onalar", key: "test_fuqarolik_a" },
+                    { text: "B) 1-bolim: ukalar, singillar", key: "test_fuqarolik_b" },
+                    { text: "C) 2-bolim: o'g'il, qiz, ota-onalar", key: "test_fuqarolik_c" }
+                ]
+            },
+            "test_fuqarolik_a": {
+                text: "✅ To'g'ri! Meros 1-bolimda: o'g'il, qiz, ota-onalar. Ulardan keyin 2-bolim: ukalar, singillar.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
