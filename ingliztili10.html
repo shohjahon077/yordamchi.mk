@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Ingliz Til (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1976D2; /* To‘q ko'k — bilim va tillar */
+            --secondary: #2196F3;
+            --accent: #FFB300; /* Sariq — kommunikatsiya va o'rganish */
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #1565C0;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(25, 118, 210, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #1976D2);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #1565C0;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === ENGLISH STYLE === */
+        .english {
+            background: #E1F5FE;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === GRAMMAR STYLE === */
+        .grammar {
+            background: #FFF3E0;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #E65100;
+        }
+
+        /* === VOCABULARY STYLE === */
+        .vocabulary {
+            background: #F5F5DC;
+            border-left: 3px solid #8B4513;
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #5D4037;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E3F2FD;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1565C0;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(25,118,210,0.2);
+        }
+
+        .quick-button:hover {
+            background: #1976D2;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(25,118,210,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Ingliz Til</h1>
+        <p>10-sinf uchun: Grammatika, lug'at, suhbat, yozuv — ingliz tilini o'rganishning qulay usuli!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🌍</div>
+            <h2>Ingliz Til Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Grammatika, lug'at, suhbat, yozuv</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Ingliz tilining 10-sinf darsligi asosidagi ma'lumotlar bazasi
+        const database = {
+            "main_menu": {
+                text: "Hello! I'm your English tutor. Let's improve your grammar, vocabulary, and speaking skills. What would you like to learn today?",
+                buttons: [
+                    { text: "📚 Grammar", key: "grammar" },
+                    { text: "📖 Vocabulary", key: "vocabulary" },
+                    { text: "🗣️ Speaking Practice", key: "speaking" },
+                    { text: "✍️ Writing Skills", key: "writing" },
+                    { text: "📝 Tests", key: "test_menu" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "grammar": {
+                text: "Let's explore essential grammar topics for grade 10:",
+                buttons: [
+                    { text: "Tenses (Time)", key: "tenses" },
+                    { text: "Passive Voice", key: "passive" },
+                    { text: "Conditionals", key: "conditionals" },
+                    { text: "Reported Speech", key: "reported" },
+                    { text: "Modals", key: "modals" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tenses": {
+                text: "<span class='grammar'>Tenses:</span><br>• Present Simple — I play football (habits)<br>• Past Simple — I played football (completed action)<br>• Present Continuous — I am playing now (action now)<br>• Future Simple — I will play tomorrow<br>• Present Perfect — I have played (experience)",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "passive": {
+                text: "<span class='grammar'>Passive Voice:</span><br>• Structure: am/is/are/was/were + past participle<br>• Active: They built this house. → Passive: This house was built (by them)<br>• Used when the doer is unknown or unimportant<br>• Common in science, news, reports",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "conditionals": {
+                text: "<span class='grammar'>Conditionals:</span><br>• Zero Conditional: If you heat ice, it melts. (facts)<br>• First Conditional: If it rains, I will stay home. (real future)<br>• Second Conditional: If I had money, I would travel. (unreal present)<br>• Third Conditional: If I had studied, I would have passed. (unreal past)",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "reported": {
+                text: "<span class='grammar'>Reported Speech:</span><br>• Direct: She said, 'I am tired.' → Reported: She said (that) she was tired.<br>• Tense shift: present → past, will → would, can → could<br>• Pronouns and time words change: now → then, today → that day",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "modals": {
+                text: "<span class='grammar'>Modals:</span><br>• Can — ability: I can swim<br>• Could — past ability or polite request: Could you help me?<br>• Must — obligation: You must wear a helmet<br>• Should — advice: You should study more<br>• May/Might — possibility: It may rain tomorrow",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "vocabulary": {
+                text: "Expand your vocabulary with common grade 10 themes:",
+                buttons: [
+                    { text: "Environment", key: "environment" },
+                    { text: "Technology", key: "technology" },
+                    { text: "Education", key: "education" },
+                    { text: "Health", key: "health" },
+                    { text: "Work & Career", key: "career" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "environment": {
+                text: "<span class='vocabulary'>Environment:</span><br>• pollution, climate change, global warming<br>• renewable energy, recycling, conservation<br>• deforestation, biodiversity, ecosystem<br>• sustainable, greenhouse effect, carbon footprint",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "technology": {
+                text: "<span class='vocabulary'>Technology:</span><br>• artificial intelligence, automation, algorithm<br>• cybersecurity, data, cloud computing<br>• smartphone, app, software, hardware<br>• upgrade, download, upload, interface",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "education": {
+                text: "<span class='vocabulary'>Education:</span><br>• curriculum, syllabus, lecture, assignment<br>• exam, grade, transcript, scholarship<br>• classroom, laboratory, library, tuition<br>• graduate, dropout, tutor, peer",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "health": {
+                text: "<span class='vocabulary'>Health:</span><br>• diet, nutrition, exercise, fitness<br>• stress, anxiety, depression, mental health<br>• vaccine, medication, symptom, diagnosis<br>• healthy lifestyle, obesity, addiction, recovery",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "career": {
+                text: "<span class='vocabulary'>Work & Career:</span><br>• job, occupation, profession, career path<br>• resume, interview, salary, promotion<br>• employer, employee, colleague, manager<br>• deadline, teamwork, leadership, responsibility",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "speaking": {
+                text: "Practice real-life speaking situations:",
+                buttons: [
+                    { text: "Self-introduction", key: "self_intro" },
+                    { text: "Daily Routine", key: "daily_routine" },
+                    { text: "Opinion on Tech", key: "tech_opinion" },
+                    { text: "Future Plans", key: "future_plans" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "self_intro": {
+                text: "<span class='english'>Self-introduction:</span><br>• 'Hi, my name is [Name]. I'm 15 years old and I live in [City].<br>• I'm a student in grade 10 at [School].<br>• I enjoy reading books and playing football.<br>• In the future, I want to become a software engineer.'",
+                buttons: [{ text: "⬅️ Back", key: "speaking", isHome: true }]
+            },
+            "daily_routine": {
+                text: "<span class='english'>Daily Routine:</span><br>• I usually wake up at 6:30 a.m.<br>• I have breakfast at 7:00 and go to school by bus.<br>• Classes start at 8:00 and finish at 2:00 p.m.<br>• After school, I do homework and practice English for 30 minutes.<br>• I go to bed at 10:30 p.m.",
+                buttons: [{ text: "⬅️ Back", key: "speaking", isHome: true }]
+            },
+            "tech_opinion": {
+                text: "<span class='english'>Opinion on Technology:</span><br>• I think technology is very useful because it helps us communicate and learn faster.<br>• However, too much screen time can be harmful to our eyes and health.<br>• We should use technology wisely — for learning, not just for games.<br>• In 10 years, I believe AI will help teachers give personalized lessons.",
+                buttons: [{ text: "⬅️ Back", key: "speaking", isHome: true }]
+            },
+            "future_plans": {
+                text: "<span class='english'>Future Plans:</span><br>• I'm going to finish school in two years.<br>• Then, I plan to study computer science at university.<br>• I hope to get a scholarship because my family can't afford it.<br>• My dream is to work for a tech company in Tashkent or abroad.<br>• I'll keep learning English every day to reach my goal.",
+                buttons: [{ text: "⬅️ Back", key: "speaking", isHome: true }]
+            },
+            "writing": {
+                text: "Improve your writing skills with these topics:",
+                buttons: [
+                    { text: "Letter to Friend", key: "letter_friend" },
+                    { text: "Opinion Essay", key: "opinion_essay" },
+                    { text: "Story Writing", key: "story" },
+                    { text: "Email Request", key: "email_request" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "letter_friend": {
+                text: "<span class='english'>Letter to a Friend:</span><br>Dear Alex,<br><br>I hope you're doing well! I just wanted to tell you about my summer holiday. I went to Samarkand with my family. We visited the Registan Square — it was amazing! I took many photos. I also tried plov — it was delicious!<br><br>How was your summer? Did you go anywhere? Let me know in your next letter!<br><br>Best wishes,<br>Samir",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "opinion_essay": {
+                text: "<span class='english'>Opinion Essay (Topic: Social Media):</span><br>Many people think social media is bad for teenagers. I disagree. Social media helps us connect with friends, learn new things, and express ourselves. For example, I follow educational channels on YouTube. However, we must use it wisely. Spending too much time online can cause stress and affect sleep. Therefore, I think we should limit our screen time to two hours a day and use social media for learning and positive communication.",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "story": {
+                text: "<span class='english'>Story Writing (Title: The Mysterious Box):</span><br>One rainy afternoon, I found a small wooden box under my bed. It had no lock, but it was covered in strange symbols. Curious, I opened it. Inside was a glowing key and a note: 'Use me when you need courage.' The next day, I had to give a speech in front of the whole school. My hands were shaking. Then I remembered the key. I held it tightly. Suddenly, I felt calm. I spoke clearly and confidently. When I returned home, the box was gone. But I still have the key — and the courage.",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "email_request": {
+                text: "<span class='english'>Email Request:</span><br>Subject: Request for Extension on Science Project<br><br>Dear Mr. Johnson,<br><br>I hope this message finds you well. I am writing to kindly request a one-day extension for the science project deadline, which is due tomorrow. Unfortunately, I have been sick with a fever since yesterday and haven't been able to complete my final slides. I have already finished the research and most of the report. I would be very grateful if I could submit it on Friday instead.<br><br>Thank you for your understanding.<br><br>Sincerely,<br>Layla Samadova",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test your knowledge with these multiple-choice questions:",
+                buttons: [
+                    { text: "Grammar Test", key: "test_grammar" },
+                    { text: "Vocabulary Test", key: "test_vocab" },
+                    { text: "Reading Comprehension", key: "test_reading" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_grammar": {
+                text: "1. She ___ to school every day.<br>A) go<br>B) goes<br>C) going<br>D) gone",
+                buttons: [
+                    { text: "A)", key: "test_grammar_a" },
+                    { text: "B)", key: "test_grammar_b" },
+                    { text: "C)", key: "test_grammar_c" },
+                    { text: "D)", key: "test_grammar_d" }
+                ]
+            },
+            "test_grammar_b": {
+                text: "✅ Correct! 'She goes to school every day.' — Present Simple for habits.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "test_vocab": {
+                text: "2. Which word means 'a person who studies at school or university'?\nA) Teacher\nB) Student\nC) Doctor\nD) Engineer",
+                buttons: [
+                    { text: "A)", key: "test_vocab_a" },
+                    { text: "B)", key: "test_vocab_b" },
+                    { text: "C)", key: "test_vocab_c" },
+                    { text: "D)", key: "test_vocab_d" }
+                ]
+            },
+            "test_vocab_b": {
+                text: "✅ Excellent! 'Student' means a person who studies at school or university.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "test_reading": {
+                text: "3. Read the text: 'John is a software engineer. He works in Tashkent. He usually gets up at 7 a.m. and walks to work. He has lunch at the office and comes home at 6 p.m.' What does John do for a living?\nA) He is a teacher\nB) He is a doctor\nC) He is a software engineer\nD) He is an engineer",
+                buttons: [
+                    { text: "A)", key: "test_reading_a" },
+                    { text: "B)", key: "test_reading_b" },
+                    { text: "C)", key: "test_reading_c" },
+                    { text: "D)", key: "test_reading_d" }
+                ]
+            },
+            "test_reading_c": {
+                text: "✅ Perfect! The text clearly says: 'John is a software engineer.'",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("This topic is not available yet.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
