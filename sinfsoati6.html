@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Sinf Soati AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9, #a5d6a7);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #43a047;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #43a047, #1b5e20);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(67, 160, 71, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #43a047, #1b5e20, #43a047);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(67, 160, 71, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(67, 160, 71, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #1b5e20;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(67, 160, 71, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(67, 160, 71, 0.9);
+      background: linear-gradient(45deg, #0d4710, #388e3c);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #1b5e20;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(67, 160, 71, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #43a047;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(67, 160, 71, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 255, 240, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #43a047, #1b5e20);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e8f5e9, #c8e6c9);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #43a047;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #43a047;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 255, 240, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #43a047;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(67, 160, 71, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(67, 160, 71, 0.7);
+      background: linear-gradient(45deg, #0d4710, #388e3c);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(67, 160, 71, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #43a047;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🤝</div>
+      <h1 class="title">ASCO Sinf Soati AI</h1>
+      <p class="subtitle">Sinf soatida qiyinchilik tug'ilmaydi! Men — sizning shaxsiy sinf soati o'qituvchingiz. Jamoa hamkorligi, mehnat qoidalari, o'z-o'zini nazorat qilish, do'stlik — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">💬</div>
+        <h2>Sinf Soati AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Sinf soati nima?')">Sinf soati nima?</button>
+          <button class="btn-3d" onclick="sendMessage('Jamoa hamkorligi')">Jamoa hamkorligi</button>
+          <button class="btn-3d" onclick="sendMessage('Mehnat qoidalari')">Mehnat qoidalari</button>
+          <button class="btn-3d" onclick="sendMessage('O\'z-o\'zini nazorat qilish')">O'z-o'zini nazorat</button>
+          <button class="btn-3d" onclick="sendMessage('Do\'stlik va munosabatlar')">Do'stlik</button>
+          <button class="btn-3d" onclick="sendMessage('Mehnatga o\'rgatish')">Mehnatga o'rgatish</button>
+          <button class="btn-3d" onclick="sendMessage('Ijodiy faoliyat')">Ijodiy faoliyat</button>
+          <button class="btn-3d" onclick="sendMessage('Hayotiy ko\'nikmalar')">Hayotiy ko'nikmalar</button>
+          <button class="btn-3d" onclick="sendMessage('O\'quvchilar o\'rtasidagi munosabatlar')">Munosabatlar</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda tartib')">Sinfda tartib</button>
+          <button class="btn-3d" onclick="sendMessage('Mas'uliyat')">Mas'uliyat</button>
+          <button class="btn-3d" onclick="sendMessage('Muhokama va fikr almashish')">Muhokama</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda ishlar')">Sinfda ishlar</button>
+          <button class="btn-3d" onclick="sendMessage('Sinf boshlig\'i')">Sinf boshlig'i</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda mehnat qilish')">Mehnat qilish</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda qonunlar')">Qonunlar</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda mehribonlik')">Mehribonlik</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda o\'zgarish')">O'zgarish</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda ijodiy loyiha')">Ijodiy loyiha</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda test')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Sinfda qo\'llanma')">Qo'llanma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning sinf soati o'qituvchingiz. Jamoa hamkorligi, mehnat qoidalari, do'stlik yoki o'z-o'zini nazorat qilish haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF SINF SOATI — ASCO LOYIHASI
+
+      if (lower.includes("sinf soati nima") || lower.includes("sinf soati")) {
+        response = "Sinf soati — o'quvchilarning jamoaviy hayotini tashkil etish, mehnatga o'rgatish va shaxsiy rivojlanish uchun o'tkaziladigan dars.\n\nUning maqsadlari:\n\n1. Jamoa hamkorligini o'rgatish\n2. Mehnatga, mas'uliyatga o'rgatish\n3. O'z-o'zini nazorat qilishni rivojlantirish\n4. Do'stlik, mehribonlik, hurmatni o'rgatish\n\n💡 Sinf soati — sizning hayotingizning asosiy qismi!";
+      } else if (lower.includes("jamoa hamkorligi")) {
+        response = "Jamoa hamkorligi — birgalikda ishlash, bir-biriga yordam berish.\n\nMisol:\n\n• Sinfda tozalashda birgalikda ishlash\n• O'yinlarda jamoa bilan o'ynash\n• Do'stlaringizga yordam berish\n\nQanday qilish?\n\n1. O'z fikringizni aytish\n2. Boshqalarning fikrini eshitish\n3. Birga qaror qabul qilish\n\n💡 Jamoa — kuch, yakkalik — kuchsizlik!";
+      } else if (lower.includes("mehnat qoidalari")) {
+        response = "Mehnat qoidalari — mehnatni to'g'ri bajarish:\n\n1. Ishni vaqtida boshlash\n2. Ishni to'liq bajarish\n3. Ishni qo'pol qilmaslik\n4. Ishni o'z kuchingiz bilan bajarish\n5. Ishni tugatgandan keyin tozalash\n\nMisol:\n\nSinfni tozalashda:\n- Qo'g'irchoqni to'g'ri joyiga qo'ying\n- Qog'ozlarni yig'ing\n- Polni tozalang\n\n💡 Mehnat — xavfsizlik, tartib va mehnatga o'rgatish!";
+      } else if (lower.includes("o'z-o'zini nazorat qilish")) {
+        response = "O'z-o'zini nazorat qilish — o'z hissiyotingizni, qarorlaringizni boshqarish.\n\nMisol:\n\n• Agar xursand bo'lsangiz — boshqalarga ham xursandlik ber\n• Agar g'azablangan bo'lsangiz — nafas oling, o'zingizga qarang\n• Agar qo'rqingan bo'lsangiz — do'stingizga gapir\n\n💡 O'z-o'zini nazorat qilish — katta odamlarning qobiliyati!";
+      } else if (lower.includes("do'stlik")) {
+        response = "Do'stlik — qalbni qo'ldan qo'ldan berish.\n\nQanday do'st bo'lish?\n\n✅ Do'st — yordam beradi\n✅ Do'st — eshitadi\n✅ Do'st — yaxshi fikr aytadi\n❌ Do'st emas — o'zini ustun qo'yadi\n❌ Do'st emas — yolg'on gapiradi\n\n💡 Do'stlik — eng buyuk qadriyat!";
+      } else if (lower.includes("mehnatga o'rgatish")) {
+        response = "Mehnatga o'rgatish — ishni o'rganish, mehnatni qadrlash.\n\nMisol:\n\n• Sinfni tozalash\n• Kitobni qo'lyozma qilish\n• Darsda qo'shimcha ish\n\nMehnat — bu:\n\n• Kuch\n• Sabr\n• O'zini o'zgartirish\n\n💡 Mehnat — hayotni yaxshilaydi!";
+      } else if (lower.includes("ijodiy faoliyat")) {
+        response = "Ijodiy faoliyat — o'z fikringizni ifodalash.\n\nMisol:\n\n• Sinfda dekorativ narsa yaratish\n• Qo'shiq yozish\n• Rasm chizish\n• Sinfda spektakl o'tkazish\n\n💡 Ijodiylik — sizning o'ziga xosligingiz!";
+      } else if (lower.includes("hayotiy ko'nikmalar")) {
+        response = "Hayotiy ko'nikmalar — hayotda kerak bo'ladigan qobiliyatlar:\n\n1. Muloqot qilish\n2. Qaror qabul qilish\n3. Vaqtni to'g'ri boshqarish\n4. Xavfsizlikni o'rganish\n5. O'zini himoya qilish\n\n💡 Hayotiy ko'nikmalar — sizning kelajagingizni shakllantiradi!";
+      } else if (lower.includes("munosabatlar")) {
+        response = "O'quvchilar o'rtasidagi munosabatlar — mehribonlik va hurmat.\n\nQanday munosabat qilish?\n\n• Har doim \"Iltimos\", \"Rahmat\", \"Afsus\" so'zlaridan foydalaning\n• Boshqalarning fikrini buzmaslik\n• O'zini o'ziga qarab, boshqalarga qarab yurish\n\n💡 Hurmat — do'stlikning asosi!";
+      } else if (lower.includes("sinfda tartib")) {
+        response = "Sinfda tartib — o'qish uchun muhit.\n\nQanday tartib saqlash?\n\n• Darsda o'z o'rnida tursangiz\n• O'qituvchiga qarab tursangiz\n• Do'stingizga gapirishda ovozingizni paslatsangiz\n\n💡 Tartib — o'qishning birinchi qadami!";
+      } else if (lower.includes("mas'uliyat")) {
+        response = "Mas'uliyat — o'z vazifangizni bajarish.\n\nMisol:\n\n• Sinf boshlig'i — sinfni tozalashni nazorat qilish\n• Kitob xodimi — kitoblarni to'plab berish\n• Sinfda ishlovchi — ishni qilish\n\n💡 Mas'uliyat — katta odamlarning qobiliyati!";
+      } else if (lower.includes("muhokama")) {
+        response = "Muhokama — fikr almashish.\n\nQanday muhokama qilish?\n\n1. O'z fikringizni tushunarli tarzda aytish\n2. Boshqalarning fikrini eshitish\n3. Fikrlaringizni aralashtirish\n4. Birga qaror qabul qilish\n\n💡 Muhokama — o'zini o'zgartirish, do'stlar bilan o'zaro tushunish!";
+      } else if (lower.includes("sinfda ishlar")) {
+        response = "Sinfda ishlar — har kuni bajariladigan vazifalar:\n\n• Sinfni tozalash\n• Kitoblarni to'plash\n• Qo'g'irchoqlarni joyiga qo'yish\n• O'qituvchiga yordam berish\n\n💡 Har bir ish — sizning mas'uliyatingiz!";
+      } else if (lower.includes("sinf boshlig'i")) {
+        response = "Sinf boshlig'i — sinfning qo'riqchisi.\n\nUning vazifalari:\n\n• Sinfni darsga tayyorlash\n• O'qituvchiga xabar berish\n• Sinfda tartibni saqlash\n• Do'stlarga yordam berish\n\n💡 Sinf boshlig'i — o'ziga ishonch, mas'uliyatli odam!";
+      } else if (lower.includes("mehnat qilish")) {
+        response = "Sinfda mehnat qilish — o'z kuchingiz bilan ishlash.\n\nMisol:\n\n• O'z o'rnini tozalash\n• Kitoblarni qo'lyozma qilish\n• Sinfda dekorativ narsa yaratish\n\n💡 Mehnat — o'zini o'zgartirish, o'zini rivojlantirish!";
+      } else if (lower.includes("qonunlar")) {
+        response = "Sinfda qonunlar — o'zaro hurmat va tartib.\n\nAsosiy qonunlar:\n\n1. Darsda ovoz qo'ymaslik\n2. Do'stlarga hurmat qilish\n3. Ishlarni vaqtida bajarish\n4. O'qituvchiga qarab tursa bo'ladi\n\n💡 Qonunlar — jamoa hayotining asosi!";
+      } else if (lower.includes("mehribonlik")) {
+        response = "Mehribonlik — boshqalarga yordam berish, qo'lini kengaytirish.\n\nMisol:\n\n• Qo'g'irchoqni topib berish\n• Darsda yordam berish\n• Qo'rqinchi do'stga gapirish\n\n💡 Mehribonlik — eng buyuk qadriyat!";
+      } else if (lower.includes("o'zgarish")) {
+        response = "Sinfda o'zgarish — yangi fikr, yangi mehnat.\n\nMisol:\n\n• Sinfni yangi tartibda tozalash\n• Yangi o'yin o'ynash\n• Yangi ishni bajarish\n\n💡 O'zgarish — rivojlanishning asosi!";
+      } else if (lower.includes("ijodiy loyiha")) {
+        response = "Ijodiy loyiha: \"Mening sining mehribonlik kuni\"\n\nQadamlari:\n\n1. Bir kunlik mehribonlik rejasini tuzing\n2. Har bir do'stingizga biror narsa yordam bering\n3. O'zingizni qanday his qilganingizni yozing\n\n💡 Ijodiy loyiha — sizning o'ziga xoslikingiz!";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Sinf soatining maqsadi nima?\n   a) Dars o'tish\n   b) Jamoa hamkorligini o'rgatish ✅\n   c) O'qish\n\n2. Sinfda qanday qonun bo'lishi kerak?\n   a) Ovoz qo'yish\n   b) Do'stlarga hurmat qilish ✅\n   c) Ishni qilmaslik\n\n3. O'z-o'zini nazorat qilish nima?\n   a) O'z hissiyotini boshqarish ✅\n   b) Boshqalarga g'azablanish\n   c) Ishni qilmaslik\n\n💡 Test — sizning bilimingizni tekshirish!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nDunyoda eng yaxshi sinf — 100% jamoa hamkorligi, mehribonlik va o'z-o'zini nazorat qilish bilan ishlaydi!\n\n💡 Sinf — sizning kichik dunyongiz. Uni yaxshi qiling — siz ham yaxshi bo'lasiz!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men o'qituvchi emasman, lekin men bilan o'qituvchi ishlaydi.\nMen o'quvchi emasman, lekin men bilan o'quvchi o'rganadi.\nMen nima?\"\n\n💡 Javob: **Sinf soati** 🤝\n\nYana biri:\n\"Men kitob emasman, lekin men bilan kitob o'qiladi.\nMen nima?\"\n💡 Javob: **Mehribonlik** ❤️";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nSinfda mehribonlik kuni uchun reja tuzing:\n\n1. Do'stingizga yordam bering\n2. Do'stingizga so'z yozing\n3. Do'stingizga qo'g'irchoq berib qo'ying\n\n✅ Bajarildi! Siz mehribonlikni o'rgandingiz!";
+      } else if (lower.includes("qo'llanma")) {
+        response = "Sinfda qo'llanma — sizning hayotingizga yordam beruvchi qo'llanma:\n\n1. Har kuni 1 ta mehribonlik qiling\n2. Har kuni 1 ta do'stga yordam bering\n3. Har kuni 1 ta ishni to'liq bajaring\n\n💡 Qo'llanma — sizning hayotingizning asosi!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning sinf soati o'qituvchingizman. Jamoa hamkorligi, do'stlik yoki mehribonlik haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Sinf soati — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli sinf soati o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf sinf soatida yordam berishga tayyorman. Iltimos, \"jamoa hamkorligi\", \"mehribonlik\", \"o'z-o'zini nazorat qilish\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
