@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Informatika AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0a0a1a, #12122e, #070714);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #04040c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #4ade80;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%234ade80"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(10, 10, 30, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(74, 222, 128, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 5, 15, 0.9);
+            color: #4ade80;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.3);
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #166534, #15803d);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #4ade80, #86efac);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #4ade80;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 5, 15, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(74, 222, 128, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #4ade80 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #4ade80;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(20, 30, 40, 0.4);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(74, 222, 128, 0.25);
+            border-color: #4ade80;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(74, 222, 128, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%234ade80"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            color: #a7f3d0;
+            background: rgba(0, 30, 10, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .term {
+            color: #bbf7d0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Informatika AI Bot</div>
+        <div class="splash-subtext">Dasturlash, algoritmlar, ma'lumotlar tuzilmasi, sun'iy intellekt, kiberxavfsizlik, tarmoqlar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">💻 11-sinf Informatika AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Dasturlash asoslari — 20 ta
+            "Algoritm nima? Uning asosiy xossalari?",
+            "Algoritm blok-sxemasi qanday tuziladi?",
+            "Chiziqli, tarmoqlanuvchi, takrorlanuvchi algoritmlar farqi?",
+            "Python dasturlash tilida o'zgaruvchi e'lon qilish qanday amalga oshiriladi?",
+            "Python sintaksisi qanday tuzilgan?",
+            "Tsikllar (for, while) qanday ishlaydi?",
+            "Shart operatorlari (if, else, elif) qanday ishlatiladi?",
+            "Funksiya nima? Python da funksiya qanday yoziladi?",
+            "Rekursiv funksiyalar qanday ishlaydi?",
+            "Kutubxona (library) nima? Python da qanday qo'llaniladi?",
+            "Modul nima? Qanday yaratiladi?",
+            "Sinflar (classes) va obyektlar (objects) nima?",
+            "Obyektga yo'naltirilgan dasturlash (OOP) prinsiplari?",
+            "Inkapsulyatsiya, meros, polimorfizm tushunchalari?",
+            "Python da fayl bilan ishlash qanday amalga oshiriladi?",
+            "Xatoliklarni boshqarish (try-except) qanday ishlaydi?",
+            "List, tuple, set, dictionary ma'lumotlar tuzilmalari farqi?",
+            "Lambda funksiyalari qanday ishlatiladi?",
+            "Generatorlar va iteratorlar nima?",
+            "Dastur kodini tekshirish (debugging) qanday amalga oshiriladi?",
+
+            // Ma'lumotlar tuzilmasi va algoritmlar — 20 ta
+            "Ma'lumotlar tuzilmalari nima?",
+            "Massiv (array) qanday ishlaydi?",
+            "Ro'yxat (linked list) qanday tashkil etilgan?",
+            "Stek (stack) va navbat (queue) farqi?",
+            "Daraxt (tree) ma'lumotlar tuzilmasi qanday?",
+            "Binariy qidiruv daraxti (BST) qanday ishlaydi?",
+            "Xesh-jadval (hash table) nima?",
+            "Graf (graph) ma'lumotlar tuzilmasi qanday?",
+            "Qidiruv algoritmlari (linear, binary) farqi?",
+            "Saralash algoritmlari (bubble, selection, insertion, merge, quick)?",
+            "Rekursiya algoritmlarida qanday muammolar sodir bo'ladi?",
+            "Dinamik dasturlash (dynamic programming) nima?",
+            ""Greedy" algoritmlar qanday ishlaydi?",
+            "Qisqa yo'lni topish algoritmlari (Dijkstra, Floyd-Warshall)?",
+            "Grafni kenglik va chuqurlik bo'yicha qidirish?",
+            "Ma'lumotlarni siqish (compression) algoritmlari?",
+            "Xesh funksiyalari qanday ishlaydi?",
+            "Kriptografiyada simmetrik va asimmetrik kalitlar farqi?",
+            "RSA algoritmi qanday ishlaydi?",
+            "Ma'lumotlar tuzilmalarini tanlash qanday amalga oshiriladi?",
+
+            // Sun'iy intellekt va axborot texnologiyalari — 20 ta
+            "Sun'iy intellekt (AI) nima?",
+            "Mashina o'qitish (machine learning) tushunchasi?",
+            "Neyron tarmoqlari qanday ishlaydi?",
+            "Chuqur o'qitish (deep learning) nima?",
+            "AI da ma'lumotlar to'plami (dataset) qanday rol o'ynaydi?",
+            "AI ning nazoratli va nazoratsiz ta'lim turlari?",
+            "AI yordamida matn, tasvir, ovozni qanday qayta ishlaymiz?",
+            "NLP (Natural Language Processing) nima?",
+            "Chatbotlar qanday ishlaydi?",
+            "Katta ma'lumotlar (Big Data) texnologiyalari nima?",
+            "Cloud computing (bulutli hisoblash) tushunchasi?",
+            "IoT (Internet of Things) nima?",
+            "Blockchain texnologiyasi qanday ishlaydi?",
+            "Axborot texnologiyalarining iqtisodiyotga ta'siri?",
+            "Axborot jamiyati tushunchasi?",
+            "Axborot xavfsizligi (information security) nima?",
+            "Kiberxavfsizlik (cybersecurity) asosiy yo'nalishlari?",
+            "Malware, virus, trojan, ransomware tushunchalari?",
+            "Phishing hujumlari qanday amalga oshiriladi?",
+            "Axborot xavfsizligini ta'minlash uchun qanday choralar ko'riladi?",
+
+            // Kompyuter tarmoqlari — 20 ta
+            "Kompyuter tarmoqlari qanday turlarga bo'linadi?",
+            "LAN, WAN, MAN tarmoqlari farqi?",
+            "IP-manzil nima? IPv4 va IPv6 farqi?",
+            "MAC-manzil nima?",
+            "DNS tizimi qanday ishlaydi?",
+            "Protokol nima? TCP/IP protokol to'plami?",
+            "HTTP va HTTPS farqi?",
+            "Router, switch, modem qurilmalari farqi?",
+            "Wi-Fi tarmog'ida xavfsizlik qanday ta'minlanadi?",
+            "Firewall (tashqi himoya) qanday ishlaydi?",
+            "Tarmoqda ma'lumot uzatish tezligi qanday o'lchanadi?",
+            "Paketli uzatish (packet switching) nima?",
+            "Tarmoqda qanday xatolar sodir bo'ladi?",
+            "Ping va traceroute buyruqlari qanday ishlaydi?",
+            "Tarmoqda qanday xavfsizlik xavflari mavjud?",
+            "DDoS hujumlari qanday amalga oshiriladi?",
+            "Tor tarmog'i nima? Anonimlikni qanday ta'minlaydi?",
+            "VPN (Virtual Private Network) nima?",
+            "Tarmoqda axborotni shifrlash qanday amalga oshiriladi?",
+            "Tarmoq muhandisligi qanday yo'nalishlarda rivojlanmoqda?",
+
+            // Amaliyot va dasturiy ta'minot — 20 ta
+            "Dasturiy ta'minot (software) turlari?",
+            "Tizimli dasturiy ta'minot nima?",
+            "Amaliy dasturiy ta'minot nima?",
+            "Dasturiy ta'minotni rivojlantirish jarayoni?",
+            "Agile va Waterfall metodologiyalari farqi?",
+            "GIT versiyalarni boshqarish tizimi qanday ishlaydi?",
+            "IDE (Integrated Development Environment) nima?",
+            "Kompilyator va interpreter farqi?",
+            "Virtual mashina (VM) nima?",
+            "Docker konteynerlari qanday ishlaydi?",
+            "Web dasturlashda front-end va back-end farqi?",
+            "HTML, CSS, JavaScript rolalari?",
+            "SQL tilida so'rov yozish qanday amalga oshiriladi?",
+            "Ma'lumotlar bazasi (database) tushunchasi?",
+            "SQL va NoSQL farqi?",
+            "REST API nima?",
+            "Web xavfsizligi (XSS, SQL-injection)?",
+            "Dasturiy ta'minot sinovdan o'tkazish (testing) qanday amalga oshiriladi?",
+            "UI/UX nima?",
+            "Dasturiy ta'minot sifatini baholash qanday amalga oshiriladi?"
+        ];
+
+        const responses = {
+            "Algoritm nima? Uning asosiy xossalari?": "<span class='term'>Algoritm</span> — ma'lum bir vazifani bajarish uchun aniq va ketma-ket ko'rsatmalar to'plami. Xossalari: <span class='term'>aniqlik</span>, <span class='term'>finitlik</span> (cheklanganlik), <span class='term'>umumiylik</span>, <span class='term'>natijadorlik</span>.",
+            "Algoritm blok-sxemasi qanday tuziladi?": "Blok-sxema — algoritmning grafik ko'rinishi. <span class='term'>To'rtburchak</span> — amal, <span class='term'>romb</span> — shart, <span class='term'>parallelogramm</span> — kiritish/chiqarish, <span class='term'>oval</span> — bosh/oxir.",
+            "Chiziqli, tarmoqlanuvchi, takrorlanuvchi algoritmlar farqi?": "<span class='term'>Chiziqli</span> — ketma-ket amallar. <span class='term'>Tarmoqlanuvchi</span> — shartga qarab yo'nalish o'zgaradi. <span class='term'>Takrorlanuvchi</span> — tsikl ichida bir xil amallar takrorlanadi.",
+            "Python dasturlash tilida o'zgaruvchi e'lon qilish qanday amalga oshiriladi?": "Python — dinamik tipga ega, shuning uchun o'zgaruvchi e'lon qilishda tur ko'rsatilmaydi: <span class='code'>x = 10</span>, <span class='code'>name = \"Ali\"</span>.",
+            "Python sintaksisi qanday tuzilgan?": "Python — <span class='term'>indentation</span> (chekinmalar) orqali bloklar ajratiladi. Qavslar, nuqtali-vergul ishlatilmaydi. Misol: <span class='code'>if x > 0:\n    print(\"Musbat\")</span>.",
+            "Tsikllar (for, while) qanday ishlaydi?": "<span class='code'>for i in range(5):</span> — 0 dan 4 gacha takrorlanadi. <span class='code'>while x < 10:</span> — x < 10 bo'lguncha takrorlanadi.",
+            "Shart operatorlari (if, else, elif) qanday ishlatiladi?": "<span class='code'>if a > b:\n    print(\"a katta\")\nelif a == b:\n    print(\"teng\")\nelse:\n    print(\"b katta\")</span>",
+            "Funksiya nima? Python da funksiya qanday yoziladi?": "<span class='term'>Funksiya</span> — qayta ishlatiladigan kod bloki. <span class='code'>def salom_ber(ism):\n    return \"Salom, \" + ism</span>",
+            "Rekursiv funksiyalar qanday ishlaydi?": "Funksiya o'zini o'zicha chaqiradi. Misol: <span class='code'>def faktorial(n):\n    if n == 1:\n        return 1\n    return n * faktorial(n-1)</span>",
+            "Kutubxona (library) nima? Python da qanday qo'llaniladi?": "Kutubxona — tayyor funksiyalar to'plami. <span class='code'>import math</span> yoki <span class='code'>from datetime import datetime</span>.",
+            "Modul nima? Qanday yaratiladi?": "Modul — alohida fayl (.py) sifatida saqlangan kod. <span class='code'>import my_module</span> orqali boshqa faylda ishlatiladi.",
+            "Sinflar (classes) va obyektlar (objects) nima?": "<span class='term'>Sinflar</span> — shablon, <span class='term'>obyektlar</span> — shu shablon asosida yaratilgan nusxalar. <span class='code'>class Car: ...</span> → <span class='code'>my_car = Car()</span>.",
+            "Obyektga yo'naltirilgan dasturlash (OOP) prinsiplari?": "To'rtta asosiy prinsip: <span class='term'>inkapsulyatsiya</span>, <span class='term'>meros</span>, <span class='term'>polimorfizm</span>, <span class='term'>abstraksiya</span>.",
+            "Inkapsulyatsiya, meros, polimorfizm tushunchalari?": "<span class='term'>Inkapsulyatsiya</span> — ma'lumotlarni yashirish. <span class='term'>Meros</span> — yangi sinf eski sinfdan xususiyatlarni meros qilib oladi. <span class='term'>Polimorfizm</span> — bir xil funksiyaning turli shakllarda ishlashi.",
+            "Python da fayl bilan ishlash qanday amalga oshiriladi?": "<span class='code'>with open('file.txt', 'r') as f:\n    content = f.read()</span> — faylni o'qish. <span class='code'>'w'</span> — yozish, <span class='code'>'a'</span> — qo'shish.",
+            "Xatoliklarni boshqarish (try-except) qanday ishlaydi?": "<span class='code'>try:\n    x = 10 / 0\nexcept ZeroDivisionError:\n    print(\"Nolga bo'lish mumkin emas\")</span>",
+            "List, tuple, set, dictionary ma'lumotlar tuzilmalari farqi?": "<span class='term'>List</span> — o'zgaruvchan, tartibli. <span class='term'>Tuple</span> — o'zgarmas. <span class='term'>Set</span> — takrorlanmagan elementlar. <span class='term'>Dictionary</span> — kalit-qiymat juftliklari.",
+            "Lambda funksiyalari qanday ishlatiladi?": "Anonim funksiyalar: <span class='code'>kvadrat = lambda x: x**2</span>. Ko'pincha <span class='code'>map()</span>, <span class='code'>filter()</span> bilan ishlatiladi.",
+            "Generatorlar va iteratorlar nima?": "Generatorlar — xotirani tejash uchun qiymatlarni kerak bo'lganda hosil qiladi: <span class='code'>def gen():\n    yield 1</span>. Iterator — <span class='code'>next()</span> orqali qiymat olish.",
+            "Dastur kodini tekshirish (debugging) qanday amalga oshiriladi?": "IDE da <span class='term'>breakpoint</span> qo'yish, <span class='term'>step into/over</span> orqali satrma-satr bajarish, o'zgaruvchilarni kuzatish.",
+
+            "Ma'lumotlar tuzilmalari nima?": "Ma'lumotlarni saqlash va boshqarish usullari. Har bir tuzilma — ma'lumotlarni qanday tartibda saqlash, qidirish, o'zgartirish imkonini beradi.",
+            "Massiv (array) qanday ishlaydi?": "Massiv — bir xil turdagi elementlarni ketma-ket saqlaydi. Indeks orqali O(1) vaqt ichida murojaat qilinadi.",
+            "Ro'yxat (linked list) qanday tashkil etilgan?": "Har bir tugun — ma'lumot va keyingi tugunga ishora (pointer). Qo'shish/O'chirish — O(1), qidirish — O(n).",
+            "Stek (stack) va navbat (queue) farqi?": "<span class='term'>Stek</span> — LIFO (oxirgi kirdi — birinchi chiqdi). <span class='term'>Navbat</span> — FIFO (birinchi kirdi — birinchi chiqdi).",
+            "Daraxt (tree) ma'lumotlar tuzilmasi qanday?": "Ierarxik tuzilma — ildiz, tugunlar, barglar. Har bir tugunda bir nechta bolali tugunlar bo'lishi mumkin.",
+            "Binariy qidiruv daraxti (BST) qanday ishlaydi?": "Har bir tugunda chap tomonda kichik, o'ng tomonda katta qiymatlar saqlanadi. Qidirish — O(log n) vaqt ichida.",
+            "Xesh-jadval (hash table) nima?": "Kalit orqali qiymatga tezkor murojaat qilish tizimi. Xesh-funksiya — kalitni indeksga aylantiradi. O(1) o'rtacha vaqt.",
+            "Graf (graph) ma'lumotlar tuzilmasi qanday?": "Tugunlar (vertex) va ular orasidagi bog'lanishlar (edge). Yo'naltirilgan/yоnaltirilmagan, vaznli/vaznsiz bo'lishi mumkin.",
+            "Qidiruv algoritmlari (linear, binary) farqi?": "<span class='term'>Linear</span> — ketma-ket qidirish, O(n). <span class='term'>Binary</span> — tartiblangan massivda yarimdan qidirish, O(log n).",
+            "Saralash algoritmlari (bubble, selection, insertion, merge, quick)?": "<span class='term'>Bubble</span> — qo'shni elementlarni almashtirish, O(n²). <span class='term'>Merge</span> — bo'lib yutish, O(n log n). <span class='term'>Quick</span> — pivot asosida saralash, o'rtacha O(n log n).",
+            "Rekursiya algoritmlarida qanday muammolar sodir bo'ladi?": "Chuqur rekursiya — <span class='term'>stack overflow</span> xatosi. Rekursiyani takrorlanuvchi (iterativ) algoritmga aylantirish orqali hal qilinadi.",
+            "Dinamik dasturlash (dynamic programming) nima?": "Murakkab muammoni kichik muammolarga bo'lib, natijalarni saqlab borish. Misol: Fibonachchi, qop masalasi (knapsack).",
+            "\"Greedy\" algoritmlar qanday ishlaydi?": "Har bosqichda mahalliy eng yaxshi yechimni tanlab, global yechimga erishishga harakat qiladi. Har doim to'g'ri emas, lekin tezkor.",
+            "Qisqa yo'lni topish algoritmlari (Dijkstra, Floyd-Warshall)?": "<span class='term'>Dijkstra</span> — manbadan barcha tugunlargacha qisqa yo'l (vaznli graf, manfiy vazn yo'q). <span class='term'>Floyd-Warshall</span> — barcha juftliklar orasidagi qisqa yo'l.",
+            "Grafni kenglik va chuqurlik bo'yicha qidirish?": "<span class='term'>BFS</span> — navbat (queue) yordamida — qisqa yo'l topish. <span class='term'>DFS</span> — stek yoki rekursiya — to'liq qidirish.",
+            "Ma'lumotlarni siqish (compression) algoritmlari?": "<span class='term'>Lossless</span> — ZIP, PNG (ma'lumot yo'qolmaydi). <span class='term'>Lossy</span> — JPEG, MP3 (sifat kamayadi, hajm kichrayadi).",
+            "Xesh funksiyalari qanday ishlaydi?": "Ixtiyoriy uzunlikdagi ma'lumotni qat'iy uzunlikdagi qiymatga aylantiradi. Xavfsizlikda — parollarni saqlash, ma'lumot butunligi.",
+            "Kriptografiyada simmetrik va asimmetrik kalitlar farqi?": "<span class='term'>Simmetrik</span> — bitta kalit (AES, DES). <span class='term'>Asimmetrik</span> — ochiq va maxfiy kalit (RSA).",
+            "RSA algoritmi qanday ishlaydi?": "Ikki katta tub sonlardan foydalanib, ochiq kalit (e, n) va maxfiy kalit (d, n) yaratiladi. Shifrlash — <span class='code'>c = m^e mod n</span>, deshifrlash — <span class='code'>m = c^d mod n</span>.",
+            "Ma'lumotlar tuzilmalarini tanlash qanday amalga oshiriladi?": "Muammoning turi, ma'lumot hajmi, qidirish/ozgartirish tezligi talablari asosida tanlanadi. Masalan: tezkor qidirish — xesh-jadval, tartib — massiv, ierarxiya — daraxt.",
+
+            "Sun'iy intellekt (AI) nima?": "Inson aqliy faoliyatini kompyuterda taqlid qilish. Masalan: o'yin o'ynash, so'z tushunish, rasmlarni tanish.",
+            "Mashina o'qitish (machine learning) tushunchasi?": "Ma'lumotlardan o'rganib, yangi ma'lumotlarni bashorat qiluvchi algoritmlar. Supervised, unsupervised, reinforcement learning turlari mavjud.",
+            "Neyron tarmoqlari qanday ishlaydi?": "Biologik neyronlarga o'xshash sun'iy tarmoq — kirish, yashirin, chiqish qatlamlari. Vaznlar va aktivatsiya funksiyalari orqali o'qitiladi.",
+            "Chuqur o'qitish (deep learning) nima?": "Ko'p yashirin qatlamlardan iborat neyron tarmoqlari. Rasm, matn, ovozni qayta ishlashda yuqori natijalar beradi.",
+            "AI da ma'lumotlar to'plami (dataset) qanday rol o'ynaydi?": "Dataset — AI ni o'qitish uchun ma'lumotlar to'plami. Sifati — AI samaradorligini belgilaydi.",
+            "AI ning nazoratli va nazoratsiz ta'lim turlari?": "<span class='term'>Nazoratli</span> — etiketlangan ma'lumotlar (tashxis qo'yish). <span class='term'>Nazoratsiz</span> — etiketlanmagan (klasterlash).",
+            "AI yordamida matn, tasvir, ovozni qanday qayta ishlaymiz?": "Matn — NLP, tasvir — CNN, ovoz — RNN yoki transformer modellaridan foydalaniladi.",
+            "NLP (Natural Language Processing) nima?": "Inson tilini tushunish va ishlab chiqarish. Masalan: tarjima, so'z o'yinlari, sentiment tahlili.",
+            "Chatbotlar qanday ishlaydi?": "NLP va ML asosida foydalanuvchi xabarini tahlil qilib, javob generatsiya qiladi. Rule-based yoki AI asosida.",
+            "Katta ma'lumotlar (Big Data) texnologiyalari nima?": "Hajmi, tezligi, turlari katta bo'lgan ma'lumotlarni qayta ishlash texnologiyalari: Hadoop, Spark, NoSQL.",
+            "Cloud computing (bulutli hisoblash) tushunchasi?": "Internet orqali hisoblash resurslarini (server, xotira, dasturiy ta'minot) taqdim etish. IaaS, PaaS, SaaS turlari mavjud.",
+            "IoT (Internet of Things) nima?": "Har kungi narsalarni internetga ulash — soatlar, muzlatkichlar, avtomobillar. Ma'lumotlarni yig'ish va boshqarish.",
+            "Blockchain texnologiyasi qanday ishlaydi?": "Blokli, shifrlangan, o'zgartirib bo'lmaydigan jurnal. Kriptovalyutalar, shartnomalar uchun ishlatiladi.",
+            "Axborot texnologiyalarining iqtisodiyotga ta'siri?": "Ishlab chiqarish samaradorligi, xizmatlar sifati, yangi ish o'rinlari, iqtisodiy o'sishni rag'batlantiradi.",
+            "Axborot jamiyati tushunchasi?": "Axborot ishlab chiqarish, tarqatish, qayta ishlash asosiy e'tiborga ega bo'lgan jamiyat. Bilim iqtisodiyoti.",
+            "Axborot xavfsizligi (information security) nima?": "Ma'lumotlarning <span class='term'>maxfiyligi</span>, <span class='term'>butunligi</span>, <span class='term'>dostupnost'</span>ni ta'minlash.",
+            "Kiberxavfsizlik (cybersecurity) asosiy yo'nalishlari?": "Tarmoq xavfsizligi, dasturiy xavfsizlik, ma'lumot xavfsizligi, identifikatsiya va autentifikatsiya.",
+            "Malware, virus, trojan, ransomware tushunchalari?": "<span class='term'>Malware</span> — zararli dasturiy ta'minot. <span class='term'>Virus</span> — boshqa fayllarga tarqaydi. <span class='term'>Trojan</span> — foydali ko'rinishda zarar yetkazadi. <span class='term'>Ransomware</span> — fayllarni shifrlaydi, pul talab qiladi.",
+            "Phishing hujumlari qanday amalga oshiriladi?": "Foydalanuvchiga soxta elektron pochta yoki sayt orqali login, parol kabi shaxsiy ma'lumotlarni o'g'irlash.",
+            "Axborot xavfsizligini ta'minlash uchun qanday choralar ko'riladi?": "Kuchli parollar, ikki bosqichli autentifikatsiya, dasturiy ta'minot yangilanishlari, antivirus, tarmoq filtrlari.",
+
+            "Kompyuter tarmoqlari qanday turlarga bo'linadi?": "Lokal (LAN), shahar (MAN), global (WAN). Hamda: sota (PAN), kampus (CAN).",
+            "LAN, WAN, MAN tarmoqlari farqi?": "<span class='term'>LAN</span> — ofis yoki uyda. <span class='term'>MAN</span> — shahar doirasida. <span class='term'>WAN</span> — mamlakat yoki dunyo miqyosida (Internet).",
+            "IP-manzil nima? IPv4 va IPv6 farqi?": "IP — qurilmaning tarmoqdagi manzili. <span class='term'>IPv4</span> — 32 bit (4.3 milliard manzil). <span class='term'>IPv6</span> — 128 bit (3.4×10³⁸ manzil).",
+            "MAC-manzil nima?": "Qurilmaning unikal fizik manzili — tarmoq interfeysida yashirin. IP — dasturiy, MAC — apparataviy manzil.",
+            "DNS tizimi qanday ishlaydi?": "So'tni IP-manzilga aylantiradi. Misol: <span class='code'>google.com → 142.250.185.206</span>. DNS serverlar ierarxik tizimda ishlaydi.",
+            "Protokol nima? TCP/IP protokol to'plami?": "Protokol — tarmoqda aloqa qilish qoidasi. <span class='term'>TCP/IP</span> — Internet asosi: IP (manzil), TCP (ishonchli yetkazish), UDP (tezkor), HTTP, DNS.",
+            "HTTP va HTTPS farqi?": "<span class='term'>HTTP</span> — maxfiy emas. <span class='term'>HTTPS</span> — SSL/TLS orqali shifrlangan. URL da qulochka belgisi.",
+            "Router, switch, modem qurilmalari farqi?": "<span class='term'>Modem</span> — Internet signali o'zgartiradi. <span class='term'>Router</span> — tarmoqlar orasida ma'lumot yo'naltiradi. <span class='term'>Switch</span> — LAN ichida qurilmalarni ulaydi.",
+            "Wi-Fi tarmog'ida xavfsizlik qanday ta'minlanadi?": "WPA2/WPA3 shifrlash, kuchli parol, tarmoq nomini yashirish, mehmon tarmog'ini ajratish.",
+            "Firewall (tashqi himoya) qanday ishlaydi?": "Kiruvchi/chiquvchi tarmoq trafigini qoidalarga ko'ra filtrlash — zararli hujumlarni bloklaydi.",
+            "Tarmoqda ma'lumot uzatish tezligi qanday o'lchanadi?": "Bit/sekund (bps). Standartlar: Mbps (megabit), Gbps (gigabit). Internet tezligi — download/upload tezligi bilan o'lchanadi.",
+            "Paketli uzatish (packet switching) nima?": "Ma'lumot — paketlarga bo'linib, alohida yo'llanadi, qabul qiluvchi tomonida qayta yig'iladi. Internet asosida ishlaydi.",
+            "Tarmoqda qanday xatolar sodir bo'ladi?": "Paketlarning yo'qolishi, kechikish, takrorlanish, noto'g'ri manzilga borish. TCP — yo'qolgan paketlarni qayta jo'natadi.",
+            "Ping va traceroute buyruqlari qanday ishlaydi?": "<span class='code'>ping</span> — tarmoqdagi qurilma bilan aloqa mavjudligini tekshiradi. <span class='code'>traceroute</span> — ma'lumot qaysi routerlardan o'tayotganini ko'rsatadi.",
+            "Tarmoqda qanday xavfsizlik xavflari mavjud?": "DDoS, MITM, sniffing, spoofing, brute force hujumlari.",
+            "DDoS hujumlari qanday amalga oshiriladi?": "Ko'p botlar (zombie) orqali serverga ko'p so'rov yuborish — resurslarni to'sib qo'yish.",
+            "Tor tarmog'i nima? Anonimlikni qanday ta'minlaydi?": "Ma'lumotni bir nechta relay orqali shifrlab yuboradi — manzilni yashiradi. Anonim brauzer orqali ishlatiladi.",
+            "VPN (Virtual Private Network) nima?": "Internet orqali shaxsiy, shifrlangan tarmoqni yaratish. Tashqi tarmoqlarda maxfiylikni saqlash uchun.",
+            "Tarmoqda axborotni shifrlash qanday amalga oshiriladi?": "SSL/TLS — veb-trafikni. IPsec — tarmoq darajasida. Shifrlash — ma'lumotlarni o'qishni qiyinlashtiradi.",
+            "Tarmoq muhandisligi qanday yo'nalishlarda rivojlanmoqda?": "5G, IoT, bulutli tarmoqlar, SDN (Software-Defined Networking), tarmoq xavfsizligi, sun'iy intellektli tarmoqlar.",
+
+            "Dasturiy ta'minot (software) turlari?": "Tizimli (Windows, Linux), amaliy (Word, Photoshop), dasturlash vositalari (PyCharm, VS Code).",
+            "Tizimli dasturiy ta'minot nima?": "Kompyuter resurslarini boshqarish — operatsion tizimlar, drayverlar, utilitalar.",
+            "Amaliy dasturiy ta'minot nima?": "Foydalanuvchi uchun mo'ljallangan dasturlar — ofis, brauzer, o'yinlar.",
+            "Dasturiy ta'minotni rivojlantirish jarayoni?": "Talablarni aniqlash → loyihalashtirish → kod yozish → sinovdan o'tkazish → ishga tushirish → qo'llab-quvvatlash.",
+            "Agile va Waterfall metodologiyalari farqi?": "<span class='term'>Waterfall</span> — ketma-ket bosqichlar. <span class='term'>Agile</span> — iterativ, moslashuvchan, mijoz bilan doimiy aloqada.",
+            "GIT versiyalarni boshqarish tizimi qanday ishlaydi?": "Kod o'zgarishlarini saqlaydi, tarixni kuzatish, guruh bilan ishlash imkonini beradi. <span class='code'>git clone</span>, <span class='code'>commit</span>, <span class='code'>push</span>, <span class='code'>pull</span> buyruqlari.",
+            "IDE (Integrated Development Environment) nima?": "Dasturlash uchun birlashtirilgan muhit — kod yozish, kompilyatsiya, debugging. Misol: PyCharm, Visual Studio.",
+            "Kompilyator va interpreter farqi?": "<span class='term'>Kompilyator</span> — butun kodni bir paytda mashina kodiiga aylantiradi (C++). <span class='term'>Interpreter</span> — kodni satrma-satr bajaradi (Python).",
+            "Virtual mashina (VM) nima?": "Bir kompyutda boshqa operatsion tizimni ishlatish uchun yaratilgan muhit. VirtualBox, VMware.",
+            "Docker konteynerlari qanday ishlaydi?": "Dasturni uning barcha bog'liqliklari bilan yengil muhitda izolyatsiya qiladi. VM dan yengilroq.",
+            "Web dasturlashda front-end va back-end farqi?": "<span class='term'>Front-end</span> — foydalanuvchi interfeysi (HTML, CSS, JS). <span class='term'>Back-end</span> — server tomoni (Python, Node.js, bazalar).",
+            "HTML, CSS, JavaScript rolalari?": "<span class='term'>HTML</span> — tuzilma. <span class='term'>CSS</span> — stil. <span class='term'>JavaScript</span> — interaktivlik.",
+            "SQL tilida so'rov yozish qanday amalga oshiriladi?": "<span class='code'>SELECT name FROM users WHERE age > 18;</span> — ma'lumotlarni tanlash. <span class='code'>INSERT</span>, <span class='code'>UPDATE</span>, <span class='code'>DELETE</span> — ma'lumotlarni boshqarish.",
+            "Ma'lumotlar bazasi (database) tushunchasi?": "Tashkiliy ma'lumotlarni saqlash tizimi. Relatsion (SQL) — jadval shaklida. NoSQL — hujjat, graf, kalit-qiymat.",
+            "SQL va NoSQL farqi?": "<span class='term'>SQL</span> — qat'iy tuzilma, ACID. <span class='term'>NoSQL</span> — moslashuvchan, yuqori o'qish tezligi, BASE prinsipi.",
+            "REST API nima?": "Veb-xizmatlarni chaqirish uchun standart — HTTP protokoli orqali. <span class='code'>GET</span>, <span class='code'>POST</span>, <span class='code'>PUT</span>, <span class='code'>DELETE</span> metodlari.",
+            "Web xavfsizligi (XSS, SQL-injection)?": "<span class='term'>XSS</span> — zararli skriptni foydalanuvchi brauzeriga kiritish. <span class='term'>SQL-injection</span> — SQL so'roviga zararli kod kiritish.",
+            "Dasturiy ta'minot sinovdan o'tkazish (testing) qanday amalga oshiriladi?": "Unit test (funksiyalar), integration test (modullar), system test (butun tizim). Avtomatlashtirilgan testlar — pytest, Selenium.",
+            "UI/UX nima?": "<span class='term'>UI</span> — foydalanuvchi interfeys dizayni. <span class='term'>UX</span> — foydalanuvchi tajribasi. Ikkalasi — dasturning foydalanish qulayligini belgilaydi.",
+            "Dasturiy ta'minot sifatini baholash qanday amalga oshiriladi?": "Funksional to'g'rilik, ishlash tezligi, xavfsizlik, xatoliksizlik, qo'llab-quvvatlanish qobiliyati asosida baholanadi."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf «Informatika va axborot texnologiyalari» darsligiga asoslangan AI yordamchiman. Dasturlash, algoritmlar, sun'iy intellekt, kiberxavfsizlik, tarmoqlar — barcha mavzular bo'yicha chuqur tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
