@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Tasviriy Sanat va Musiqa (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A148C; /* Lila — sanat uchun */
+            --secondary: #7B1FA2;
+            --accent: #FFD54F; /* Sarg'ish — ijodiylik */
+            --light: #FFFFFF;
+            --bg: #EDE7F6;
+            --text: #311B92;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(75, 20, 140, 0.15);
+            --border: #D1C4E9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ede7f6, #d1c4e9);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #311B92);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #EDE7F6;
+            color: #311B92;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === ART STYLE === */
+        .art {
+            background: #EDE7F6;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #5E35B1;
+        }
+
+        /* === MUSIC STYLE === */
+        .music {
+            background: #E8EAF6;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #311B92;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #EDE7F6;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #5E35B1;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(75,20,140,0.2);
+        }
+
+        .quick-button:hover {
+            background: #311B92;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(75,20,140,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Tasviriy Sanat va Musiqa</h1>
+        <p>8-sinf uchun: Ranglar, kompozitsiya, musiqa asboblar, ijodiy loyihalar — ijodiylik dunyosiga xush kelibsiz!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🎨🎵</div>
+            <h2>Tasviriy Sanat va Musiqa</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — Ranglar, kompozitsiya, musiqa asboblar, ijodiy loyihalar</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Tasviriy Sanat va Musiqa faniga oid ma'lumotlar bazasi (8-sinf)
+        const database = {
+            "main_menu": {
+                text: "Salom! Sanat va musiqa — ruhni o'zgartiruvchi dunyo. Qaysi sohani o'rganishni xohlaysiz?",
+                buttons: [
+                    { text: "🎨 Tasviriy Sanat", key: "tasviriy" },
+                    { text: "🎵 Musiqa", key: "musiqa" },
+                    { text: "🖼️ Rasm chizish", key: "rasm_chizish" },
+                    { text: "🎼 Musiqa asboblar", key: "asboblar" },
+                    { text: "🎭 Ijodiy loyihalar", key: "loyiha" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tasviriy": {
+                text: "Tasviriy sanat — rang, chiziq, kompozitsiya va shakllar orqali ifoda qilish.",
+                buttons: [
+                    { text: "Ranglar nazariyasi", key: "ranglar_naz" },
+                    { text: "Kompozitsiya", key: "kompozitsiya" },
+                    { text: "Ijodiy usullar", key: "ijodiy_usullar" },
+                    { text: "Tarixiy usullar", key: "tarixiy" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ranglar_naz": {
+                text: "<span class='art'>Ranglar nazariyasi:</span><br>• Asosiy ranglar: qizil, ko'k, sariq<br>• Ikkinchi darajali: yashil, binafsha, qo'ng'iroq<br>• Qarama-qarshi ranglar: qizil–yashil, ko'k–qo'ng'iroq",
+                buttons: [{ text: "⬅️ Orqaga", key: "tasviriy", isHome: true }]
+            },
+            "kompozitsiya": {
+                text: "<span class='art'>Kompozitsiya — rasm tuzilishi:</span><br>• Markaziy nuqta<br>• Simmetriya va asimetriya<br>• Xarakterli chiziqlar<br>• Ranglar balansi — 60-30-10 qoidasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "tasviriy", isHome: true }]
+            },
+            "ijodiy_usullar": {
+                text: "<span class='example'>Ijodiy usullar:</span><br>• Kolorit (ranglar) — hissiyotni ifodalash<br>• Kontrast — taqqoslash<br>• Tekstura — to'siq, qog'oz, bo'yoq bilan yaratish<br>• Abstraksiya — haqiqatni o'zgartirish",
+                buttons: [{ text: "⬅️ Orqaga", key: "tasviriy", isHome: true }]
+            },
+            "tarixiy": {
+                text: "<span class='art'>Tarixiy usullar:</span><br>• Rangli qog'oz (qo'lda chizilgan naqshlar)<br>• Uzum naqshi — O'zbekiston madaniyati<br>• Dasturxonga chizilgan naqshlar — qadimiy sanat",
+                buttons: [{ text: "⬅️ Orqaga", key: "tasviriy", isHome: true }]
+            },
+            "musiqa": {
+                text: "Musiqa — tovushlar, ritm va melodiyalar orqali hissiyotni ifodalash.",
+                buttons: [
+                    { text: "Musiqa elementlari", key: "musiqa_elementlar" },
+                    { text: "Melodiya va ritm", key: "melodiya_ritm" },
+                    { text: "Musiqa janrlari", key: "janrlar" },
+                    { text: "O'zbek musiqasi", key: "o_z_musiqasi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "musiqa_elementlar": {
+                text: "<span class='music'>Musiqa elementlari:</span><br>• Melodiya — qo'shiq chizig'i<br>• Ritm — tovushlarning vaqti<br>• Harmoniya — birga o'ynaladigan tovushlar<br>• Dinamika — kuchli/zaif o'zgarish",
+                buttons: [{ text: "⬅️ Orqaga", key: "musiqa", isHome: true }]
+            },
+            "melodiya_ritm": {
+                text: "<span class='example'>Melodiya va ritm:</span><br>• Melodiya: «Yomg'ir» qo'shig'ining qo'shig'i<br>• Ritm: 4/4 — to'rt qismli, 3/4 — valsga o'xshash<br>• Qo'shiqda ritm — qo'lingiz bilan qo'ng'iroq qiling!",
+                buttons: [{ text: "⬅️ Orqaga", key: "musiqa", isHome: true }]
+            },
+            "janrlar": {
+                text: "<span class='music'>Musiqa janrlari:</span><br>• Klassik — Beethoven, Mozart<br>• Jazz — improvisatsiya<br>• Pop — qo'shiq, qo'g'irchoq<br>• Folk — O'zbekiston qo'shiqlari",
+                buttons: [{ text: "⬅️ Orqaga", key: "musiqa", isHome: true }]
+            },
+            "o_z_musiqasi": {
+                text: "<span class='art'>O'zbek musiqasi:</span><br>• Shashmaqom — asosiy klassik janr<br>• Maqom — 6 ta asosiy maqom<br>• O'zbek qo'shiqlari: «Yomg'ir», «Bolajon», «Sariq devon»",
+                buttons: [{ text: "⬅️ Orqaga", key: "musiqa", isHome: true }]
+            },
+            "rasm_chizish": {
+                text: "Rasm chizish — ijodiy faoliyatning asosi.",
+                buttons: [
+                    { text: "Chiziq va shakl", key: "chiziq_shakl" },
+                    { text: "Shaxsiy uslub", key: "uslub" },
+                    { text: "Portret chizish", key: "portret" },
+                    { text: "Landscape", key: "landscape" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "chiziq_shakl": {
+                text: "<span class='example'>Chiziq va shakl:</span><br>• To'g'ri chiziq — turg'unlik<br>• Egri chiziq — harakat<br>• Aylana — butunlik<br>• Uchburchak — dinamika<br>• Kvadrat — barqarorlik",
+                buttons: [{ text: "⬅️ Orqaga", key: "rasm_chizish", isHome: true }]
+            },
+            "uslub": {
+                text: "<span class='art'>Shaxsiy uslub:</span><br>Har bir rassom — o'z uslubiga ega!<br>• Chiziq qalinligi<br>• Rang tanlovi<br>• Qo'lda chizilgan naqshlar<br>• Fikr — rasmning mohiyati",
+                buttons: [{ text: "⬅️ Orqaga", key: "rasm_chizish", isHome: true }]
+            },
+            "portret": {
+                text: "<span class='example'>Portret chizish:</span><br>1. Bosh shakli — yumaloq<br>2. Ko'zlar — yarim aylana<br>3. Burun — uchburchak<br>4. Ayoq — chiziq<br>5. So'ng — rang va sovuq-so'ngi bo'yoq",
+                buttons: [{ text: "⬅️ Orqaga", key: "rasm_chizish", isHome: true }]
+            },
+            "landscape": {
+                text: "<span class='art'>Landscape — tabiat rasm:</span><br>• Avval — orqa fon (osmon)<br>• O'rtada — tog'lar, daraxtlar<br>• Olda — o't, gullar, toshlar<br>• Ranglar: sovuq — orqa, issiq — old",
+                buttons: [{ text: "⬅️ Orqaga", key: "rasm_chizish", isHome: true }]
+            },
+            "asboblar": {
+                text: "Musiqa asboblar — tovush yaratish vositalari.",
+                buttons: [
+                    { text: "O'zbek asboblar", key: "o_z_asboblar" },
+                    { text: "G'arbiy asboblar", key: "g_arbiy" },
+                    { text: "Elektron asboblar", key: "elektron" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "o_z_asboblar": {
+                text: "<span class='music'>O'zbek asboblar:</span><br>• Dutar — ikki simli<br>• Doira — qo'l bilan o'ynaladi<br>• Chang — qo'shiq chiqaradi<br>• Nai — qushlar ovoziga o'xshash",
+                buttons: [{ text: "⬅️ Orqaga", key: "asboblar", isHome: true }]
+            },
+            "g_arbiy": {
+                text: "<span class='music'>G'arbiy asboblar:</span><br>• Piano — 88 tugma<br>• Violina — 4 simli<br>• Gitara — akustik yoki elektr<br>• Flauta — o'tli ovoz",
+                buttons: [{ text: "⬅️ Orqaga", key: "asboblar", isHome: true }]
+            },
+            "elektron": {
+                text: "<span class='example'>Elektron asboblar:</span><br>• MIDI klaviatura<br>• DAW dasturlari (GarageBand, FL Studio)<br>• Synthesizer — yangi ovozlar yaratadi<br>• Mikrofon — ovozni kuchaytiradi",
+                buttons: [{ text: "⬅️ Orqaga", key: "asboblar", isHome: true }]
+            },
+            "loyiha": {
+                text: "Ijodiy loyihalar — sizning ijodiylikni namoyish etish imkoniyati!",
+                buttons: [
+                    { text: "Rasm albomi", key: "rasm_albom" },
+                    { text: "Musiqiy qo'shiq", key: "musiqiy_qosh" },
+                    { text: "Sanat eksponati", key: "eksponat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "rasm_albom": {
+                text: "<span class='art'>Rasm albomi loyihasi:</span><br>• 10 ta rasm (portret, landscape, abstraksiya)<br>• Har biriga izoh: «Men nima his qildim?»<br>• Ranglar va uslubni tushuntiring",
+                buttons: [{ text: "⬅️ Orqaga", key: "loyiha", isHome: true }]
+            },
+            "musiqiy_qosh": {
+                text: "<span class='music'>Musiqiy qo'shiq loyihasi:</span><br>• 3 ta qatorda qo'shiq yozing<br>• Ritmni 4/4 qiling<br>• Biror asbob (dutar yoki gitara) bilan o'ynang<br>• Audio fayl sifatida yuboring",
+                buttons: [{ text: "⬅️ Orqaga", key: "loyiha", isHome: true }]
+            },
+            "eksponat": {
+                text: "<span class='art'>Sanat eksponati:</span><br>• O'zining ishingizni sinfda namoyish qiling<br>• Rasm, musiqa, naqsh, qo'g'irchoq — istalgan shaklda<br>• 2 daqiqa tushuntirish — «Nima uchun?»",
+                buttons: [{ text: "⬅️ Orqaga", key: "loyiha", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Sanat testi", key: "test_sanat" },
+                    { text: "Musiqa testi", key: "test_musiqa" },
+                    { text: "Ijodiy loyihalar", key: "test_loyiha" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_sanat": {
+                text: "1. Qaysi ranglar asosiy ranglar?\nA) Qizil, ko'k, sariq\nB) Yashil, qo'ng'iroq, binafsha\nC) Qora, oq, kulrang",
+                buttons: [
+                    { text: "A)", key: "test_sanat_a" },
+                    { text: "B)", key: "test_sanat_b" },
+                    { text: "C)", key: "test_sanat_c" }
+                ]
+            },
+            "test_sanat_a": {
+                text: "✅ To'g'ri! Asosiy ranglar — qizil, ko'k, sariq.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_musiqa": {
+                text: "2. 4/4 ritm qanday qo'shiqga mos?\nA) Valsga\nB) Qo'shiqga\nC) Jazzga",
+                buttons: [
+                    { text: "A)", key: "test_musiqa_a" },
+                    { text: "B)", key: "test_musiqa_b" },
+                    { text: "C)", key: "test_musiqa_c" }
+                ]
+            },
+            "test_musiqa_b": {
+                text: "✅ Ajoyib! 4/4 — eng ko'p qo'shiqlarda ishlatiladigan ritm.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_loyiha": {
+                text: "3. Ijodiy loyihada nima muhim?\nA) Faqat natija\nB) Jarayon va hissiyot\nC) Faqat qo'g'irchoq",
+                buttons: [
+                    { text: "A)", key: "test_loyiha_a" },
+                    { text: "B)", key: "test_loyiha_b" },
+                    { text: "C)", key: "test_loyiha_c" }
+                ]
+            },
+            "test_loyiha_b": {
+                text: "✅ To'g'ri! Ijodiy loyihada jarayon va hissiyot — eng muhim qism.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
