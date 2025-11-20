@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Tabiiy Fanlar AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #2196f3;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #2196f3, #0d47a1);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(33, 150, 243, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #2196f3, #0d47a1, #2196f3);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(33, 150, 243, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(33, 150, 243, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #0d47a1;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #0d47a1, #2196f3);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(33, 150, 243, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(33, 150, 243, 0.9);
+      background: linear-gradient(45deg, #0a3a8a, #1976d2);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #0d47a1;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(33, 150, 243, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #2196f3;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #0d47a1, #2196f3);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(33, 150, 243, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 248, 255, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #2196f3, #0d47a1);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #2196f3;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2196f3;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 248, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #2196f3;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #0d47a1, #2196f3);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(33, 150, 243, 0.7);
+      background: linear-gradient(45deg, #0a3a8a, #1976d2);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(33, 150, 243, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #2196f3;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🌍</div>
+      <h1 class="title">ASCO Tabiiy Fanlar AI</h1>
+      <p class="subtitle">6-sinf tabiiy fanlarida qiyinchilik tug'ilmaydi! Men — sizning shaxsiy tabiatshunoslik o'qituvchingiz. Modda, energiya, o'simliklar, hayvonlar, ekologiya, Yer va kosmos — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🔬</div>
+        <h2>Tabiiy Fanlar AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Modda va uning xossalari')">Modda va xossalari</button>
+          <button class="btn-3d" onclick="sendMessage('Jism, modda, material')">Jism, modda, material</button>
+          <button class="btn-3d" onclick="sendMessage('Energiya turlari')">Energiya turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Suv aylanishi')">Suv aylanishi</button>
+          <button class="btn-3d" onclick="sendMessage('Havo tarkibi')">Havo tarkibi</button>
+          <button class="btn-3d" onclick="sendMessage('Tuproq tuzilishi')">Tuproq tuzilishi</button>
+          <button class="btn-3d" onclick="sendMessage('O\'simliklar tuzilishi')">O'simliklar tuzilishi</button>
+          <button class="btn-3d" onclick="sendMessage('Hayvonlarning turlari')">Hayvonlar turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Ekologiya va atrof-muhit')">Ekologiya</button>
+          <button class="btn-3d" onclick="sendMessage('Yer qobig\'i')">Yer qobig'i</button>
+          <button class="btn-3d" onclick="sendMessage('Kosmos va Quyosh tizimi')">Kosmos</button>
+          <button class="btn-3d" onclick="sendMessage('Ob-havo va iqlim')">Ob-havo</button>
+          <button class="btn-3d" onclick="sendMessage('Tabiatda aylanish')">Tabiatda aylanish</button>
+          <button class="btn-3d" onclick="sendMessage('Fotosintez')">Fotosintez</button>
+          <button class="btn-3d" onclick="sendMessage('Tabiiy ofatlar')">Tabiiy ofatlar</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimcha savol')">Qo'shimcha savol</button>
+          <button class="btn-3d" onclick="sendMessage('Tajriba')">'Ilmiy tajriba'</button>
+          <button class="btn-3d" onclick="sendMessage('Tabiatni muhofaza qilish')">Muhozaza qilish</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning 6-sinf tabiiy fanlar o'qituvchingiz. Modda, energiya, o'simliklar, ekologiya yoki kosmos haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF TABIIY FANLAR — ASCO LOYIHASI
+
+      if (lower.includes("modda") || lower.includes("xossalari")) {
+        response = "Modda — jismlarni tashkil qiluvchi narsa. Moddaning 3 asosiy xossasi:\n\n1. Massa — og'irligini ifodalaydi (gr, kg)\n2. HAJM — qancha joy egallashini ko'rsatadi (sm³, l)\n3. Zichlik — bir hajmdagi massa miqdori\n\nModda 3 holatda bo'ladi:\n- Qattiq (muz)\n- Suyuq (suv)\n- Gaz (bug')\n\nHar bir holatda zarrachalar har xil harakat qiladi.";
+      } else if (lower.includes("jism") || lower.includes("material")) {
+        response = "Farqlar:\n\n• **Jism** — shakli va hajmi aniq bo'lgan narsa (shar, kitob, stol)\n• **Modda** — jismni tashkil qiluvchi narsa (plastmassa, yog', suv)\n• **Material** — jism tayyorlanadigan modda (yog'och, temir, paxta)\n\nMasalan:\n- Jism: futbol to'pi\n- Modda: rezina\n- Material: sun'iy rezina";
+      } else if (lower.includes("energiya")) {
+        response = "Energiya — ish qilish qobiliyati. Asosiy turlari:\n\n1. **Mexanik** — harakat (shamol, suv oqimi)\n2. **Yorug'lik** — Quyosh, lampa\n3. **Issiqlik** — olov, issiq suv\n4. **Elektr** — tok, batareya\n5. **Kimyoviy** — yoqilg'i, oziq-ovqat\n6. **Yadroviy** — quyoshda yoki reaktorda\n\nEnergiya bir shakldan ikkinchisiga aylanadi. Masalan, quyosh — yorug'lik → o'simlik — kimyoviy energiya.";
+      } else if (lower.includes("suv aylanishi")) {
+        response = "Tabiatda suv doim aylanib turadi:\n\n1. **Bug'lanish** — suv bug'ga aylanadi (quyosh ta'sirida)\n2. **Kondensatsiya** — bug' sovub, bulutga aylanadi\n3. **Yomg'ir** — bulutdagi suv yerga tushadi\n4. **Suv oqimi** — daryo, ko'l, dengizga boradi\n\nBu jarayon — **suv aylanishi** deb ataladi. U hayot uchun juda muhim!";
+      } else if (lower.includes("havo tarkibi")) {
+        response = "Havo — gazlar aralashmasi. Tarkibi:\n\n• Azot (N₂) — 78%\n• Kislorod (O₂) — 21%\n• Boshqa gazlar (argon, CO₂, suv bug'i) — 1%\n\nKislorod — nafas olish uchun kerak.\nAzot — o'simliklarga oziq modda sifatida kerak.\nCO₂ — o'simliklar fotosintez qilish uchun ishlatadi.";
+      } else if (lower.includes("tuproq")) {
+        response = "Tuproq — yer yuzidagi tirik mavjudotlar uchun asos. Tarkibi:\n\n• Mineral moddalar (45%)\n• Suv (25%)\n• Havo (25%)\n• Organik moddalar — g'ildirg'och, chiritilgan o'simlik qoldiqlari (5%)\n\nTuproq qatlamlari:\n1. Humus qatlami (eng yuqori, unumdor)\n2. Yog'och qatlami\n3. Chuchuk tuproq qatlami\n\nTuproqni qo'riqlash — kelajak avlod uchun zarur!";
+      } else if (lower.includes("o'simliklar tuzilishi")) {
+        response = "O'simlikning asosiy qismlari:\n\n1. **Ildiz** — suv va oziq moddalarni so'rash\n2. **Poya** — barg va gullarni ushlab turish\n3. **Barg** — fotosintez qilish\n4. **Gul** — urug' berish\n5. **Mevasi** — urug'larni himoya qilish\n\nFotosintez:\n\\(\\text{CO}_2 + \\text{suv} + \\text{yorug'lik} → \\text{glukoza} + \\text{O}_2\\)";
+      } else if (lower.includes("hayvonlar turlari")) {
+        response = "Hayvonlar 2 guruhga bo'linadi:\n\n1. **Uy hayvonlari** — inson tomonidan parvarishlanadi (sigir, qo'y, it)\n2. **Yovvoyi hayvonlar** — tabiatda yashaydi (ayiq, tulki, jayron)\n\nHayvonlarning turlari:\n• Sut emizuvchilar (it, mushuk)\n• Qushlar (burgut, tovuq)\n• Suvda yashovchi (baliq, delfin)\n• Hasharotlar (ari, kapalak)\n\nBarchasi ekotizimning bir qismidir!";
+      } else if (lower.includes("ekologiya")) {
+        response = "Ekologiya — tirik mavjudotlar va ularning atrof-muhit bilan aloqasini o'rganadi.\n\nMuammolar:\n• Tuproq ifloslanishi\n• Havo va suvning ifloslanishi\n• O'rmonlarning kesilishi\n• Xavf ostidagi hayvonlarning qirilishi\n\nYechimlar:\n• Qayta ishlash\n• Elektr transporti\n• O'rmonni qo'riqlash\n• Suvni tejash\n\nSiz ham kichik qadamingizdan boshlashingiz mumkin!";
+      } else if (lower.includes("yer qobig'i")) {
+        response = "Yer qobig'i — Yerning tashqi qattiq qismi. U 2 qismdan iborat:\n\n1. **Kontinentlar qobig'i** — quruqlikda (30–50 km qalin)\n2. **Okean qobig'i** — suv ostida (5–10 km qalin)\n\nTarkibi:\n• Granit (quruqlikda)\n• Bazalt (suv ostida)\n\nYer qobig'i — tektonik plitalardan tashkil topgan. Ularning harakati — zilzila va vulqonlarga sabab bo'ladi.";
+      } else if (lower.includes("kosmos") || lower.includes("quyosh tizimi")) {
+        response = "Quyosh tizimi — 1 yulduz (Quyosh) va uning atrofidagi 8 ta sayyora.\n\nSayyoralar:\n1. Merkuriy\n2. Venera\n3. Yer\n4. Mars\n5. Yupiter\n6. Saturn\n7. Uran\n8. Neptun\n\nYer — tirik mavjudotlar yashaydigan yagona sayyora!\nQuyosh — barcha energiyaning manbai.\nOy — Yerning yo'ldoshi.";
+      } else if (lower.includes("ob-havo") || lower.includes("iqlim")) {
+        response = "• **Ob-havo** — qisqa muddatli, kunlik (sana, harorat, bulutli)\n• **Iqlim** — uzoq muddatli, yillik o'rtacha (cho'l, o'rmon, muzlik)\n\nIqlimga ta'sir qiluvchi omillar:\n- Kenglik\n- Dengizdan masofa\n- Balandlik\n- Oqimlar\n\nO'zbekiston — cho'l va yarim cho'l iqlimida.";
+      } else if (lower.includes("tabiatda aylanish")) {
+        response = "Tabiatda 3 asosiy aylanish:\n\n1. **Suv aylanishi** — bug'lanish → yomg'ir → suv oqimi\n2. **Uglerod aylanishi** — o'simlik CO₂ so'raydi, hayvon nafas olganda chiqaradi\n3. **Azot aylanishi** — bakteriyalar tuproqda azotni o'zgartiradi\n\nBu aylanishlar — tirik mavjudotlar uchun hayot aylanishi!";
+      } else if (lower.includes("fotosintez")) {
+        response = "Fotosintez — o'simliklarning quyosh yorug'ligi yordamida oziq modda ishlab chiqarish jarayoni.\n\nFormula:\n\\(\\text{Karbonat angidrid} + \\text{suv} + \\text{yorug'lik} → \\text{glukoza} + \\text{kislorod}\\)\n\nAhamiyati:\n• O'simliklar oziqlanadi\n• Havoga kislorod beradi\n• Karbonat angidridni kamaytiradi\n\nFotosintez — Yerdagi hayotning poydevori!";
+      } else if (lower.includes("tabiiy ofatlar")) {
+        response = "Tabiiy ofatlar — inson nazoratidan tashqari hodisalar:\n\n• Zilzila — yer qobig'ining titrashi\n• Sel — tog'likda suv va tosh oqimi\n• Bo'ron — kuchli shamol\n• Qurg'oqchilik — uzoq vaqt yomg'ir yog'maslik\n• Suv toshqini — daryoning to'lib ketishi\n\nOldini olish:\n- Seysmik xavfli hududlarda ehtimoliy rejalar\n- O'rmonlarni saqlash\n- Suvni boshqarish tizimlari";
+      } else if (lower.includes("tajriba") || lower.includes("ilmiy")) {
+        response = "Ilmiy tajriba — tabiat qonuniyatlarini o'rganish usuli.\n\nBosqichlari:\n1. **Savol** — nima uchun? qanday?\n2. **Gipoteza** — taxminiy javob\n3. **Tajriba** — shartlarni nazorat qilish\n4. **Kuzatish** — natijalarni yozish\n5. **Xulosa** — gipoteza to'g'ri yoki yo'q?\n\nMasalan:\n\"Nafas olganimizda nima chiqariladi?\"\n→ CO₂ chiqariladi (shishaga nafas berib, limonli suvni o'zgartirish orqali tekshiriladi)";
+      } else if (lower.includes("muhozaza") || lower.includes("atrof-muhit")) {
+        response = "Tabiatni muhofaza qilish — barchamizning burchimiz!\n\nNima qilish kerak?\n✅ Suvni tejash\n✅ Qayta ishlanadigan idishlardan foydalanish\n✅ Elektr energiyani tejash\n✅ O'rmonlarni ekish\n✅ Chiqindilarni to'g'ri tashlash\n\nHar bir kichik harakat — katta o'zgarishga olib keladi!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men hamma narsani yeyman:\nQog'oz, yog', o'simlik, plastmassa...\nLekin hech qachon to'yolmayman.\nMen nima?\"\n\n💡 Javob: **Tuproqdagi g'ildirg'och** (chirituvchi bakteriyalar)\n\nUlar organik moddalarni parchalab, tuproqqa foydali moddalar qo'shadi!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nYerda 1 dan 1.5 millionga yaqin turdagi hayvon mavjud!\n\nShundan:\n• Hasharotlar — 1 milliondan ortiq\n• Baliqlar — 34 000 dan ko'proq\n• Qushlar — 10 000 dan ko'proq\n\nAmmo ularning 1/3 qismi xavf ostida!\nShuning uchun tabiatni qo'riqlash kerak.";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nQuyidagi jarayonlarni to'g'ri tartibda joylashtiring:\n1. Yomg'ir yog'di\n2. Suv dengizga oqdi\n3. Quyosh suvni bug'lantirdi\n4. Bulut hosil bo'ldi\n\n✅ To'g'ri tartib: 3 → 4 → 1 → 2\n\nBu — **suv aylanishi**!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning 6-sinf tabiiy fanlar o'qituvchingizman. Modda, o'simliklar, ekologiya yoki kosmos haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Tabiatni o'rganish — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli tabiiy fanlar o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni qiziqarli va tushunarli tarzda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf tabiiy fanlarida yordam berishga tayyorman. Iltimos, \"modda\", \"fotosintez\", \"ekologiya\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
