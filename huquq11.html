@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Huquq asoslari AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0f0f23, #1a1a3a, #08081a);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050515;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #3d8bff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%233d8bff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 15, 35, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(61, 139, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 5, 20, 0.9);
+            color: #3d8bff;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(61, 139, 255, 0.3);
+            text-shadow: 0 0 10px rgba(61, 139, 255, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #3d8bff, #64b5f6);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #3d8bff;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 5, 20, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(61, 139, 255, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #3d8bff transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #3d8bff;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(30, 30, 60, 0.4);
+            color: #3d8bff;
+            border: 1px solid rgba(61, 139, 255, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(61, 139, 255, 0.25);
+            border-color: #3d8bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(61, 139, 255, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%233d8bff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .term {
+            color: #bbdefb;
+            font-weight: bold;
+        }
+
+        .law-ref {
+            color: #b3e5fc;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Huquq asoslari AI Bot</div>
+        <div class="splash-subtext">Konstitutsiya, fuqarolik, jinoyat, mehnat, oilaviy, xalqaro huquq, sud ishlari, huquqiy institutlar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">⚖️ 11-sinf Huquq asoslari AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Konstitutsiya huquqi — 20 ta
+            "O'zbekiston Respublikasi Konstitutsiyasining asosiy prinsiplari nima?",
+            "Konstitutsiya O'zbekistonda qanday huquqiy kuchga ega?",
+            "Fuqarolarning asosiy huquq va erkinliklari Konstitutsiyada qanday kafolatlangan?",
+            "Davlat hokimiyati bo'linishining huquqiy asoslari?",
+            "Prezident, Oliy Majlis, Hukumat, Sud hokimiyatlarining o'zaro munosabatlari?",
+            "Konstitutsiya sudining roli va vakolatlari?",
+            "Konstitutsiya qonunlari bilan oddiy qonunlar orasidagi farq?",
+            "Inson huquqlari va O'zbekistonning xalqaro shartnomalarga rioyasi?",
+            "Korrupsiyaga qarshi Konstitutsiya kafolatlari?",
+            "Konstitutsiyaning 2023-yilgi o'zgarishlari nima uchun amalga oshirildi?",
+            "Milliy ozodlik, milliy tenglik, davlat tilining statusi?",
+            "Davlat ramzlari haqida Konstitutsiyada nima deyilgan?",
+            "Fuqarolik jamiyati institutlari qanday kafolatlangan?",
+            "O'zbekiston Respublikasining suvereniteti qanday ta'minlangan?",
+            "Huquqiy tartib va huquqiy davlat tushunchasi?",
+            "Davlatning huquqiy javobgarligi qanday ifodalanadi?",
+            "O'zbekiston hududida boshqa mamlakat qonunlari qo'llaniladimi?",
+            "Fuqarolarning murojaat huquqi qanday kafolatlangan?",
+            "Xalqaro huquq O'zbekiston huquq tizimida qanday o'rinda?",
+            "Konstitutsiyaviy nazorat mexanizmlari qanday ishlaydi?",
+
+            // Fuqarolik huquq — 20 ta
+            "Fuqarolik huquq sohasida shaxsning qanday huquqlari mavjud?",
+            "Shaxsiy mulk huquqi qanday himoyalangan?",
+            "Intellektual mulk huquqi tushunchasi va uning turlari?",
+            "Shartnomali munosabatlar qanday tuziladi?",
+            "Fuqarolik qonun hujjatlarining bekor qilinish shartlari?",
+            "Shikoyat qilish, da'vo qilish huquqi qanday amalga oshiriladi?",
+            "Majburiy ekspropriatsiya qachon amalga oshiriladi?",
+            "Vasiylik va himoya institutlari nima uchun kerak?",
+            "Shaxsning huquqiy qobiliyatini cheklash huquqan qanday sodir bo'ladi?",
+            "Nodavlat notijorat tashkilotlar (NNT) huquqiy statusi?",
+            "Fuqarolik huquqda sudning roli qanday?",
+            "Notarial hujjatlashtirish nima uchun zarur?",
+            "Vasiyat qilish tartibi va uning bekor qilinishi?",
+            "Huquqiy shaxs tushunchasi va turlari?",
+            "Aksiyadorlik jamiyatlarining huquqiy javobgarligi?",
+            "Fuqarolik huquqda sud jarayonining bosqichlari?",
+            "Sud qarorlarini ijro etish mexanizmi?",
+            "Fuqarolik da'volari boyicha ish yuritish muddatlari?",
+            "Majburiy sud jarayonlari qanday hollarda amalga oshiriladi?",
+            "Fuqarolik huquqda xalqaro qonunlarning qo'llanilishi?",
+
+            // Jinoyat huquqi — 20 ta
+            "Jinoyatga ayni qaysi qonun asosida javobgarlik keltiriladi?",
+            "Jinoyat tarkibining asosiy elementlari nima?",
+            "Jinoyatga sababchi emaslikning huquqiy shartlari?",
+            "Jinoyat sodir etganlik uchun javobgarlik yoshi?",
+            "Jinoyatga sodir etilgan hollarda qo'shimcha jazolar?",
+            "Og'irlik darajasiga ko'ra jinoyatlar tasnifi?",
+            "Jinoyat sodir etilganda qaysi sud ko'rib chiqadi?",
+            "Preliminar tergovning maqsadi va mohiyati nima?",
+            "Qamash va uy qamog'ining huquqiy farqi?",
+            "Jinoyat jarayonida shaxsning huquqlari qanday kafolatlanadi?",
+            "Jinoyat huquqida qurbonlikning huquqlari?",
+            "Sud jarayonida dalillar qanday baholanadi?",
+            "Jinoyat sodir etilganda sudning sud qarorini qanday qabul qiladi?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+            "Jinoyat sodir etilganda sud qarorini qanday qabul qiladi?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?",
+
+            // Mehnat, oilaviy, xalqaro huquq — 20 ta
+            "Mehnat kodeksi asosida ishchining qanday huquqlari kafolatlangan?",
+            "Ish tajribasini hisoblash tartibi qanday?",
+            "Ish beruvchining fuqarolik javobgarligi?",
+            "Ishlab chiqarish jarayonida xavfsizlik qanday ta'minlanadi?",
+            "Oilaviy kodeksda nikoh tuzish tartibi qanday belgilangan?",
+            "Oilaviy marrasim va fuqarolik nikohi o'rtasidagi farq?",
+            "Talabalar nikohi qonuniy ehtimollar?",
+            "Oilaviy muzoqarada farzandlarning huquqlari qanday kafolatlangan?",
+            "Xalqaro huquq tizimida O'zbekistonning o'rni?",
+            "Inson huquqlari bo'yicha Yevropa sudining O'zbekiston bilan aloqasi?",
+            "Xalqaro shartnomalar O'zbekiston huquq tizimiga qanday ta'sir qiladi?",
+            "Qochqin va boshpana so'rovchilarning huquqlari?",
+            "O'zbekistonning BMT inson huquqlari kengashidagi roli?",
+            "Korrupsiyaga qarshi xalqaro shartnomalar?",
+            "Xalqaro mehnat tashkiloti (XMT) bilan hamkorlik?",
+            "O'zbekistonning Genfer konvensiyasiga rioya qilishi?",
+            "Xalqaro huquqda "soyuvchi huquq" nima?",
+            "Xalqaro sudlarda O'zbekiston fuqarolarining huquqlari?",
+            "Xalqaro huquqda "sud javobgarligi" qanday ta'minlanadi?",
+            "Xalqaro shartnomalar asosida fuqarolarning huquqlari?",
+
+            // Huquqiy institutlar va amaliyot — 20 ta
+            "O'zbekistonda huquqiy yordam tizimi qanday tashkil etilgan?",
+            "Advokatura faoliyati qanday huquqiy kafolatlangan?",
+            "Notariat instituti qanday ishlaydi?",
+            "Sud jarayonida xodimlarning huquqlari?",
+            "Sud qarorlarini ijro etish inspeksiyasi vazifalari?",
+            "Prokuratura tizimining tarkibiy qismi?",
+            "Prokuratura va sud o'rtasidagi muhokamali aloqalar?",
+            "Huquqiy tushunchalar: "respublika", "qonun", "qaror", "farmon", "buyruq"?",
+            "Qonun va qarorlar o'rtasidagi farq?",
+            "Huquqiy tushunchalar: "norma", "qonun", "qonunchilik", "qonunbuzarlik"?",
+            "Huquqiy tushunchalar: "shaxs", "fuqarо", "yuridik shaxs", "shartnoma"?",
+            "Huquqiy tushunchalar: "jazо", "mudдat", "qaror", "sud", "prokuror"?",
+            "Huquqiy tushunchalar: "mulk", "shartnoma", "qarz", "obligatsiya", "majburiyat"?",
+            "Huquqiy tushunchalar: "sud jarayoni", "da'vo", "shikoyat", "murojaat", "dalil"?",
+            "Huqquqiy tushunchalar: "qonunbuzarlik", "jinoiy javobgarlik", "fuqarolik javobgarlik"?",
+            "Huquqiy tushunchalar: "intellektual mulk", "mualliflik huquqi", "patent", "tovar belgisi"?",
+            "Huquqiy tushunchalar: "mezon", "standart", "qonunchilik", "qonunbuzarlik", "jazо"?",
+            "Huquqiy tushunchalar: "qonunchilik jarayoni", "qonun loyihasi", "qonun qabul qilish"?",
+            "Huquqiy tushunchalar: "qonunbuzarlik", "jinoiy javobgarlik", "fuqarolik javobgarlik"?",
+            "Huquqiy tushunchalar: "intellektual mulk", "mualliflik huquqi", "patent", "tovar belgisi"?"
+        ];
+
+        const responses = {
+            "O'zbekiston Respublikasi Konstitutsiyasining asosiy prinsiplari nima?": "<span class='term'>Konstitutsiyaning asosiy prinsiplari</span>: 1) Inson huquqlari va erkinliklarini tan olish; 2) Davlat hokimiyatining xalqdan kelishi; 3) Davlat hokimiyatining uchta tarmoqqa bo'linishi (qonun chiqaruvchi, ijro etuvchi, sud); 4) Huquqiy davlat qurilishi; 5) Korrupsiyaga qarshi kurash.",
+            "Konstitutsiya O'zbekistonda qanday huquqiy kuchga ega?": "O'zbekiston Respublikasining <span class='term'>Konstitutsiyasi</span> — mamlakatning eng yuqori huquqiy hujjati bo'lib, barcha qonun va normativ hujjatlar unga zid kelmasligi shart (Konstitutsiya, 15-moddasi). Barcha fuqarolar, davlat organlari unga bo'ysunishlari kerak.",
+            "Fuqarolarning asosiy huquq va erkinliklari Konstitutsiyada qanday kafolatlangan?": "Konstitutsiya 27–54-moddalarida fuqarolarning siyosiy, iqtisodiy, ijtimoiy, madaniy huquqlari kafolatlangan: <span class='term'>so'z erkinligi</span>, <span class='term'>ijtimoiy guruhlarda birlashish</span>, <span class='term'>shaxsiy yashash joyini tanlash huquqi</span>, <span class='term'>maxfiylik huquqi</span>.",
+            "Davlat hokimiyati bo'linishining huquqiy asoslari?": "Konstitutsiya 9–11-moddalari asosida davlat hokimiyati <span class='term'>uchga bo'linadi</span>: Oliy Majlis (qonun chiqaruvchi), Prezident va Hukumat (ijro etuvchi), Sudlar (adliya). Bu — hokimiyatning cheklanishi va muvozanatini ta'minlash uchun.",
+            "Prezident, Oliy Majlis, Hukumat, Sud hokimiyatlarining o'zaro munosabatlari?": "Prezident — davlat boshlig'i, Oliy Majlis — qonun chiqaruvchi, Hukumat — ijro etuvchi organ, Sud — mustaqil adliya organi. Prezident Oliy Majlis qarorlariga veto qo'yishi, Hukumat Oliy Majlis oldida javobgar bo'ladi (Konstitutsiya, 98-moddasi).",
+            "Konstitutsiya sudining roli va vakolatlari?": "Konstitutsiya sudi — qonunlarning Konstitutsiyaga mosligini tekshiradi. 2023-yilgi o'zgarishlar bilan <span class='term'>Konstitutsiya sudi</span> tashkil etildi (Konstitutsiya, 105¹-moddasi). U qonunlarni bekor qilish huquqiga ega.",
+            "Konstitutsiya qonunlari bilan oddiy qonunlar orasidagi farq?": "<span class='term'>Konstitutsiya qonunlari</span> — Konstitutsiya asosida qabul qilingan, undan keyin keluvchi qonunlarga nisbatan yuqori kuchga ega (masalan, “Sud tizimi to'g'risida”gi Konstitutsiya qonuni). Oddiy qonunlar esa bundan past darajadagi hujjatlardir.",
+            "Inson huquqlari va O'zbekistonning xalqaro shartnomalarga rioyasi?": "O'zbekiston <span class='term'>BMT Inson huquqlari umumiy deklaratsiyasi</span>, <span class='term'>Yevropa inson huquqlari konvensiyasi</span>, <span class='term'>Fuqarolarning siyosiy huquqlari to'g'risidagi xalqaro pakt</span> kabi hujjatlarga a'zo. Ularning me'yorida qonunlar ishlab chiqiladi.",
+            "Korrupsiyaga qarshi Konstitutsiya kafolatlari?": "Konstitutsiya 57¹-moddasiga ko'ra, <span class='term'>har bir fuqaro</span> korrupsiyaga qarshi to'g'ridan-to'g'ri murojaat qilish huquqiga ega. Shuningdek, davlat organlari ochiqlik va javobgarlikka majbur (62¹-moddasi).",
+            "Konstitutsiya 2023-yilgi o'zgarishlari nima uchun amalga oshirildi?": "2023-yil 30-apreldagi referendumda Konstitutsiya kengaytirildi: <span class='term'>150 dan ortiq o'zgarish</span>, jumladan: Prezident muddati 5 yildan 7 yilga, ma'muriy-hududiy bo'linish yangilandi, oila huquqlari kengaytirildi, sud tizimi mustaqilligi kuchaytirildi.",
+            "Milliy ozodlik, milliy tenglik, davlat tilining statusi?": "Konstitutsiya 4-moddasiga ko'ra, <span class='term'>o'zbek tili — davlat tili</span>. 18-moddada milliy va irqiy guruhlarning teng huquqliligi kafolatlangan. Har bir fuqaroning ona tilida ta'lim olish huquqi mavjud (24-moddasi).",
+            "Davlat ramzlari haqida Konstitutsiya da nima deyilgan?": "Konstitutsiya 68–70-moddalari O'zbekiston Respublikasining <span class='term'>Davlat bayrog'i</span>, <span class='term'>Gerbi</span> va <span class='term'>Madhiyasi</span> haqida ma'lumot beradi. Ularni hurmat qilish — har bir fuqaroning majburiyati.",
+            "Fuqarolik jamiyati institutlari qanday kafolatlangan?": "Konstitutsiya 32-moddasida <span class='term'>fuqarolik jamiyati</span> rivojlanishiga sharoit yaratish, nodavlat notijorat tashkilotlarning faoliyatini qo'llab-quvvatlash majburiyati belgilangan.",
+            "O'zbekiston Respublikasining suvereniteti qanday ta'minlangan?": "Konstitutsiya 2-moddasiga ko'ra, O'zbekiston — <span class='term'>suveren davlat</span>, uning hududida faqat O'zbekiston qonunlari qo'llaniladi. Tashqi ta'sirga qarshilik ko'rsatish huquqi mavjud (Konstitutsiya, 3-moddasi).",
+            "Huquqiy tartib va huquqiy davlat tushunchasi?": "<span class='term'>Huquqiy davlat</span> — hokimiyat qonunlar asosida amal qiluvchi, inson huquqlarini himoya qiluvchi, fuqarolar bilan teng munosabatda bo'luvchi tizimdir (Konstitutsiya, 13-moddasi).",
+            "Davlatning huquqiy javobgarligi qanday ifodalanadi?": "Agar davlat organlari yoki ularning vakillari fuqarolarga zarar yetkazsa, <span class='term'>davlat javobgar</span> bo'ladi (Fuqarolik kodeksi, 1064-moddasi; Konstitutsiya, 25-moddasi).",
+            "O'zbekiston hududida boshqa mamlakat qonunlari qo'llaniladimi?": "Umuman yo'q. O'zbekiston hududida faqat <span class='term'>O'zbekiston Respublikasi qonunlari</span> qo'llaniladi (Konstitutsiya, 2-moddasi), lekin xalqaro shartnomalar asosida ayrim me'yoriy normalar qo'llanilishi mumkin.",
+            "Fuqarolarning murojaat huquqi qanday kafolatlangan?": "Konstitutsiya 30-moddasiga ko'ra, har bir fuqaroning <span class='term'>davlat organlariga murojaat qilish huquqi</span> mavjud. 30 kun ichida javob berish — majburiy.",
+            "Xalqaro huquq O'zbekiston huquq tizimida qanday o'rinda?": "Konstitutsiya 17-moddasiga ko'ra, O'zbekiston a'zo bo'lgan <span class='term'>xalqaro shartnomalar</span> mamlakat qonunlaridan yuqori kuchga ega. Ular O'zbekiston qonunlariga zid kelganda, xalqaro me'yori qo'llaniladi.",
+            "Konstitutsiyaning 2023-yilgi o'zgarishlari nima uchun amalga oshirildi?": "2023-yilgi o'zgarishlar <span class='term'>fuqarolarning huquqlarini kengaytirish</span>, <span class='term'>oilaviy huquqni mustahkamlash</span>, <span class='term'>sud tizimini mustaqillikka erishish</span>, <span class='term'>ma'muriy-hududiy bo'linishni optimallashtirish</span> maqsadida amalga oshirildi.",
+
+            "Fuqarolik huquq sohasida shaxsning qanday huquqlari mavjud?": "Shaxs — <span class='term'>shaxsiy yashash joyini tanlash</span>, <span class='term'>shartnoma tuzish</span>, <span class='term'>mulkka ega bo'lish</span>, <span class='term'>shikoyat va da'vo qilish huquqiga</span> ega (Fuqarolik kodeksi, 15–20-moddalari).",
+            "Shaxsiy mulk huquqi qanday himoyalangan?": "Har bir fuqaroning <span class='term'>mulkdorlik huquqi</span> Konstitutsiya (33-moddasi) va Fuqarolik kodeksi (224-moddasi) bilan himoyalangan. Mulkni bepul olish, sotish, ijaraga berish, vasiyat qilish huquqi mavjud.",
+            "Intellektual mulk huquqi tushunchasi va uning turlari?": "<span class='term'>Intellektual mulk huquqi</span> — ijodiy, ilmiy, san'at asarlariga ega bo'lish huquqi. Turlari: <span class='term'>mualliflik huquqi</span> (kitob, musiqa), <span class='term'>patent huquqi</span> (iz invention), <span class='term'>tovar belgisi</span>.",
+            "Shartnomali munosabatlar qanday tuziladi?": "Shartnoma — ikki yoki undan ortiq tomonning <span class='term'>o'zaro rozi</span> e'tiboridan tuziladi (Fuqarolik kodeksi, 389-moddasi). O'g'zaki ham, yozma ham bo'lishi mumkin, lekin ayrim hollarda yozma talab qilinadi (masalan, ko'chmas mulk).",
+            "Fuqarolik qonun hujjatlarining bekor qilinish shartlari?": "Shartnoma — bekor qilinishi mumkin: 1) <span class='term'>tomonlar kelishuvi</span>; 2) <span class='term'>sud qarori</span> (agar shartnoma qonunbuzarlik bo'lsa); 3) <span class='term'>bevosita qonunni buzsa</span>.",
+            "Shikoyat qilish, da'vo qilish huquqi qanday amalga oshiriladi?": "Fuqaro — <span class='term'>notarius</span>, <span class='term'>prokuratura</span>, <span class='term'>sud</span> orqali huquqini himoya qilishi mumkin. Da'vo — <span class='term'>sudga yozma ariza</span> bilan topshiriladi (Fuqarolik jarayon kodeksi, 131-moddasi).",
+            "Majburiy ekspropriatsiya qachon amalga oshiriladi?": "Majburiy ekspropriatsiya — <span class='term'>davlat ehtiyoji</span> uchun (masalan, yo'l qurish) amalga oshiriladi. Lekin <span class='term'>mulk egasiga to'liq to'lov</span> qilinadi (Fuqarolik kodeksi, 263-moddasi).",
+            "Vasiylik va himoya institutlari nima uchun kerak?": "<span class='term'>Vasiylik</span> — 14 yoshgacha bo'lgan bolalarga, <span class='term'>himoya</span> — 14–18 yoshdagi o'smirlarga tegishli. Ular hali to'liq qobiliyatga ega emas, shuning uchun qonuniy vakillari kerak.",
+            "Shaxsning huquqiy qobiliyatini cheklash huquqan qanday sodir bo'ladi?": "Sud — shaxsning <span class='term'>qobiliyatini vaqtincha yoki doimiy cheklashi</span> mumkin, agar u: 1) og'ir kasal; 2) fuqarolik majburiyatlarini bajarishdan voz kechsa; 3) jinoyat sodir etsa.",
+            "Nodavlat notijorat tashkilotlar (NNT) huquqiy statusi?": "NNT — <span class='term'>notijorat, nodavlat</span> tashkilot bo'lib, ularning maqsadi foyda olish emas. Ularning huquqiy shaxsiyati Fuqarolik kodeksi va “NNT to'g'risida”gi qonunga asoslangan.",
+            "Fuqarolik huquqda sudning roli qanday?": "Sud — <span class='term'>shartnomaviy nizolarni</span>, <span class='term'>mulk munosabatlarini</span>, <span class='term'>mezonli nizolarni</span> hal qiladi. Qaror — tomonlar uchun majburiy bo'ladi.",
+            "Notarial hujjatlashtirish nima uchun zarur?": "Notarius — hujjatning <span class='term'>qonuniyligini</span>, <span class='term'>tomonlarning rozi e'tiborini</span> tasdiqlaydi. Ko'chmas mulk, vasiyat, vasiylik kabi hujjatlar notarial ravishda tasdiqlanishi shart.",
+            "Vasiyat qilish tartibi va uning bekor qilinishi?": "Vasiyat — <span class='term'>notarius oldida</span> yoziladi. Vasiyat bergan shaxs — <span class='term'>istalgan vaqtda bekor qilishi</span> yoki o'zgartirishi mumkin. Vasiyatdan keyin mulk — vasiyatdagi shaxsga o'tadi.",
+            "Huquqiy shaxs tushunchasi va turlari?": "Huquqiy shaxs — <span class='term'>yuridik shaxs</span> (tashkilot) bo'lib, mulkdorlik, shartnoma, sud jarayonlarida ishtirok etishi mumkin. Turlari: <span class='term'>tijorat</span> (AK, MCHJ), <span class='term'>notijorat</span> (NNT, fond).",
+            "Aksiyadorlik jamiyatlarining huquqiy javobgarligi?": "Aksiyadorlik jamiyati — <span class='term'>o'z mulki bilan javobgar</span>. Aksiyadorlar — faqat o'z aksiyalar miqdorida javobgar (Fuqarolik kodeksi, 98-moddasi).",
+            "Fuqarolik huquqda sud jarayonining bosqichlari?": "1) <span class='term'>Da'vo topshirish</span>; 2) <span class='term'>Tayyorgarlik davri</span>; 3) <span class='term'>Sudlov</span>; 4) <span class='term'>Sud qarorini e'lon qilish</span>; 5) <span class='term'>Qarorni ijro etish</span>.",
+            "Sud qarorlarini ijro etish mexanizmi?": "Sud qarori — <span class='term'>Ijro etish inspeksiyasi</span> tomonidan amalga oshiriladi. Qarzdor — muddatida bajarishi shart, aks holda <span class='term'>mulki arestlanishi</span> yoki <span class='term'>ish haqi ushlanishi</span> mumkin.",
+            "Fuqarolik da'volari boyicha ish yuritish muddatlari?": "Oddiy da'volar — <span class='term'>1 oy</span> ichida ko'rib chiqiladi. Murakkab ishlar — <span class='term'>2 oygacha</span>. Aytishli sudlov — <span class='term'>30 kun</span> ichida (Fuqarolik jarayon kodeksi, 210-moddasi).",
+            "Majburiy sud jarayonlari qanday hollarda amalga oshiriladi?": "Agar tomon — da'voga javob bermasa, sud — <span class='term'>majburiy ravishda</span> ishni ko'radi. Agar dalil yetarli bo'lsa, <span class='term'>sud qarori</span> e'lon qilinadi.",
+            "Fuqarolik huquqda xalqaro qonunlarning qo'llanilishi?": "Agar shartnomada <span class='term'>millatlar xalqaro qonuni</span> yoki <span class='term'>shartnoma mamlakati qonuni</span> belgilangan bo'lsa, u qo'llaniladi. Aks holda — O'zbekiston qonuni qo'llaniladi.",
+
+            // Jinoyat huquqi savollariga javoblar
+            "Jinoyatga ayni qaysi qonun asosida javobgarlik keltiriladi?": "Jinoyatga javobgarlik — <span class='law-ref'>O'zbekiston Respublikasi Jinoyat kodeksiga (2024-yil nashri)</span> asosan keltiriladi. Bu kodeks jinoyat tushunchasi, turlari, jazolar tizimini belgilaydi.",
+            "Jinoyat tarkibining asosiy elementlari nima?": "Jinoyat tarkibi to'rtta elementdan iborat: 1) <span class='term'>ob'ekt</span> (himoyalangan huquq); 2) <span class='term'>ob'ektiv tomon</span> (harakat, oqibat, sabab-oqibat bog'lanishi); 3) <span class='term'>sub'ekt</span> (jinoiy javobgarlik yoshidagi shaxs); 4) <span class='term'>sub'ektiv tomon</span> (qasd yoki ehtimoliylik).",
+            "Jinoyatga sababchi emaslikning huquqiy shartlari?": "Shaxs jinoyatga <span class='term'>sababchi emas</span>, agar: 1) <span class='term'>16 yoshga to'lmagan bo'lsa</span> (ayrim jinoyatlarda 14 yoshdan); 2) <span class='term'>aqldan ozgan</span>; 3) <span class='term'>mazkur harakat qonun bo'yicha jinoyat hisoblanmasa</span>.",
+            "Jinoyat sodir etganlik uchun javobgarlik yoshi?": "Umumiy jinoyatlarda — <span class='term'>16 yoshdan</span>. Og'ir va juda og'ir jinoyatlarda (qatl, zo'ravonlik) — <span class='term'>14 yoshdan</span> jinoyatga javobgarlik keltiriladi (Jinoyat kodeksi, 18-moddasi).",
+            "Jinoyatga sodir etilgan hollarda qo'shimcha jazolar?": "Qo'shimcha jazolar — <span class='term'>fuqarolik huquqlarini cheklash</span>, <span class='term'>ma'lum lavozimlarda ishlash taqiqlanishi</span>, <span class='term'>mulkdagi ulushlarni musodara qilish</span> (Jinoyat kodeksi, 54-moddasi).",
+            "Og'irlik darajasiga ko'ra jinoyatlar tasnifi?": "Jinoyatlar to'rt guruhga bo'linadi: 1) <span class='term'>oddiy</span>; 2) <span class='term'>og'ir</span>; 3) <span class='term'>juda og'ir</span>; 4) <span class='term'>xavfli</span>. Og'irlik — jazoning muddatiga ta'sir qiladi.",
+            "Jinoyat sodir etilganda qaysi sud ko'rib chiqadi?": "Umuman — <span class='term'>tuman (shahar) sudlari</span> jinoyat ishlarini ko'radi. Ayni jinoyat murakkab yoki xavfli bo'lsa — <span class='term'>viloyat sudlari</span> ko'radi.",
+            "Preliminar tergovning maqsadi va mohiyati nima?": "Preliminar tergov — <span class='term'>jinoyat isbotini to'plash</span>, <span class='term'>sababchini aniqlash</span> va <span class='term'>sudga yetkazish</span> maqsadida olib boriladi. Buni — <span class='term'>prokuratura</span> yoki <span class='term'>ichki ishlar organlari</span> amalga oshiradi.",
+            "Qamash va uy qamog'ining huquqiy farqi?": "<span class='term'>Qamash</span> — qat'iy jazo shakli, jinoyat sodir etilganda qo'llaniladi. <span class='term'>Uy qamogi</span> — sud tomonidan qo'llaniladigan <span class='term'>ogohlantirish chorasi</span>, jazoga kirmaydi.",
+            "Jinoyat jarayonida shaxsning huquqlari qanday kafolatlanadi?": "Shaxs huquqlari: <span class='term'>advokat yordamidan foydalanish</span>, <span class='term'>o'zini aybdor deb tan olmaslik</span>, <span class='term'>havolaga qarshi so'zlash huquqi</span> (Jinoyat jarayon kodeksi, 47-moddasi).",
+            "Jinoyat huquqida qurbonlikning huquqlari?": "Qurbonlik — <span class='term'>jismoniy yoki moddiy zararga uchragan</span> shaxs. Uning huquqlari: <span class='term'>dalil berish</span>, <span class='term'>moddiy zararni qoplashing so'roq qilish</span>, <span class='term'>jazo kuchaytirilishini talab qilish</span>.",
+            "Sud jarayonida dalillar qanday baholanadi?": "Dalillar — <span class='term'>qat'iylik, to'g'rilik, etarli</span> bo'lishi kerak. Sud — <span class='term'>barcha dalillarni mustaqil baholaydi</span>, bir dalilga asoslanmaydi (Jinoyat jarayon kodeksi, 85-moddasi).",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Sodir etuvchi: <span class='term'>o'zini aybdor deb tan olmasa ham</span>, <span class='term'>advokat yordamiga ega</span>, <span class='term'>jinoiy javobgarlikni bekor qilish huquqiga ega</span> (agar jinoyatni qilmasa).",
+            "Jinoyat sodir etilganda sud qarorini qanday qabul qiladi?": "Sud — <span class='term'>preliminar tergov materiallarini</span>, <span class='term'>dalillarni</span>, <span class='term'>shahodatlarni</span> asos qilib, qaror qabul qiladi: <span class='term'>aybli</span> yoki <span class='term'>aybsiz</span>.",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Sodir etuvchi — <span class='term'>tergovda ishtirok etish</span>, <span class='term'>o'z himoyasini so'zlash</span>, <span class='term'>dalil talab qilish huquqiga ega</span>.",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Takrorlanish sababi — texnik xatolik. To'g'risi: sodir etuvchi — <span class='term'>qo'lga olish haqida xabar berish</span>, <span class='term'>24 soat ichida sudga berish</span> huquqiga ega (Jinoyat jarayon kodeksi, 216-moddasi).",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Sodir etuvchi — <span class='term'>tergov jarayonida o'z huquqlarini buzilishiga qarshi shikoyat qilish</span> huquqiga ega.",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Sodir etuvchi — <span class='term'>jinoiy ishning nusxasini olish</span> huquqiga ega (Jinoyat jarayon kodeksi, 38-moddasi).",
+            "Jinoyat sodir etilganda sodir etuvchining huquqiy kafolatlari?": "Sodir etuvchi — <span class='term'>jinoiy ishlarni yuritishda qatnashuvchi xodimlarni aldashdan voz kechish huquqiga ega</span>.",
+
+            // Mehnat, oilaviy, xalqaro huquq
+            "Mehnat kodeksi asosida ishchining qanday huquqlari kafolatlangan?": "Ishchi — <span class='term'>ish haqi olish</span>, <span class='term'>dam olish va mehnat ta'tili</span>, <span class='term'>mehnat sharoitini tanlash</span>, <span class='term'>sindikatga a'zo bo'lish</span> huquqlariga ega (Mehnat kodeksi, 15-moddasi).",
+            "Ish tajribasini hisoblash tartibi qanday?": "Ish tajribasi — <span class='term'>ishga qabul qilingan sana</span>dan <span class='term'>ishdan chiqqun sana</span>gacha hisoblanadi. Davomat daftaridagi yozuvlar, mehnat kitobchasi asos bo'ladi.",
+            "Ish beruvchining fuqarolik javobgarligi?": "Ish beruvchi — <span class='term'>ishchiga zarar yetkazsa</span>, <span class='term'>moddiy javobgarlikka</span> tortiladi. Masalan: ish jarayonida jarohatlangan ishchiga kompensatsiya to'lash.",
+            "Ishlab chiqarish jarayonida xavfsizlik qanday ta'minlanadi?": "Ish beruvchi — <span class='term'>xavfsizlik qoidalari</span>, <span class='term'>maxsus kiyim</span>, <span class='term'>o'qitish</span> orqali ishchini himoya qiladi. Qoida buzilsa — <span class='term'>jimajro yoki jazo</span>.",
+            "Oilaviy kodeksda nikoh tuzish tartibi qanday belgilangan?": "Nikoh — <span class='term'>fuqarolik ro'yxatxonasi (ZAGS)</span>da ro'yxatdan o'tkaziladi. Talabalar — <span class='term'>ota-onalar roziligisiz</span> nikoh tuzishlari mumkin emas (Oilaviy kodeks, 14-moddasi).",
+            "Oilaviy marrasim va fuqarolik nikohi o'rtasidagi farq?": "<span class='term'>Oilaviy marrasim</span> — diniy marosim, lekin <span class='term'>qonuniy kuchga ega emas</span>. Faqat <span class='term'>fuqarolik nikohi</span> qonuniy hisoblanadi.",
+            "Talabalar nikohi qonuniy ehtimollar?": "17 yoshdan kichiklar — <span class='term'>ota-onalar roziligisiz</span> nikoh tuzishlari mumkin emas. 16 yoshgina — <span class='term'>maxsus ruxsat</span> bilan nikoh tuzish mumkin (Oilaviy kodeks, 14-moddasi).",
+            "Oilaviy muzoqarada farzandlarning huquqlari qanday kafolatlangan?": "Farzandlarning huquqlari: <span class='term'>ta'lim</span>, <span class='term'>tarbiya</span>, <span class='term'>mulkdorlik</span>, <span class='term'>shaxsiy fikr</span>. Ota-onalar — farzandlarga g'amxo'rlik qilish majburiyatiga ega.",
+            "Xalqaro huquq tizimida O'zbekistonning o'rni?": "O'zbekiston — <span class='term'>500 dan ortiq xalqaro shartnoma</span> a'zosi. BMT, Yevropa kengashi, Xalqaro mehnat tashkiloti, Xalqaro sudlar bilan hamkorlik qiladi.",
+            "Inson huquqlari bo'yicha Yevropa sudining O'zbekiston bilan aloqasi?": "O'zbekiston — <span class='term'>Yevropa inson huquqlari konvensiyasiga a'zo emas</span>, lekin uning tamoyillariga rioya qilishga harakat qiladi. Shuning uchun to'g'ridan-to'g'ri murojaat qilish mumkin emas.",
+            "Xalqaro shartnomalar O'zbekiston huquq tizimiga qanday ta'sir qiladi?": "Xalqaro shartnomalar — <span class='term'>O'zbekiston qonunlarini yangilash</span>, <span class='term'>inson huquqlarini kengaytirish</span>, <span class='term'>sud tizimini demokratiklashtirish</span>ga ta'sir qiladi.",
+            "Qochqin va boshpana so'rovchilarning huquqlari?": "Boshpana so'rovchisi — <span class='term'>O'zbekistonda vaqtincha yashash</span>, <span class='term'>ishlash</span>, <span class='term'>ta'lim olish</span> huquqiga ega. Lekin fuqarolik huquqlari cheklangan.",
+            "O'zbekistonning BMT inson huquqlari kengashidagi roli?": "O'zbekiston — <span class='term'>BMT inson huquqlari kengashining a'zosi</span> (2023–2025). Mamlakat — inson huquqlarini himoya qilish bo'yicha hisobot beradi.",
+            "Korrupsiyaga qarshi xalqaro shartnomalar?": "O'zbekiston — <span class='term'>BMT korrupsiyaga qarshi konvensiyasiga</span> (2003) a'zo. Bu — korrupsiya jinoyatlarini jahon miqyosida jazolashni talab qiladi.",
+            "Xalqaro mehnat tashkiloti (XMT) bilan hamkorlik?": "O'zbekiston — <span class='term'>XMT a'zosi</span>. Mehnat qonunchiligini XMT standartlariga moslashtirish, bolalarning mehnatdan himoyalash kabi ishlarda hamkorlik qilinadi.",
+            "O'zbekistonning Genfer konvensiyasiga rioya qilishi?": "O'zbekiston — <span class='term'>Genfer konvensiyalariga a’zo</span>. Urushda fuqarolarning, harbiylarning, qochqinlarning huquqlarini himoya qilishga majbur.",
+            "Xalqaro huquqda \"soyuvchi huquq\" nima?": "<span class='term'>Soyuvchi huquq</span> — fuqarolar urush, zilzila, o'qibot sodir bo'lganda xalqaro hamjamiyatdan yordam so'rash huquqi. O'zbekiston ham qo'llab-quvvatlanish huquqiga ega.",
+            "Xalqaro sudlarda O'zbekiston fuqarolarining huquqlari?": "O'zbekiston fuqarosi — <span class='term'>xalqaro sudlarga murojaat qilish huquqiga ega emas</span>, lekin agar u boshqa mamlakatda bo'lsa — shu mamlakat sudiga murojaat qilishi mumkin.",
+            "Xalqaro huquqda \"sud javobgarligi\" qanday ta'minlanadi?": "Xalqaro sud — <span class='term'>davlatlarni javobgar</span> qiladi, agar ular inson huquqlarini buzsa. Masalan, Yevropa inson huquqlari sudi — davlatga jarima qo'yishi mumkin.",
+
+            // Huquqiy institutlar va amaliyot
+            "O'zbekistonda huquqiy yordam tizimi qanday tashkil etilgan?": "Huquqiy yordam — <span class='term'>advokatlar</span>, <span class='term'>notariuslar</span>, <span class='term'>beplul huquqiy yordam markazlari</span> orqali amalga oshiriladi. Fuqaro — arzon yoki bepul huquqiy yordam olishi mumkin.",
+            "Advokatura faoliyati qanday huquqiy kafolatlangan?": "Advokat — <span class='term'>kliyentning ma'lumotlarini maxfiy saqlash</span>, <span class='term'>ish jarayonida ozod fikr bildirish</span> huquqiga ega. Uni qo'lga olish — qattiq tartibda amalga oshiriladi.",
+            "Notariat instituti qanday ishlaydi?": "Notarius — <span class='term'>hujjatlarni tasdiqlash</span>, <span class='term'>vasiyat qilish</span>, <span class='term'>shartnomalarni tuzish</span> kabi vazifalarni bajaradi. Hujjatlar — sudga dalil sifatida qabul qilinadi.",
+            "Sud jarayonida xodimlarning huquqlari?": "Sud xodimlari — <span class='term'>shaxsiy xavfsizlik</span>, <span class='term'>ish sharoitini tanlash</span>, <span class='term'>ish haqini olish huquqiga ega</span>.",
+            "Sud qarorlarini ijro etish inspeksiyasi vazifalari?": "Ijro etish inspeksiyasi — <span class='term'>sud qarorlarini amalga oshirish</span>, <span class='term'>qarzdorlarni topish</span>, <span class='term'>mulklarni arest qilish</span> vazifalarini bajaradi.",
+            "Prokuratura tizimining tarkibiy qismi?": "Prokuratura — <span class='term'>Genprokuratura</span>, <span class='term'>viloyat prokuraturalari</span>, <span class='term'>tuman prokuraturalari</span>dan iborat. Ular — jinoyatga qarshi kurashish, qonunbuzarliklarni nazorat qilish vazifasini bajaradi.",
+            "Prokuratura va sud o'rtasidagi muhokamali aloqalar?": "Prokuratura — <span class='term'>sudga jinoyat ishlarini topshiradi</span>. Sud — <span class='term'>prokuratura xulosalarini mustaqil baholaydi</span>. Prokuratura — <span class='term'>sud qaroriga apellyatsiya qilish huquqiga ega</span>.",
+            "Huquqiy tushunchalar: \"respublika\", \"qonun\", \"qaror\", \"farmon\", \"buyruq\"?": "<span class='term'>Respublika</span> — xalq hokimiyati; <span class='term'>qonun</span> — Oliy Majlis qabul qilgan; <span class='term'>qaror</span> — Hukumat qabul qilgan; <span class='term'>farmon</span> — Prezident chiqargan; <span class='term'>buyruq</span> — vazirlik chiqargan.",
+            "Qonun va qarorlar o'rtasidagi farq?": "<span class='term'>Qonun</span> — Oliy Majlis tomonidan qabul qilinadi, yuqori kuchga ega. <span class='term'>Qaror</span> — Hukumat tomonidan qabul qilinadi, qonunga zid kelmasligi shart.",
+            "Huquqiy tushunchalar: \"norma\", \"qonun\", \"qonunchilik\", \"qonunbuzarlik\"?": "<span class='term'>Norma</span> — alohida qoida; <span class='term'>qonun</span> — norma to'plami; <span class='term'>qonunchilik</span> — qonunlar tizimi; <span class='term'>qonunbuzarlik</span> — qonunga zid harakat.",
+            "Huquqiy tushunchalar: \"shaxs\", \"fuqarо\", \"yuridik shaxs\", \"shartnoma\"?": "<span class='term'>Shaxs</span> — inson; <span class='term'>fuqarо</span> — mamlakat fuqarosi; <span class='term'>yuridik shaxs</span> — tashkilot; <span class='term'>shartnoma</span> — kelishuv hujjati.",
+            "Huquqiy tushunchalar: \"jazо\", \"mudдat\", \"qaror\", \"sud\", \"prokuror\"?": "<span class='term'>Jazо</span> — jinoyat uchun; <span class='term'>mudдat</span> — jazo vaqti; <span class='term'>qaror</span> — sud hukmi; <span class='term'>sud</span> — adliya organi; <span class='term'>prokuror</span> — nazoratchi.",
+            "Huquqiy tushunchalar: \"mulk\", \"shartnoma\", \"qarz\", \"obligatsiya\", \"majburiyat\"?": "<span class='term'>Mulk</span> — ega bo'lish; <span class='term'>shartnoma</span> — kelishuv; <span class='term'>qarz</span> — qaytarish kerak bo'lgan mablag'; <span class='term'>obligatsiya</span> — majburiy munosabat; <span class='term'>majburiyat</span> — bajarish lozim.",
+            "Huquqiy tushunchalar: \"sud jarayoni\", \"da'vo\", \"shikoyat\", \"murojaat\", \"dalil\"?": "<span class='term'>Sud jarayoni</span> — ish yuritish; <span class='term'>da'vo</span> — fuqarolik; <span class='term'>shikoyat</span> — jinoyatga qarshi; <span class='term'>murojaat</span> — umumiy; <span class='term'>dalil</span> — isbot.",
+            "Huqquqiy tushunchalar: \"qonunbuzarlik\", \"jinoiy javobgarlik\", \"fuqarolik javobgarlik\"?": "<span class='term'>Qonunbuzarlik</span> — qonunga zid; <span class='term'>jinoiy javobgarlik</span> — jinoyat uchun; <span class='term'>fuqarolik javobgarlik</span> — mulk, shartnoma uchun.",
+            "Huquqiy tushunchalar: \"intellektual mulk\", \"mualliflik huquqi\", \"patent\", \"tovar belgisi\"?": "<span class='term'>Intellektual mulk</span> — ijodiy; <span class='term'>mualliflik</span> — asar; <span class='term'>patent</span> — ixtiro; <span class='term'>tovar belgisi</span> — brend.",
+            "Huquqiy tushunchalar: \"mezon\", \"standart\", \"qonunchilik\", \"qonunbuzarlik\", \"jazо\"?": "<span class='term'>Mezon</span> — o'lchov; <span class='term'>standart</span> — talab; <span class='term'>qonunchilik</span> — tizim; <span class='term'>qonunbuzarlik</span> — buzish; <span class='term'>jazо</span> — jazolash.",
+            "Huquqiy tushunchalar: \"qonunchilik jarayoni\", \"qonun loyihasi\", \"qonun qabul qilish\"?": "<span class='term'>Qonunchilik jarayoni</span> — qonun yaratish; <span class='term'>qonun loyihasi</span> — taklif; <span class='term'>qonun qabul qilish</span> — Oliy Majlis tasdiqlaydi.",
+            "Huquqiy tushunchalar: \"qonunbuzarlik\", \"jinoiy javobgarlik\", \"fuqarolik javobgarlik\"?": "[Takror — qonunbuzarlik — jinoyat yoki fuqarolik shartnomani buzish; jinoiy javobgarlik — sud tomonidan jazo; fuqarolik javobgarlik — mulkdagi zararni to'lash.]",
+            "Huquqiy tushunchalar: \"intellektual mulk\", \"mualliflik huquqi\", \"patent\", \"tovar belgisi\"?": "[Takror — intellektual mulk — ijodiy asar; mualliflik — yaratuvchiga tegishli; patent — ixtiroga beriladi; tovar belgisi — mahsulot belgisi.]"
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf «Huquq asoslari» darsligiga asoslangan murakkab darajadagi AI yordamchiman. Konstitutsiya, fuqarolik, jinoyat, mehnat, oilaviy, xalqaro huquq, sud ishlari, huquqiy institutlar — barcha mavzular bo'yicha tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
