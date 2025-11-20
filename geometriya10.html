@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Geometriya (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1B5E20; /* To‘q yashil — bilim va aniqlik */
+            --secondary: #388E3C;
+            --accent: #FFB300; /* Sariq — mantiq va yechim */
+            --light: #FFFFFF;
+            --bg: #E8F5E9;
+            --text: #1B5E20;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(27, 94, 32, 0.15);
+            --border: #C8E6C9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #1B5E20);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E8F5E9;
+            color: #1B5E20;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === GEOMETRY STYLE === */
+        .geometry {
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        /* === FORMULA STYLE === */
+        .formula {
+            background: #E3F2FD;
+            border-left: 3px solid #1976D2;
+            padding: 10px 12px;
+            margin: 12px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #1565C0;
+            white-space: pre-wrap;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1B5E20;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(27,94,32,0.2);
+        }
+
+        .quick-button:hover {
+            background: #1B5E20;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(27,94,32,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+                <!-- Geometrik element: uchburchak -->
+                <polygon points="12,5 16,15 8,15" fill="white" opacity="0.3"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Geometriya</h1>
+        <p>10-sinf uchun: Stereometriya, vektorlar, aylanalar, tekisliklar, teoremalarning isboti — bilimlar olamiga kirish!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📐</div>
+            <h2>Geometriya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Stereometriya, vektorlar, aylanalar, teoremalarning isboti</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Geometriya ma'lumotlar bazasi (10-sinf darsligi asosida)
+        const database = {
+            "main_menu": {
+                text: "Salom! Geometriya — bu mantiqning san’ati. Qaysi mavzu bo‘yicha yordam kerak?",
+                buttons: [
+                    { text: "🔺 Stereometriya", key: "stereometriya" },
+                    { text: "📏 Vektorlar", key: "vektor" },
+                    { text: "⭕ Aylanalar", key: "aylana" },
+                    { text: "📐 Tekisliklar", key: "tekislik" },
+                    { text: "🧠 Teorema isboti", key: "teorema" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "stereometriya": {
+                text: "Stereometriya — fazoviy shakllar va ularning xossalari.",
+                buttons: [
+                    { text: "Kub, prizma", key: "kub_prizma" },
+                    { text: "Piramida", key: "piramida" },
+                    { text: "Silindr", key: "silindr" },
+                    { text: "Konus", key: "konuss" },
+                    { text: "Shar", key: "shar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kub_prizma": {
+                text: "<span class='geometry'>Kub va prizma:</span><br>• Kub — 6 ta kvadrat yuz, barcha qirralar teng<br>• Prizma — ikki parallel asos, to‘g‘ri to‘rtburchak yon yuzlar<br>• Hajmi: V = S_asos × h<br>• Sirti: S = 2×S_asos + S_yon",
+                buttons: [{ text: "⬅️ Orqaga", key: "stereometriya", isHome: true }]
+            },
+            "piramida": {
+                text: "<span class='geometry'>Piramida:</span><br>• Asos — ko‘pburchak, yon yuzlar — uchburchaklar<br>• To‘g‘ri piramida — asos markaziga tushgan balandlik<br>• Hajmi: V = (1/3) × S_asos × h<br>• Sirti: S = S_asos + S_yon yuzlar",
+                buttons: [{ text: "⬅️ Orqaga", key: "stereometriya", isHome: true }]
+            },
+            "silindr": {
+                text: "<span class='geometry'>Silindr:</span><br>• Asos — aylanalar, yon sirt — to‘g‘ri chiziq<br>• Hajmi: V = πr²h<br>• Sirti: S = 2πr² + 2πrh<br>• O‘q — asoslarning markazlarini tutashtiruvchi chiziq",
+                buttons: [{ text: "⬅️ Orqaga", key: "stereometriya", isHome: true }]
+            },
+            "konuss": {
+                text: "<span class='geometry'>Konus:</span><br>• Asos — aylana, yon sirt — to‘g‘ri chiziq (generatrisa)<br>• Hajmi: V = (1/3)πr²h<br>• Sirti: S = πr² + πrl (l — generatrisa)<br>• L = √(r² + h²)",
+                buttons: [{ text: "⬅️ Orqaga", key: "stereometriya", isHome: true }]
+            },
+            "shar": {
+                text: "<span class='geometry'>Shar:</span><br>• Barcha nuqtalar markazdan bir xil masofada<br>• Hajmi: V = (4/3)πr³<br>• Sirti: S = 4πr²<br>• Katta aylana — shar markazidan o‘tuvchi aylana",
+                buttons: [{ text: "⬅️ Orqaga", key: "stereometriya", isHome: true }]
+            },
+            "vektor": {
+                text: "Vektorlar — yo‘nalishli kesmalar. Koordinatali usulda ishlanadi.",
+                buttons: [
+                    { text: "Vektor nima?", key: "vektor_nima" },
+                    { text: "Qo‘shish, ayirish", key: "vektor_qoshish" },
+                    { text: "Skalyar ko‘paytma", key: "vektor_skalyar" },
+                    { text: "Koordinata", key: "vektor_koord" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "vektor_nima": {
+                text: "<span class='geometry'>Vektor nima?</span><br>• Vektor — boshlang‘ich va oxirgi nuqta bilan belgilangan yo‘nalishli kesma<br>• |a| — vektor uzunligi (moduli)<br>• Boshlang‘ich nuqta: A, oxirgi: B → vektor: AB<br>• Nol vektor: boshlang‘ich va oxirgi nuqta bir xil",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "vektor_qoshish": {
+                text: "<span class='geometry'>Vektorlarni qo‘shish va ayirish:</span><br>• Qo‘shish: parallelogramm qoidasi yoki uchburchak qoidasi<br>• Ayirish: a - b = a + (-b)<br>• Koordinatalarda: (x₁,y₁) + (x₂,y₂) = (x₁+x₂, y₁+y₂)<br>• Vektorni songa ko‘paytirish: k·(x,y) = (kx, ky)",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "vektor_skalyar": {
+                text: "<span class='geometry'>Skalyar ko‘paytma:</span><br>• a·b = |a|·|b|·cosφ (φ — burchak)<br>• Koordinatalarda: a·b = x₁x₂ + y₁y₂<br>• Agar a·b = 0 → vektorlar perpendikulyar<br>• a·a = |a|²",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "vektor_koord": {
+                text: "<span class='geometry'>Koordinatalar:</span><br>• Vektor AB = (x₂ - x₁, y₂ - y₁)<br>• Markaz: M = ((x₁+x₂)/2, (y₁+y₂)/2)<br>• Masofa: |AB| = √[(x₂-x₁)² + (y₂-y₁)²]<br>• Vektorlar parallel: a = k·b",
+                buttons: [{ text: "⬅️ Orqaga", key: "vektor", isHome: true }]
+            },
+            "aylana": {
+                text: "Aylanalar, radius, chiziq, burchaklar — tekislik geometriyasining asosi.",
+                buttons: [
+                    { text: "Aylana nima?", key: "aylana_nima" },
+                    { text: "Markaziy burchak", key: "markaziy_burchak" },
+                    { text: "Chiziq va aylana", key: "chiziq_aylana" },
+                    { text: "Ko‘pburchak va aylana", key: "ko'pburchak_aylana" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "aylana_nima": {
+                text: "<span class='geometry'>Aylana nima?</span><br>• Aylana — tekislikdagi nuqtalarning markazdan bir xil masofada bo‘lishi<br>• Radius — markazdan aylanaga qadar bo‘lgan masofa<br>• Diameter — radiusning ikki barobariga teng<br>• Tenglama: (x - a)² + (y - b)² = R²",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "markaziy_burchak": {
+                text: "<span class='geometry'>Markaziy burchak:</span><br>• Markaziy burchak — aylananing markazida bo‘lgan burchak<br>• Markaziy burchak = qo‘shilgan yoyning o‘lchami<br>• Kirish burchak — aylanada, yoyning yarmini o‘lchaydi<br>• Kirish burchak = ½ × markaziy burchak",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "chiziq_aylana": {
+                text: "<span class='geometry'>Chiziq va aylana:</span><br>• Qirqish — 2 nuqta<br>• Urug‘lanish — 1 nuqta (tangens)<br>• Chiziq bilan aylana kesishmasa — 0 nuqta<br>• Tangens — radiusga perpendikulyar<br>• Tangens uzunligi: √(d² - R²) (d — markazdan masofa)",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "ko'pburchak_aylana": {
+                text: "<span class='geometry'>Ko‘pburchak va aylana:</span><br>• Aylanaga ichki chizilgan — barcha uchlari aylanada<br>• Aylanaga tashqi chizilgan — barcha tomonlari aylana bilan urug‘lanadi<br>• Markaziy burchak = 360° / n (n — tomonlar soni)<br>• Qo‘shimcha: a = 2R·sin(π/n)",
+                buttons: [{ text: "⬅️ Orqaga", key: "aylana", isHome: true }]
+            },
+            "tekislik": {
+                text: "Tekislik — fazoviy geometriyaning asosiy obyekti.",
+                buttons: [
+                    { text: "Tekislik nima?", key: "tekislik_nima" },
+                    { text: "Ikki tekislik", key: "ikkita_tekislik" },
+                    { text: "Chiziq va tekislik", key: "chiziq_tekislik" },
+                    { text: "Perpendikulyarlik", key: "perpendikulyar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tekislik_nima": {
+                text: "<span class='geometry'>Tekislik nima?</span><br>• Tekislik — cheksiz kenglik va uzunlikka ega, balandligi yo‘q<br>• Uch nuqta tekislikni aniqlaydi<br>• Ikki tekislik — yoki parallel, yoki kesishadi<br>• Kesishish chizig‘i — to‘g‘ri chiziq",
+                buttons: [{ text: "⬅️ Orqaga", key: "tekislik", isHome: true }]
+            },
+            "ikkita_tekislik": {
+                text: "<span class='geometry'>Ikki tekislik:</span><br>• Parallel: hech qanday umumiy nuqta yo‘q<br>• Kesishuvchi: umumiy to‘g‘ri chiziq bor<br>• Burchak: ikki tekislik o‘rtasidagi burchak — ularning normal vektorlari orasidagi burchak<br>• cosφ = |n₁·n₂| / (|n₁|·|n₂|)",
+                buttons: [{ text: "⬅️ Orqaga", key: "tekislik", isHome: true }]
+            },
+            "chiziq_tekislik": {
+                text: "<span class='geometry'>Chiziq va tekislik:</span><br>• Chiziq tekislikda: barcha nuqtalari tekislikda<br>• Chiziq tekislikni kesadi: 1 nuqta<br>• Chiziq tekislikka parallel: hech qanday nuqta yo‘q<br>• Chiziq tekislikka perpendikulyar: tekislikning barcha chizig‘iga perpendikulyar",
+                buttons: [{ text: "⬅️ Orqaga", key: "tekislik", isHome: true }]
+            },
+            "perpendikulyar": {
+                text: "<span class='geometry'>Perpendikulyarlik:</span><br>• Chiziq tekislikka perpendikulyar: agar u tekislikdagi ikkita kesishuvchi chiziqqa perpendikulyar bo‘lsa<br>• Ikki tekislik perpendikulyar: agar biri ikkinchisining normali bo‘lsa<br>• Uch perpendikulyar teoremasi: agar chiziq tekislikda bo‘lsa va uning proyeksiyasi ikkinchi chiziqqa perpendikulyar bo‘lsa, u holda asl chiziq ham perpendikulyar",
+                buttons: [{ text: "⬅️ Orqaga", key: "tekislik", isHome: true }]
+            },
+            "teorema": {
+                text: "Geometriyaning asosiy teoremalari va ularning isboti.",
+                buttons: [
+                    { text: "Pifagor teoremasi", key: "pifagor" },
+                    { text: "Kosinuslar teoremasi", key: "kosinus" },
+                    { text: "Sinuslar teoremasi", key: "sinus" },
+                    { text: "Chiziq va tekislik", key: "chiziq_tekislik_t" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "pifagor": {
+                text: "<span class='geometry'>Pifagor teoremasi:</span><br>• To‘g‘ri burchakli uchburchakda: c² = a² + b²<br>• Isboti: kvadrat yuzlariga asoslanadi<br>• Qo‘shimcha: 3-4-5 — eng oddiy sonlar juftligi<br>• Teskari teorema: agar c² = a² + b² bo‘lsa, u holda uchburchak to‘g‘ri burchakli",
+                buttons: [{ text: "⬅️ Orqaga", key: "teorema", isHome: true }]
+            },
+            "kosinus": {
+                text: "<span class='geometry'>Kosinuslar teoremasi:</span><br>• Har qanday uchburchakda: c² = a² + b² - 2ab·cosC<br>• Pifagor — bu teoremaning xususiy holati (C=90°)<br>• Isboti: koordinatalar yoki vektorlar orqali<br>• Qo‘llanilishi: tomonlar va burchaklar orasidagi bog‘liqlikni topish",
+                buttons: [{ text: "⬅️ Orqaga", key: "teorema", isHome: true }]
+            },
+            "sinus": {
+                text: "<span class='geometry'>Sinuslar teoremasi:</span><br>• a/sinA = b/sinB = c/sinC = 2R<br>• R — tashqi aylana radiusi<br>• Isboti: tashqi aylana va markaziy burchak orqali<br>• Qo‘llanilishi: ikki tomon va qarama-qarshi burchak berilganda",
+                buttons: [{ text: "⬅️ Orqaga", key: "teorema", isHome: true }]
+            },
+            "chiziq_tekislik_t": {
+                text: "<span class='geometry'>Uch perpendikulyar teoremasi:</span><br>• Agar tekislikda turgan chiziq, boshqa chiziqning tekislikdagi proyeksiyasiga perpendikulyar bo‘lsa, u holda u asl chiziqqa ham perpendikulyar bo‘ladi<br>• Isboti: vektorlar yoki koordinatalar orqali<br>• Qo‘llanilishi: fazoviy masalalarda, masofani hisoblashda",
+                buttons: [{ text: "⬅️ Orqaga", key: "teorema", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Stereometriya testi", key: "test_stereo" },
+                    { text: "Vektorlar testi", key: "test_vektor" },
+                    { text: "Aylanalar testi", key: "test_aylana" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_stereo": {
+                text: "1. Kubning hajmi 64 cm³. Uning tomoni necha sm?\nA) 3 cm\nB) 4 cm\nC) 8 cm",
+                buttons: [
+                    { text: "A)", key: "test_stereo_a" },
+                    { text: "B)", key: "test_stereo_b" },
+                    { text: "C)", key: "test_stereo_c" }
+                ]
+            },
+            "test_stereo_b": {
+                text: "✅ To'g'ri! V = a³ → 64 = a³ → a = 4 cm.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_vektor": {
+                text: "2. A(2,3), B(5,7) nuqtalar orasidagi vektor qanday?\nA) (3,4)\nB) (-3,-4)\nC) (7,10)",
+                buttons: [
+                    { text: "A)", key: "test_vektor_a" },
+                    { text: "B)", key: "test_vektor_b" },
+                    { text: "C)", key: "test_vektor_c" }
+                ]
+            },
+            "test_vektor_a": {
+                text: "✅ Ajoyib! AB = (5-2, 7-3) = (3,4).",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_aylana": {
+                text: "3. Aylana radiusi 5 sm. Markaziy burchak 72° bo‘lsa, qo‘shilgan yoy uzunligi qanday?\nA) 2π sm\nB) 5π sm\nC) 10π sm",
+                buttons: [
+                    { text: "A)", key: "test_aylana_a" },
+                    { text: "B)", key: "test_aylana_b" },
+                    { text: "C)", key: "test_aylana_c" }
+                ]
+            },
+            "test_aylana_a": {
+                text: "✅ To'g'ri! Yoy uzunligi = (θ/360) × 2πR = (72/360) × 2π×5 = (1/5)×10π = 2π sm.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
