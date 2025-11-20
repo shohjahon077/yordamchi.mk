@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Fizika AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a1a2e, #16213e, #0f1428);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0c0f1c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #ffcc00;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ffcc00"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 20, 40, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 5, 15, 0.9);
+            color: #ffcc00;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 204, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #d4af37, #f4c430);
+            color: #000;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #ffcc00, #ffd700);
+            color: #000;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ffcc00;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 5, 15, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(255, 204, 0, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ffcc00 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ffcc00;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(40, 30, 10, 0.4);
+            color: #ffcc00;
+            border: 1px solid rgba(255, 204, 0, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(255, 204, 0, 0.25);
+            border-color: #ffcc00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23ffcc00"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            color: #ffeb3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Fizika AI Bot</div>
+        <div class="splash-subtext">Elektromagnetizm, atom fizikasi, termodinamika, kvant nazariyasi va boshqalar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">⚡ 11-sinf Fizika AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Elektromagnetizm — 30 ta
+            "Elektr maydon nima? Uning kuchlanganligi qanday hisoblanadi?",
+            "Kulon qonuni qanday ifodalanadi?",
+            "Elektr maydon potensiali nima?",
+            "Elektr kuchlanganlik va potensial orasidagi bog'lanish?",
+            "O'tkazgichdagi elektr tokining tabiati nima?",
+            "Om qonuni qanday ifodalanadi?",
+            "Tok kuchi, kuchlanish, qarshilik orasidagi bog'lanish?",
+            "Zanjirning bir qismi uchun Om qonuni?",
+            "To'liq zanjir uchun Om qonuni?",
+            "Tok kuchi ishini qanday hisoblaymiz?",
+            "Tok quvvati nima? Formulasi?",
+            "Kirxgof qoidalari qanday?",
+            "Elektroliz qonunlari nima?",
+            "Magnit maydon nima? Uning induksiyasi qanday aniqlanadi?",
+            "Tokli o'tkazgichga ta'sir etuvchi Amper kuchi?",
+            "Zaryadlangan zarraga ta'sir etuvchi Lorens kuchi?",
+            "Elektromagnit induksiya hodisasi nima?",
+            "Faradey qonuni qanday ifodalanadi?",
+            "Len qonuni nima maqsatda qo'llaniladi?",
+            "Induksion tok EYuK qanday hisoblanadi?",
+            "O'zaro induksiya nima?",
+            "O'z-o'zidan induksiya hodisasi?",
+            "Induktivlik nima? Birligi?",
+            "Garmonik tok qanday ifodalanadi?",
+            "Tok kuchining o'rtacha kvadratik qiymati?",
+            "Kondensator, induktivlik va aktiv qarshilikli zanjirlar xossalari?",
+            "Rezonans hodisasi nima?",
+            "Tok kuchi chastotasi rezonans chastotasiga teng bo'lganda nima sodir bo'ladi?",
+            "Quvvat koeffitsienti nima?",
+            "Elektr maydon va magnit maydon orasidagi aloqa?",
+
+            // Atom va yadro fizikasi — 25 ta
+            "Rutherford tajribasi natijasida nima aniqlandi?",
+            "Atomning Bor modeli qanday?",
+            "Atom spektrlari nima uchun chiziqli?",
+            "Foton nima? Uning energiyasi qanday?",
+            "Fotoeffekt hodisasi nima?",
+            "Eynshteyn tenglamasi fotoeffekt uchun?",
+            "Chiqish ishi nima?",
+            "Fotoeffekt uchun qizil chegarasi nima?",
+            "Kvant nazariyasining asosiy g'oyasi?",
+            "De Broyl to'lqinlari nima?",
+            "Atom yadrosi tarkibini tushuntiring.",
+            "Nuklonlar, protonlar, neytronlar nima?",
+            "Yadro massasi va massalar defekti?",
+            "Bog'lanish energiyasi nima?",
+            "Radioaktivlik nima? Turlari?",
+            "α, β, γ nurlanishlar xossalari?",
+            "Yadroviy reaksiyalar qanday sodir bo'ladi?",
+            "Zanjir reaksiyasi nima?",
+            "Termostatik yadroviy sintez qanday?",
+            "Massa va energiya ekvivalentligi?",
+            "E = mc² formulasi nima ahamiyatga ega?",
+            "Izotoplar nima? Ularni qanday ajratish mumkin?",
+            "Yadroviy reaktor qanday ishlaydi?",
+            "Atom bombasi va vodorod bombasi farqi?",
+            "Radioaktiv nurlanishdan qanday himoyalash mumkin?",
+
+            // Termodinamika — 20 ta
+            "Ichki energiya nima?",
+            "Termodinamikaning birinchi qonuni?",
+            "Adiabatik, izotermik, izobarik, izoxorik jarayonlar?",
+            "Termodinamikaning ikkinchi qonuni?",
+            "Issiq dvigatelning FIK qanday hisoblanadi?",
+            "Karno sikli nima?",
+            "Entropiya nima?",
+            "Molyar issiqlik sig'imi nima?",
+            "Gazlarning o'rtacha kinetik energiyasi?",
+            "Mendeleyev–Klapeyron tenglamasi?",
+            "Absolyut nol nima?",
+            "Termodinamik muvozanat nima?",
+            "Fazaviy o'tishlar qanday sodir bo'ladi?",
+            "Bug'lanish va kondensatsiya jarayonlari?",
+            "Namlik nima? Uni qanday o'lchaymiz?",
+            "Suyuqlik yuzi kuchlanishi nima?",
+            "Kapillyarlik hodisasi?",
+            "Diffuziya va issiqlik o'tkazuvchanlik qanday bog'langan?",
+            "Issiqlik miqdori qanday hisoblanadi?",
+            "Molyar gaz doimiysi qanday qiymatga ega?",
+
+            // Mexanika — 15 ta
+            "Nyuntonning birinchi qonuni?",
+            "Nyuntonning ikkinchi qonuni?",
+            "Nyuntonning uchinchi qonuni?",
+            "Impuls nima? Impuls saqlanish qonuni?",
+            "Kinetik va potensial energiya?",
+            "Mexanik energiya saqlanish qonuni?",
+            "Garmonik tebranishlar tenglamasi?",
+            "Mayatnik davri qanday hisoblanadi?",
+            "To'lqin uzunligi, chastota, tezlik orasidagi bog'lanish?",
+            "Dopler effekti nima?",
+            "Mexanik to'lqinlar turlari?",
+            "Rezonans mexanikada qanday sodir bo'ladi?",
+            "Jismning aylanish harakati qanday tavsiflanadi?",
+            "Inertsiya momenti nima?",
+            "Kuch momenti va burchak tezlanish orasidagi bog'lanish?",
+
+            // Nazariy va amaliy savollar — 10 ta
+            "SI tizimidagi asosiy fizik kattaliklar?",
+            "Fizik kattaliklarni o'lchashda xatoliklar nima uchun vujudga keladi?",
+            "Grafik usulda natijalarni qayta ishlash qanday amalga oshiriladi?",
+            "Fizik masalani yechish bosqichlari?",
+            "Vektorli va skalyar kattaliklar farqi?",
+            "Koordinata tizimlari nima uchun kerak?",
+            "Inersiya tizimi nima?",
+            "Galiley almashtirishlari nima?",
+            "Maxsus nisbiylik nazariyasining postulatlari?",
+            "Fizikaning zamonaviy rivojlanish yo'nalishlari?"
+        ];
+
+        const responses = {
+            "Elektr maydon nima? Uning kuchlanganligi qanday hisoblanadi?": "<span class='formula'>E = F/q</span> — elektr maydon kuchlanganligi. Bu — birlik musbat zaryadga ta'sir etuvchi kuch. Maydon — materiya shakli bo'lib, zaryadlarga ta'sir etadi.",
+            "Kulon qonuni qanday ifodalanadi?": "<span class='formula'>F = k·(q₁q₂)/r²</span>, bunda <i>k = 9·10⁹ N·m²/C²</i>. Ikki nuqtaviy zaryad orasidagi o'zaro ta'sir kuchi.",
+            "Elektr maydon potensiali nima?": "Birlik zaryadni cheksizlikdan nuqtaga keltirish uchun bajariladigan ish. <span class='formula'>φ = W/q = kQ/r</span>.",
+            "Elektr kuchlanganlik va potensial orasidagi bog'lanish?": "<span class='formula'>E = -Δφ/Δx</span> (bir o'lchovda). Maydon kuchlanganligi — potensialning fazoviy o'zgarish tezligi.",
+            "O'tkazgichdagi elektr tokining tabiati nima?": "Metallarda — erkin elektronlarning tartibli harakati. Elektrolitlarda — ionlarning harakati.",
+            "Om qonuni qanday ifodalanadi?": "<span class='formula'>I = U/R</span> — tok kuchi kuchlanishga to'g'ri, qarshilikka teskari proporsional.",
+            "Tok kuchi, kuchlanish, qarshilik orasidagi bog'lanish?": "Yuqoridagi Om qonuni asosida: <i>U = IR</i>, <i>R = U/I</i>.",
+            "Zanjirning bir qismi uchun Om qonuni?": "Zanjirning faqat o'tkazgich qismi uchun: <span class='formula'>I = U/R</span>.",
+            "To'liq zanjir uchun Om qonuni?": "<span class='formula'>I = ε/(R + r)</span>, bunda <i>ε</i> — manba EYuK, <i>r</i> — ichki qarshilik.",
+            "Tok kuchi ishini qanday hisoblaymiz?": "<span class='formula'>A = IUt</span> yoki <span class='formula'>A = I²Rt</span>.",
+            "Tok quvvati nima? Formulasi?": "<span class='formula'>P = IU = I²R = U²/R</span>.",
+            "Kirxgof qoidalari qanday?": "1) Tugun qoidasi: <i>ΣI_kir = ΣI_chiq</i>. 2) Kontur qoidasi: <i>Σε = ΣIR</i>.",
+            "Elektroliz qonunlari nima?": "Faradeyning birinchi qonuni: <i>m = kIt</i>. Ikkinchi: <i>k = M/(Fn)</i>.",
+            "Magnit maydon nima? Uning induksiyasi qanday aniqlanadi?": "Magnit maydon — harakatdagi zaryadlarga ta'sir etuvchi maydon. Induksiya <i>B</i> — tesla (T) bilan o'lchanadi. <span class='formula'>F = qvB·sinα</span>.",
+            "Tokli o'tkazgichga ta'sir etuvchi Amper kuchi?": "<span class='formula'>F = BIl·sinα</span>.",
+            "Zaryadlangan zarraga ta'sir etuvchi Lorens kuchi?": "<span class='formula'>F = qvB·sinα</span>. Yo'nalishi — chap qo'l qoidasi yoki vektor ko'paytma.",
+            "Elektromagnit induksiya hodisasi nima?": "O'tkazgichni magnit maydonida harakatlantirganda yoki magnit oqimini o'zgartirganda EYuK hosil bo'ladi.",
+            "Faradey qonuni qanday ifodalanadi?": "<span class='formula'>ε = -ΔΦ/Δt</span>, bunda <i>Φ = B·S·cosα</i> — magnit oqimi.",
+            "Len qonuni nima maqsatda qo'llaniladi?": "Induksion tok yo'nalishini aniqlash uchun: u o'zgarishga qarshilik ko'rsatadi.",
+            "Induksion tok EYuK qanday hisoblanadi?": "Faradey qonuni orqali: <i>ε = -N·dΦ/dt</i>.",
+            "O'zaro induksiya nima?": "Bir o'tkazgichdagi tok o'zgarishi boshqa o'tkazgichda EYuK hosil qilish hodisasi.",
+            "O'z-o'zidan induksiya hodisasi?": "O'tkazgichdagi tok o'zgarishi o'zida EYuK hosil qiladi: <i>ε = -L·dI/dt</i>.",
+            "Induktivlik nima? Birligi?": "Katuşkaning o'z-o'zidan induksiya qilish xususiyati. Birlik — Genri (H).",
+            "Garmonik tok qanday ifodalanadi?": "<span class='formula'>i = Iₘ·sin(ωt + φ)</span>.",
+            "Tok kuchining o'rtacha kvadratik qiymati?": "<span class='formula'>I = Iₘ/√2</span>.",
+            "Kondensator, induktivlik va aktiv qarshilikli zanjirlar xossalari?": "Kondensator — tok oldin boradi. Induktivlik — kuchlanish oldin boradi. Aktiv — fazalar bir xil.",
+            "Rezonans hodisasi nima?": "Zanjirda induktiv va sig'im qarshiliklari teng bo'lganda to'liq qarshilik minimum, tok maksimum bo'ladi.",
+            "Tok kuchi chastotasi rezonans chastotasiga teng bo'lganda nima sodir bo'ladi?": "Tok kuchi maksimal qiymatga erishadi, zanjir to'la quvvatni iste'mol qiladi.",
+            "Quvvat koeffitsienti nima?": "<span class='formula'>cosφ = P/S</span> — foydali quvvatning to'liq quvvatga nisbati.",
+            "Elektr maydon va magnit maydon orasidagi aloqa?": "O'zgaruvchan elektr maydon magnit maydon, o'zgaruvchan magnit maydon elektr maydon hosil qiladi (Maksvel tenglamalari).",
+
+            "Rutherford tajribasi natijasida nima aniqlandi?": "Atomning markazida kichik, musbat yadro borligi aniqlandi. Elektronlar unga aylanib turadi.",
+            "Atomning Bor modeli qanday?": "Elektronlar faqat ma'lum orbita bo'ylab harakatlanadi. Orbita o'zgarishida foton yutiladi yoki chiqariladi.",
+            "Atom spektrlari nima uchun chiziqli?": "Elektronlar diskret energiya darajalari orasida o'tishlarda foton chiqaradi — shu sababli chiziqli spektr.",
+            "Foton nima? Uning energiyasi qanday?": "Yorug'lik kvanti. <span class='formula'>E = hν = hc/λ</span>.",
+            "Fotoeffekt hodisasi nima?": "Yorug'lik ta'sirida metall sirtidan elektronlarning uchib chiqishi.",
+            "Eynshteyn tenglamasi fotoeffekt uchun?": "<span class='formula'>hν = A + (mv²)/2</span>.",
+            "Chiqish ishi nima?": "Elektronni metall ichidan chiqarish uchun kerak bo'lgan minimal energiya (<i>A</i>).",
+            "Fotoeffekt uchun qizil chegarasi nima?": "<span class='formula'>ν₀ = A/h</span> — undan past chastotali yorug'lik fotoeffektni kuzgatmaydi.",
+            "Kvant nazariyasining asosiy g'oyasi?": "Energiya diskret (to'plamlar — kvantlar) shaklida uzatiladi.",
+            "De Broyl to'lqinlari nima?": "Har qanday harakatdagi zarraga to'lqin mos keladi: <span class='formula'>λ = h/p</span>.",
+            "Atom yadrosi tarkibini tushuntiring.": "Protonlar (+) va neytronlardan (0) tashkil topgan. Birgalikda — nuklonlar.",
+            "Nuklonlar, protonlar, neytronlar nima?": "Nuklon — yadro zarralari umumiy nomi. Proton — zaryadli, neytron — zaryadsiz.",
+            "Yadro massasi va massalar defekti?": "Yadro massasi tarkibidagi nuklonlar massasi yig'indisidan kam — shu farq — massalar defekti.",
+            "Bog'lanish energiyasi nima?": "<span class='formula'>E = Δm·c²</span> — nuklonlarni yadroda ushlab turuvchi energiya.",
+            "Radioaktivlik nima? Turlari?": "Yadro o'z-o'zidan parchalanib nurlanish chiqarish hodisasi. Turlari: α, β, γ.",
+            "α, β, γ nurlanishlar xossalari?": "α — geliy yadrosi (2p+2n), β — elektron yoki pozitron, γ — yuqori energiyali foton.",
+            "Yadroviy reaksiyalar qanday sodir bo'ladi?": "Yadro boshqa yadro yoki zarraga urilib, yangi yadro hosil qiladi: <i>⁴₂He + ¹⁴₇N → ¹⁷₈O + ¹₁H</i>.",
+            "Zanjir reaksiyasi nima?": "Bir parchalanish natijasida chiqqan neytronlar boshqa yadrolarni parchalaydi — reaksiya zanjir shaklida tarqaydi.",
+            "Termostatik yadroviy sintez qanday?": "Yengil yadrolar (masalan, vodorod izotoplari) yuqori haroratda birlashib og'ir yadro hosil qiladi (Quyoshda sodir bo'ladi).",
+            "Massa va energiya ekvivalentligi?": "Massa — energiyaning bir shakli: <span class='formula'>E = mc²</span>.",
+            "E = mc² formulasi nima ahamiyatga ega?": "Juda kichik massaga juda katta energiya mos keladi (masalan, yadroviy reaksiyalarda).",
+            "Izotoplar nima? Ularni qanday ajratish mumkin?": "Bir xil proton, har xil neytron soni. Mass-spektrometr yordamida ajratiladi.",
+            "Yadroviy reaktor qanday ishlaydi?": "Boshqariladigan zanjir reaksiyasi orqali issiqlik ishlab chiqariladi — bu suvni qizitib, turbinani aylantiradi.",
+            "Atom bombasi va vodorod bombasi farqi?": "Atom — yadro parchalanishi (uran, plutoniy). Vodorod — yadro birlashishi (deyteriy, tritiy). Ikkinchisi kuchliroq.",
+            "Radioaktiv nurlanishdan qanday himoyalash mumkin?": "α — qog'oz, β — metall folga, γ — qalin beton yoki qo'rg'oshin.",
+
+            "Ichki energiya nima?": "Jismdagi barcha molekulalarning kinetik + potensial energiyalari yig'indisi.",
+            "Termodinamikaning birinchi qonuni?": "<span class='formula'>ΔU = Q - A</span> — issiqlik ichki energiyaga va ishga sarflanadi.",
+            "Adiabatik, izotermik, izobarik, izoxorik jarayonlar?": "Adiabatik — issiqlik almashinmaydi. Izotermik — harorat doimiy. Izobarik — bosim doimiy. Izoxorik — hajm doimiy.",
+            "Termodinamikaning ikkinchi qonuni?": "Issiqlik o'z-o'zidan sovuq jismdan issiq jismga o'tmaydi.",
+            "Issiq dvigatelning FIK qanday hisoblanadi?": "<span class='formula'>η = (Q₁ - Q₂)/Q₁ = 1 - T₂/T₁</span> (Karno).",
+            "Karno sikli nima?": "Ikki izotermik va ikki adiabatik jarayondan iborat ideal issiq dvigatel sikli.",
+            "Entropiya nima?": "Tartibsizlik darajasi. O'lchov birligi — J/K. O'z-o'zidan jarayonlarda entropiya ortadi.",
+            "Molyar issiqlik sig'imi nima?": "1 mol moddani 1 K ga qizdirish uchun kerak bo'lgan issiqlik miqdori.",
+            "Gazlarning o'rtacha kinetik energiyasi?": "<span class='formula'>E_k = (3/2)kT</span>, <i>k</i> — Boltsmann doimiysi.",
+            "Mendeleyev–Klapeyron tenglamasi?": "<span class='formula'>pV = (m/M)RT = νRT</span>.",
+            "Absolyut nol nima?": "0 K = -273.15°C — molekulalar to'xtaydigan (nazariy) harorat.",
+            "Termodinamik muvozanat nima?": "Tizim parametrlari (p, V, T) vaqt o'tishi bilan o'zgarmaydigan holat.",
+            "Fazaviy o'tishlar qanday sodir bo'ladi?": "Molekulyar tuzilma o'zgaradi: muz → suv → bug'. Har birida issiqlik sarflanadi yoki ajraladi.",
+            "Bug'lanish va kondensatsiya jarayonlari?": "Bug'lanish — suyuqlikdan bug'ga o'tish (issiqlik sarflanadi). Kondensatsiya — aksincha (issiqlik ajraladi).",
+            "Namlik nima? Uni qanday o'lchaymiz?": "Havodagi suv bug'ining miqdori. Psixrometr yordamida — quruq va nam termometrlar orqali.",
+            "Suyuqlik yuzi kuchlanishi nima?": "Yuzdagi molekulalarga tushadigan kuchlar simmetrik emas — natijada yuz yig'ilishga harakat qiladi.",
+            "Kapillyarlik hodisasi?": "Naychada suyuqlik yuqoriga ko'tarilishi yoki pastga tushishi — yuz kuchlanishi tufayli.",
+            "Diffuziya va issiqlik o'tkazuvchanlik qanday bog'langan?": "Ikkalasi ham molekulyar harakat natijasidir: diffuziya — zarralar, issiqlik — energiya tarqalishi.",
+            "Issiqlik miqdori qanday hisoblanadi?": "<span class='formula'>Q = cmΔt</span> (harorat o'zgarishida), <span class='formula'>Q = λm</span> (erishda/suyishda).",
+            "Molyar gaz doimiysi qanday qiymatga ega?": "<span class='formula'>R = 8.31 J/(mol·K)</span>.",
+
+            "Nyuntonning birinchi qonuni?": "Inersiya qonuni: tashqi kuch ta'sir qilmaganda jism to'g'ri chiziqli tekis harakatlanadi yoki tinch turadi.",
+            "Nyuntonning ikkinchi qonuni?": "<span class='formula'>F = ma</span> — kuch jismga tezlanish beradi.",
+            "Nyuntonning uchinchi qonuni?": "Harakat va qarshilik kuchlari teng va qarama-qarshi yo'nalgan.",
+            "Impuls nima? Impuls saqlanish qonuni?": "Impuls <i>p = mv</i>. Yopiq tizimda umumiy impuls saqlanadi.",
+            "Kinetik va potensial energiya?": "Kinetik: <i>E_k = mv²/2</i>. Potensial: <i>E_p = mgh</i> (og'irlik kuchi maydonida).",
+            "Mexanik energiya saqlanish qonuni?": "Agar ichki kuchlar konservativ bo'lsa, <i>E_k + E_p = const</i>.",
+            "Garmonik tebranishlar tenglamasi?": "<span class='formula'>x = A·cos(ωt + φ)</span>.",
+            "Mayatnik davri qanday hisoblanadi?": "Matematik: <span class='formula'>T = 2π√(l/g)</span>. Prujinali: <span class='formula'>T = 2π√(m/k)</span>.",
+            "To'lqin uzunligi, chastota, tezlik orasidagi bog'lanish?": "<span class='formula'>v = λν</span>.",
+            "Dopler effekti nima?": "Manba yoki kuzatuvchi harakatlanayotganda tovush/yorug'lik chastotasi o'zgaradi.",
+            "Mexanik to'lqinlar turlari?": "Ko'ndalang — zarralar tebranish yo'nalishi to'lqin tarqalishiga perpendikulyar. Bo'ylama — parallel.",
+            "Rezonans mexanikada qanday sodir bo'ladi?": "Tashqi kuch chastotasi tizimning xos chastotasiga teng bo'lganda tebranish amplitudasi maksimal bo'ladi.",
+            "Jismning aylanish harakati qanday tavsiflanadi?": "Burchak tezlik <i>ω</i>, burchak tezlanish <i>ε</i>, inertsiya momenti <i>I</i>.",
+            "Inertsiya momenti nima?": "Jismning aylanishga qarshilik ko'rsatish xususiyati: <i>I = Σmr²</i>.",
+            "Kuch momenti va burchak tezlanish orasidagi bog'lanish?": "<span class='formula'>M = Iε</span> — Nyutonning ikkinchi qonuni aylanish uchun.",
+
+            "SI tizimidagi asosiy fizik kattaliklar?": "Uzunlik (m), massa (kg), vaqt (s), tok kuchi (A), harorat (K), modd miqdori (mol), yorqinlik (cd).",
+            "Fizik kattaliklarni o'lchashda xatoliklar nima uchun vujudga keladi?": "Asbob chegarasi, inson xatosi, tashqi sharoit o'zgarishi, statistik tabiat.",
+            "Grafik usulda natijalarni qayta ishlash qanday amalga oshiriladi?": "Nuqtalarni koordinata tekisligiga qo'yib, eng yaxshi to'g'ri chiziq (regressiya) o'tkaziladi.",
+            "Fizik masalani yechish bosqichlari?": "1) Shartni tahlil qilish; 2) rasmini chizish; 3) qonunlarni belgilash; 4) tenglamalar tuzish; 5) yechish; 6) tekshirish.",
+            "Vektorli va skalyar kattaliklar farqi?": "Vektor — yo'nalish va son qiymati (kuch, tezlik). Skalyar — faqat son qiymati (massa, energiya).",
+            "Koordinata tizimlari nima uchun kerak?": "Jismning vaziyatini, harakatini matematik ifodalash uchun.",
+            "Inersiya tizimi nima?": "Nyunton qonunlari bajariladigan sanoq tizimi.",
+            "Galiley almashtirishlari nima?": "Bir inersiya tizimidan boshqasiga o'tishda koordinata va vaqt almashtirishlari: <i>x' = x - vt</i>, <i>t' = t</i>.",
+            "Maxsus nisbiylik nazariyasining postulatlari?": "1) Fizika qonunlari barcha inersiya tizimlarda bir xil. 2) Yorug'lik tezligi doimiy — barcha tizimlarda <i>c</i>.",
+            "Fizikaning zamonaviy rivojlanish yo'nalishlari?": "Kvant hisobi, kosmologiya, nurlanish texnologiyalari, nanofizika, qattiq jismlar fizikasi, plazma fizikasi."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Fizika darsliklariga asoslangan murakkab savollarga javob beruvchi AI yordamchiman. Elektromagnetizm, yadro fizikasi, termodinamika — barchasini tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
