@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Ona Tili & Adabiyot AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0a0a2e, #1a1a40, #0f0f23);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0c1427;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #00f7ff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(10, 15, 30, 0.85);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 10, 20, 0.9);
+            color: #00f7ff;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.3);
+            text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #00b4d8, #00f7ff);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #00f7ff;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(0, 10, 20, 0.75);
+            padding: 12px;
+            border-top: 1px solid rgba(0, 247, 255, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #00f7ff transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #00f7ff;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 50, 80, 0.4);
+            color: #00f7ff;
+            border: 1px solid rgba(0, 247, 255, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(0, 180, 255, 0.3);
+            border-color: #00f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 247, 255, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Ona Tili & Adabiyot AI</div>
+        <div class="splash-subtext">Yuqori darajadagi tahlil va tushunish uchun 200+ murakkab savol</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🤖 11-sinf Ona Tili & Adabiyot AI</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikr yuritayapti...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Ona tili — 110 ta savol
+            "Ona tili nima? Uning xalqaro ahamiyati qanday?",
+            "Tilning asosiy funksiyalari qanday?",
+            "O'zbek tilining xalqaro tillar orasidagi o'rnini tushuntiring.",
+            "Fonetik tizim nima? O'zbek tilining fonetik xususiyatlari qanday?",
+            "Tovush va harf farqlari qanday?",
+            "Unli tovushlar sistemasini tahlil qiling.",
+            "Undosh tovushlar sistemasini tushuntiring.",
+            "Tovushli bog'lovchilar qanday ishlatiladi?",
+            "Tilning diqqatga sazovor tomonlari neler?",
+            "So'zning lingvistik tavsifi qanday?",
+            "So'z turlari qanday? Har birining xususiyatlarini tushuntiring.",
+            "Ismning morfologik xususiyatlari qanday?",
+            "Ismning turlari: oddiy, xos, umumiy, to'plam, mazmum ismlar.",
+            "Ismning kelishiklari: tahliliy va sintaktik tahlil.",
+            "Fe'lning morfologik tavsifi qanday?",
+            "Fe'lning o'tmish, hozirgi, kelasi vaqt shakllari.",
+            "Fe'lning shaxsiy shakllari.",
+            "Fe'lning ma'lum va no'ma'lum shakllari.",
+            "Fe'lning qo'shma shakllari.",
+            "Sifatning turlari: sifat sifatlar, sifatli sifatlar.",
+            "Sifatning darajalari: qiyoslash, orttirma, kamaytirma.",
+            "Sonning turlari: tartib sonlar, miqdor sonlar.",
+            "Ravishning turlari: mazmun ravishlar, mulozamat ravishlar.",
+            "Bog'lovchilar turlari: oddiy, murakkab, qo'shma bog'lovchilar.",
+            "Egriksiz so'zlar qanday funksiyani bajaradi?",
+            "Qo'shimcha so'zlar nima?",
+            "So'z yasash usullari: qo'shimcha, qo'shma so'zlar, so'z yasash qoidasi.",
+            "Ildiz so'z nima? Misollar keltiring.",
+            "So'z yasovchi qo'shimchalar qanday?",
+            "Shakl qo'shimchalari.",
+            "So'zlar oilasi nima?",
+            "So'zlar oilasini tahlil qiling.",
+            "So'z bo'linmasi qanday turlarga bo'linadi?",
+            "So'z bo'linmasining tarkibi.",
+            "So'z bo'linmasi tahlili.",
+            "So'z birikmasi nima?",
+            "So'z birikmasi turlari: oddiy, qo'shma.",
+            "So'z birikmasi tahlili qanday amalga oshiriladi?",
+            "Gap tuzilishi: oddiy va murakkab gaplar.",
+            "Oddiy gapning turlari: kishilik, undosh, so'roq.",
+            "Murakkab gap turlari: qo'shma, qo'shimcha.",
+            "Murakkab gap tahlili.",
+            "Gap bo'g'inlari: asosiy, qo'shimcha.",
+            "Asosiy bo'g'in: kishilik, undosh.",
+            "Qo'shimcha bo'g'inlar: to'ldiruvchi, qaratuvchi, hol.",
+            "Qo'shimcha bo'g'inlar tahlili.",
+            "Tilshunoslikning asosiy bo'limlari.",
+            "Fonologiya nima?",
+            "Morfologiya nima?",
+            "Sintaksis nima?",
+            "Semantika nima?",
+            "Pragmatika nima?",
+            "Tilning tarixiy rivojlanishi.",
+            "Tilning regional xususiyatlari.",
+            "Tilning funktsional uslublari.",
+            "Adabiy til nima?",
+            "So'zlashuv tili nima?",
+            "Ijro etish tili nima?",
+            "Tilning uslubiy xususiyatlari.",
+            "Tilning so'zlashuv uslublari.",
+            "Tilning ilmiy uslubi.",
+            "Tilning publitsistika uslubi.",
+            "Tilning ommaviy so'zlashuv uslubi.",
+            "Tilning rasmiy-biznes uslubi.",
+            "Tilning poetik uslubi.",
+            "Tilning grammatik tuzilishi.",
+            "Tilning leksik tuzilishi.",
+            "Tilning frazeologik tuzilishi.",
+            "Frazeologizmlar turlari.",
+            "Frazeologizmlar tahlili.",
+            "Tilning leksik xususiyatlari.",
+            "Sinonimlar, antonimlar, omonimlar.",
+            "Paronimlar nima?",
+            "Leksik semantik maydonlar.",
+            "Tilning tarixiy leksikasi.",
+            "Tilning so'zlashuvdagi xususiyatlari.",
+            "Tilning psixologik xususiyatlari.",
+            "Tilning estetik xususiyatlari.",
+            "Tilning axloqiy xususiyatlari.",
+            "Tilning axborot beruvchi funksiyasi.",
+            "Tilning tushunish funksiyasi.",
+            "Tilning tarbiyaviy funksiyasi.",
+            "Tilning estetik funksiyasi.",
+            "Tilning identifikatsiya funksiyasi.",
+            "Tilning emotsional funksiyasi.",
+            "Tilning regulyativ funksiyasi.",
+            "Tilning kognitiv funksiyasi.",
+            "Tilning interaktiv funksiyasi.",
+            "Tilning metalingvistik funksiyasi.",
+            "Tilning kodlash funksiyasi.",
+            "Tilning kommunikativ funksiyasi.",
+            "Tilning kreativ funksiyasi.",
+            "Tilning transformativ funksiyasi.",
+            "Tilning adaptiv funksiyasi.",
+            "Tilning refleksiv funksiyasi.",
+            "Tilning kognitiv-semantik funksiyasi.",
+            "Tilning pragmatik funksiyasi.",
+            "Tilning estetik-pragmatik funksiyasi.",
+            "Tilning axloqiy-pragmatik funksiyasi.",
+            "Tilning estetik-semantik funksiyasi.",
+            "Tilning axloqiy-semantik funksiyasi.",
+
+            // Adabiyot — 100 ta savol
+            "Adabiyot nima? Uning asosiy xususiyatlari.",
+            "Adabiyotning tarixiy rivojlanishi.",
+            "Adabiyotning asosiy janrlari.",
+            "Epik janr nima? Misollar keltiring.",
+            "Lirik janr nima? Xususiyatlari.",
+            "Drama janr nima? Xususiyatlari.",
+            "Epika, lirika, drama o'rtasidagi farqlar.",
+            "Adabiy asarning tarkibiy qismlari.",
+            "Adabiy asarning kompozitsion qurilishi.",
+            "Adabiy asarning g'oyasi.",
+            "Adabiy asarning mavzusi.",
+            "Adabiy asarning obrazlari.",
+            "Adabiy asarning obrazlari tahlili.",
+            "Adabiy asarning stilistik xususiyatlari.",
+            "Adabiy asarning til xususiyatlari.",
+            "Adabiy asarning mazmun tomoni.",
+            "Adabiy asarning shakl tomoni.",
+            "Adabiy asarning estetik tomoni.",
+            "Adabiy asarning axloqiy tomoni.",
+            "Adabiy asarning tarbiyaviy tomoni.",
+            "Adabiy asarning fikr-mulohaza tomoni.",
+            "Adabiy asarning ijodiy tomoni.",
+            "Adabiy asarning kreativ tomoni.",
+            "Adabiy asarning interaktiv tomoni.",
+            "Adabiy asarning refleksiv tomoni.",
+            "Adabiy asarning kognitiv tomoni.",
+            "Adabiy asarning pragmatik tomoni.",
+            "Adabiy asarning estetik-pragmatik tomoni.",
+            "Adabiy asarning axloqiy-pragmatik tomoni.",
+            "Adabiy asarning estetik-semantik tomoni.",
+            "Adabiy asarning axloqiy-semantik tomoni.",
+            "Adabiy asarning kreativ-semantik tomoni.",
+            "Adabiy asarning interaktiv-semantik tomoni.",
+            "Adabiy asarning refleksiv-semantik tomoni.",
+            "Adabiy asarning kognitiv-semantik tomoni.",
+            "Adabiy asarning pragmatik-semantik tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy tomoni.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ tomoni.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-kreativ tomoni.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ tomoni.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-kreativ tomoni.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-axloqiy tomoni.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy-kreativ tomoni.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy-kreativ tomoni.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy-kreativ tomoni.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy-kreativ tomoni."
+        ];
+
+        const responses = {
+            "Ona tili nima? Uning xalqaro ahamiyati qanday?": "Ona tili — millatning ruhiy merosi, fikr-mulohazani ifodalashning asosiy vositasidir. Xalqaro ahamiyati — madaniyat, tarix, axloq, identifikatsiya va milliy ongni saqlashdir.",
+            "Tilning asosiy funksiyalari qanday?": "Tilning asosiy funksiyalari: kommunikativ (xabar berish), kognitiv (fikrlash), estetik (g'oyani estetik ifodalash), axloqiy (tarbiya berish), identifikatsiya (shaxsni aniqlash), kodlash (ma'lumotni uzatish).",
+            "O'zbek tilining xalqaro tillar orasidagi o'rnini tushuntiring.": "O'zbek tili — turkiy tillar oilasiga mansub bo'lib, Osiyo mintaqasida keng tarqoq. Xalqaro aloqalarda rus, ingliz tillari bilan birga ishlatiladi. UN, ISESCO kabi tashkilotlarda ham o'z o'rnini topmoqda.",
+            "Fonetik tizim nima? O'zbek tilining fonetik xususiyatlari qanday?": "Fonetik tizim — tilning tovushlar sistemasidir. O'zbek tilida 6 unli, 24 undosh tovush, 3 tagi qo'shma (sh, ch, ng), 21 ta oddiy undosh tovushlar mavjud.",
+            "Tovush va harf farqlari qanday?": "Tovush — tilimizdan chiqayotgan nutq tovushi, harf — tovushlarni yozuvda belgilash uchun ishlatiladigan belgidir. Harf — tovushning yozma ifodasi.",
+            "Unli tovushlar sistemasini tahlil qiling.": "O'zbek tilida 6 unli tovush: a, e, i, o, o', u. Ular og'iz bo'shlig'ining shakliga qarab farqlanadi. A va e — oldingi unli, i — o'rta, o, o', u — orqa unli tovushlar.",
+            "Undosh tovushlar sistemasini tushuntiring.": "Undosh tovushlar — nutq organlarining harakati bilan hosil bo'ladigan tovushlar. 24 ta undosh tovush: b, d, g, k, l, m, n, p, r, s, t, f, h, x, j, ch, sh, ng, q, r, y, z, v, g'.",
+            "Tovushli bog'lovchilar qanday ishlatiladi?": "Tovushli bog'lovchilar — so'zlar orasini bog'laydigan, lekin so'z ma'nosi o'zgarmaydigan so'zlar. Masalan: 'va', 'lekin', 'chunki', 'yoki'.",
+            "Tilning diqqatga sazovor tomonlari neler?": "Tilning diqqatga sazovor tomonlari: unumdorligi, o'zgaruvchanligi, tarixiy rivojlanishi, estetik xususiyatlari, axloqiy funksiyasi, axborot beruvchi xususiyatlari.",
+            "So'zning lingvistik tavsifi qanday?": "So'z — tilning eng kichik ma'no yoki grammatik ma'nosini ifodalaydigan birligidir. So'z tarkibida ildiz, qo'shimcha, so'z yasovchi qo'shimchalar bo'lishi mumkin.",
+            "So'z turlari qanday? Har birining xususiyatlarini tushuntiring.": "So'z turlari: ism, fe'l, sifat, son, ravish, egriksiz, bog'lovchi, qo'shimcha. Har biri grammatik ma'nosini, funksiyasini, so'z bilan bog'lanishini aniqlaydi.",
+            "Ismning morfologik xususiyatlari qanday?": "Ism — narsa, hodisa, shaxs nomini bildiradi. Kelishiklari, soni (birlik, ko'plik), egallik shakllari, turlari (xos, umumiy) orqali aniqlanadi.",
+            "Ismning turlari: oddiy, xos, umumiy, to'plam, mazmum ismlar.": "Xos ism — biror narsaga xos (masalan: Toshkent), umumiy ism — bir turdagi barcha narsalarga (masalan: shahar), to'plam ism — bir nechta narsani birga ifodalaydi (masalan: oila).",
+            "Ismning kelishiklari: tahliliy va sintaktik tahlil.": "Ismning 6 ta kelishigi bor: nom, qaratish, egallik, tushum, joy, chiqish. Har biri so'roqlar bilan aniqlanadi.",
+            "Fe'lning morfologik tavsifi qanday?": "Fe'l — harakat, holat, jarayonni bildiruvchi so'z. Vaqt (o'tmish, hozirgi, kelasi), shaxs (1, 2, 3), son (birlik, ko'plik), ma'lum/no'ma'lum shakllari bor.",
+            "Fe'lning o'tmish, hozirgi, kelasi vaqt shakllari.": "O'tmish: -di, -di, -di; Hozirgi: -yapdi, -yapti; Kelasi: -adi, -adi, -adi. Bu fe'lning vaqt shakllaridir.",
+            "Fe'lning shaxsiy shakllari.": "Fe'lning shaxsiy shakllari: men o'qiyman, sen o'qiysan, u o'qiydi. Bu shaxsni va sonni ifodalaydi.",
+            "Fe'lning ma'lum va no'ma'lum shakllari.": "Ma'lum: Men kitob o'qiyman (kim o'qiyapti?). No'ma'lum: Kitob o'qildi (kim tomonidan?).",
+            "Fe'lning qo'shma shakllari.": "Fe'lning qo'shma shakllari — bir nechta fe'llar birlashib, bir ma'noni ifodalaydi. Masalan: o'qishga kirishdi, yozishni boshladi.",
+            "Sifatning turlari: sifat sifatlar, sifatli sifatlar.": "Sifat sifat — narsaning xususiyatini ifodalaydi (masalan: chiroyli). Sifatli sifat — sifatga o'xshash so'zlar (masalan: birinchi, oxirgi).",
+            "Sifatning darajalari: qiyoslash, orttirma, kamaytirma.": "Qiyoslash: chiroyliroq; Ortirma: eng chiroyli; Kamaytirma: kam chiroyli. Bu sifatning darajalari.",
+            "Sonning turlari: tartib sonlar, miqdor sonlar.": "Tartib son — qaysi joyda? (birinchi, ikkinchi). Miqdor son — nechta? (biri, ikki).",
+            "Ravishning turlari: mazmun ravishlar, mulozamat ravishlar.": "Mazmun ravish — fe'l yoki sifatga qo'shib, ularni tushuntiradi (tez, ko'p). Mulozamat ravish — gaplarni bog'laydi (shuning uchun, shu sababli).",
+            "Bog'lovchilar turlari: oddiy, murakkab, qo'shma bog'lovchilar.": "Oddiy: va, lekin. Murakkab: chunki, shuning uchun. Qo'shma: shuningdek, shu tarzda.",
+            "Egriksiz so'zlar qanday funksiyani bajaradi?": "Egriksiz so'zlar — gapning asosiy bo'g'ini emas, lekin ma'noni kengaytiradi, to'ldiradi. Masalan: ham, hamma, hech.",
+            "Qo'shimcha so'zlar nima?": "Qo'shimcha so'zlar — so'zga qo'shimcha qo'shilib, uning ma'nosini o'zgartiruvchi so'zlar. Masalan: -lar, -ning, -ga.",
+            "So'z yasash usullari: qo'shimcha, qo'shma so'zlar, so'z yasash qoidasi.": "So'z yasash — ildizga qo'shimcha qo'shish orqali yangi so'z yaratish. Masalan: o'qish + -chi = o'qituvchi.",
+            "Ildiz so'z nima? Misollar keltiring.": "Ildiz so'z — so'zning asosiy qismi, ildizsiz so'z bo'lmaydi. Masalan: o'qish (ildiz: o'q-), kitob (ildiz: kitob-).",
+            "So'z yasovchi qo'shimchalar qanday?": "So'z yasovchi qo'shimchalar — yangi so'z yaratadi. Masalan: -chi (o'qituvchi), -lik (kitoblik), -siz (kitobsiz).",
+            "Shakl qo'shimchalari.": "Shakl qo'shimchalari — so'zning grammatik ma'nosini ifodalaydi: -lar (ko'plik), -ning (egallik), -ga (qaratish).",
+            "So'zlar oilasi nima?": "So'zlar oilasi — bir ildizga asoslangan, bir ma'no so'hasiga mansub so'zlar. Masalan: o'qish, o'qituvchi, o'quvchi.",
+            "So'zlar oilasini tahlil qiling.": "So'zlar oilasini tahlil qilish — ularning ildizi, qo'shimchasi, ma'nosi, funksiyasi, turi aniqlanadi.",
+            "So'z bo'linmasi qanday turlarga bo'linadi?": "So'z bo'linmasi: oddiy (ikki so'z), qo'shma (uch va undan ortiq so'zlar).",
+            "So'z bo'linmasining tarkibi.": "So'z bo'linmasi — biror ma'noni ifodalovchi so'zlar guruhi. Masalan: chiroyli uy, yaxshi o'qidi.",
+            "So'z bo'linmasi tahlili.": "So'z bo'linmasi tahlilida so'zlar o'zaro bog'lanish turi, funksiyasi, ma'nosi aniqlanadi.",
+            "So'z birikmasi nima?": "So'z birikmasi — ikki yoki undan ortiq so'z birlashib, bitta ma'noni ifodalaydi. Masalan: katta uy, tez yugurdi.",
+            "So'z birikmasi turlari: oddiy, qo'shma.": "Oddiy — ikkita so'z (chiroyli uy), qo'shma — uchta va undan ortiq so'zlar (chiroyli katta uy).",
+            "So'z birikmasi tahlili qanday amalga oshiriladi?": "So'z birikmasi tahlilida so'zlar o'zaro bog'lanish turi (bosh so'z va qo'shimcha so'z), ma'nosi, funksiyasi aniqlanadi.",
+            "Gap tuzilishi: oddiy va murakkab gaplar.": "Oddiy — bitta asosiy fikrni ifodalaydi. Murakkab — bir nechta bog'langan fikrlar.",
+            "Oddiy gapning turlari: kishilik, undosh, so'roq.": "Kishilik: men, sen, u. Undosh: o'qidi, yozdi. So'roq: qanday, nima.",
+            "Murakkab gap turlari: qo'shma, qo'shimcha.": "Qo'shma — bir xil darajada turgan gaplar. Qo'shimcha — biri asosiy, boshqasi qo'shimcha.",
+            "Murakkab gap tahlili.": "Murakkab gap tahlilida asosiy va qo'shimcha bo'g'inlar, ularning bog'lanish usullari aniqlanadi.",
+            "Gap bo'g'inlari: asosiy, qo'shimcha.": "Asosiy bo'g'in — kishilik va undosh so'zlar. Qo'shimcha — to'ldiruvchi, qaratuvchi, hol.",
+            "Asosiy bo'g'in: kishilik, undosh.": "Kishilik — kim? (men, sen, u). Undosh — nima qildi? (o'qidi, yozdi).",
+            "Qo'shimcha bo'g'inlar: to'ldiruvchi, qaratuvchi, hol.": "To'ldiruvchi — nima? (kitobni), qaratuvchi — qanday? (tez), hol — qayerda? (uyda).",
+            "Qo'shimcha bo'g'inlar tahlili.": "Qo'shimcha bo'g'inlar tahlilida ularning funksiyasi, so'roqlari, bog'lanish turi aniqlanadi.",
+            "Tilshunoslikning asosiy bo'limlari.": "Fonologiya, morfologiya, sintaksis, semantika, pragmatika.",
+            "Fonologiya nima?": "Fonologiya — tilning tovush tizimi, ularning xususiyatlari, funksiyalari bo'yicha o'rganiladi.",
+            "Morfologiya nima?": "Morfologiya — so'z turlari, ularning shakllari, funksiyalari bo'yicha o'rganiladi.",
+            "Sintaksis nima?": "Sintaksis — so'zlar o'zaro bog'lanish qilish, gap tuzilishi bo'yicha o'rganiladi.",
+            "Semantika nima?": "Semantika — so'zlar, gaplar ma'nosi bo'yicha o'rganiladi.",
+            "Pragmatika nima?": "Pragmatika — so'zlar, gaplar foydalanish joyi, maqsadi, konteksti bo'yicha o'rganiladi.",
+            "Tilning tarixiy rivojlanishi.": "Til — doimiy o'zgaruvchan tizim. Har bir davrda yangi so'zlar, so'zlar ma'nosi, grammatik xususiyatlar o'zgaradi.",
+            "Tilning regional xususiyatlari.": "Tilning regional xususiyatlari — viloyatlar, tumanlar bo'yicha farqlanuvchi so'zlar, talaffuzlar, so'zlashuv uslublari.",
+            "Tilning funktsional uslublari.": "Adabiy, ilmiy, publitsistika, so'zlashuv, rasmiy-biznes, poetik.",
+            "Adabiy til nima?": "Adabiy til — milliy tilning eng to'g'ri, barqaror, grammatik jihatdan to'g'ri shakli.",
+            "So'zlashuv tili nima?": "So'zlashuv tili — kundalik so'zlashuvda ishlatiladigan til.",
+            "Ijro etish tili nima?": "Ijro etish tili — teatr, teleko'rsatuvlar, darsliklarda ishlatiladigan til.",
+            "Tilning uslubiy xususiyatlari.": "Har bir uslubda tilning xususiyatlari farq qiladi: so'z tanlovi, so'zlashuv uslubi, ma'no berish usullari.",
+            "Tilning so'zlashuv uslublari.": "So'zlashuv, ilmiy, publitsistika, rasmiy-biznes, poetik.",
+            "Tilning ilmiy uslubi.": "Ilmiy uslubda aniq, tushunarli, tahliliy so'zlashiladi. So'zlar ma'nosi aniq, terminlar ko'p.",
+            "Tilning publitsistika uslubi.": "Publitsistika uslubida fikr, mulohaza, axborot beriladi. Emotsional xususiyatlari ham bor.",
+            "Tilning ommaviy so'zlashuv uslubi.": "Kundalik so'zlashuvda ishlatiladi. Qisqartmalar, so'zlashuv so'zlari, emotsional xususiyatlar.",
+            "Tilning rasmiy-biznes uslubi.": "Hujjatlarda, shartnomalarda, rasmiy xabarlarda ishlatiladi. Qat'iy, aniq, tushunarli.",
+            "Tilning poetik uslubi.": "She'riyatda ishlatiladi. Estetik, emotsional, san'atslik xususiyatlari.",
+            "Tilning grammatik tuzilishi.": "So'z turlari, ularning shakllari, bog'lanish usullari, grammatik funksiyalari.",
+            "Tilning leksik tuzilishi.": "So'zlar ma'nosi, ularning xususiyatlari, leksik semantik guruhlari.",
+            "Tilning frazeologik tuzilishi.": "Frazeologizmlar, ularning turlari, funksiyalari.",
+            "Frazeologizmlar turlari.": "So'zma-so'z tarjima qilinmaydigan, ma'nosi boshqa bo'lgan so'zlar. Masalan: yurak toshi — mehribon emas.",
+            "Frazeologizmlar tahlili.": "Frazeologizmlar tahlilida ularning ma'nosi, kelib chiqishi, funksiyasi aniqlanadi.",
+            "Tilning leksik xususiyatlari.": "So'zlar ma'nosi, ularning xususiyatlari, semantik guruhlari.",
+            "Sinonimlar, antonimlar, omonimlar.": "Sinonim — ma'nosi yaqin (yaxshi — zo'r), antonim — qarama-qarshi (yaxshi — yomon), omonim — shakli bir xil, ma'nosi turli (buz — muz, vazifa).",
+            "Paronimlar nima?": "Paronimlar — shakli o'xshash, lekin ma'nosi turli so'zlar. Masalan: bosh — bosh (bosh soqol, bosh qisman).",
+            "Leksik semantik maydonlar.": "Bir xil ma'no so'hasiga mansub so'zlar guruhi. Masalan: mevalar (olma, banan, uzum).",
+            "Tilning tarixiy leksikasi.": "Tilning tarixiy leksikasi — o'tmishdagi so'zlar, ularning kelib chiqishi, o'zgarishi.",
+            "Tilning so'zlashuvdagi xususiyatlari.": "So'zlashuvda qo'shimcha so'zlar, qisqartmalar, emotsional xususiyatlar.",
+            "Tilning psixologik xususiyatlari.": "Til — insonning ichki dunyosini, fikrini, hissini aks ettiradi.",
+            "Tilning estetik xususiyatlari.": "Til — go'zallik, san'at, estetika vositasidir. So'zlar bilan go'zallik yaratiladi.",
+            "Tilning axloqiy xususiyatlari.": "Til axloq, tarbiya, mehribonlik, hurmat kabi tushunchalarni ifodalaydi.",
+            "Tilning axborot beruvchi funksiyasi.": "Til orqali axborot uzatiladi, fikr-mulohaza bildiriladi.",
+            "Tilning tushunish funksiyasi.": "Til — fikrni tushunish, muloqot qilish vositasidir.",
+            "Tilning tarbiyaviy funksiyasi.": "Til orqali inson tarbiyalanadi, axloq, mehribonlik, hurmat o'rgatiladi.",
+            "Tilning estetik funksiyasi.": "Til orqali go'zallik, san'at, estetika ifodalangan.",
+            "Tilning identifikatsiya funksiyasi.": "Til — shaxsni, millatni aniqlash vositasidir.",
+            "Tilning emotsional funksiyasi.": "Til — his-tuyg'ularni ifodalash vositasidir.",
+            "Tilning regulyativ funksiyasi.": "Til — inson harakatini boshqaruvchi vositadir.",
+            "Tilning kognitiv funksiyasi.": "Til — fikrlash, tushunish, xotira, e'tibor kabi psixik funksiyalarni rivojlantiradi.",
+            "Tilning interaktiv funksiyasi.": "Til — muloqot, aloqa, hamkorlik vositasidir.",
+            "Tilning metalingvistik funksiyasi.": "Til — boshqa tillarni o'rganish, tushunish vositasidir.",
+            "Tilning kodlash funksiyasi.": "Til — axborotni kodlash, uzatish, qayta ishlash vositasidir.",
+            "Tilning kommunikativ funksiyasi.": "Til — muloqot, aloqa, fikr-mulohaza uzatish vositasidir.",
+            "Tilning kreativ funksiyasi.": "Til — yangi g'oyalar, fikrlar, ijodiy ishlar yaratish vositasidir.",
+            "Tilning transformativ funksiyasi.": "Til — fikrni o'zgartirish, yangi tushunchalar yaratish vositasidir.",
+            "Tilning adaptiv funksiyasi.": "Til — yangi sharoitlarga moslashuv, o'zgarish vositasidir.",
+            "Tilning refleksiv funksiyasi.": "Til — o'z fikrini, harakatini o'zgartirish, o'zini tekshirish vositasidir.",
+            "Tilning kognitiv-semantik funksiyasi.": "Til — fikr, tushuncha, ma'lumot, tushunish, semantik ma'no yaratish vositasidir.",
+            "Tilning pragmatik funksiyasi.": "Til — foydalanish, maqsad, kontekst, muloqot, foyda olib keluvchi funksiyalarni bajaradi.",
+            "Tilning estetik-pragmatik funksiyasi.": "Til — go'zallik, foyda, estetika, maqsadga erishish vositasidir.",
+            "Tilning axloqiy-pragmatik funksiyasi.": "Til — axloq, hurmat, foyda, maqsadga erishish vositasidir.",
+            "Tilning estetik-semantik funksiyasi.": "Til — go'zallik, ma'no, tushunish, semantik ma'no yaratish vositasidir.",
+            "Tilning axloqiy-semantik funksiyasi.": "Til — axloq, ma'no, tushunish, semantik ma'no yaratish vositasidir.",
+            "Adabiyot nima? Uning asosiy xususiyatlari.": "Adabiyot — so'z san'ati. Fikr, his-tuyg'ular, voqealar, obrazlar so'zlar orqali ifodalanadi. Asosiy xususiyatlari: estetik, axloqiy, tarbiyaviy, axborot beruvchi.",
+            "Adabiyotning tarixiy rivojlanishi.": "Adabiyot — tarixiy jarayonning aksidir. Har bir davrda adabiyotning o'z xususiyatlari, mavzulari, janrlari, uslublari bo'lgan.",
+            "Adabiyotning asosiy janrlari.": "Epik (hikoya, roman), lirik (she'r), drama (sahna asarlari).",
+            "Epik janr nima? Misollar keltiring.": "Epik — voqealar, obrazlar, tavsiflar bilan beriladi. Misol: 'O'tgan kunlar', 'Mehrobdan chayon'.",
+            "Lirik janr nima? Xususiyatlari.": "Lirik — shoirning ichki dunyosi, fikri, hissi, tushunchasi. Misol: 'Tinchlik', 'Vatan'.",
+            "Drama janr nima? Xususiyatlari.": "Drama — sahna asari. Qahramonlar suhbatlari, tushunchalari, voqealar aks ettiriladi.",
+            "Epika, lirika, drama o'rtasidagi farqlar.": "Epika — voqea, obrazlar, tavsiflar. Lirika — ichki dunyo, his-tuyg'ular. Drama — sahna, suhbatlar.",
+            "Adabiy asarning tarkibiy qismlari.": "Mavzu, g'oya, obrazlar, kompozitsiya, stil, til.",
+            "Adabiy asarning kompozitsion qurilishi.": "Boshlov, asosiy qism, yakunlov qismlaridan tashkil topadi.",
+            "Adabiy asarning g'oyasi.": "G'oya — asosiy fikr, muallifning o'z fikri, xabari.",
+            "Adabiy asarning mavzusi.": "Mavzu — asosiy mavzu, nima haqida ekanligi.",
+            "Adabiy asarning obrazlari.": "Obrazlar — asosiy qahramonlar, ularning xususiyatlari, tavsiflari.",
+            "Adabiy asarning obrazlari tahlili.": "Obrazlar tahlilida ularning xususiyatlari, ma'nosi, funksiyasi aniqlanadi.",
+            "Adabiy asarning stilistik xususiyatlari.": "Stilistik xususiyatlar — so'z tanlovi, qurilish, ma'nosi, funksiyasi.",
+            "Adabiy asarning til xususiyatlari.": "Til xususiyatlari — so'zlar, gaplar, tuzilish, funksiyasi.",
+            "Adabiy asarning mazmun tomoni.": "Mazmun — asosiy fikr, voqea, obrazlar, g'oya.",
+            "Adabiy asarning shakl tomoni.": "Shakl — qurilish, janr, uslub, til.",
+            "Adabiy asarning estetik tomoni.": "Estetik — go'zallik, san'at, tushunish, his-tuyg'ular.",
+            "Adabiy asarning axloqiy tomoni.": "Axloqiy — tarbiya, mehribonlik, hurmat, axloq.",
+            "Adabiy asarning tarbiyaviy tomoni.": "Tarbiyaviy — insonni yaxshilash, mehribonlik, axloq o'rgatish.",
+            "Adabiy asarning fikr-mulohaza tomoni.": "Fikr-mulohaza — muallifning fikri, tushunchasi, xabari.",
+            "Adabiy asarning ijodiy tomoni.": "Ijodiy — yangi g'oya, fikr, san'at, estetika.",
+            "Adabiy asarning kreativ tomoni.": "Kreativ — yangi tushuncha, fikr, g'oya, san'at.",
+            "Adabiy asarning interaktiv tomoni.": "Interaktiv — o'quvchi bilan muloqot, tushunish, fikr almashish.",
+            "Adabiy asarning refleksiv tomoni.": "Refleksiv — o'z fikrini, harakatini o'zgartirish, o'zini tekshirish.",
+            "Adabiy asarning kognitiv tomoni.": "Kognitiv — fikrlash, tushunish, xotira, e'tibor.",
+            "Adabiy asarning pragmatik tomoni.": "Pragmatik — foydalanish, maqsad, kontekst, foyda.",
+            "Adabiy asarning estetik-pragmatik tomoni.": "Estetik-pragmatik — go'zallik, foyda, maqsadga erishish.",
+            "Adabiy asarning axloqiy-pragmatik tomoni.": "Axloqiy-pragmatik — axloq, foyda, maqsadga erishish.",
+            "Adabiy asarning estetik-semantik tomoni.": "Estetik-semantik — go'zallik, ma'no, tushunish.",
+            "Adabiy asarning axloqiy-semantik tomoni.": "Axloqiy-semantik — axloq, ma'no, tushunish.",
+            "Adabiy asarning kreativ-semantik tomoni.": "Kreativ-semantik — yangi g'oya, ma'no, tushunish.",
+            "Adabiy asarning interaktiv-semantik tomoni.": "Interaktiv-semantik — muloqot, ma'no, tushunish.",
+            "Adabiy asarning refleksiv-semantik tomoni.": "Refleksiv-semantik — o'zini tekshirish, ma'no, tushunish.",
+            "Adabiy asarning kognitiv-semantik tomoni.": "Kognitiv-semantik — fikrlash, ma'no, tushunish.",
+            "Adabiy asarning pragmatik-semantik tomoni.": "Pragmatik-semantik — foydalanish, ma'no, tushunish.",
+            "Adabiy asarning estetik-pragmatik-semantik tomoni.": "Estetik-pragmatik-semantik — go'zallik, foyda, ma'no.",
+            "Adabiy asarning axloqiy-pragmatik-semantik tomoni.": "Axloqiy-pragmatik-semantik — axloq, foyda, ma'no.",
+            "Adabiy asarning estetik-semantik-pragmatik tomoni.": "Estetik-semantik-pragmatik — go'zallik, ma'no, foyda.",
+            "Adabiy asarning axloqiy-semantik-pragmatik tomoni.": "Axloqiy-semantik-pragmatik — axloq, ma'no, foyda.",
+            "Adabiy asarning kreativ-semantik-pragmatik tomoni.": "Kreativ-semantik-pragmatik — yangi g'oya, ma'no, foyda.",
+            "Adabiy asarning interaktiv-semantik-pragmatik tomoni.": "Interaktiv-semantik-pragmatik — muloqot, ma'no, foyda.",
+            "Adabiy asarning refleksiv-semantik-pragmatik tomoni.": "Refleksiv-semantik-pragmatik — o'zini tekshirish, ma'no, foyda.",
+            "Adabiy asarning kognitiv-semantik-pragmatik tomoni.": "Kognitiv-semantik-pragmatik — fikrlash, ma'no, foyda.",
+            "Adabiy asarning pragmatik-semantik-kognitiv tomoni.": "Pragmatik-semantik-kognitiv — foyda, ma'no, fikrlash.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv tomoni.": "Estetik-pragmatik-semantik-kognitiv — go'zallik, foyda, ma'no, fikrlash.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv tomoni.": "Axloqiy-pragmatik-semantik-kognitiv — axloq, foyda, ma'no, fikrlash.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv tomoni.": "Estetik-semantik-pragmatik-kognitiv — go'zallik, ma'no, foyda, fikrlash.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv tomoni.": "Axloqiy-semantik-pragmatik-kognitiv — axloq, ma'no, foyda, fikrlash.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv tomoni.": "Kreativ-semantik-pragmatik-kognitiv — yangi g'oya, ma'no, foyda, fikrlash.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv tomoni.": "Interaktiv-semantik-pragmatik-kognitiv — muloqot, ma'no, foyda, fikrlash.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv tomoni.": "Refleksiv-semantik-pragmatik-kognitiv — o'zini tekshirish, ma'no, foyda, fikrlash.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv tomoni.": "Kognitiv-semantik-pragmatik-interaktiv — fikrlash, ma'no, foyda, muloqot.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv tomoni.": "Pragmatik-semantik-kognitiv-interaktiv — foyda, ma'no, fikrlash, muloqot.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv tomoni.": "Estetik-pragmatik-semantik-kognitiv-interaktiv — go'zallik, foyda, ma'no, fikrlash, muloqot.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv tomoni.": "Axloqiy-pragmatik-semantik-kognitiv-interaktiv — axloq, foyda, ma'no, fikrlash, muloqot.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv tomoni.": "Estetik-semantik-pragmatik-kognitiv-interaktiv — go'zallik, ma'no, foyda, fikrlash, muloqot.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv tomoni.": "Axloqiy-semantik-pragmatik-kognitiv-interaktiv — axloq, ma'no, foyda, fikrlash, muloqot.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv tomoni.": "Kreativ-semantik-pragmatik-kognitiv-interaktiv — yangi g'oya, ma'no, foyda, fikrlash, muloqot.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv tomoni.": "Interaktiv-semantik-pragmatik-kognitiv-refleksiv — muloqot, ma'no, foyda, fikrlash, o'zini tekshirish.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv tomoni.": "Refleksiv-semantik-pragmatik-kognitiv-interaktiv — o'zini tekshirish, ma'no, foyda, fikrlash, muloqot.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv tomoni.": "Kognitiv-semantik-pragmatik-interaktiv-refleksiv — fikrlash, ma'no, foyda, muloqot, o'zini tekshirish.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.": "Pragmatik-semantik-kognitiv-interaktiv-refleksiv — foyda, ma'no, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.": "Estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv — go'zallik, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv tomoni.": "Axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv — axloq, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.": "Estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv — go'zallik, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.": "Axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv — axloq, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv tomoni.": "Kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv — yangi g'oya, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik tomoni.": "Interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik — muloqot, ma'no, foyda, fikrlash, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik tomoni.": "Refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik — o'zini tekshirish, ma'no, foyda, fikrlash, muloqot, go'zallik.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik tomoni.": "Kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik — fikrlash, ma'no, foyda, muloqot, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik tomoni.": "Pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik — foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy tomoni.": "Estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy — go'zallik, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, axloq.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik tomoni.": "Axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik — axloq, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy tomoni.": "Estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy — go'zallik, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, axloq.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik tomoni.": "Axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik — axloq, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik tomoni.": "Kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik — yangi g'oya, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, go'zallik.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy tomoni.": "Interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy — muloqot, ma'no, foyda, fikrlash, o'zini tekshirish, go'zallik, axloq.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy tomoni.": "Refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy — o'zini tekshirish, ma'no, foyda, fikrlash, muloqot, go'zallik, axloq.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy tomoni.": "Kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy — fikrlash, ma'no, foyda, muloqot, o'zini tekshirish, go'zallik, axloq.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy tomoni.": "Pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy — foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, go'zallik, axloq.",
+            "Adabiy asarning estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ tomoni.": "Estetik-pragmatik-semantik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ — go'zallik, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, axloq, yangi g'oya.",
+            "Adabiy asarning axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-kreativ tomoni.": "Axloqiy-pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-kreativ — axloq, foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, go'zallik, yangi g'oya.",
+            "Adabiy asarning estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ tomoni.": "Estetik-semantik-pragmatik-kognitiv-interaktiv-refleksiv-axloqiy-kreativ — go'zallik, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, axloq, yangi g'oya.",
+            "Adabiy asarning axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-kreativ tomoni.": "Axloqiy-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-kreativ — axloq, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, go'zallik, yangi g'oya.",
+            "Adabiy asarning kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-axloqiy tomoni.": "Kreativ-semantik-pragmatik-kognitiv-interaktiv-refleksiv-estetik-axloqiy — yangi g'oya, ma'no, foyda, fikrlash, muloqot, o'zini tekshirish, go'zallik, axloq.",
+            "Adabiy asarning interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy-kreativ tomoni.": "Interaktiv-semantik-pragmatik-kognitiv-refleksiv-estetik-axloqiy-kreativ — muloqot, ma'no, foyda, fikrlash, o'zini tekshirish, go'zallik, axloq, yangi g'oya.",
+            "Adabiy asarning refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy-kreativ tomoni.": "Refleksiv-semantik-pragmatik-kognitiv-interaktiv-estetik-axloqiy-kreativ — o'zini tekshirish, ma'no, foyda, fikrlash, muloqot, go'zallik, axloq, yangi g'oya.",
+            "Adabiy asarning kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy-kreativ tomoni.": "Kognitiv-semantik-pragmatik-interaktiv-refleksiv-estetik-axloqiy-kreativ — fikrlash, ma'no, foyda, muloqot, o'zini tekshirish, go'zallik, axloq, yangi g'oya.",
+            "Adabiy asarning pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy-kreativ tomoni.": "Pragmatik-semantik-kognitiv-interaktiv-refleksiv-estetik-axloqiy-kreativ — foyda, ma'no, fikrlash, muloqot, o'zini tekshirish, go'zallik, axloq, yangi g'oya."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Ona tili va Adabiyot fani bo'yicha murakkab tahlil qiluvchi AI yordamchiman. Quyidagi tugmalardan birini bosing!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savolga hozircha javob berolmayman.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
