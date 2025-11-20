@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Tarix (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Tarix</h1>
+        <p>8-sinf uchun: O'zbekiston tarixi, qadimiy davrlar, islom, Temuriylar, Rossiya ta'siri — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📜</div>
+            <h2>Tarix Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — O'zbekiston tarixi, qadimiy davrlar, Temuriylar, Rossiya ta'siri</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ TARIX ma'lumotlar bazasi (8-sinf darsligiga mos) — BARCHA "text:" TO'G'RILANDI!
+        const database = {
+            "main_menu": {
+                text: "Salom! O'zbekiston tarixiga sayohat qilishga tayyormisiz? Qaysi davr qiziqarli?",
+                buttons: [
+                    { text: "🏛️ Qadimiy O'zbekiston", key: "qadimiy" },
+                    { text: "☪️ Islom davri", key: "islom" },
+                    { text: "👑 Temuriylar davri", key: "temuriylar" },
+                    { text: "🇷🇺 Rossiya ta'siri", key: "rossiya" },
+                    { text: "🇺🇿 Mustaqillik", key: "mustaqillik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "qadimiy": {
+                text: "Qadimiy O'zbekiston — Sog'd, Boktriya, Xorazm, Buxoro va Samarqand — qadimiy madaniyatlar markazi.",
+                buttons: [
+                    { text: "Sog'd", key: "sogd" },
+                    { text: "Boktriya", key: "boktriya" },
+                    { text: "Xorazm", key: "xorazm" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sogd": {
+                text: "<span class='location'>Sog'd</span> — O'zbekiston shimolidagi qadimiy mamlakat. Savdo yo'llari markazi. Sog'diyancha tillar foydalanilgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qadimiy", isHome: true }]
+            },
+            "boktriya": {
+                text: "<span class='location'>Boktriya</span> — qadimiy Sharqning eng ilg'or madaniyatlari. Avesto asosida diniy matnlar yozilgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qadimiy", isHome: true }]
+            },
+            "xorazm": {
+                text: "<span class='location'>Xorazm</span> — Amudaryo bo'yida joylashgan. Xorazmliklar suv ta'minoti va qurilishda ilg'or edi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "qadimiy", isHome: true }]
+            },
+            "islom": {
+                text: "8-asrda islom O'zbekistonga kirib keldi. Samarqand va Buxoro — islom ilmiy markazlariga aylandi.",
+                buttons: [
+                    { text: "Islomning kirishi", key: "islom_kirishi" },
+                    { text: "Buxoro va Samarqand", key: "buxoro_samarqand" },
+                    { text: "Ilmiy meros", key: "ilmiy_meros" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "islom_kirishi": {
+                text: "712-yilda qutayba ibn Muslim arab qo'shinlari O'zbekistonga kirib, islomni tarqatdi. Buxoro 712-yilda qo'zg'olon qildi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "islom", isHome: true }]
+            },
+            "buxoro_samarqand": {
+                text: "<span class='location'>Buxoro va Samarqand</span> — islom dunyosining eng muhim ilmiy markazlari. Ularda madrasalar, kutubxonalar barpo etildi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "islom", isHome: true }]
+            },
+            "ilmiy_meros": {
+                text: "<span class='fact'>Qiziq fakt: Abu Ali ibn Sino (Avitsenna) Samarqandda ta'lim olgan, uning 'Qonun fi tibb' asari Yevropada 500 yil o'qilgan.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "islom", isHome: true }]
+            },
+            "temuriylar": {
+                text: "14-asrda Temur boshchiligida O'zbekiston dunyoning eng katta imperiyasiga aylandi.",
+                buttons: [
+                    { text: "Temur hayoti", key: "temur_hayoti" },
+                    { text: "Samarqand poytaxt", key: "samarqand_poytaxt" },
+                    { text: "Madaniy meros", key: "madaniy_meros" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "temur_hayoti": {
+                text: "<span class='location'>Temur (Tamerlan)</span> — 1336-yilda Sirdaryo bo'yida tug'ilgan. O'z davrida 17 mamlakatni bosib olgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "temuriylar", isHome: true }]
+            },
+            "samarqand_poytaxt": {
+                text: "<span class='location'>Samarqand</span> — Temur poytaxti. Shahi Zinda, Bibi Xonim, Registon maydoni — bu davrning ajoyib qolganlaridir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "temuriylar", isHome: true }]
+            },
+            "madaniy_meros": {
+                text: "<span class='fact'>Qiziq fakt: Temur davrida 300 dan ortiq ilmiy asar yozilgan. Ilm-fan, san'at, arxitektura o'sgan.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "temuriylar", isHome: true }]
+            },
+            "rossiya": {
+                text: "19-asrda Rossiya imperiyasi O'zbekistonga kirib keldi. 1865-yilda Toshkent bosib olingan.",
+                buttons: [
+                    { text: "Toshkentning bosib olinishi", key: "toshkent_bosib_olinishi" },
+                    { text: "Kolonial siyosat", key: "kolonial_siyosat" },
+                    { text: "Qo'zg'olonlar", key: "qozgolonlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "toshkent_bosib_olinishi": {
+                text: "1865-yilda general K. von Kaufman Toshkentni bosib olgan. Bu O'zbekistonda Rossiya ta'sirining boshlanishi edi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "rossiya", isHome: true }]
+            },
+            "kolonial_siyosat": {
+                text: "Rossiya O'zbekistonda qo'zg'olonlarni bostirgan, paxta yetishtirishni joriy qilgan, o'zbek tilini cheklagan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "rossiya", isHome: true }]
+            },
+            "qozgolonlar": {
+                text: "<span class='location'>Basmachi harakati</span> — 1916–1924-yillarda Rossiya qo'zg'olonchilari. Xalq qo'zg'oloni bo'lgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "rossiya", isHome: true }]
+            },
+            "mustaqillik": {
+                text: "1991-yilda O'zbekiston mustaqillikka erishdi. Islam Karimov birinchi prezident bo'ldi.",
+                buttons: [
+                    { text: "Mustaqillik e'lon qilinishi", key: "mustaqillik_e'lon" },
+                    { text: "Davlat ramkalari", key: "davlat_ramkalar" },
+                    { text: "Hozirgi O'zbekiston", key: "hozirgi_uz" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mustaqillik_e'lon": {
+                text: "1991-yil 31-avgustda O'zbekiston Oliy Soveti mustaqillikni e'lon qildi. Bu sana — O'zbekiston Mustaqillik kuni.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik", isHome: true }]
+            },
+            "davlat_ramkalar": {
+                text: "1992-yilda konstitutsiya qabul qilindi. Davlat tuzumi — prezidentlik respublikasi. Milliy bayroq, gerb, madhiya qabul qilindi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik", isHome: true }]
+            },
+            "hozirgi_uz": {
+                text: "Hozirgi O'zbekiston — demokratiya, iqtisodiy o'sish, tashqi siyosatni yangilash, ta'limni rivojlantirish yo'nalishida rivojlanmoqda.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Qadimiy davr", key: "test_qadimiy" },
+                    { text: "Temuriylar", key: "test_temuriylar" },
+                    { text: "Mustaqillik", key: "test_mustaqillik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_qadimiy": {
+                text: "1. Qaysi mamlakat Sog'diyonlar tomonidan asos solingan?\nA) Buxoro   B) Sog'd   C) Xorazm",
+                buttons: [
+                    { text: "A) Buxoro", key: "test_qadimiy_a" },
+                    { text: "B) Sog'd", key: "test_qadimiy_b" },
+                    { text: "C) Xorazm", key: "test_qadimiy_c" }
+                ]
+            },
+            "test_qadimiy_b": {
+                text: "✅ To'g'ri! Sog'd — qadimiy O'zbekistonda savdo va madaniyat markazi bo'lgan mamlakat.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_temuriylar": {
+                text: "2. Temurning poytaxti qayer edi?\nA) Toshkent   B) Buxoro   C) Samarqand",
+                buttons: [
+                    { text: "A) Toshkent", key: "test_temuriylar_a" },
+                    { text: "B) Buxoro", key: "test_temuriylar_b" },
+                    { text: "C) Samarqand", key: "test_temuriylar_c" }
+                ]
+            },
+            "test_temuriylar_c": {
+                text: "✅ Ajoyib! Temur Samarqandni poytaxt qilgan. Shahi Zinda va Registon — uning merosidir.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_mustaqillik": {
+                text: "3. O'zbekiston mustaqilligini qachon e'lon qildi?\nA) 1990   B) 1991   C) 1992",
+                buttons: [
+                    { text: "A) 1990", key: "test_mustaqillik_a" },
+                    { text: "B) 1991", key: "test_mustaqillik_b" },
+                    { text: "C) 1992", key: "test_mustaqillik_c" }
+                ]
+            },
+            "test_mustaqillik_b": {
+                text: "✅ To'g'ri! 1991-yil 31-avgustda O'zbekiston mustaqillikni e'lon qildi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
