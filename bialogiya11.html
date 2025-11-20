@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Biologiya AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a2e1a, #223b22, #0f1c0f);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0c1a0c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #00ff99;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2300ff99"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 30, 15, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 255, 153, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 15, 5, 0.9);
+            color: #00ff99;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 255, 153, 0.3);
+            text-shadow: 0 0 10px rgba(0, 255, 153, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #006400, #008000);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #00cc66, #00ff99);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #00ff99;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 15, 5, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(0, 255, 153, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #00ff99 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #00ff99;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(20, 50, 20, 0.4);
+            color: #00ff99;
+            border: 1px solid rgba(0, 255, 153, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(0, 255, 153, 0.25);
+            border-color: #00ff99;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 255, 153, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%2300ff99"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .term {
+            color: #66ffcc;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Biologiya AI Bot</div>
+        <div class="splash-subtext">Genetika, evolyutsiya, ekologiya, organizmlar fiziologiyasi, hujayra biologiyasi</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🧬 11-sinf Biologiya AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Genetika — 25 ta
+            "Genetika nima? Uning asoschisi kim?",
+            "Mendelning birinchi qonuni nima?",
+            "Mendelning ikkinchi qonuni nima?",
+            "Gomozigota va geterozigota farqi?",
+            "Dominant va retsessiv allellar nima?",
+            "Monogibrid va digibrid chatishtirish farqi?",
+            "Fenotip va genotip nima?",
+            "Xromosoma nazariyasi nima?",
+            "Guruhli bog'lanish qonuni kim tomonidan kashf qilingan?",
+            "Krossover hodisasi nima?",
+            "Jins bilan bog'langan irsiylanish qanday sodir bo'ladi?",
+            "Gematofiliya va daltonizm nima uchun erkaklarda ko'proq uchraydi?",
+            "Genom nima?",
+            "DNK tuzilishi qanday?",
+            "RNK turlari va ularning vazifalari?",
+            "Transkripsiya va translatsiya jarayonlari?",
+            "Mutatsiya tushunchasi va turlari?",
+            "Xromosoma mutatsiyalari nima?",
+            "Gen mutatsiyalari nima?",
+            "Gen inzhineriyasi nima?",
+            "Rekombinant DNK texnologiyasi qanday amalga oshiriladi?",
+            "Polimeraza zanjir reaksiyasi (PZR) nima?",
+            "GMO (genetik o'zgartirilgan organizmlar) nima?",
+            "Klonlash nima? Uni qanday amalga oshirish mumkin?",
+            "Gen terapiyasi nima? Qanday kasalliklarda qo'llaniladi?",
+
+            // Evolyutsiya — 20 ta
+            "Evolyutsiya nima?",
+            "Darvinning evolyutsiya nazariyasining asosiy g'oyasi?",
+            "Tabiiy tanlanish qanday sodir bo'ladi?",
+            "Sun'iy tanlanish nima?",
+            "Divergensiya va konvergensiya farqi?",
+            "Paralelizm nima?",
+            "Mikroevolyutsiya va makroevolyutsiya farqi?",
+            "Populyatsiya genetikasi nima?",
+            "Hardi-Vaynberg qonuni qanday?",
+            "Genofond nima?",
+            "Adaptatsiya nima?",
+            "Gomologik va analogik organlar farqi?",
+            "Rudimentar organlar nima?",
+            "Atavizm nima?",
+            "Fossiliyalar evolyutsiya haqida qanday ma'lumot beradi?",
+            "Embriologik dalillar evolyutsiyani qanday tasdiqlaydi?",
+            "Biogeografik dalillar nima?",
+            "Molekulyar-biologik dalillar nima?",
+            "Insonga eng yaqin tugon hayvon qaysi?",
+            "Gominidlarning rivojlanish bosqichlari?",
+
+            // Ekologiya — 20 ta
+            "Ekologiya nima?",
+            "Ekotizim tushunchasi?",
+            "Producentlar, konsumentlar, redutsentlar nima?",
+            "Trovik darajalar nima?",
+            "Oziqlanish zanjiri va oziqlanish tarmog'i farqi?",
+            "Biologik magnitatsiya nima?",
+            "Ekologik muvozanat nima?",
+            "Biosfera nima?",
+            "Biogeotsenoz nima?",
+            "Abiotik, biotik va antropogen omillar?",
+            "Populyatsiya va uning xossalari?",
+            "Biotsenoz nima?",
+            "Ekologik niş nima?",
+            "Konkurensiya tushunchasi?",
+            "Simbioz turlari?",
+            "Parazitizm nima?",
+            "Ekologik muammolar va ularni hal qilish yo'llari?",
+            "Ozon qatlami qanday vayron bo'lmoqda?",
+            "Iqlim o'zgarishining asosiy sabablari?",
+            "Barqaror rivojlanish nima?",
+
+            // Organizmlar fiziologiyasi — 20 ta
+            "Nerv tizimi qanday tuzilgan?",
+            "Markaziy va periferik nerv tizimi farqi?",
+            "Refleks va uning turlari?",
+            "Gormonlar nima? Endokrin bezlar tizimi?",
+            "Insulin va glukagon qanday ishlaydi?",
+            "Qon aylanish tizimi qanday ishlaydi?",
+            "Kichik va katta qon aylanish doiralari?",
+            "Nafas olish tizimi qanday tuzilgan?",
+            "Gaz almashinuvi qanday sodir bo'ladi?",
+            "Mevali bez nima uchun kerak?",
+            "Bosh miya qismlari va ularning vazifalari?",
+            "Spinal miyaning funksiyalari?",
+            "Ko'rish organi qanday tuzilgan?",
+            "Eshtish organi qanday ishlaydi?",
+            "Buyraklar organizmda qanday rol o'ynaydi?",
+            "Sovunma tizimi qanday ishlaydi?",
+            "Ichaklarda ozuqa qanday hazm qilinadi?",
+            "Jigar qanday funksiyalarni bajaradi?",
+            "Immun tizimi qanday himoya qiladi?",
+            "Viruslar organizmga qanday ta'sir qiladi?",
+
+            // Hujayra biologiyasi — 15 ta
+            "Prokariot va eukariot hujayralar farqi?",
+            "Hujayraning asosiy qismlari?",
+            "Mitoxondriya nima uchun 'energetik stansiya' deyiladi?",
+            "Ribosomalar qanday ishlaydi?",
+            "Endoplazmatik to'r qanday funksiyaga ega?",
+            "Golji apparati nima uchun kerak?",
+            "Lizosomalar nima?",
+            "Xloroplastlar qanday ishlaydi?",
+            "Hujayra membranasi tuzilishi?",
+            "Plazmoliz nima?",
+            "Fagotsitoz va pinotsitoz farqi?",
+            "Hujayra bo'linishining mitoz bosqichlari?",
+            "Meioz nima? Uni mitozdan farqlang.",
+            "Gametogenez jarayoni qanday?",
+            "Hujayra sikli bosqichlari?"
+        ];
+
+        const responses = {
+            "Genetika nima? Uning asoschisi kim?": "<span class='term'>Genetika</span> — irsiylik va o'zgaruvchanlik qonuniyatlarini o'rganuvchi fan. Asoschisi — <span class='term'>Grigor Mendel</span> (1865).",
+            "Mendelning birinchi qonuni nima?": "<span class='term'>Bir jinsli hibridlarning bir xilligi qonuni</span>: geterozigota organizmlarda dominant allel ifodalanadi.",
+            "Mendelning ikkinchi qonuni nima?": "<span class='term'>Belgilarning ajralishi qonuni</span>: monogibrid chatishtirishda F2 da 3:1 nisbatda fenotip ajraladi.",
+            "Gomozigota va geterozigota farqi?": "<span class='term'>Gomozigota</span> — allellar bir xil (AA yoki aa). <span class='term'>Geterozigota</span> — allellar har xil (Aa).",
+            "Dominant va retsessiv allellar nima?": "<span class='term'>Dominant</span> — ifodalanuvchi allel (A). <span class='term'>Retsessiv</span> — gomozigota bo'lgandagina ifodalanadi (a).",
+            "Monogibrid va digibrid chatishtirish farqi?": "<span class='term'>Monogibrid</span> — bitta belgi bo'yicha (Aa × Aa). <span class='term'>Digibrid</span> — ikkita belgi bo'yicha (AaBb × AaBb), 9:3:3:1 nisbati.",
+            "Fenotip va genotip nima?": "<span class='term'>Fenotip</span> — tashqi ko'rinish. <span class='term'>Genotip</span> — genetik tarkib.",
+            "Xromosoma nazariyasi nima?": "Genlar xromosomalarda joylashgan. Xromosomalar irsiylik materialini taqsimlaydi (T. Morgan).",
+            "Guruhli bog'lanish qonuni kim tomonidan kashf qilingan?": "<span class='term'>T. Morgan</span> — 1911 yilda meva pashshasi ustida tajribalar orqali.",
+            "Krossover hodisasi nima?": "Meiozda gomologik xromosomalarning segment almashinuvi — yangi kombinatsiyalar hosil qiladi.",
+            "Jins bilan bog'langan irsiylanish qanday sodir bo'ladi?": "Xromosomadagi genlar (odatda X xromosomada) jins bilan bog'langan belgilarni beradi (masalan, daltonizm).",
+            "Gematofiliya va daltonizm nima uchun erkaklarda ko'proq uchraydi?": "Bu genlar X xromosomada joylashgan. Erkaklarda faqat bitta X bor — shuning uchun retsessiv gen ham ifodalanadi.",
+            "Genom nima?": "Organizmning barcha genetik materiali.",
+            "DNK tuzilishi qanday?": "Ikki spiral (Watson-Krik). Nukleotidlar: dezoksiriboza, fosfat, azotli asoslar (A-T, G-C).",
+            "RNK turlari va ularning vazifalari?": "<span class='term'>iRNK</span> — gen axboratini ko'chiradi. <span class='term'>tRNK</span> — aminokislotalarni yetkazadi. <span class='term'>rRNK</span> — ribosoma tarkibida.",
+            "Transkripsiya va translatsiya jarayonlari?": "<span class='term'>Transkripsiya</span> — DNK dan iRNK sintezi (yadroda). <span class='term'>Translatsiya</span> — iRNK bo'yicha oqsil sintezi (ribosomada).",
+            "Mutatsiya tushunchasi va turlari?": "DNK ketma-ketligining o'zgarishi. Turlari: <span class='term'>gen</span>, <span class='term'>xromosoma</span>, <span class='term'>genom</span> mutatsiyalari.",
+            "Xromosoma mutatsiyalari nima?": "Xromosomaning strukturaviy o'zgarishi: deletsion, duplikatsion, inversiya, translokatsiya.",
+            "Gen mutatsiyalari nima?": "Nukleotid almashinuvi, qo'shilish yoki tushib qolish — oqsil tuzilishi buziladi.",
+            "Gen inzhineriyasi nima?": "Genlarni o'zgartirish, ko'chirish yoki yangi gen kiritish texnologiyasi.",
+            "Rekombinant DNK texnologiyasi qanday amalga oshiriladi?": "Vektor (plazmid) yordamida tashuvchi hujayraga chet el geni kiritiladi.",
+            "Polimeraza zanjir reaksiyasi (PZR) nima?": "DNK ni kopiya qilish usuli — juda kichik miqdordagi DNK dan millionlab nusxa olish mumkin.",
+            "GMO (genetik o'zgartirilgan organizmlar) nima?": "Inson tomonidan genetik o'zgartirilgan o'simlik, hayvon yoki mikroorganizm (masalan, pestitsidga chidamli makkajo'xori).",
+            "Klonlash nima? Uni qanday amalga oshirish mumkin?": "Genetik jihatdan bir xil organizm yaratish. Somatik hujayradan embrion hosil qilish (Dolly qo'y).",
+            "Gen terapiyasi nima? Qanday kasalliklarda qo'llaniladi?": "Kasal genlarni sog'lom nusxasi bilan almashtirish. Masalan: immunitet yetishmovchiligi, gipoxolesterinemiya.",
+
+            "Evolyutsiya nima?": "Organizmlarning vaqt o'tishi bilan avlodlar orasida o'zgarib borishi jarayoni.",
+            "Darvinning evolyutsiya nazariyasining asosiy g'oyasi?": "<span class='term'>Tabiiy tanlanish</span> — mos keluvchi organizmlar ko'proq avlod qoldiradi.",
+            "Tabiiy tanlanish qanday sodir bo'ladi?": "Muhitga mos kelmaydiganlar nobud bo'ladi, mos keluvchilari omon qoladi va irsiylanadi.",
+            "Sun'iy tanlanish nima?": "Inson tomonidan foydali belgilar tanlanadi (masalan, qo'lqoni, g'alla ekiladi).",
+            "Divergensiya va konvergensiya farqi?": "<span class='term'>Divergensiya</span> — bitta ajdoddan turli shakllar. <span class='term'>Konvergensiya</span> — turli ajdodlardan o'xshash shakllar (akula va delfin).",
+            "Paralelizm nima?": "Bir ajdoddan kelib chiqqan organizmlar bir xil yo'nalishda rivojlanadi.",
+            "Mikroevolyutsiya va makroevolyutsiya farqi?": "<span class='term'>Mikroevolyutsiya</span> — populyatsiya darajasida o'zgarishlar. <span class='term'>Makroevolyutsiya</span> — tur, oila darajasidagi o'zgarishlar.",
+            "Populyatsiya genetikasi nima?": "Gen chastotalarining populyatsiyada tarqalishini o'rganadi.",
+            "Hardi-Vaynberg qonuni qanday?": "Ideal sharoitda allel chastotalari o'zgarmaydi: <span class='term'>p² + 2pq + q² = 1</span>.",
+            "Genofond nima?": "Populyatsiyaning barcha genlar to'plami.",
+            "Adaptatsiya nima?": "Muhitga moslashish xususiyatlari (masalan, tuya — cho'lga, baliq — suvga).",
+            "Gomologik va analogik organlar farqi?": "<span class='term'>Gomologik</span> — tuzilishi bir xil, vazifasi turlicha (odam qo'li, qush qanoti). <span class='term'>Analogik</span> — vazifasi bir xil, tuzilishi turlicha (qush qanoti, kapalak qanoti).",
+            "Rudimentar organlar nima?": "Funksiyasini yo'qotgan, lekin ajdodda bo'lgan organlar (odam qovurg'a qo'shimchalari, dum umurtqalari).",
+            "Atavizm nima?": "Ajdoddagi belgining qaytib kelish hodisasi (odamda ko'p jun, dum).",
+            "Fossiliyalar evolyutsiya haqida qanday ma'lumot beradi?": "Organizmlarning qadimiy shakllarini, o'tish shakllarini (arxeopteriks) ko'rsatadi.",
+            "Embriologik dalillar evolyutsiyani qanday tasdiqlaydi?": "Barcha umurtqalilarning embrionlari bir-biriga o'xshash — umumiy ajdodga ishora.",
+            "Biogeografik dalillar nima?": "Turli qit'alardagi organizmlar tarqalishi evolyutsiya yo'nalishini ko'rsatadi (Darvin finchlar).",
+            "Molekulyar-biologik dalillar nima?": "Barcha tirik mavjudotlarda DNK, oqsil tuzilishi bir xil — umumiy kelib chiqish isboti.",
+            "Insonga eng yaqin tugon hayvon qaysi?": "<span class='term'>Shimpanze</span> — DNK o'xshashligi 98.7%.",
+            "Gominidlarning rivojlanish bosqichlari?": "Australopitek → Homo habilis → Homo erectus → Neandertal → Homo sapiens.",
+
+            "Ekologiya nima?": "Organizm va uning atrof-muhit orasidagi munosabatlarni o'rganuvchi fan.",
+            "Ekotizim tushunchasi?": "Biotsenoz (organizmlar) + biotop (yashash muhiti) — bir-biriga bog'langan tizim.",
+            "Producentlar, konsumentlar, redutsentlar nima?": "<span class='term'>Producentlar</span> — o'simliklar (fotosintez). <span class='term'>Konsumentlar</span> — hayvonlar (yeydi). <span class='term'>Redutsentlar</span> — mikroorganizmlar (chirish).",
+            "Trovik darajalar nima?": "Oziqlanish zanjiridagi bosqichlar: 1 — o'simliklar, 2 — o'txo'r hayvonlar, 3 — go'shtxo'r hayvonlar.",
+            "Oziqlanish zanjiri va oziqlanish tarmog'i farqi?": "<span class='term'>Zanjir</span> — chiziqli ketma-ketlik. <span class='term'>Tarmoq</span> — bir nechta zanjirlar bog'langan tizim.",
+            "Biologik magnitatsiya nima?": "Zaharli moddalarning trofik zanjir bo'ylab to'planishi (konsentratsiyasi ortib boradi).",
+            "Ekologik muvozanat nima?": "Ekotizimda organizmlar soni barqaror bo'lib, resurslar teng taqsimlanadi.",
+            "Biosfera nima?": "Yerning tirik mavjudotlar yashaydigan qismi — havo, suv, tuproq.",
+            "Biogeotsenoz nima?": "Ma'lum hududdagi ekotizim (masalan, o'rmon, ko'l).",
+            "Abiotik, biotik va antropogen omillar?": "<span class='term'>Abiotik</span> — iqlim, suv, yorug'lik. <span class='term'>Biotik</span> — boshqa tirik mavjudotlar. <span class='term'>Antropogen</span> — inson ta'siri.",
+            "Populyatsiya va uning xossalari?": "Bir tur vakillarining ma'lum hududdagi to'plami. Xossalari: zichlik, yosh tarkibi, jins nisbati.",
+            "Biotsenoz nima?": "Ma'lum hududda yashovchi barcha organizmlar jamoasi.",
+            "Ekologik niş nima?": "Organizmning ekotizimdagi roli, vazifasi — nima yeydi, kim yeydi, qayerda yashaydi.",
+            "Konkurensiya tushunchasi?": "Resurslar uchun kurash — bir xil tur (ichki) yoki turli turlar (tashqi) o'rtasida.",
+            "Simbioz turlari?": "<span class='term'>Mutualizm</span> — foyda-foyda (pichoq va bakteriyalar). <span class='term'>Kommensalizm</span> — foyda-neytral (baliq va akula). <span class='term'>Parazitizm</span> — foyda-zarar.",
+            "Parazitizm nima?": "Bir organizm (parazit) boshqa organizmdan (xo'jayin) foydalanib, unga zarar yetkazadi.",
+            "Ekologik muammolar va ularni hal qilish yo'llari?": "Global isish, ozon teshilishi, ifloslanish. Yo'llari: qayta ishlash, energiya tejash, barqaror rivojlanish.",
+            "Ozon qatlami qanday vayron bo'lmoqda?": "Xlorftoruglevodorodlar (CFC) ozonni parchalaydi — Quyoshdan UV nurlarini to'sish qobiliyati kamayadi.",
+            "Iqlim o'zgarishining asosiy sabablari?": "Karbonat angidrid (CO₂), metan (CH₄) gazlari — issiqlikni ushlab qoladi (parnik effekti).",
+            "Barqaror rivojlanish nima?": "Hozirgi ehtiyojlarni qondirish kelajak avlodlarga zarar bermasdan amalga oshiriladi.",
+
+            "Nerv tizimi qanday tuzilgan?": "Markaziy (bosh miya, spinal miya) va periferik (nervlar) qismlardan iborat.",
+            "Markaziy va periferik nerv tizimi farqi?": "<span class='term'>Markaziy</span> — axboratni qayta ishlash markazi. <span class='term'>Periferik</span> — markaz bilan a'zolar orasidagi aloqa.",
+            "Refleks va uning turlari?": "Avtomatik javob. <span class='term'>Shartli</span> (o'rganilgan: PAVLOV iti) va <span class='term'>shartsiz</span> (tug'ma: ko'zni qisish).",
+            "Gormonlar nima? Endokrin bezlar tizimi?": "Ichki sekretsiya bezlaridan chiqadigan kimyoviy moddalar. Tizimi: gipotalamus, gipofiz, qalqonsimon, buyrak ustlari.",
+            "Insulin va glukagon qanday ishlaydi?": "<span class='term'>Insulin</span> — qondagi glukozani kamaytiradi (jigar hujayralariga kirishini rag'batlantiradi). <span class='term'>Glukagon</span> — aksincha.",
+            "Qon aylanish tizimi qanday ishlaydi?": "Yurak qonni pompalaydi — arteriyalar → kapillyarlar → venalar → yurak.",
+            "Kichik va katta qon aylanish doiralari?": "<span class='term'>Kichik</span> — yurak → o'pka → yurak (gaz almashinuvi). <span class='term'>Katta</span> — yurak → tana → yurak (kislorod yetkazish).",
+            "Nafas olish tizimi qanday tuzilgan?": "Burun → so'lak → bronx → bronxiollar → alveolalar (gaz almashinuvi).",
+            "Gaz almashinuvi qanday sodir bo'ladi?": "Kislorod alveoladan qonga, karbonat angidrid — qondan alveolaga diffulyatsiya qilinadi.",
+            "Mevali bez nima uchun kerak?": "Gipofizga signal beradi — jinsiy bezlarni nazorat qiladi.",
+            "Bosh miya qismlari va ularning vazifalari?": "Old miya (fikrlash), o'rta miya (ko'rish-eshitish), orqa miya (nafas, yurak ishi), uzun cho'ntak (harakat muvozanati).",
+            "Spinal miyaning funksiyalari?": "Reflekslarni amalga oshirish, axboratni bosh miyaga uzatish.",
+            "Ko'rish organi qanday tuzilgan?": "Ko'z — tirsak, lensa, retina. Retinadagi fotoreseptorlar (kolbalar, tayoqchalar) yorug'likni nerv signliga aylantiradi.",
+            "Eshtish organi qanday ishlaydi?": "Tovush to'lqini — quloq pishonigini titratadi — ichki quloqdagi soch hujayralari signal hosil qiladi.",
+            "Buyraklar organizmda qanday rol o'ynaydi?": "Zaharli moddalarni chiqarish, suv-solyar muvozanatini saqlash, qon bosimini nazorat qilish.",
+            "Sovunma tizimi qanday ishlaydi?": "Teri orqali issiqlikni sovutish, suv va tuz chiqarish, himoya qilish.",
+            "Ichaklarda ozuqa qanday hazm qilinadi?": "Fermentlar (amilaza, tripsin, lipaza) — uglevodlar, oqsillar, yog'larni parchalaydi.",
+            "Jigar qanday funksiyalarni bajaradi?": "Detoksikatsiya, oqsil sintezi, oshqozon suyuqligini ishlab chiqarish, glukozani saqlash.",
+            "Immun tizimi qanday himoya qiladi?": "Oq qon hujayralari (T, B limfotsitlar) — virus, bakteriyalarga qarshi kurashadi.",
+            "Viruslar organizmga qanday ta'sir qiladi?": "Hujayraga kirib, uning DNK/RNK qurilishini buzib, ko'payadi — hujayra vayron bo'ladi.",
+
+            "Prokariot va eukariot hujayralar farqi?": "<span class='term'>Prokariot</span> — yadro, organoidlar yo'q (bakteriyalar). <span class='term'>Eukariot</span> — yadro va organoidlar bor (o'simlik, hayvon).",
+            "Hujayraning asosiy qismlari?": "Membrana, sitoplazma, yadro (eukariotda), ribosomalar, mitoxondriya, ER, Golji apparati.",
+            "Mitoxondriya nima uchun 'energetik stansiya' deyiladi?": "Nafas olish jarayonida ATF ishlab chiqaradi — hujayra energiyasi manbai.",
+            "Ribosomalar qanday ishlaydi?": "iRNK bo'yicha aminokislotalarni biriktirib, oqsil sintez qiladi.",
+            "Endoplazmatik to'r qanday funksiyaga ega?": "<span class='term'>Granulyar ER</span> — oqsil sintezi. <span class='term'>Gladkiy ER</span> — yog' sintezi, detoksikatsiya.",
+            "Golji apparati nima uchun kerak?": "Moddalarni qayta ishlash, ajratish, lizosomalar yasash.",
+            "Lizosomalar nima?": "Ichida fermentlar bor — chet el moddalarni parchalaydi, hujayra ichidagi narsalarni yeydi.",
+            "Xloroplastlar qanday ishlaydi?": "Fotosintez — yorug'lik energiyasini kimyoviy energiyaga aylantiradi (o'simliklarda).",
+            "Hujayra membranasi tuzilishi?": "Fosfolipid ikki qavati + oqsillar — selektiv o'tkazuvchanlik.",
+            "Plazmoliz nima?": "Gipertonik eritmada hujayra suvini yo'qotib qurib qoladi.",
+            "Fagotsitoz va pinotsitoz farqi?": "<span class='term'>Fagotsitoz</span> — qattiq zarralarni yutish. <span class='term'>Pinotsitoz</span> — suyuqlikni yutish.",
+            "Hujayra bo'linishining mitoz bosqichlari?": "Profaza → metafaza → anafaza → telofaza → sitokinez.",
+            "Meioz nima? Uni mitozdan farqlang.": "<span class='term'>Meioz</span> — jinsiy hujayralar hosil qilish, 2 marta bo'linadi, n = haploid. <span class='term'>Mitoz</span> — somatik hujayralar, 1 marta, 2n = diploid.",
+            "Gametogenez jarayoni qanday?": "Spermatogenez (erkakda) — 4 spermatozoid. Oogenez (ayolda) — 1 tuxum hujayra + 3 polotsit.",
+            "Hujayra sikli bosqichlari?": "G1 → S (DNK nusxalanadi) → G2 → M (mitoz)."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Biologiya darsliklariga asoslangan AI yordamchiman. Genetika, evolyutsiya, ekologiya, fiziologiya — barcha mavzular bo'yicha chuqur tushuntirishga tayyorman. Savollarni tanlang!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
