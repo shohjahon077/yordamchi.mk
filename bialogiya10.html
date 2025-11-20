@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Biologiya (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E7D32; /* To‘q yashil — hayot, DNK, hujayra */
+            --secondary: #388E3C;
+            --accent: #FFD54F; /* Sariq — energiya, ATP */
+            --light: #FFFFFF;
+            --bg: #E8F5E9;
+            --text: #2E7D32;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(46, 125, 50, 0.15);
+            --border: #C8E6C9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #2E7D32);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === BIO STYLE === */
+        .bio {
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #1B5E20;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F2F1;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #00695C;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(46,125,50,0.2);
+        }
+
+        .quick-button:hover {
+            background: #2E7D32;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(46,125,50,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Biologiya</h1>
+        <p>10-sinf uchun: Hujayra, DNK, genetika, evolyutsiya — hayot siriga kirish!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🧬</div>
+            <h2>Biologiya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Hujayra, DNK, genetika, metabolizm, evolyutsiya</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Biologiya ma'lumotlar bazasi (10-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Hayot — hujayralardan boshlanadi. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "🧫 Hujayra", key: "hujayra" },
+                    { text: "🧬 DNK va RNT", key: "dnk" },
+                    { text: "🧫 Oqsillar", key: "oqsil" },
+                    { text: "⚡ Metabolizm", key: "metabolizm" },
+                    { text: "🔬 Genetika", key: "genetika" },
+                    { text: "🌍 Evolyutsiya", key: "evolyutsiya" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hujayra": {
+                text: "Hujayra — hayotning asosiy birlik. Prokariot va eukariot hujayralar.",
+                buttons: [
+                    { text: "Tuzilishi", key: "huj_tuzilish" },
+                    { text: "Organelalar", key: "organela" },
+                    { text: "Bölünish", key: "bolunish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "huj_tuzilish": {
+                text: "<span class='bio'>Hujayra tuzilishi:</span><br>• Membrana — hujayrani o'rab turadi<br>• Sitoplazma — ichki muhit<br>• Yadro — DNK saqlanadi (eukariotda)<br>• Prokariotda — yadrosiz, DNK sitoplazmada",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "organela": {
+                text: "<span class='bio'>Asosiy organellar:</span><br>• Mitoxondriya — energiya (ATP)<br>• Ribosoma — oqsil sintezi<br>• Lizosoma — chiqindi qayta ishlaydi<br>• Golji apparati — moddalarni paketlaydi",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "bolunish": {
+                text: "<span class='example'>Hujayra bölünishi:</span><br>• Mitoz — jismoniy hujayralar<br>• Meioz — jinsiy hujayralar (gametalar)<br>• Mitoz natijasida 2 ta bir xil hujayra hosil bo'ladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "hujayra", isHome: true }]
+            },
+            "dnk": {
+                text: "DNK — irsiy ma'lumotni saqlaydi. RNT — oqsil sintezida ishtirok etadi.",
+                buttons: [
+                    { text: "DNK tuzilishi", key: "dnk_tuzilish" },
+                    { text: "RNT turlari", key: "rnt" },
+                    { text: "DNK nusxalash", key: "nusxalash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "dnk_tuzilish": {
+                text: "<span class='bio'>DNK tuzilishi:</span><br>• Qo'sh spiral shakl<br>• Azotli asoslar: A-T, G-C<br>• Gen — DNKning bir bo'lagi<br>• Xromosoma — DNK va oqsillar aralashmasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "dnk", isHome: true }]
+            },
+            "rnt": {
+                text: "<span class='bio'>RNT turlari:</span><br>• i-RNT (informatsion) — DNKdan ma'lumot olib keladi<br>• t-RNT (transport) — aminokislotalarni ribosomaga yetkazadi<br>• r-RNT (ribosomal) — ribosoma tarkibida",
+                buttons: [{ text: "⬅️ Orqaga", key: "dnk", isHome: true }]
+            },
+            "nusxalash": {
+                text: "<span class='example'>DNK nusxalash (transkripsiya):</span><br>• DNK → i-RNT<br>• Ferment — RNT-polimeraza<br>• A → U, T → A, G → C, C → G",
+                buttons: [{ text: "⬅️ Orqaga", key: "dnk", isHome: true }]
+            },
+            "oqsil": {
+                text: "Oqsillar — hayotning asosiy qurilish va funksional molekulalari.",
+                buttons: [
+                    { text: "Tuzilishi", key: "oqsil_tuzilish" },
+                    { text: "Funksiyalari", key: "oqsil_funksiya" },
+                    { text: "Sintez jarayoni", key: "sintez" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "oqsil_tuzilish": {
+                text: "<span class='bio'>Oqsil tuzilishi:</span><br>• 20 ta aminokislota<br>• Birinchi daraja — zanjir<br>• To'rtinchi daraja — murakkab uch o'lchovli shakl<br>• Struktura — funksiyaga bog'liq",
+                buttons: [{ text: "⬅️ Orqaga", key: "oqsil", isHome: true }]
+            },
+            "oqsil_funksiya": {
+                text: "<span class='bio'>Funksiyalari:</span><br>• Fermentlar — reaktsiyalarni tezlashtiradi<br>• Gormonlar — insulindir, adrenalin<br>• Antitelolar — immunitet<br>• Struktural — kollogen, keratin",
+                buttons: [{ text: "⬅️ Orqaga", key: "oqsil", isHome: true }]
+            },
+            "sintez": {
+                text: "<span class='example'>Oqsil sintezi (translyatsiya):</span><br>• Ribosomada boshlanadi<br>• i-RNT kodonlari o'qiladi<br>• t-RNT aminokislotalarni yetkazadi<br>• Polipeptid zanjiri hosil bo'ladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "oqsil", isHome: true }]
+            },
+            "metabolizm": {
+                text: "Metabolizm — hujayradagi barcha kimyoviy jarayonlar: assimilyatsiya va disimilyatsiya.",
+                buttons: [
+                    { text: "Assimilyatsiya", key: "assim" },
+                    { text: "Disimilyatsiya", key: "disim" },
+                    { text: "ATP", key: "atp" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "assim": {
+                text: "<span class='bio'>Assimilyatsiya:</span><br>• Energiya sarflanadi<br>• Anabolizm — oddiy moddalardan murakkab moddalar hosil qilinadi<br>• Misol: fotosintez, oqsil sintezi",
+                buttons: [{ text: "⬅️ Orqaga", key: "metabolizm", isHome: true }]
+            },
+            "disim": {
+                text: "<span class='bio'>Disimilyatsiya:</span><br>• Energiya ajraladi<br>• Katabolizm — murakkab moddalar parchalanadi<br>• Misol: nafas olish, oqsil parchalanishi",
+                buttons: [{ text: "⬅️ Orqaga", key: "metabolizm", isHome: true }]
+            },
+            "atp": {
+                text: "<span class='example'>ATP — energiya valyutasi:</span><br>• Adenozin trifosfat<br>• ATP → ADP + P + energiya<br>• Mitoxondriyada ko'p hosil bo'ladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "metabolizm", isHome: true }]
+            },
+            "genetika": {
+                text: "Genetika — irsiylik va o'zgaruvchanlik haqida fan.",
+                buttons: [
+                    { text: "Mendel qonunlari", key: "mendel" },
+                    { text: "Punnett jadvali", key: "punnett" },
+                    { text: "Xromosomal kasalliklar", key: "kasallik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mendel": {
+                text: "<span class='bio'>Mendel qonunlari:</span><br>1. Bir jinsli gomozigotalar — bir xil allel<br>2. Dominant va retsessiv belgilar<br>3. Belgilarni ajratish — F2 avlodida 3:1 nisbat",
+                buttons: [{ text: "⬅️ Orqaga", key: "genetika", isHome: true }]
+            },
+            "punnett": {
+                text: "<span class='example'>Punnett jadvali:</span><br>Aa × Aa →<br>AA, Aa, Aa, aa → 75% dominant, 25% retsessiv<br>Bu — bolalarda belgilarni bashorat qilish usuli",
+                buttons: [{ text: "⬅️ Orqaga", key: "genetika", isHome: true }]
+            },
+            "kasallik": {
+                text: "<span class='bio'>Xromosomal kasalliklar:</span><br>• Daun sindromi — 21-xromosoma qo'shimcha<br>• Xromosomal mutatsiyalar — DNKda o'zgarish<br>• Genetik konsultatsiya — oldini olish",
+                buttons: [{ text: "⬅️ Orqaga", key: "genetika", isHome: true }]
+            },
+            "evolyutsiya": {
+                text: "Evolyutsiya — tirik mavjudotlarning vaqt o'tishi bilan o'zgarishi.",
+                buttons: [
+                    { text: "Darvin nazariyasi", key: "darvin" },
+                    { text: "Tabiiy tanlanish", key: "tanlanish" },
+                    { text: "Mikroevolyutsiya", key: "mikro" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "darvin": {
+                text: "<span class='bio'>Darvin nazariyasi:</span><br>• Barcha tirik mavjudotlar — umumiy ajdoddan kelib chiqqan<br>• O'zgarishlar — mutatsiya, rekombinatsiya<br>• Eng mos kelganlar — tirik qoladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "evolyutsiya", isHome: true }]
+            },
+            "tanlanish": {
+                text: "<span class='example'>Tabiiy tanlanish:</span><br>• Zirhli hasharotlar — pestitsidlarga chidamli<br>• Qalin qo'lqopli qushlar — qattiq urug'larni yeb oladi<br>• Tabiat — qaysi belgilarni saqlashini tanlaydi",
+                buttons: [{ text: "⬅️ Orqaga", key: "evolyutsiya", isHome: true }]
+            },
+            "mikro": {
+                text: "<span class='bio'>Mikroevolyutsiya:</span><br>• Populyatsiyadagi gen chastotasining o'zgarishi<br>• Mutatsiya, migratsiya, gen drifti<br>• Uzoq muddat — makroevolyutsiyaga olib keladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "evolyutsiya", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Hujayra testi", key: "test_hujayra" },
+                    { text: "DNK testi", key: "test_dnk" },
+                    { text: "Genetika testi", key: "test_genetika" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_hujayra": {
+                text: "1. Hujayraning 'energetik stansiyasi' qaysi organella?\nA) Ribosoma\nB) Mitoxondriya\nC) Lizosoma",
+                buttons: [
+                    { text: "A)", key: "test_hujayra_a" },
+                    { text: "B)", key: "test_hujayra_b" },
+                    { text: "C)", key: "test_hujayra_c" }
+                ]
+            },
+            "test_hujayra_b": {
+                text: "✅ To'g'ri! Mitoxondriya — ATP ishlab chiqaradi, hujayraning energetik markazi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_dnk": {
+                text: "2. DNKda A bilan qaysi azotli asos juftlashadi?\nA) G\nB) C\nC) T",
+                buttons: [
+                    { text: "A)", key: "test_dnk_a" },
+                    { text: "B)", key: "test_dnk_b" },
+                    { text: "C)", key: "test_dnk_c" }
+                ]
+            },
+            "test_dnk_c": {
+                text: "✅ Ajoyib! DNKda A (adenin) T (timin) bilan juftlashadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_genetika": {
+                text: "3. Aa × aa natijasida retsessiv belgi necha foiz bo'ladi?\nA) 25%\nB) 50%\nC) 75%",
+                buttons: [
+                    { text: "A)", key: "test_genetika_a" },
+                    { text: "B)", key: "test_genetika_b" },
+                    { text: "C)", key: "test_genetika_c" }
+                ]
+            },
+            "test_genetika_b": {
+                text: "✅ To'g'ri! Aa × aa → Aa, Aa, aa, aa → 50% retsessiv (aa).",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
