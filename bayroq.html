@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title id="pageTitle">🌍 Butun Dunyo Bayroqlari — Super Mega Versiya</title>
+    <style>
+        /* =========================================== */
+        /* 🎨 1. ASOSIY STIL (Kontent uchun) */
+        /* =========================================== */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background: linear-gradient(135deg, #eef3f7 0%, #dce4eb 100%);
+            color: #333;
+            min-height: 100vh;
+            transition: background 0.5s, color 0.5s; 
+        }
+        header { 
+            background: #0057b7; 
+            color: white; 
+            padding: 25px 20px; 
+            text-align: center; 
+            font-size: 32px; 
+            font-weight: 900; 
+            position: relative; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background 0.5s, box-shadow 0.5s;
+        }
+
+        /* 👇 YANGI: CONTROL BAR STILI (Header ostida) */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 10px 20px;
+            background: #f0f4f7; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 900;
+        }
+        
+        /* Mavzu almashtirgich */
+        .theme-toggle { 
+            padding: 8px 12px; 
+            border-radius: 15px; 
+            border: 2px solid #0057b7; 
+            background: white; 
+            color: #0057b7; 
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .theme-toggle:hover {
+            background: #e6e6e6;
+        }
+
+        /* Til almashtirgich */
+        .language-selector.flag-selector {
+            display: flex;
+            gap: 5px; 
+            padding: 0;
+        }
+
+        .lang-btn {
+            background: rgba(0, 87, 183, 0.1); 
+            border: 2px solid transparent; 
+            border-radius: 50%; 
+            width: 38px;
+            height: 38px;
+            font-size: 18px;
+            line-height: 1; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 0; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            color: black; 
+        }
+        .lang-btn.active-lang {
+            border-color: #ffd700; 
+            transform: scale(1.1);
+            background: #0057b7; 
+            color: white;
+        }
+        .lang-btn:hover:not(.active-lang) {
+            transform: scale(1.05);
+            background: rgba(0, 87, 183, 0.2);
+        }
+        /* 👆 TIL VA MAVZU STILI */
+
+
+        nav { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            background: white; 
+            padding: 12px; 
+            position: sticky; 
+            top: 0; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+            z-index: 1000; 
+            flex-wrap: wrap; 
+            transition: background 0.5s, box-shadow 0.5s;
+        }
+        nav button { 
+            padding: 10px 15px; 
+            border: none; 
+            background: #0057b7; 
+            color: white; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            font-weight: bold;
+            transition: all 0.3s ease; 
+            flex-grow: 1; 
+            max-width: 150px;
+        }
+        nav button.active-btn {
+            background: #003875;
+            transform: scale(1.05);
+        }
+
+        .tools { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin: 25px; 
+            flex-wrap: wrap; 
+        }
+        .tools input, .tools select { 
+            padding: 12px 18px; 
+            font-size: 16px; 
+            border-radius: 25px; 
+            border: 1px solid #ccc; 
+            width: 250px; 
+            max-width: 100%; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            box-sizing: border-box; 
+            transition: all 0.5s;
+        }
+        #sorterSelect {
+            width: 180px; 
+        }
+
+        .section { padding: 30px 15px; display: none; }
+        .section.active { display: block; }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 20px; 
+            perspective: 1500px; 
+        }
+        
+        .card { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 15px; 
+            text-align: center; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+            cursor: pointer; 
+            height: 100%;
+            text-decoration: none; 
+            color: inherit; 
+            
+            opacity: 0;
+            transform: translateY(50px);
+            transition: none !important; 
+            transform-style: preserve-3d; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            animation-fill-mode: forwards; 
+        }
+        
+        .flag-img { 
+            width: 100%; 
+            height: 130px; 
+            object-fit: cover; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            border: 3px solid #f0f0f0; 
+            transition: transform 0.3s ease;
+        }
+        
+        @keyframes staggered-entry {
+            0% { opacity: 0; transform: translateY(50px) rotateX(10deg); }
+            100% { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+        
+        .card.stagger-in {
+            animation: staggered-entry 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        
+        /* Modal stil */
+        .modal-bg {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center;
+            align-items: center;
+        }
+        .modal {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: modal-open 0.3s ease-out;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        .modal h2 { margin-top: 0; color: #0057b7; font-size: 1.8rem; transition: color 0.5s; }
+        
+        /* =========================================== */
+        /* 🌙 2. DARK MODE STILI */
+        /* =========================================== */
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #121212 0%, #212121 100%);
+            color: #f0f0f0; 
+        }
+        body.dark-mode header {
+            background: #003366; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        /* DARK MODE CONTROL BAR STILI */
+        body.dark-mode .controls-bar {
+            background: #2c2c2c;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode .theme-toggle {
+            border-color: #66b3ff;
+            color: #f0f0f0;
+            background: #3c3c3c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        body.dark-mode .theme-toggle:hover {
+            background: #4c4c4c;
+        }
+
+        /* Dark Mode uchun til tugmalari */
+        body.dark-mode .lang-btn {
+            background: #444; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            color: #f0f0f0; 
+        }
+        body.dark-mode .lang-btn.active-lang {
+            border-color: #ffd700;
+            background: #003366; 
+        }
+        body.dark-mode .lang-btn:hover:not(.active-lang) {
+            background: #555;
+        }
+        body.dark-mode nav {
+            background: #2c2c2c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5); 
+        }
+        body.dark-mode .tools input, 
+        body.dark-mode .tools select {
+            background: #333;
+            color: #f0f0f0;
+            border-color: #555;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5); 
+        }
+        body.dark-mode .card {
+            background: #2c2c2c;
+            color: #f0f0f0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+        }
+        body.dark-mode .modal {
+            background-color: #2c2c2c;
+            color: #f0f0f0;
+        }
+        body.dark-mode .modal h2 {
+            color: #66b3ff;
+        }
+        
+        /* =========================================== */
+        /* 🚀 3. KIRISH EKRANI (MEDIA QUERIES) */
+        /* =========================================== */
+        #splashScreen {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1f2733 0%, #151a21 100%); 
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white; 
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-out 0.4s; 
+            overflow: hidden; 
+        }
+        #splashScreen.fade-out {
+            opacity: 0;
+            pointer-events: none; 
+        }
+        #splashContent {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out; 
+        }
+        #splashContent.fly-out {
+            transform: scale(2.0) translateY(-100px); 
+            opacity: 0; 
+        }
+        #splashScreen h1 {
+            font-size: 3.5rem;
+            margin-bottom: 5px;
+            font-weight: 900;
+            color: #00bcd4; 
+            text-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);
+        }
+        #splashScreen p {
+            font-size: 1.5rem; 
+            margin-bottom: 50px;
+            font-weight: 400;
+            color: #e0e0e0;
+        }
+        #startButton {
+            padding: 18px 50px; 
+            font-size: 1.4rem;
+            font-weight: bold;
+            border: none;
+            background: #00bcd4; 
+            color: #151a21; 
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0, 188, 212, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @media (max-width: 768px) {
+            #splashScreen h1 { font-size: 2.5rem; }
+            #splashScreen p { font-size: 1.2rem; }
+            #startButton { padding: 12px 25px; font-size: 1rem; }
+            header { font-size: 24px; padding: 15px 10px; }
+            
+            /* 👇 XATO TUZATILDI: Mobil telefon uchun Control Bar stillari */
+            .controls-bar {
+                flex-direction: column; 
+                gap: 10px;
+                padding: 10px; 
+            }
+            .theme-toggle {
+                width: 100%; 
+                max-width: 300px; 
+                box-sizing: border-box; /* To'liq kenglik uchun muhim */
+                margin-bottom: 5px; 
+            }
+        }
+        
+    </style>
+</head>
+<body>
+
+<div id="splashScreen">
+    <div id="splashContent">
+        <h1>🌍 DUNYO BAYROQLARI ATLASI</h1>
+        <p>Interaktiv 3D Effektli Maʼlumotnoma</p>
+        <button id="startButton">Atlasni Ochish</button>
+    </div>
+</div>
+<header>
+    <span id="headerTitle">🌍 Butun Dunyo Bayroqlari — Super Mega Versiya</span>
+</header>
+
+<div class="controls-bar">
+    <button class="theme-toggle" id="themeToggle">
+        🌙 Dark Mode
+    </button>
+    
+    <div class="language-selector flag-selector" id="languageSelector">
+        <button data-lang="uz" class="lang-btn">🇺🇿</button>
+        <button data-lang="en" class="lang-btn">🇬🇧</button>
+        <button data-lang="ru" class="lang-btn">🇷🇺</button>
+        <button data-lang="cn" class="lang-btn">🇨🇳</button>
+        <button data-lang="kr" class="lang-btn">🇰🇷</button>
+    </div>
+</div>
+<nav id="navBar">
+    <button id="btnRasm" data-section="rasm" class="active-btn">📘 Rasmli</button>
+    <button id="btnInfo" data-section="info">📚 Maʼlumotli</button>
+    <button id="btnEmoji" data-section="emoji">😊 Emoji</button>
+</nav>
+
+<div class="tools">
+    <input type="text" id="searchInput" placeholder="🔍 Davlat qidirish..." />
+    <select id="filterSelect">
+        <option value="all" data-lang-key="all_continents">🌎 Barcha qit'alar</option>
+        <option value="Asia" data-lang-key="asia">Osiyo</option>
+        <option value="Europe" data-lang-key="europe">Yevropa</option>
+        <option value="Africa" data-lang-key="africa">Afrika</option>
+        <option value="North America" data-lang-key="north_america">Shimoliy Amerika</option>
+        <option value="South America" data-lang-key="south_america">Janubiy Amerika</option>
+        <option value="Oceania" data-lang-key="oceania">Okeaniya</option>
+    </select>
+    <select id="sorterSelect">
+        <option value="name_uz" data-lang-key="sort_name">A-Z (Nom boʻyicha)</option>
+        <option value="population" data-lang-key="sort_population">Aholi boʻyicha</option>
+        <option value="area" data-lang-key="sort_area">Maydoni boʻyicha</option>
+    </select>
+</div>
+
+<div id="rasm" class="section active"><h2 data-lang-key="title_rasm">Rasmli Bayroqlar</h2><div class="grid" id="rasmGrid"></div></div>
+<div id="info" class="section"><h2 data-lang-key="title_info">Maʼlumotli Bayroqlar</h2><div class="grid" id="infoGrid"></div></div>
+<div id="emoji" class="section"><h2 data-lang-key="title_emoji">Emoji Bayroqlar</h2><div class="grid" id="emojiGrid"></div></div>
+
+<div id="modalBg" class="modal-bg">
+    <div class="modal" id="modal"></div>
+</div>
+
+<script>
+// ===========================================
+// 🛠️ 3. KONSTANTALAR VA ELEMENTLAR
+// ===========================================
+const regionTranslations = {
+    'Asia': { uz: 'Osiyo', en: 'Asia', ru: 'Азия', cn: '亚洲', kr: '아시아' },
+    'Europe': { uz: 'Yevropa', en: 'Europe', ru: 'Европа', cn: '欧洲', kr: '유럽' },
+    'Africa': { uz: 'Afrika', en: 'Africa', ru: 'Африка', cn: '非洲', kr: '아프리카' },
+    'North America': { uz: 'Shimoliy Amerika', en: 'North America', ru: 'Северная Америка', cn: '北美洲', kr: '북미' },
+    'South America': { uz: 'Janubiy Amerika', en: 'South America', ru: 'Южная Америка', cn: '南美洲', kr: '남미' },
+    'Oceania': { uz: 'Okeaniya', en: 'Oceania', ru: 'Океания', cn: '大洋洲', kr: '오세아니아' }
+};
+
+const translations = {
+    uz: {
+        pageTitle: "🌍 Butun Dunyo Bayroqlari — Super Mega Versiya", headerTitle: "🌍 Butun Dunyo Bayroqlari — Super Mega Versiya",
+        btn_rasm: "📘 Rasmli", btn_info: "📚 Maʼlumotli", btn_emoji: "😊 Emoji",
+        search_placeholder: "🔍 Davlat qidirish...", all_continents: "🌎 Barcha qit'alar",
+        title_rasm: "Rasmli Bayroqlar", title_info: "Maʼlumotli Bayroqlar", title_emoji: "Emoji Bayroqlar",
+        modal_capital: "Poytaxt:", modal_continent: "Qitʼa:", modal_population: "Aholi:", modal_area: "Maydon:", modal_close: "Yopish",
+        sort_name: "A-Z (Nom boʻyicha)", sort_population: "Aholi boʻyicha", sort_area: "Maydoni boʻyicha"
+    },
+    en: { pageTitle: "World Flags Atlas", headerTitle: "World Flags Atlas — Super Mega Version", btn_rasm: "📘 Image", btn_info: "📚 Data", btn_emoji: "😊 Emoji", search_placeholder: "🔍 Search Country...", all_continents: "🌎 All Continents", title_rasm: "Image Flags", title_info: "Data Flags", title_emoji: "Emoji Flags", modal_capital: "Capital:", modal_continent: "Continent:", modal_population: "Population:", modal_area: "Area:", modal_close: "Close", sort_name: "A-Z (By Name)", sort_population: "By Population", sort_area: "By Area" },
+    ru: { pageTitle: "Атлас Флагов Мира", headerTitle: "Атлас Флагов Мира — Супер Мега Версия", btn_rasm: "📘 Изобр.", btn_info: "📚 Данные", btn_emoji: "😊 Эмодзи", search_placeholder: "🔍 Поиск страны...", all_continents: "🌎 Все континенты", title_rasm: "Флаги (Изображение)", title_info: "Флаги (Данные)", title_emoji: "Флаги (Эмодзи)", modal_capital: "Столица:", modal_continent: "Континент:", modal_population: "Население:", modal_area: "Площадь:", modal_close: "Закрыть", sort_name: "А-Я (По имени)", sort_population: "По населению", sort_area: "По площади" },
+    cn: { pageTitle: "世界国旗图鉴", headerTitle: "世界国旗图鉴 — 超级版", btn_rasm: "📘 图像", btn_info: "📚 数据", btn_emoji: "😊 表情", search_placeholder: "🔍 搜索国家...", all_continents: "🌎 所有大洲", title_rasm: "图像国旗", title_info: "数据国旗", title_emoji: "表情国旗", modal_capital: "首都:", modal_continent: "大洲:", modal_population: "人口:", modal_area: "面积:", modal_close: "关闭", sort_name: "A-Z (按名称)", sort_population: "按人口", sort_area: "按面积" },
+    kr: { pageTitle: "세계 국기 아틀라스", headerTitle: "세계 국기 아틀라스 — 슈퍼 메가 버전", btn_rasm: "📘 이미지", btn_info: "📚 정보", btn_emoji: "😊 이모티콘", search_placeholder: "🔍 국가 검색...", all_continents: "🌎 모든 대륙", title_rasm: "이미지 국기", title_info: "정보 국기", title_emoji: "이모티콘 국기", modal_capital: "수도:", modal_continent: "대륙:", modal_population: "인구:", modal_area: "면적:", modal_close: "닫기", sort_name: "A-Z (이름순)", sort_population: "인구순", sort_area: "면적순" }
+};
+
+const countries = [
+    {name_uz:'Oʻzbekiston', name_en:'Uzbekistan', name_ru:'Узбекистан', name_cn:'乌兹别克斯坦', name_kr:'우즈베키스탄', code:'uz', flag:'🇺🇿', region:'Asia', capital:'Toshkent', population:36000000, area:'447,400 km²'},
+    {name_uz:'Xitoy', name_en:'China', name_ru:'Китай', name_cn:'中国', name_kr:'중국', code:'cn', flag:'🇨🇳', region:'Asia', capital:'Beijing', population:1425000000, area:'9,597,000 km²'},
+    {name_uz:'Hindiston', name_en:'India', name_ru:'Индия', name_cn:'印度', name_kr:'인도', code:'in', flag:'🇮🇳', region:'Asia', capital:'New Delhi', population:1428000000, area:'3,287,000 km²'},
+    {name_uz:'Yaponiya', name_en:'Japan', name_ru:'Япония', name_cn:'日本', name_kr:'일본', code:'jp', flag:'🇯🇵', region:'Asia', capital:'Tokyo', population:123000000, area:'377,975 km²'},
+    {name_uz:'Koreya Respublikasi', name_en:'South Korea', name_ru:'Южная Корея', name_cn:'韩国', name_kr:'대한민국', code:'kr', flag:'🇰🇷', region:'Asia', capital:'Seoul', population:51700000, area:'100,210 km²'},
+    {name_uz:'Qozogʻiston', name_en:'Kazakhstan', name_ru:'Казахстан', name_cn:'哈萨克斯坦', name_kr:'카자흐스탄', code:'kz', flag:'🇰🇿', region:'Asia', capital:'Astana', population:19000000, area:'2,725,000 km²'},
+    {name_uz:'Turkiya', name_en:'Turkey', name_ru:'Турция', name_cn:'土耳其', name_kr:'터키', code:'tr', flag:'🇹🇷', region:'Europe', capital:'Ankara', population:86000000, area:'783,562 km²'},
+    {name_uz:'Saudiya Arabistoni', name_en:'Saudi Arabia', name_ru:'Саудовская Аравия', name_cn:'沙特阿拉伯', name_kr:'사우디아라비아', code:'sa', flag:'🇸🇦', region:'Asia', capital:'Riyadh', population:37000000, area:'2,150,000 km²'},
+    {name_uz:'Rossiya', name_en:'Russia', name_ru:'Россия', name_cn:'俄罗斯', name_kr:'러시아', code:'ru', flag:'🇷🇺', region:'Europe', capital:'Moscow', population:144000000, area:'17,100,000 km²'},
+    {name_uz:'Buyuk Britaniya', name_en:'UK', name_ru:'Великобритания', name_cn:'英国', name_kr:'영국', code:'gb', flag:'🇬🇧', region:'Europe', capital:'London', population:67000000, area:'242,495 km²'},
+    {name_uz:'Fransiya', name_en:'France', name_ru:'Франция', name_cn:'法国', name_kr:'프랑스', code:'fr', flag:'🇫🇷', region:'Europe', capital:'Paris', population:64800000, area:'551,695 km²'},
+    {name_uz:'Germaniya', name_en:'Germany', name_ru:'Германия', name_cn:'德国', name_kr:'독일', code:'de', flag:'🇩🇪', region:'Europe', capital:'Berlin', population:84000000, area:'357,588 km²'},
+    {name_uz:'Italiya', name_en:'Italy', name_ru:'Италия', name_cn:'意大利', name_kr:'이탈리아', code:'it', flag:'🇮🇹', region:'Europe', capital:'Rome', population:58700000, area:'301,340 km²'},
+    {name_uz:'Ukraina', name_en:'Ukraine', name_ru:'Украина', name_cn:'乌克兰', name_kr:'우크라이나', code:'ua', flag:'🇺🇦', region:'Europe', capital:'Kyiv', population:40000000, area:'603,628 km²'},
+    {name_uz:'Ispaniya', name_en:'Spain', name_ru:'Испания', name_cn:'西班牙', name_kr:'스페인', code:'es', flag:'🇪🇸', region:'Europe', capital:'Madrid', population:47800000, area:'505,992 km²'},
+    {name_uz:'AQSH', name_en:'USA', name_ru:'США', name_cn:'美国', name_kr:'미국', code:'us', flag:'🇺🇸', region:'North America', capital:'Washington D.C.', population:340000000, area:'9,833,517 km²'},
+    {name_uz:'Kanada', name_en:'Canada', name_ru:'Канада', name_cn:'加拿大', name_kr:'캐나다', code:'ca', flag:'🇨🇦', region:'North America', capital:'Ottawa', population:40000000, area:'9,984,670 km²'},
+    {name_uz:'Meksika', name_en:'Mexico', name_ru:'Мексика', name_cn:'墨西哥', name_kr:'멕시코', code:'mx', flag:'🇲🇽', region:'North America', capital:'Mexico City', population:129000000, area:'1,964,375 km²'},
+    {name_uz:'Braziliya', name_en:'Brazil', name_ru:'Бразилия', name_cn:'巴西', name_kr:'브라질', code:'br', flag:'🇧🇷', region:'South America', capital:'Brasilia', population:217000000, area:'8,515,767 km²'},
+    {name_uz:'Argentina', name_en:'Argentina', name_ru:'Аргентина', name_cn:'阿根廷', name_kr:'아르헨티나', code:'ar', flag:'🇦🇷', region:'South America', capital:'Buenos Aires', population:46000000, area:'2,780,400 km²'},
+    {name_uz:'Misr', name_en:'Egypt', name_ru:'Египет', name_cn:'埃及', name_kr:'이집트', code:'eg', flag:'🇪🇬', region:'Africa', capital:'Cairo', population:114000000, area:'1,002,450 km²'},
+    {name_uz:'Nigeriya', name_en:'Nigeria', name_ru:'Нигерия', name_cn:'尼日利亚', name_kr:'나이지리아', code:'ng', flag:'🇳🇬', region:'Africa', capital:'Abuja', population:230000000, area:'923,768 km²'},
+    {name_uz:'Janubiy Afrika', name_en:'South Africa', name_ru:'Южная Африка', name_cn:'南非', name_kr:'남아프리카', code:'za', flag:'🇿🇦', region:'Africa', capital:'Pretoria', population:62000000, area:'1,221,037 km²'},
+    {name_uz:'Avstraliya', code:'au', flag:'🇦🇺', region:'Oceania', capital:'Canberra', name_en:'Australia', name_ru:'Австралия', name_cn:'澳大利亚', name_kr:'호주', population:27000000, area:'7,692,024 km²'},
+    {name_uz:'Yangi Zelandiya', code:'nz', flag:'🇳🇿', region:'Oceania', capital:'Wellington', name_en:'New Zealand', name_ru:'Новая Зеландия', name_cn:'新西兰', kr:'뉴질랜드', population:5300000, area:'268,021 km²'},
+    {name_uz:'Qirgʻiziston', name_en:'Kyrgyzstan', name_ru:'Кыргызстан', name_cn:'吉尔吉斯斯坦', name_kr:'키르기스스탄', code:'kg', flag:'🇰🇬', region:'Asia', capital:'Bishkek', population:7000000, area:'199,900 km²'},
+    {name_uz:'Tojikiston', name_en:'Tajikistan', name_ru:'Таджикистан', name_cn:'塔吉克斯坦', name_kr:'타지키스탄', code:'tj', flag:'🇹🇯', region:'Asia', capital:'Dushanbe', population:10000000, area:'143,100 km²'},
+    {name_uz:'Turkmaniston', name_en:'Turkmenistan', name_ru:'Туркменистан', name_cn:'土库曼斯坦', name_kr:'투르크메니스탄', code:'tm', flag:'🇹🇲', region:'Asia', capital:'Ashgabat', population:7000000, area:'488,100 km²'},
+    {name_uz:'Afgʻoniston', name_en:'Afghanistan', name_ru:'Афганистан', name_cn:'阿富汗', name_kr:'아프가니스탄', code:'af', flag:'🇦🇫', region:'Asia', capital:'Kabul', population:41000000, area:'652,860 km²'},
+    {name_uz:'Armaniston', name_en:'Armenia', name_ru:'Армения', name_cn:'亚美尼亚', name_kr:'아르메니아', code:'am', flag:'🇦🇲', region:'Asia', capital:'Yerevan', population:3000000, area:'29,743 km²'},
+    {name_uz:'Ozarbayjon', name_en:'Azerbaijan', name_ru:'Азербайджан', name_cn:'阿塞拜疆', name_kr:'아제르바이잔', code:'az', flag:'🇦🇿', region:'Asia', capital:'Baku', population:10000000, area:'86,600 km²'},
+    {name_uz:'Filippin', name_en:'Philippines', name_ru:'Филиппины', name_cn:'菲律宾', name_kr:'필리핀', code:'ph', flag:'🇵🇭', region:'Asia', capital:'Manila', population:118000000, area:'300,000 km²'},
+    {name_uz:'Pokiston', name_en:'Pakistan', name_ru:'Пакистан', name_cn:'巴基斯坦', name_kr:'파키스탄', code:'pk', flag:'🇵🇰', region:'Asia', capital:'Islamabad', population:240000000, area:'881,913 km²'},
+    {name_uz:'Vyetnam', name_en:'Vietnam', name_ru:'Вьетнам', name_cn:'越南', name_kr:'베트남', code:'vn', flag:'🇻🇳', region:'Asia', capital:'Hanoi', population:99000000, area:'331,212 km²'},
+    {name_uz:'Indoneziya', name_en:'Indonesia', name_ru:'Индонезия', name_cn:'印度尼西亚', name_kr:'인도네시아', code:'id', flag:'🇮🇩', region:'Asia', capital:'Jakarta', population:277000000, area:'1,904,569 km²'},
+    {name_uz:'Keniya', name_en:'Kenya', name_ru:'Кения', name_cn:'肯尼亚', name_kr:'케냐', code:'ke', flag:'🇰🇪', region:'Africa', capital:'Nairobi', population:56000000, area:'580,367 km²'},
+    {name_uz:'Gana', name_en:'Ghana', name_ru:'Гана', name_cn:'加纳', kr:'가나', code:'gh', flag:'🇬🇭', region:'Africa', capital:'Accra', population:34000000, area:'238,533 km²'},
+    {name_uz:'Shvetsiya', name_en:'Sweden', name_ru:'Швеция', name_cn:'瑞典', name_kr:'스웨덴', code:'se', flag:'🇸🇪', region:'Europe', capital:'Stockholm', population:10500000, area:'450,295 km²'},
+    {name_uz:'Shveytsariya', name_en:'Switzerland', name_ru:'Швейцария', name_cn:'瑞士', name_kr:'스위스', code:'ch', flag:'🇨🇭', region:'Europe', capital:'Bern', population:8800000, area:'41,285 km²'},
+    {name_uz:'Gvatemala', name_en:'Guatemala', name_ru:'Гватемала', name_cn:'危地马拉', name_kr:'과테말라', code:'gt', flag:'🇬🇹', region:'North America', capital:'Guatemala City', population:18000000, area:'108,889 km²'},
+    {name_uz:'Chili', name_en:'Chile', name_ru:'Чили', name_cn:'智利', name_kr:'칠레', code:'cl', flag:'🇨🇱', region:'South America', capital:'Santiago', population:19700000, area:'756,102 km²'},
+    {name_uz:'Paragvay', name_en:'Paraguay', name_ru:'Парагвай', name_cn:'巴拉圭', name_kr:'파라과이', code:'py', flag:'🇵🇾', region:'South America', capital:'Asunción', population:6800000, area:'406,752 km²'},
+    {name_uz:'Singapur', name_en:'Singapore', name_ru:'Сингапур', name_cn:'新加坡', name_kr:'싱가포르', code:'sg', flag:'🇸🇬', region:'Asia', capital:'Singapore', population:6000000, area:'710 km²'},
+    {name_uz:'Tailand', name_en:'Thailand', name_ru:'Таиланд', name_cn:'泰国', name_kr:'태국', code:'th', flag:'🇹🇭', region:'Asia', capital:'Bangkok', population:71000000, area:'513,120 km²'},
+    {name_uz:'Eron', name_en:'Iran', name_ru:'Иран', name_cn:'伊朗', name_kr:'이란', code:'ir', flag:'🇮🇷', region:'Asia', capital:'Tehran', population:89000000, area:'1,648,195 km²'},
+    {name_uz:'Iroq', name_en:'Iraq', name_ru:'Ирак', name_cn:'伊拉克', name_kr:'이라크', code:'iq', flag:'🇮🇶', region:'Asia', capital:'Baghdad', population:46000000, area:'438,317 km²'},
+    {name_uz:'Isroil', name_en:'Israel', name_ru:'Израиль', name_cn:'以色列', name_kr:'이스라엘', code:'il', flag:'🇮🇱', region:'Asia', capital:'Jerusalem', population:9900000, area:'22,072 km²'},
+    {name_uz:'Malayziya', name_en:'Malaysia', name_ru:'Малайзия', name_cn:'马来西亚', name_kr:'말레이시아', code:'my', flag:'🇲🇾', region:'Asia', capital:'Kuala Lumpur', population:34000000, area:'330,803 km²'},
+    {name_uz:'Bangladesh', name_en:'Bangladesh', name_ru:'Бангладеш', name_cn:'孟加拉国', name_kr:'방글라데시', code:'bd', flag:'🇧🇩', region:'Asia', capital:'Dhaka', population:174000000, area:'147,570 km²'},
+    {name_uz:'Nepal', name_en:'Nepal', name_ru:'Непал', name_cn:'尼泊尔', name_kr:'네팔', code:'np', flag:'🇳🇵', region:'Asia', capital:'Kathmandu', population:30000000, area:'147,181 km²'},
+    {name_uz:'Gretsiya', name_en:'Greece', name_ru:'Греция', name_cn:'希腊', name_kr:'그리스', code:'gr', flag:'🇬🇷', region:'Europe', capital:'Athens', population:10400000, area:'131,957 km²'},
+    {name_uz:'Polsha', name_en:'Poland', name_ru:'Польша', name_cn:'波兰', kr:'폴란드', code:'pl', flag:'🇵🇱', region:'Europe', capital:'Warsaw', population:37700000, area:'312,696 km²'},
+    {name_uz:'Ruminiya', name_en:'Romania', name_ru:'Румыния', name_cn:'罗马尼亚', name_kr:'루마니아', code:'ro', flag:'🇷🇴', region:'Europe', capital:'Bucharest', population:19000000, area:'238,397 km²'},
+    {name_uz:'Niderlandiya', name_en:'Netherlands', name_ru:'Нидерланды', name_cn:'荷兰', name_kr:'네덜란드', code:'nl', flag:'🇳🇱', region:'Europe', capital:'Amsterdam', population:17800000, area:'41,850 km²'},
+    {name_uz:'Belgiya', name_en:'Belgium', name_ru:'Бельгия', name_cn:'比利时', name_kr:'벨기에', code:'be', flag:'🇧🇪', region:'Europe', capital:'Brussels', population:11800000, area:'30,689 km²'},
+    {name_uz:'Portugaliya', name_en:'Portugal', name_ru:'Португалия', name_cn:'葡萄牙', name_kr:'포르투갈', code:'pt', flag:'🇵🇹', region:'Europe', capital:'Lisbon', population:10400000, area:'92,212 km²'},
+    {name_uz:'Avstriya', name_en:'Austria', name_ru:'Австрия', name_cn:'奥地利', name_kr:'오스트리아', code:'at', flag:'🇦🇹', region:'Europe', capital:'Vienna', population:9100000, area:'83,879 km²'},
+    {name_uz:'Vengriya', name_en:'Hungary', name_ru:'Венгрия', name_cn:'匈牙利', name_kr:'헝가리', code:'hu', flag:'🇭🇺', region:'Europe', capital:'Budapest', population:9600000, area:'93,030 km²'},
+    {name_uz:'Marokash', name_en:'Morocco', name_ru:'Марокко', name_cn:'摩洛哥', name_kr:'모로코', code:'ma', flag:'🇲🇦', region:'Africa', capital:'Rabat', population:38000000, area:'446,550 km²'},
+    {name_uz:'Jazoir', name_en:'Algeria', name_ru:'Алжир', name_cn:'阿尔及利亚', name_kr:'알제리', code:'dz', flag:'🇩🇿', region:'Africa', capital:'Algiers', population:47000000, area:'2,381,741 km²'},
+    {name_uz:'Kongo (DRK)', name_en:'DR Congo', name_ru:'ДР Конго', name_cn:'刚果（金）', name_kr:'콩고민주공화국', code:'cd', flag:'🇨🇩', region:'Africa', capital:'Kinshasa', population:105000000, area:'2,345,410 km²'},
+    {name_uz:'Efiopiya', name_en:'Ethiopia', name_ru:'Эфиопия', name_cn:'埃塞俄比亚', name_kr:'에티오피아', code:'et', flag:'🇪🇹', region:'Africa', capital:'Addis Ababa', population:128000000, area:'1,104,300 km²'},
+    {name_uz:'Tanzaniya', name_en:'Tanzania', name_ru:'Танзания', name_cn:'坦桑尼亚', name_kr:'탄자니아', code:'tz', flag:'🇹🇿', region:'Africa', capital:'Dodoma', population:68000000, area:'947,303 km²'},
+    {name_uz:'Puerto-Riko', name_en:'Puerto Rico', name_ru:'Пуэрто-Рико', name_cn:'波多黎各', name_kr:'푸에르토리코', code:'pr', flag:'🇵🇷', region:'North America', capital:'San Juan', population:3200000, area:'8,870 km²'},
+    {name_uz:'Kuba', name_en:'Cuba', name_ru:'Куба', name_cn:'古巴', name_kr:'쿠바', code:'cu', flag:'🇨🇺', region:'North America', capital:'Havana', population:11000000, area:'109,884 km²'},
+    {name_uz:'Kolumbiya', name_en:'Colombia', name_ru:'Колумбия', name_cn:'哥伦比亚', name_kr:'콜롬비아', code:'co', flag:'🇨🇴', region:'South America', capital:'Bogotá', population:52000000, area:'1,141,748 km²'},
+    {name_uz:'Peru', name_en:'Peru', ru:'Перу', cn:'秘鲁', kr:'페루', code:'pe', flag:'🇵🇪', region:'South America', capital:'Lima', population:34000000, area:'1,285,216 km²'},
+    {name_uz:'Venesuela', name_en:'Venezuela', name_ru:'Венесуэла', name_cn:'委内瑞拉', name_kr:'베네수엘라', code:'ve', flag:'🇻🇪', region:'South America', capital:'Caracas', population:29000000, area:'916,445 km²'},
+    {name_uz:'Fiji', name_en:'Fiji', name_ru:'Фиджи', name_cn:'斐济', name_kr:'피지', code:'fj', flag:'🇫🇯', region:'Oceania', capital:'Suva', population:900000, area:'18,272 km²'},
+    {name_uz:'Samoa', name_en:'Samoa', name_ru:'Самоа', name_cn:'萨摩亚', name_kr:'사모아', code:'ws', flag:'🇼🇸', region:'Oceania', capital:'Apia', population:220000, area:'2,842 km²'},
+];
+
+
+let currentLang = 'uz'; 
+
+const body = document.body; 
+const themeToggle = document.getElementById('themeToggle'); 
+const langSelector = document.getElementById('languageSelector'); 
+const rasmGrid = document.getElementById('rasmGrid');
+const infoGrid = document.getElementById('infoGrid');
+const emojiGrid = document.getElementById('emojiGrid');
+const modalBg = document.getElementById('modalBg');
+const modal = document.getElementById('modal');
+const searchInput = document.getElementById('searchInput');
+const filterSelect = document.getElementById('filterSelect');
+const sorterSelect = document.getElementById('sorterSelect');
+const navBar = document.getElementById('navBar');
+const splashScreen = document.getElementById('splashScreen');
+const startButton = document.getElementById('startButton');
+const splashContent = document.getElementById('splashContent'); 
+
+// ===========================================
+// 🛠️ 4. FUNKSIYALAR
+// ===========================================
+
+function formatPopulation(num) {
+    if (typeof num === 'number') {
+        const locale = currentLang === 'cn' ? 'zh-CN' : currentLang === 'kr' ? 'ko-KR' : 'en-US'; 
+        return num.toLocaleString(locale);
+    }
+    return num;
+}
+
+// 🌙 MAVZUNI YUKLASH VA ALMASHTIRISH
+function toggleTheme() {
+    body.classList.toggle('dark-mode');
+    
+    const isDarkMode = body.classList.contains('dark-mode');
+    
+    themeToggle.innerHTML = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+    
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.innerHTML = '☀️ Light Mode';
+    } else {
+        themeToggle.innerHTML = '🌙 Dark Mode';
+    }
+}
+
+
+function translateUI() {
+    const lang = translations[currentLang];
+    
+    document.getElementById('pageTitle').textContent = lang.pageTitle;
+    document.getElementById('headerTitle').textContent = lang.headerTitle;
+    
+    navBar.querySelectorAll('button').forEach(btn => {
+        const key = `btn_${btn.dataset.section}`;
+        if (lang[key]) btn.textContent = lang[key];
+    });
+    
+    searchInput.placeholder = lang.search_placeholder;
+    
+    filterSelect.querySelectorAll('option').forEach(option => {
+        const key = option.getAttribute('data-lang-key');
+        if (option.value !== 'all' && regionTranslations[option.value]) {
+            option.textContent = regionTranslations[option.value][currentLang] || option.value;
+        } else if (lang[key]) {
+             option.textContent = lang[key];
+        }
+    });
+
+    sorterSelect.querySelectorAll('option').forEach(option => {
+        const key = option.getAttribute('data-lang-key');
+        if (key && lang[key]) {
+             option.textContent = lang[key];
+        }
+    });
+
+    document.querySelectorAll('.section h2').forEach(h2 => {
+        const key = h2.getAttribute('data-lang-key');
+        if (key && lang[key]) {
+            h2.textContent = lang[key];
+        }
+    });
+
+    if (splashScreen.style.display === 'none') {
+        filterCountries();
+    }
+}
+
+function setLanguage(langCode) {
+    currentLang = langCode;
+    translateUI();
+    
+    // Faol til tugmasini belgilash
+    langSelector.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active-lang');
+        if (btn.dataset.lang === langCode) {
+            btn.classList.add('active-lang');
+        }
+    });
+}
+
+
+function staggerAnimateCards(gridElement) {
+    const cards = gridElement.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.classList.remove('stagger-in');
+        
+        setTimeout(() => {
+            const delay = (index % 10) * 50; 
+            
+            card.style.animationDelay = `${delay}ms`;
+            card.classList.add('stagger-in');
+        }, 100); 
+    });
+}
+
+
+function fillGrids(list) {
+    const nameKey = `name_${currentLang}`;
+    const lang = translations[currentLang];
+
+    const generateCardHtml = (c, type) => {
+        const regionName = regionTranslations[c.region][currentLang] || c.region; 
+        let content = '';
+        const cardNameAttr = c.name_uz.replace(/'/g, "\\'"); 
+
+        if (type === 'rasm' || type === 'info') {
+            content = `<img class='flag-img' src='https://flagcdn.com/w320/${c.code}.png' alt='${c.name_uz} bayrogʻi' onerror="this.onerror=null; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; this.outerHTML='<div class=\\'emoji-flag flag-img-error\\'>🌐</div>'">`;
+        } else if (type === 'emoji') {
+            content = `<div class='emoji-flag'>${c.flag}</div>`;
+        }
+        
+        let infoHtml = '';
+        if (type === 'info') {
+            infoHtml = `
+                <div>${lang.modal_continent} ${regionName}</div>
+                <div>${lang.modal_capital} ${c.capital}</div>
+                <div>${lang.modal_population} ${formatPopulation(c.population)}</div>
+            `;
+        }
+
+        return `
+            <a href="#" class='card' data-country-name='${cardNameAttr}' onclick='event.preventDefault(); openModal("${cardNameAttr}")'>
+                ${content}
+                <div class='name'>${c[nameKey] || c.name_uz}</div>
+                ${infoHtml}
+            </a>`;
+    };
+
+    const rasmHtml = list.map(c => generateCardHtml(c, 'rasm')).join('');
+    const infoHtml = list.map(c => generateCardHtml(c, 'info')).join(''); 
+    const emojiHtml = list.map(c => generateCardHtml(c, 'emoji')).join('');
+
+    rasmGrid.innerHTML = rasmHtml;
+    infoGrid.innerHTML = infoHtml;
+    emojiGrid.innerHTML = emojiHtml;
+    
+    staggerAnimateCards(rasmGrid);
+    staggerAnimateCards(infoGrid);
+    staggerAnimateCards(emojiGrid);
+}
+
+function filterCountries() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedRegion = filterSelect.value;
+    const sortBy = sorterSelect.value; 
+    const nameKey = `name_${currentLang}`; 
+    const uzNameKey = 'name_uz';
+
+    let filteredList = countries.filter(country => {
+        const countryNameInLang = country[nameKey] || country[uzNameKey];
+        const matchesSearch = countryNameInLang.toLowerCase().includes(searchTerm) || 
+                              country[uzNameKey].toLowerCase().includes(searchTerm) ||
+                              country.capital.toLowerCase().includes(searchTerm);
+
+        const matchesRegion = selectedRegion === 'all' || country.region === selectedRegion;
+
+        return matchesSearch && matchesRegion;
+    });
+
+    filteredList.sort((a, b) => {
+        if (sortBy === 'population') {
+            return b.population - a.population; 
+        } else if (sortBy === 'area') {
+            const areaA = parseFloat(a.area.replace(/[^\d.]/g, ''));
+            const areaB = parseFloat(b.area.replace(/[^\d.]/g, ''));
+            
+            return areaB - areaA;
+        } else if (sortBy === 'name_uz') {
+            const nameA = (a[uzNameKey] || '').toLowerCase();
+            const nameB = (b[uzNameKey] || '').toLowerCase();
+            
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+        }
+        return 0; 
+    });
+
+    fillGrids(filteredList);
+}
+
+function openModal(countryNameUz) {
+    const country = countries.find(c => c.name_uz === countryNameUz);
+    const nameKey = `name_${currentLang}`;
+    const lang = translations[currentLang];
+    
+    if (!country) return;
+
+    const regionName = regionTranslations[country.region][currentLang] || country.region; 
+
+    modal.innerHTML = `
+        <h2>${country[nameKey] || country.name_uz}</h2>
+        <img src='https://flagcdn.com/w320/${country.code}.png' alt='${country.name_uz} flag'>
+        <p><strong>${lang.modal_capital}</strong> ${country.capital}</p>
+        <p><strong>${lang.modal_continent}</strong> ${regionName}</p>
+        <p><strong>${lang.modal_population}</strong> ${formatPopulation(country.population)}</p>
+        <p><strong>${lang.modal_area}</strong> ${country.area}</p>
+        <button class='close' onclick='closeModal()'>${lang.modal_close}</button>
+    `;
+
+    modalBg.style.display = 'flex';
+}
+
+function closeModal() {
+    modalBg.style.display = 'none';
+}
+
+function showSection(sectionId, button) {
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+    
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.style.display = 'block';
+        targetSection.classList.add('active');
+    }
+
+    navBar.querySelectorAll('button').forEach(btn => {
+        btn.classList.remove('active-btn');
+    });
+    button.classList.add('active-btn');
+    
+    const activeGrid = targetSection.querySelector('.grid');
+    if(activeGrid) {
+        activeGrid.querySelectorAll('.card').forEach(card => card.classList.remove('stagger-in'));
+        staggerAnimateCards(activeGrid);
+    }
+}
+
+
+// ===========================================
+// 🚀 7. INITSALIZATSIYA (DOMContent Loaded)
+// ===========================================
+
+function initializeApp() {
+    // 🌙 Mavzuni yuklash
+    loadTheme();
+    
+    // Boshlang'ich tilni o'rnatish (Uzbek)
+    const initialLang = 'uz'; 
+    sorterSelect.value = 'name_uz'; 
+    setLanguage(initialLang); 
+
+    const initialButton = document.querySelector('#navBar button[data-section="rasm"]');
+    if (initialButton) {
+        showSection('rasm', initialButton);
+    }
+
+    // 👇 KIRISH EKRANI ANIMATSIYASI 
+    startButton.addEventListener('click', () => {
+        splashContent.classList.add('fly-out'); 
+        splashScreen.classList.add('fade-out'); 
+        
+        setTimeout(() => {
+            splashScreen.style.display = 'none';
+            filterCountries(); 
+        }, 1100); 
+    });
+
+    // Event tinglovchilar
+    
+    // Til almashtirgich uchun tinglovchi 
+    langSelector.addEventListener('click', (e) => {
+        const button = e.target.closest('.lang-btn');
+        if (button && button.dataset.lang) {
+            setLanguage(button.dataset.lang);
+        }
+    });
+
+    // Mavzu almashtirgich
+    themeToggle.addEventListener('click', toggleTheme); 
+    
+    navBar.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (button && button.dataset.section) {
+            showSection(button.dataset.section, button);
+        }
+    });
+    searchInput.addEventListener('input', filterCountries);
+    filterSelect.addEventListener('change', filterCountries);
+    sorterSelect.addEventListener('change', filterCountries); 
+    modalBg.addEventListener('click', (e) => {
+        if (e.target.id === 'modalBg') {
+            closeModal();
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalBg.style.display === 'flex') {
+            closeModal();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializeApp);
+</script>
+
+</body>
+</html>
