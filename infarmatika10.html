@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Informatika va Axborot Texnologiyalari (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1; /* To‘q ko'k — axborot va texnologiya */
+            --secondary: #1976D2;
+            --accent: #FFB300; /* Sariq — innovatsiya va dasturlash */
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === CODE STYLE === */
+        .code {
+            background: #F5F5F5;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #212121;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* === CONCEPT STYLE === */
+        .concept {
+            background: #E1F5FE;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #006064;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E3F2FD;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #0D47A1;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Informatika</h1>
+        <p>10-sinf uchun: Dasturlash asoslari, algoritmlar, ma'lumotlar tuzilmasi, axborot xavfsizligi — texnologiyalar dunyosiga kirish!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">💻</div>
+            <h2>Informatika Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Dasturlash, algoritmlar, ma'lumotlar tuzilmasi, axborot xavfsizligi</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Informatika va axborot texnologiyalari ma'lumotlar bazasi (10-sinf darsligi asosida)
+        const database = {
+            "main_menu": {
+                text: "Salom! Informatika — axborotlarni qayta ishlash, saqlash va uzatish haqidagi fan. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "⚙️ Algoritmlar", key: "algoritmlar" },
+                    { text: "📝 Dasturlash asoslari", key: "dasturlash" },
+                    { text: "📊 Ma'lumotlar tuzilmasi", key: "malumotlar" },
+                    { text: "🔒 Axborot xavfsizligi", key: "xavfsizlik" },
+                    { text: "🌐 Internet va tarmoqlar", key: "internet" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "algoritmlar": {
+                text: "Algoritmlar — muammolarni hal qilish uchun qadamlar ketma-ketligi.",
+                buttons: [
+                    { text: "Algoritm turlari", key: "algoritm_turlari" },
+                    { text: "Blok-sxema", key: "blok_sxema" },
+                    { text: "Tartiblash algoritmlari", key: "tartiblash" },
+                    { text: "Qidiruv algoritmlari", key: "qidiruv" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "algoritm_turlari": {
+                text: "<span class='concept'>Algoritm turlari:</span><br>• Chiziqli — qadamlar ketma-ket<br>• Shartli — if/else, tanlash<br>• Takrorlanuvchi — for, while<br>• Rekursiv — o'ziga o'ziga murojaat",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "blok_sxema": {
+                text: "<span class='concept'>Bloksxema elementlari:</span><br>• Oval — boshlanish/tugallash<br>• To'rtburchak — amal<br>• Romb — shart<br>• To'g'ri chiziq — yo'nalish<br>• Parallelogramm — kiritish/chiqarish",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "tartiblash": {
+                text: "<span class='code'>// Tartiblash — buxgalteriya algoritmi (kabul qilingan)</span><br>• Bubbel tartiblash: qo'shni elementlarni solishtirish<br>• Tanlash tartiblashi: eng kichikni topib joylashtirish<br>• Qo'shish tartiblashi: har bir elementni to'g'ri joyga joylashtirish",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "qidiruv": {
+                text: "<span class='concept'>Qidiruv algoritmlari:</span><br>• Chiziqli qidiruv: massivni ketma-ket tekshirish<br>• Ikki qatlamli qidiruv: tartiblangan massivda, har bir qadamda qismga ajratish<br>• Qidiruv tezligi: ikki qatlamli — O(log n)",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "dasturlash": {
+                text: "Dasturlash — kompyuterga buyruqlar berish usuli.",
+                buttons: [
+                    { text: "O'zgaruvchilar", key: "ozgaruvchilar" },
+                    { text: "Shart operatorlari", key: "shart" },
+                    { text: "Tsikllar", key: "tsikl" },
+                    { text: "Funksiyalar", key: "funksiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ozgaruvchilar": {
+                text: "<span class='code'>// O'zgaruvchilar — ma'lumotlarni saqlash</span><br>• let, const — JavaScriptda<br>• int, float, string — ma'lumot turi<br>• O'zgaruvchi nomi: harf bilan boshlanadi, raqam bilan emas",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "shart": {
+                text: "<span class='code'>// Shart operatorlari</span><br>• if (shart) { ... }<br>• else if (shart) { ... }<br>• else { ... }<br>• switch (qiymat) { case x: ... break; }",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "tsikl": {
+                text: "<span class='code'>// Tsikllar — takrorlash</span><br>• for (let i=0; i<10; i++) { ... }<br>• while (shart) { ... }<br>• do { ... } while (shart);<br>• break — tsiklni to'xtatish<br>• continue — keyingi iteratsiyaga o'tish",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "funksiya": {
+                text: "<span class='code'>// Funksiya — kodni qayta ishlatish</span><br>• function nomi(parametrlar) { ... }<br>• return qiymat — natijani qaytarish<br>• Funksiyani chaqirish: nomi(arg1, arg2)",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "malumotlar": {
+                text: "Ma'lumotlar tuzilmasi — ma'lumotlarni tashkil etish usullari.",
+                buttons: [
+                    { text: "Massivlar", key: "massiv" },
+                    { text: "Slovarlar", key: "slovar" },
+                    { text: "Qator", key: "qator" },
+                    { text: "Stek", key: "stek" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "massiv": {
+                text: "<span class='code'>// Massiv — tartiblangan elementlar to'plami</span><br>• let arr = [1, 2, 3];<br>• arr[0] — birinchi element<br>• arr.length — uzunlik<br>• push(), pop(), shift(), unshift() — qo'shish/ochirish",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "slovar": {
+                text: "<span class='code'>// Slovar — kalit-qiymat juftligi</span><br>• let obj = { ism: 'Ali', yosh: 16 };<br>• obj.ism — qiymatni olish<br>• obj.yosh = 17 — qiymatni o'zgartirish<br>• delete obj.ism — kalitni o'chirish",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "qator": {
+                text: "<span class='concept'>Qator (Queue) — FIFO (Birinchi kirgan, birinchi chiqadi)</span><br>• Qo'shish — enqueue<br>• O'chirish — dequeue<br>• Qo'llanilishi: qatorda kutish, print queue",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "stek": {
+                text: "<span class='concept'>Stek (Stack) — LIFO (Oxirgi kirgan, birinchi chiqadi)</span><br>• Qo'shish — push<br>• O'chirish — pop<br>• Qo'llanilishi: funksiya chaqiruvlari, orqa qaytish",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "xavfsizlik": {
+                text: "Axborot xavfsizligi — ma'lumotlarni himoya qilish.",
+                buttons: [
+                    { text: "Parollar", key: "parollar" },
+                    { text: "Viruslar", key: "virus" },
+                    { text: "Firewall", key: "firewall" },
+                    { text: "Shifrlash", key: "shifrlash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "parollar": {
+                text: "<span class='concept'>Parollar xavfsizligi:</span><br>• Kamida 8 belgi<br>• Katta, kichik harf, raqam, belgi<br>• Har 3-6 oyda o'zgartirish<br>• 2 ta faktorli autentifikatsiya (2FA)",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "virus": {
+                text: "<span class='concept'>Viruslar va himoya:</span><br>• Viruss — o'zini nusxalaydigan dastur<br>• Trojan — o'zini dastur deb beradi<br>• Spyware — ma'lumotlarni yig'adi<br>• Himoya: antivirus dasturlari, yangilanishlar",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "firewall": {
+                text: "<span class='concept'>Firewall — tarmoq himoyasi:</span><br>• Kiritilayotgan va chiqayotgan trafikni tekshiradi<br>• Portlarni bloklash<br>• Tarmoq chegarasi sifatida ishlaydi<br>• O'quvchilar uchun: ISP tomonidan boshqariladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "shifrlash": {
+                text: "<span class='concept'>Shifrlash:</span><br>• Shifrlash — ma'lumotlarni faqat ruxsat berilganlarga o'qish mumkin qilish<br>• AES, RSA — keng tarqalgan algoritmlar<br>• Hash — ma'lumotlarni bitta kodga aylantirish (parollar uchun)",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "internet": {
+                text: "Internet va tarmoqlar — axborotni uzatish tizimi.",
+                buttons: [
+                    { text: "IP manzil", key: "ip" },
+                    { text: "DNS", key: "dns" },
+                    { text: "Protokollar", key: "protokollar" },
+                    { text: "Web sahifalar", key: "web" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ip": {
+                text: "<span class='concept'>IP manzil:</span><br>• IPv4: 192.168.1.1 — 4 ta son (0-255)<br>• IPv6: 2001:0db8:85a3::8a2e:0370:7334 — 128 bit<br>• Public IP — internetda ko'rinadi<br>• Private IP — lokal tarmoqda",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "dns": {
+                text: "<span class='concept'>DNS (Domain Name System):</span><br>• www.google.com → 142.250.185.206<br>• DNS serverlar — domen nomlarini IP ga aylantiradi<br>• Kompyuter DNS manzilini ISP tomonidan oladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "protokollar": {
+                text: "<span class='concept'>Asosiy protokollar:</span><br>• HTTP/HTTPS — veb-sahifalarni yuklash<br>• TCP/IP — ma'lumotlarni ishonchli uzatish<br>• UDP — tez, lekin ishonchsiz (video, o'yinlar)<br>• FTP — faylarni yuklash",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "web": {
+                text: "<span class='concept'>Web sahifalar:</span><br>• HTML — tuzilma<br>• CSS — dizayn<br>• JavaScript — interaktivlik<br>• Server — ma'lumotlarni saqlaydi<br>• Klient — brauzer (Siz)",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Algoritmlar testi", key: "test_algoritm" },
+                    { text: "Dasturlash testi", key: "test_dastur" },
+                    { text: "Axborot xavfsizligi", key: "test_xavf" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_algoritm": {
+                text: "1. Quyidagi algoritm qanday turga kiradi?\nfor (i=0; i<10; i++) { print(i) }\nA) Chiziqli\nB) Shartli\nC) Takrorlanuvchi",
+                buttons: [
+                    { text: "A)", key: "test_algoritm_a" },
+                    { text: "B)", key: "test_algoritm_b" },
+                    { text: "C)", key: "test_algoritm_c" }
+                ]
+            },
+            "test_algoritm_c": {
+                text: "✅ To'g'ri! Bu — takrorlanuvchi algoritm (tsikl).",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_dastur": {
+                text: "2. Quyidagi kod natijasi nima?\nlet x = 5;\nx += 3;\nconsole.log(x);\nA) 5\nB) 8\nC) 3",
+                buttons: [
+                    { text: "A)", key: "test_dastur_a" },
+                    { text: "B)", key: "test_dastur_b" },
+                    { text: "C)", key: "test_dastur_c" }
+                ]
+            },
+            "test_dastur_b": {
+                text: "✅ Ajoyib! x += 3 → x = 5 + 3 = 8.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_xavf": {
+                text: "3. Quyidagilardan qaysi biri xavfsiz parol bo'lishi mumkin?\nA) 123456\nB) password\nC) M@shina123!",
+                buttons: [
+                    { text: "A)", key: "test_xavf_a" },
+                    { text: "B)", key: "test_xavf_b" },
+                    { text: "C)", key: "test_xavf_c" }
+                ]
+            },
+            "test_xavf_c": {
+                text: "✅ To'g'ri! M@shina123! — katta harf, kichik harf, raqam, belgi — xavfsiz parol.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
