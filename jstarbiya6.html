@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Jismoniy Tarbiya AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9, #a5d6a7);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #43a047;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #43a047, #1b5e20);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(67, 160, 71, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #43a047, #1b5e20, #43a047);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(67, 160, 71, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(67, 160, 71, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #1b5e20;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(67, 160, 71, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(67, 160, 71, 0.9);
+      background: linear-gradient(45deg, #0d4710, #388e3c);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #1b5e20;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(67, 160, 71, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #43a047;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(67, 160, 71, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 255, 240, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #43a047, #1b5e20);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e8f5e9, #c8e6c9);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #43a047;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #43a047;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 255, 240, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #43a047;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #1b5e20, #43a047);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(67, 160, 71, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(67, 160, 71, 0.7);
+      background: linear-gradient(45deg, #0d4710, #388e3c);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(67, 160, 71, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #43a047;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🏃</div>
+      <h1 class="title">ASCO Jismoniy Tarbiya AI</h1>
+      <p class="subtitle">Jismoniy tarbiyada qiyinchilik tug'ilmaydi! Men — sizning shaxsiy JT o'qituvchingiz. Harakatlar, sport turlari, tayyorgarlik, mehnat qoidalari — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">💪</div>
+        <h2>Jismoniy Tarbiya AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Jismoniy tarbiya nima?')">Jismoniy tarbiya nima?</button>
+          <button class="btn-3d" onclick="sendMessage('Harakatlar va ularning turlari')">Harakatlar</button>
+          <button class="btn-3d" onclick="sendMessage('Sport turlari')">Sport turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Tayyorgarlik qoidalari')">Tayyorgarlik</button>
+          <button class="btn-3d" onclick="sendMessage('Mehnat qoidalari')">Mehnat qoidalari</button>
+          <button class="btn-3d" onclick="sendMessage('Xavfsizlik qoidalari')">Xavfsizlik</button>
+          <button class="btn-3d" onclick="sendMessage('Jismoniy rivojlanish')">Jismoniy rivojlanish</button>
+          <button class="btn-3d" onclick="sendMessage('O'z-o'zini nazorat qilish')">O'z-o'zini nazorat qilish</button>
+          <button class="btn-3d" onclick="sendMessage('Sporchilik')">Sporchilik</button>
+          <button class="btn-3d" onclick="sendMessage('Sport mehnati')">Sport mehnati</button>
+          <button class="btn-3d" onclick="sendMessage('Tuzilish va muskullar')">Tuzilish</button>
+          <button class="btn-3d" onclick="sendMessage('Davomiylik va tezlik')">Davomiylik</button>
+          <button class="btn-3d" onclick="sendMessage('Balandlik va masofa')">Balandlik</button>
+          <button class="btn-3d" onclick="sendMessage('Tayyorgarlik mashqlari')">Tayyorgarlik mashqlari</button>
+          <button class="btn-3d" onclick="sendMessage('O'tish va o'tish turlari')">O'tish</button>
+          <button class="btn-3d" onclick="sendMessage('O'yin turlari')">O'yin turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Jismoniy ko'rsatkichlar')">Ko'rsatkichlar</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Ijodiy loyiha')">Ijodiy loyiha</button>
+          <button class="btn-3d" onclick="sendMessage('Sog'liqni saqlash')">Sog'liqni saqlash</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning jismoniy tarbiya o'qituvchingiz. Harakatlar, sport, tayyorgarlik yoki mehnat qoidalari haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF JISMONIY TARBIYA — ASCO LOYIHASI
+
+      if (lower.includes("jismoniy tarbiya nima") || lower.includes("jismoniy tarbiya")) {
+        response = "Jismoniy tarbiya — sog'liqni saqlash, jismoniy rivojlanish va mehnat qobiliyatini oshirish uchun o'tkaziladigan harakatlar tizimi.\n\nAsosiy maqsadlar:\n\n1. Kuch, tezlik, davomiylikni rivojlantirish\n2. Ko'prik, o'tish, o'yinlar orqali koordinatsiyani oshirish\n3. Sog'liqni saqlash, xavfsizlikni o'rganish\n4. Jamoa hamkorligi va mehnatga o'rgatish\n\n💡 Jismoniy tarbiya — sog'liqning asosi!";
+      } else if (lower.includes("harakatlar") || lower.includes("harakat turlari")) {
+        response = "Asosiy harakatlar:\n\n1. **Yugurish** — tezlik va davomiylik\n2. **Sekirish** — balandlik va masofa\n3. **O'tish** — ko'prik, yon tomon, orqa tomon\n4. **Tartibga solish** — qo'llar, oyoqlar, bosh\n5. **Bosish** — o'zgaruvchan harakatlar\n\nMisol: \"10 metr yugurish → 3 marta sekirish → 2 marta o'tish\"\n\n💡 Harakatlar — jismoniy rivojlanishning kaliti!";
+      } else if (lower.includes("sport turlari")) {
+        response = "6-sinf uchun asosiy sport turlari:\n\n• **Futbol** — jamoa o'yini, tezlik\n• **Voleybol** — sekirish, koordinatsiya\n• **Basketbol** — to'p bilan ishlash\n• **Atletika** — yugurish, sekirish, o'tish\n• **Qo'l topshiruv** — jamoa hamkorligi\n• **Tennis** — reaktsiya, tezlik\n\n💡 Sport — faqat o'yin emas, balki mehnat va tayyorgarlik!";
+      } else if (lower.includes("tayyorgarlik")) {
+        response = "Tayyorgarlik — jismoniy ishga tayyorlanish!\n\n3 bosqich:\n\n1. **Tayyorgarlik** — 5-10 daqiqa: yugurish, oyoq chizish\n2. **Asosiy qism** — 20-30 daqiqa: harakatlar, o'yinlar\n3. **So'nggi qism** — 5 daqiqa: nafas olish, suv ichish\n\n💡 Tayyorgarlik qilmasangiz — jarohat olish xavfi bor!";
+      } else if (lower.includes("mehnat qoidalari")) {
+        response = "Mehnat qoidalari — jismoniy ishda xavfsizlik:\n\n1. Harakatni tez boshlamang — tayyorgarlik kerak\n2. Qo'llaringizni va oyoqlaringizni sovuq suvda emas, balki sovuq havo bilan soviting\n3. O'z kuchingizga qarab ishlashingiz kerak\n4. O'qituvchining buyrug'iga amal qiling\n5. O'zini himoya qiling — qo'g'irchoq, to'p bilan o'ynashda ehtiyot bo'ling\n\n💡 Mehnat — xavfsizlik bilan boshlanadi!";
+      } else if (lower.includes("xavfsizlik")) {
+        response = "Xavfsizlik qoidalari:\n\n• To'p bilan o'ynashda — atrofingizni ko'ring\n• Sekirishda — qattiq yerga emas, balki yumshoq yerga\n• O'tishda — qo'llaringizni himoya qiling\n• O'yinlarda — boshqa odamlarga zarar bermang\n• Sovuq va qorli kunda — qo'g'irchoq bilan o'ynashni cheklab qo'ying\n\n💡 Xavfsizlik — jismoniy tarbiyaning birinchi qadami!";
+      } else if (lower.includes("jismoniy rivojlanish")) {
+        response = "Jismoniy rivojlanish — sizning kuch, tezlik, davomiylik va koordinatsiyangizni oshirish.\n\nQanday o'sadi?\n\n• Har kuni 10 daqiqa yugurish\n• 3 marta o'tish\n• 5 marta sekirish\n• 2 daqiqa qo'ldan qo'ldan o'tish\n\n💡 Har kuni 10 daqiqa — haftada 70 daqiqa! Bu — sizning kuchingiz!";
+      } else if (lower.includes("o'z-o'zini nazorat qilish")) {
+        response = "O'z-o'zini nazorat qilish — jismoniy ishda o'z kuchingizni bilish!\n\nMisol:\n\n• Qancha yugurishim kerak?\n• Qancha sekirishim kerak?\n• Qancha dam olishim kerak?\n\n💡 O'z-o'zini nazorat qilish — katta odamlarning qobiliyati!";
+      } else if (lower.includes("sporchilik")) {
+        response = "Sporchilik — sportga qiziqish va doimiy ishlash.\n\nQanday bo'lish mumkin?\n\n• Har kuni 10 daqiqa harakat\n• O'yinlarda ishtirok etish\n• O'z kuchingizni oshirishga intilish\n\n💡 Sporchilik — bu faqat professional odamlar uchun emas, balki har bir o'quvchi uchun!";
+      } else if (lower.includes("sport mehnati")) {
+        response = "Sport mehnati — jismoniy ishda mehnat qilish.\n\nMehnat — bu:\n\n• Qo'lingizni qo'zg'atish\n• Oyoqlaringizni yugurish\n• Qalbingizni tezroq urish\n\n💡 Sport mehnati — sizga kuch, sog'liq va xursandlik beradi!";
+      } else if (lower.includes("tuzilish") || lower.includes("muskullar")) {
+        response = "Tuzilish — sizning jismoniy tuzilishingiz.\n\nAsosiy muskullar:\n\n• Qo'llar — yugurish, to'p bilan ishlash\n• Oyoqlar — yugurish, sekirish\n• Qorin — o'tish, balandlik\n• Orqa — turgan holda to'g'ri turish\n\n💡 Muskullar — sizning jismoniy kuchingizning manbai!";
+      } else if (lower.includes("davomiylik") || lower.includes("tezlik")) {
+        response = "Davomiylik — uzun vaqt davomida ishlash.\n\nMisol: 5 daqiqa yugurish\n\nTezlik — qisqa vaqt ichida ishlash.\n\nMisol: 10 metr yugurish\n\n💡 Davomiylik — qaror, tezlik — reaktsiya!";
+      } else if (lower.includes("balandlik") || lower.includes("masofa")) {
+        response = "Balandlik — yuqoriga sekirish.\n\nMisol: o'qilish, to'g'ri sekirish\n\nMasofa — oldinga yugurish.\n\nMisol: 30 metr yugurish\n\n💡 Balandlik — kuch, masofa — tezlik!";
+      } else if (lower.includes("tayyorgarlik mashqlari")) {
+        response = "Tayyorgarlik mashqlari — 5-10 daqiqa:\n\n1. Yugurish — 2 daqiqa\n2. Qo'llar bilan chizish — 1 daqiqa\n3. Oyoqlar bilan chizish — 1 daqiqa\n4. Qo'ldan qo'ldan o'tish — 2 daqiqa\n5. Nafas olish — 1 daqiqa\n\n💡 Tayyorgarlik — jarohatni oldini oladi!";
+      } else if (lower.includes("o'tish")) {
+        response = "O'tish — ko'prik, yon tomon, orqa tomon orqali o'tish.\n\nTurlari:\n\n• **Ko'prik** — orqa tomon, qo'llar bilan\n• **Yon tomon** — yon tomon, oyoq bilan\n• **Orqa tomon** — orqa tomon, qo'llar bilan\n\nMisol: \"Ko'prik → yon tomon → orqa tomon\"\n\n💡 O'tish — koordinatsiyani oshiradi!";
+      } else if (lower.includes("o'yin turlari")) {
+        response = "O'yin turlari — jamoa hamkorligi:\n\n• **Futbol** — 7-8 kishilik\n• **Voleybol** — 6 kishilik\n• **Basketbol** — 5 kishilik\n• **Qo'l topshiruv** — 4 kishilik\n\n💡 O'yin — o'zaro tushunish va hamkorlik!";
+      } else if (lower.includes("ko'rsatkichlar")) {
+        response = "Jismoniy ko'rsatkichlar — sizning qobiliyatingizni o'lchash:\n\n• **Yugurish** — 30 metr necha sekundda?\n• **Sekirish** — qancha baland?\n• **O'tish** — qancha marta?\n• **Qo'ldan qo'ldan o'tish** — qancha marta?\n\n💡 Ko'rsatkichlar — sizning progressingiz!";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\n1. 30 metr yugurish\n2. 5 marta ko'prik\n3. 3 marta yon tomon o'tish\n4. 2 daqiqa nafas olish\n\n✅ Bajarildi! Siz 10 daqiqa jismoniy ish qildingiz!\n\n💡 Har kuni 10 daqiqa — sog'liqni saqlash!";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Jismoniy tarbiyaning maqsadi nima?\n   a) O'qish\n   b) Sog'liqni saqlash ✅\n   c) O'yin\n\n2. Qaysi harakat tezlikni rivojlantiradi?\n   a) Yugurish ✅\n   b) O'tish\n   c) Sekirish\n\n3. Tayyorgarlik qilmasangiz nima bo'ladi?\n   a) Jarohat olish xavfi ✅\n   b) Yaxshi his qilish\n   c) Kuch o'sish\n\n💡 Test — sizning bilimingizni tekshirish!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nDunyodagi eng kuchli sportchi — 100 metrni 9.58 sekundda yuguradi!\n\nBu — Usain Bolt!\n\n💡 Siz ham 100 metrni 15 sekundda yugurishingiz mumkin — har kuni 10 daqiqa ishlashingiz kerak!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men oyoq emasman, lekin men bilan oyoq yuguradi.\nMen qo'l emasman, lekin men bilan qo'l sekiradi.\nMen nima?\"\n\n💡 Javob: **Jismoniy tarbiya** 🏃‍♂️\n\nYana biri:\n\"Men qo'g'irchoq emasman, lekin men bilan qo'g'irchoq o'ynaydi.\nMen nima?\"\n💡 Javob: **Sport** 🏀";
+      } else if (lower.includes("ijodiy loyiha")) {
+        response = "Ijodiy loyiha: \"Mening kunlik jismoniy dasturi\"\n\n1. 7:00 — 5 daqiqa yugurish\n2. 7:05 — 3 marta ko'prik\n3. 7:10 — 2 daqiqa nafas olish\n4. 17:00 — 5 daqiqa o'yin\n\n💡 Har kuni 10 daqiqa — siz sog'liqli bo'lasiz!";
+      } else if (lower.includes("sog'liqni saqlash")) {
+        response = "Sog'liqni saqlash — 4 qoida:\n\n1. Har kuni 10 daqiqa harakat\n2. To'g'ri ovqatlanish\n3. Kifoyatli suv ichish\n4. Tinchlik va uyqu\n\n💡 Sog'liq — bu kuch, bu quvonch, bu hayot!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning jismoniy tarbiya o'qituvchingizman. Harakatlar, sport yoki mehnat qoidalari haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Jismoniy tarbiya — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli jismoniy tarbiya o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf jismoniy tarbiyada yordam berishga tayyorman. Iltimos, \"harakat\", \"sport\", \"tayyorgarlik\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
