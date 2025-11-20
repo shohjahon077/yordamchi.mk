@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Ingliz Tili AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a1a3a, #12122e, #08081a);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #040410;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #60a5fa;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2360a5fa"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 15, 35, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(96, 165, 250, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 5, 20, 0.9);
+            color: #60a5fa;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(96, 165, 250, 0.3);
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #60a5fa, #93c5fd);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #60a5fa;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 5, 20, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(96, 165, 250, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #60a5fa transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #60a5fa;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(30, 30, 60, 0.4);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(96, 165, 250, 0.25);
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%2360a5fa"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .grammar {
+            color: #93c5fd;
+            font-weight: bold;
+        }
+
+        .example {
+            background: rgba(30, 30, 60, 0.3);
+            padding: 8px 12px;
+            border-left: 4px solid #60a5fa;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .term {
+            color: #bbdefb;
+            font-weight: bold;
+        }
+
+        .note {
+            color: #e0f2fe;
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf English AI Bot</div>
+        <div class="splash-subtext">Grammar, Vocabulary, Reading, Writing, Speaking — Master Advanced English</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">📚 11-sinf English AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Thinking...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Grammar — 30 ta
+            "What is the difference between Present Perfect and Past Simple?",
+            "When do we use 'would' vs 'will' in conditional sentences?",
+            "Explain the structure of the Third Conditional.",
+            "What is the difference between 'since' and 'for' in perfect tenses?",
+            "How are modal verbs used to express possibility, obligation, and deduction?",
+            "Explain the passive voice in different tenses with examples.",
+            "What is the function of 'used to' and 'be used to'?",
+            "How do you form reported speech for questions and commands?",
+            "What is the difference between 'say' and 'tell' in reported speech?",
+            "Explain the use of articles: a, an, the — with exceptions.",
+            "What are the rules for using 'much', 'many', 'a lot of', 'few', 'little'?",
+            "How do you form comparative and superlative adjectives irregularly?",
+            "What is the difference between 'who', 'whom', and 'whose'?",
+            "Explain the use of relative clauses: defining vs non-defining.",
+            "What are phrasal verbs? Give 5 common examples with meanings.",
+            "How do you use 'so', 'such', 'too', and 'enough' correctly?",
+            "Explain the difference between 'can', 'could', 'be able to' in past and future.",
+            "What is the subjunctive mood? When is it used after 'suggest', 'demand'?",
+            "How do you use 'if only' and 'I wish' to express regret?",
+            "What is the difference between 'affect' and 'effect'?",
+            "Explain the use of 'it' as a formal subject (It is important that...).",
+            "How are infinitives and gerunds used after verbs? (e.g., like to do vs like doing)",
+            "What is the difference between 'stop to do' and 'stop doing'?",
+            "Explain the use of 'by' and 'until' in time expressions.",
+            "How do you form tag questions for negative sentences?",
+            "What is the difference between 'borrow' and 'lend'?",
+            "Explain the use of 'would rather' and 'had better'.",
+            "What is the structure of 'the more... the more...' sentences?",
+            "How do you use 'no sooner... than...' and 'hardly... when...'?",
+            "Explain the difference between 'since' and 'because' in cause-effect.",
+
+            // Vocabulary & Usage — 25 ta
+            "What are synonyms and antonyms for 'happy', 'important', 'difficult'?",
+            "Explain the difference between 'economic' and 'economical'.",
+            "What is the difference between 'affect' and 'effect' in context?",
+            "What are collocations for 'make', 'do', 'take', 'have'?",
+            "Explain the meaning of idioms: 'break the ice', 'hit the sack', 'cost an arm and a leg'.",
+            "What is the difference between 'borrow' and 'lend'?",
+            "Define: 'ambitious', 'resilient', 'diligent', 'skeptical', 'optimistic'.",
+            "What are words with opposite meanings to 'generous', 'honest', 'patient'?",
+            "Explain the difference between 'compliment' and 'complement'.",
+            "What are phrasal verbs related to 'give'? (give up, give in, give away)",
+            "Explain the meaning of 'to be fed up with', 'to be on the verge of', 'to look forward to'.",
+            "What are synonyms for 'very good' in formal writing?",
+            "Explain the difference between 'price', 'cost', and 'expense'.",
+            "What is the difference between 'advice' and 'advise'?",
+            "Define: 'sustainable', 'innovation', 'globalization', 'inequality'.",
+            "What are formal alternatives to 'get', 'find out', 'use'?",
+            "Explain the meaning of 'to be in charge of', 'to be responsible for'.",
+            "What are common prefixes and suffixes for nouns, verbs, adjectives?",
+            "Explain the difference between 'historic' and 'historical'.",
+            "What are words related to 'environment': pollution, climate change, carbon footprint?",
+            "Explain the meaning of 'to be under pressure', 'to be overwhelmed', 'to burn out'.",
+            "What are words for emotions: annoyed, frustrated, delighted, terrified?",
+            "Define: 'prejudice', 'discrimination', 'tolerance', 'diversity'.",
+            "Explain the difference between 'realize' and 'recognize'.",
+            "What are academic verbs for essays: analyze, evaluate, compare, contrast?",
+
+
+            // Reading & Writing — 20 ta
+            "How do you identify the main idea in a reading passage?",
+            "What is the difference between skimming and scanning?",
+            "How do you write a good topic sentence for a paragraph?",
+            "Explain the structure of a 5-paragraph essay.",
+            "How do you paraphrase a sentence without changing its meaning?",
+            "What are linking words for contrast, cause, and result?",
+            "How do you avoid plagiarism when writing a summary?",
+            "What is the difference between formal and informal writing?",
+            "How do you write a good conclusion for an essay?",
+            "What are common mistakes in IELTS Task 2 writing?",
+            "How do you organize ideas logically in an argumentative essay?",
+            "What is the role of evidence in academic writing?",
+            "How do you use quotations correctly in an essay?",
+            "What are the key features of a good letter (formal/informal)?",
+            "How do you write a strong thesis statement?",
+            "What are cohesive devices in writing?",
+            "How do you use passive voice in academic writing?",
+            "What is the difference between 'summary' and 'paraphrase'?",
+            "How do you evaluate the reliability of a source?",
+            "How do you write a good title for an essay or article?",
+
+
+            // Speaking & Listening — 15 ta
+            "How do you pronounce 'th' sounds in 'think' and 'this'?",
+            "What is the difference between stressed and unstressed syllables?",
+            "How do you use intonation to show surprise or doubt?",
+            "What are common linking sounds in spoken English?",
+            "How do you ask for clarification in a conversation?",
+            "How do you express agreement and disagreement politely?",
+            "What are discourse markers in speaking? (e.g., well, you know, actually)",
+            "How do you structure a 2-minute speech on a given topic?",
+            "How do you answer 'Why do you think...?' questions in IELTS Speaking?",
+            "What are common fillers in spoken English and how to avoid them?",
+            "How do you use conditionals in everyday conversation?",
+            "How do you describe a graph or chart in an oral presentation?",
+            "How do you give an opinion with reasons and examples?",
+            "What are strategies to improve listening comprehension?",
+            "How do you take notes while listening to a lecture?",
+
+
+            // Literature & Culture — 10 ta
+            "Who is William Shakespeare? Name two of his famous plays.",
+            "What is the theme of 'Romeo and Juliet'?",
+            "What is the significance of 'The Great Gatsby' in American literature?",
+            "Who is George Orwell? What is '1984' about?",
+            "What is the difference between a novel and a short story?",
+            "What is symbolism in literature? Give an example.",
+            "What is irony? Explain with an example.",
+            "What is the role of setting in a story?",
+            "Who is Harper Lee? What is 'To Kill a Mockingbird' about?",
+            "What is the difference between first-person and third-person narration?"
+        ];
+
+        const responses = {
+            "What is the difference between Present Perfect and Past Simple?": "<span class='grammar'>Present Perfect</span> connects the past to the present. It's used for unfinished time, life experience, or recent actions with present results. <span class='example'>I have visited Paris.</span> (I know Paris — it's part of my life). <span class='grammar'>Past Simple</span> is for completed actions at a specific time in the past. <span class='example'>I visited Paris last year.</span> (It's finished, time is mentioned).",
+            "When do we use 'would' vs 'will' in conditional sentences?": "<span class='term'>Will</span> is used for real or likely future conditions: <span class='example'>If it rains, I will stay home.</span> <span class='term'>Would</span> is for unreal, hypothetical, or polite situations: <span class='example'>If I won the lottery, I would travel the world.</span> Also for polite requests: <span class='example'>Would you help me?</span>",
+            "Explain the structure of the Third Conditional.": "Third Conditional talks about unreal past situations and their imaginary results. Structure: <span class='example'>If + Past Perfect, would have + past participle.</span> <span class='example'>If I had studied harder, I would have passed the exam.</span> (But I didn’t study — so I failed.)",
+            "What is the difference between 'since' and 'for' in perfect tenses?": "<span class='term'>Since</span> + a point in time: <span class='example'>I have lived here since 2020.</span> <span class='term'>For</span> + a duration: <span class='example'>I have lived here for 4 years.</span> (Since = start point, For = length of time).",
+            "How are modal verbs used to express possibility, obligation, and deduction?": "<span class='term'>Possibility</span>: may, might, could (e.g., She might be late). <span class='term'>Obligation</span>: must, have to (e.g., You must wear a helmet). <span class='term'>Deduction</span>: must (for certainty), can’t (for impossibility): <span class='example'>He must be tired — he worked all night.</span>",
+            "Explain the passive voice in different tenses with examples.": "Passive: <span class='term'>Object + be + past participle</span>. <span class='example'>Present Simple: The book is written by her.</span> <span class='example'>Past Simple: The house was built in 1990.</span> <span class='example'>Future: The project will be finished next month.</span> <span class='example'>Present Perfect: The letter has been sent.</span>",
+            "What is the function of 'used to' and 'be used to'?": "<span class='term'>Used to + verb</span> = past habit, now stopped: <span class='example'>I used to smoke.</span> (Now I don’t). <span class='term'>Be used to + noun/gerund</span> = be familiar with: <span class='example'>I am used to waking up early.</span> (It’s normal for me now).",
+            "How do you form reported speech for questions and commands?": "For questions: change word order, remove question mark, use if/whether. <span class='example'>She asked: 'Do you like coffee?' → She asked if I liked coffee.</span> For commands: use 'tell/ask + object + to + verb'. <span class='example'>He said: 'Close the door!' → He told me to close the door.</span>",
+            "What is the difference between 'say' and 'tell' in reported speech?": "<span class='term'>Say</span> — no direct object: <span class='example'>She said (that) she was tired.</span> <span class='term'>Tell</span> — needs object: <span class='example'>She told me (that) she was tired.</span> We say 'say something', but 'tell someone something'.",
+            "Explain the use of articles: a, an, the — with exceptions.": "<span class='term'>A/an</span> — for first mention or general things: <span class='example'>I saw a cat.</span> <span class='term'>The</span> — for specific or known things: <span class='example'>The cat was black.</span> Exceptions: no article with plural/uncountable nouns in general: <span class='example'>I love coffee.</span> No article with countries, cities, streets: <span class='example'>I live in Paris.</span>",
+            "What are the rules for using 'much', 'many', 'a lot of', 'few', 'little'?": "<span class='term'>Much</span> — uncountable (negative/questions): <span class='example'>I don’t have much time.</span> <span class='term'>Many</span> — countable plural: <span class='example'>There are many students.</span> <span class='term'>A lot of</span> — neutral (affirmative): <span class='example'>She has a lot of friends.</span> <span class='term'>Few</span> — few (negative) countable: <span class='example'>Few people came.</span> <span class='term'>Little</span> — little (negative) uncountable: <span class='example'>I have little money.</span>",
+            "How do you form comparative and superlative adjectives irregularly?": "Irregular forms: <span class='example'>good → better → best</span>, <span class='example'>bad → worse → worst</span>, <span class='example'>far → farther/further → farthest/furthest</span>, <span class='example'>many/much → more → most</span>, <span class='example'>little → less → least</span>. These must be memorized!",
+            "What is the difference between 'who', 'whom', and 'whose'?": "<span class='term'>Who</span> — subject: <span class='example'>Who called you?</span> <span class='term'>Whom</span> — object: <span class='example'>Whom did you call?</span> (Formal). <span class='term'>Whose</span> — possession: <span class='example'>Whose book is this?</span> In informal speech, 'who' often replaces 'whom'.",
+            "Explain the use of relative clauses: defining vs non-defining.": "<span class='term'>Defining</span> — essential info, no commas: <span class='example'>The woman who lives next door is a doctor.</span> (We don’t know which woman). <span class='term'>Non-defining</span> — extra info, with commas: <span class='example'>My brother, who lives in London, is a teacher.</span> (We know who he is).",
+            "What are phrasal verbs? Give 5 common examples with meanings.": "Phrasal verbs = verb + particle. Examples: <span class='example'>give up</span> (quit), <span class='example'>look after</span> (take care of), <span class='example'>run out of</span> (use all), <span class='example'>turn down</span> (reject), <span class='example'>get along with</span> (have a good relationship).",
+            "How do you use 'so', 'such', 'too', and 'enough' correctly?": "<span class='term'>So</span> + adj/adv: <span class='example'>It’s so cold!</span> <span class='term'>Such</span> + a(n) + adj + noun: <span class='example'>It’s such a cold day!</span> <span class='term'>Too</span> = more than needed: <span class='example'>It’s too expensive.</span> <span class='term'>Enough</span> = sufficient: <span class='example'>She is old enough to drive.</span>",
+            "Explain the difference between 'can', 'could', 'be able to' in past and future.": "<span class='term'>Can</span> — present ability. <span class='term'>Could</span> — past ability or polite request. <span class='term'>Was/were able to</span> — succeeded in doing something specific in the past: <span class='example'>I could swim when I was 5.</span> (General) <span class='example'>I was able to swim across the river.</span> (One time). Future: use 'will be able to'.",
+            "What is the subjunctive mood? When is it used after 'suggest', 'demand'?": "Subjunctive = base verb (no -s, no -ed). Used after verbs like suggest, demand, insist, recommend: <span class='example'>She suggested that he leave early.</span> (Not 'leaves'). Also in 'It is important that...' structures: <span class='example'>It is essential that she be on time.</span>",
+            "How do you use 'if only' and 'I wish' to express regret?": "<span class='term'>I wish</span> + Past Simple = regret about present: <span class='example'>I wish I had more time.</span> <span class='term'>I wish</span> + Past Perfect = regret about past: <span class='example'>I wish I had studied harder.</span> <span class='term'>If only</span> = stronger regret: <span class='example'>If only I had listened!</span>",
+            "What is the difference between 'affect' and 'effect'?": "<span class='term'>Affect</span> — verb: to influence. <span class='example'>The weather affected our plans.</span> <span class='term'>Effect</span> — noun: result. <span class='example'>The effect of the storm was severe.</span> (Rarely, 'effect' can be a verb = to cause: <span class='example'>She effected change.</span>)",
+            "Explain the use of 'it' as a formal subject (It is important that...).": "We use 'it' as a dummy subject to avoid a heavy clause at the beginning. <span class='example'>It is important that you arrive on time.</span> (Instead of: That you arrive on time is important.) The real subject is the clause: 'that you arrive on time'.",
+            "How are infinitives and gerunds used after verbs? (e.g., like to do vs like doing)": "Some verbs take only infinitive: <span class='example'>decide, want, promise</span>. Some take only gerund: <span class='example'>enjoy, avoid, suggest</span>. Some take both with little change: <span class='example'>I like swimming.</span> (General) <span class='example'>I like to swim.</span> (Specific occasion). Some change meaning: <span class='example'>stop smoking</span> (quit) vs <span class='example'>stop to smoke</span> (pause to do it).",
+            "What is the difference between 'stop to do' and 'stop doing'?": "<span class='example'>Stop to do</span> — pause one action to begin another: <span class='example'>He stopped to rest.</span> (He was walking, then paused to rest). <span class='example'>Stop doing</span> — cease an action: <span class='example'>He stopped smoking.</span> (He quit smoking).",
+            "Explain the use of 'by' and 'until' in time expressions.": "<span class='term'>By</span> = not later than: <span class='example'>I’ll finish by 5 p.m.</span> (At or before 5). <span class='term'>Until</span> = up to a point: <span class='example'>I worked until 5 p.m.</span> (Started earlier, ended at 5). 'Until' can mean 'not before': <span class='example'>I won’t leave until you come.</span>",
+            "How do you form tag questions for negative sentences?": "If the main clause is negative, the tag is positive: <span class='example'>She isn’t coming, is she?</span> <span class='example'>They haven’t finished, have they?</span> If the main clause is positive, the tag is negative: <span class='example'>You like coffee, don’t you?</span> Remember: 'I am' → 'aren’t I?'",
+            "What is the difference between 'borrow' and 'lend'?": "<span class='term'>Borrow</span> = to receive: <span class='example'>Can I borrow your pen?</span> (I want to take it). <span class='term'>Lend</span> = to give: <span class='example'>Can you lend me your pen?</span> (You give it to me). Think: 'Borrow' = get, 'Lend' = give.",
+            "Explain the use of 'would rather' and 'had better'.": "<span class='term'>Would rather</span> = prefer: <span class='example'>I’d rather stay home.</span> (I prefer to stay). <span class='term'>Had better</span> = strong advice or warning: <span class='example'>You’d better study!</span> (It’s important — or there will be consequences).",
+            "What is the structure of 'the more... the more...' sentences?": "Structure: <span class='example'>The more you practice, the better you become.</span> Both parts use comparative forms. It shows proportional relationship: as one increases, the other increases too. Can be used with adjectives, adverbs, or verbs: <span class='example'>The harder you work, the more you earn.</span>",
+            "How do you use 'no sooner... than...' and 'hardly... when...'?": "Both mean 'immediately after'. Use inversion after 'no sooner' and 'hardly': <span class='example'>No sooner had I arrived than the meeting started.</span> <span class='example'>Hardly had she left when the phone rang.</span> (Past perfect + inversion).",
+            "Explain the difference between 'since' and 'because' in cause-effect.": "<span class='term'>Since</span> — mild reason, often at the beginning: <span class='example'>Since it’s raining, we’ll stay in.</span> <span class='term'>Because</span> — direct, strong reason, often at the end: <span class='example'>We stayed in because it was raining.</span> 'Because' is more emphatic.",
+            "What are synonyms and antonyms for 'happy', 'important', 'difficult'?": "<span class='term'>Happy</span>: Syn: joyful, delighted, content. Ant: sad, miserable. <span class='term'>Important</span>: Syn: significant, crucial, vital. Ant: unimportant, trivial. <span class='term'>Difficult</span>: Syn: hard, challenging, tough. Ant: easy, simple.",
+            "Explain the difference between 'economic' and 'economical'.": "<span class='term'>Economic</span> — related to the economy: <span class='example'>economic growth, economic crisis.</span> <span class='term'>Economical</span> — cost-effective, saving money: <span class='example'>This car is economical — it uses little fuel.</span> (Not the same!).",
+            "What are collocations for 'make', 'do', 'take', 'have'?": "<span class='term'>Make</span>: make a decision, make a mistake, make money. <span class='term'>Do</span>: do homework, do business, do well. <span class='term'>Take</span>: take a break, take a photo, take responsibility. <span class='term'>Have</span>: have a shower, have a meeting, have fun.",
+            "Explain the meaning of idioms: 'break the ice', 'hit the sack', 'cost an arm and a leg'.": "<span class='example'>Break the ice</span> — start a conversation in a tense situation. <span class='example'>Hit the sack</span> — go to bed. <span class='example'>Cost an arm and a leg</span> — be extremely expensive.",
+            "Define: 'ambitious', 'resilient', 'diligent', 'skeptical', 'optimistic'.": "<span class='term'>Ambitious</span> — having strong desire to succeed. <span class='term'>Resilient</span> — able to recover quickly from difficulties. <span class='term'>Diligent</span> — hard-working and careful. <span class='term'>Skeptical</span> — doubtful, not easily convinced. <span class='term'>Optimistic</span> — hopeful and positive about the future.",
+            "What are words with opposite meanings to 'generous', 'honest', 'patient'?": "<span class='term'>Generous</span> → stingy, selfish. <span class='term'>Honest</span> → dishonest, deceitful. <span class='term'>Patient</span> → impatient, restless.",
+            "Explain the difference between 'compliment' and 'complement'.": "<span class='term'>Compliment</span> (noun/verb) — praise: <span class='example'>She gave me a compliment.</span> <span class='term'>Complement</span> (noun/verb) — something that completes or enhances: <span class='example'>Red wine complements cheese.</span>",
+            "What are phrasal verbs related to 'give'? (give up, give in, give away)": "<span class='example'>Give up</span> — quit: <span class='example'>He gave up smoking.</span> <span class='example'>Give in</span> — surrender: <span class='example'>The child gave in and cried.</span> <span class='example'>Give away</span> — donate: <span class='example'>She gave away her old clothes.</span>",
+            "Explain the meaning of 'to be fed up with', 'to be on the verge of', 'to look forward to'.": "<span class='example'>Be fed up with</span> — very annoyed: <span class='example'>I’m fed up with waiting!</span> <span class='example'>Be on the verge of</span> — very close to: <span class='example'>She was on the verge of tears.</span> <span class='example'>Look forward to</span> — eagerly anticipate: <span class='example'>I look forward to seeing you.</span>",
+            "What are synonyms for 'very good' in formal writing?": "Excellent, outstanding, exceptional, superb, remarkable, exemplary, first-rate, top-notch.",
+            "Explain the difference between 'price', 'cost', and 'expense'.": "<span class='term'>Price</span> — amount paid by buyer. <span class='term'>Cost</span> — amount paid by producer or total expenditure. <span class='term'>Expense</span> — money spent (often for business or personal needs). <span class='example'>The price of the car is $20,000. The cost of production was $15,000. Travel expenses were high.</span>",
+            "What is the difference between 'advice' and 'advise'?": "<span class='term'>Advice</span> — noun: <span class='example'>I need your advice.</span> <span class='term'>Advise</span> — verb: <span class='example'>She advised me to study.</span>",
+            "Define: 'sustainable', 'innovation', 'globalization', 'inequality'.": "<span class='term'>Sustainable</span> — able to continue without harming the environment. <span class='term'>Innovation</span> — a new idea, method, or product. <span class='term'>Globalization</span> — the process of increasing interconnectedness of countries. <span class='term'>Inequality</span> — unfair difference in wealth, power, or opportunity.",
+            "What are formal alternatives to 'get', 'find out', 'use'?": "<span class='term'>Get</span> → obtain, acquire. <span class='term'>Find out</span> → discover, determine. <span class='term'>Use</span> → utilize, employ.",
+            "Explain the meaning of 'to be in charge of', 'to be responsible for'.": "<span class='term'>Be in charge of</span> — have authority over: <span class='example'>She is in charge of the team.</span> <span class='term'>Be responsible for</span> — have duty or obligation: <span class='example'>He is responsible for the budget.</span>",
+            "What are common prefixes and suffixes for nouns, verbs, adjectives?": "Prefixes: un-, re-, pre-, dis-, in- (e.g., unhappy, rewrite). Suffixes: -tion/-sion (action, decision), -ment (development), -er/-or (teacher, actor), -able/-ible (possible, readable), -ly (quickly).",
+            "Explain the difference between 'historic' and 'historical'.": "<span class='term'>Historic</span> — famous or important in history: <span class='example'>a historic event</span>. <span class='term'>Historical</span> — related to history: <span class='example'>a historical novel</span> (fiction set in the past).",
+            "What are words related to 'environment': pollution, climate change, carbon footprint?": "<span class='term'>Pollution</span> — contamination of air, water, soil. <span class='term'>Climate change</span> — long-term shifts in temperature and weather. <span class='term'>Carbon footprint</span> — total greenhouse gases emitted by a person or activity.",
+            "Explain the meaning of 'to be under pressure', 'to be overwhelmed', 'to burn out'.": "<span class='example'>Be under pressure</span> — feeling stress from deadlines. <span class='example'>Be overwhelmed</span> — feeling too much to handle. <span class='example'>Burn out</span> — physical/emotional exhaustion from long-term stress.",
+            "What are words for emotions: annoyed, frustrated, delighted, terrified?": "<span class='term'>Annoyed</span> — slightly angry. <span class='term'>Frustrated</span> — upset because you can’t achieve something. <span class='term'>Delighted</span> — very happy. <span class='term'>Terrified</span> — extremely afraid.",
+            "Define: 'prejudice', 'discrimination', 'tolerance', 'diversity'.": "<span class='term'>Prejudice</span> — unfair opinion based on stereotypes. <span class='term'>Discrimination</span> — treating someone unfairly because of race, gender, etc. <span class='term'>Tolerance</span> — accepting differences. <span class='term'>Diversity</span> — variety of backgrounds, cultures, ideas.",
+            "Explain the difference between 'realize' and 'recognize'.": "<span class='term'>Realize</span> — understand something suddenly: <span class='example'>I realized I was wrong.</span> <span class='term'>Recognize</span> — identify someone/something you know: <span class='example'>I recognized her voice.</span>",
+            "What are academic verbs for essays: analyze, evaluate, compare, contrast?": "<span class='term'>Analyze</span> — break down into parts. <span class='term'>Evaluate</span> — judge value or quality. <span class='term'>Compare</span> — find similarities. <span class='term'>Contrast</span> — find differences. Use these verbs to show critical thinking in essays.",
+            "How do you identify the main idea in a reading passage?": "Look for the topic sentence (often first or last). Ask: 'What is the author trying to tell me?' The main idea summarizes the whole passage. Supporting details explain or prove it.",
+            "What is the difference between skimming and scanning?": "<span class='term'>Skimming</span> — reading fast to get the general idea. <span class='term'>Scanning</span> — reading fast to find specific information (dates, names, numbers). Skimming = big picture. Scanning = details.",
+            "How do you write a good topic sentence for a paragraph?": "It should clearly state the paragraph’s main point. It should be specific and support the essay’s thesis. Avoid vague statements. Example: <span class='example'>One major benefit of technology is improved communication.</span>",
+            "Explain the structure of a 5-paragraph essay.": "1. Introduction: Hook + background + thesis statement. 2–4. Body paragraphs: Each has a topic sentence, supporting details, examples. 5. Conclusion: Restate thesis + summarize main points + final thought. No new ideas in conclusion.",
+            "How do you paraphrase a sentence without changing its meaning?": "Use synonyms, change word order, change active to passive, change parts of speech. Example: Original: <span class='example'>The government increased taxes.</span> Paraphrase: <span class='example'>Taxes were raised by the government.</span>",
+            "What are linking words for contrast, cause, and result?": "<span class='term'>Contrast</span>: however, although, whereas, on the other hand. <span class='term'>Cause</span>: because, since, due to, as a result of. <span class='term'>Result</span>: therefore, thus, so, consequently.",
+            "How do you avoid plagiarism when writing a summary?": "Don’t copy text word-for-word. Read, understand, then write in your own words. Cite the source. Use quotation marks for direct quotes. Always paraphrase and credit the original author.",
+            "What is the difference between formal and informal writing?": "<span class='term'>Formal</span>: no contractions (I am, not I’m), no slang, complex vocabulary, passive voice, objective tone. <span class='term'>Informal</span>: contractions, slang, personal pronouns, emotional tone, short sentences.",
+            "How do you write a good conclusion for an essay?": "Restate the thesis in different words. Summarize main points briefly. End with a final thought — prediction, recommendation, or question. Avoid introducing new ideas. Make it memorable.",
+            "What are common mistakes in IELTS Task 2 writing?": "1. Not answering the question fully. 2. Writing too little. 3. Poor paragraphing. 4. Repetition of words. 5. Grammar errors (articles, tenses). 6. Lack of examples. 7. Informal language.",
+            "How do you organize ideas logically in an argumentative essay?": "Start with your position. Present one idea per paragraph. Support each with evidence. Address the counterargument. Use linking words. End with a strong conclusion. Structure: Claim → Evidence → Explanation → Link.",
+            "What is the role of evidence in academic writing?": "Evidence supports your claims and makes your argument credible. Use data, statistics, expert quotes, or examples. Always explain how the evidence proves your point. Don’t just drop quotes — analyze them.",
+            "How do you use quotations correctly in an essay?": "Use quotation marks for direct quotes. Introduce them with your own words. Follow with analysis. Cite the source. Don’t overuse. Example: <span class='example'>As Smith argues, 'Education is the key to equality' (2020). This means...</span>",
+            "What are the key features of a good letter (formal/informal)?": "<span class='term'>Formal</span>: Date, address, salutation ('Dear Sir/Madam'), clear purpose, formal language, closing ('Yours faithfully'), signature. <span class='term'>Informal</span>: Friendly tone, contractions, personal stories, no address, 'Hi', 'Love', signature only.",
+            "How do you write a strong thesis statement?": "It should be clear, specific, and arguable. It answers the essay question. It outlines your main points. Example: <span class='example'>While social media connects people, its negative effects on mental health outweigh its benefits.</span>",
+            "What are cohesive devices in writing?": "Words that link ideas: <span class='term'>Addition</span>: moreover, furthermore. <span class='term'>Contrast</span>: however, although. <span class='term'>Cause/Effect</span>: therefore, as a result. <span class='term'>Sequence</span>: first, next, finally. They make writing flow smoothly.",
+            "How do you use passive voice in academic writing?": "Use passive to focus on the action or result, not the doer: <span class='example'>The experiment was conducted in 2023.</span> (Focus on experiment, not who did it). Common in science: 'It was found that...', 'Data were analyzed...'",
+            "What is the difference between 'summary' and 'paraphrase'?": "<span class='term'>Summary</span> — shorter version, only main ideas. <span class='term'>Paraphrase</span> — restating a passage in your own words, same length. Summary = condense. Paraphrase = rewrite.",
+            "How do you evaluate the reliability of a source?": "Check the author’s credentials, publication date, publisher (academic? blog?), evidence provided, bias, and references. Reliable sources: peer-reviewed journals, university websites, government reports.",
+            "How do you write a good title for an essay or article?": "Be clear, specific, and engaging. Include keywords. Avoid vague phrases. Example: <span class='example'>The Impact of Social Media on Teen Mental Health</span> (Better than: 'Social Media and Teens').",
+            "How do you pronounce 'th' sounds in 'think' and 'this'?": "<span class='term'>/θ/</span> — voiceless: tongue between teeth, no voice: <span class='example'>think, thank, bath</span>. <span class='term'>/ð/</span> — voiced: tongue between teeth, voice on: <span class='example'>this, that, mother</span>. Practice: 'thin' vs 'then'.",
+            "What is the difference between stressed and unstressed syllables?": "Stressed syllables are louder, longer, higher pitch. Unstressed are quieter and shorter. Example: <span class='example'>PHOtograph</span> (stress on 1st), <span class='example'>phoTOgrapher</span> (stress on 2nd). Stress changes meaning: <span class='example'>REcord</span> (noun) vs <span class='example'>reCORD</span> (verb).",
+            "How do you use intonation to show surprise or doubt?": "Rising intonation (↑) for surprise: <span class='example'>You passed the exam?</span> Falling intonation (↓) for certainty: <span class='example'>I passed the exam.</span> For doubt: rising-falling: <span class='example'>I’m not sure...</span>",
+            "What are common linking sounds in spoken English?": "Linking: when words connect: <span class='example'>get it → getit</span>, <span class='example'>an apple → anapple</span>. Elision: dropping sounds: <span class='example'>I don’t know → I dunno</span>. Assimilation: sounds change: <span class='example'>next time → nekstaim</span>.",
+            "How do you ask for clarification in a conversation?": "Say: <span class='example'>Could you repeat that, please?</span> <span class='example'>What do you mean by...?</span> <span class='example'>Do you mean...?</span> <span class='example'>Can you explain that again?</span> Polite and natural.",
+            "How do you express agreement and disagreement politely?": "Agree: <span class='example'>That’s a good point.</span> <span class='example'>I see what you mean.</span> Disagree: <span class='example'>I’m not sure I agree.</span> <span class='example'>I see it differently.</span> <span class='example'>That’s an interesting view, but...</span>",
+            "What are discourse markers in speaking? (e.g., well, you know, actually)": "Words that manage conversation flow. <span class='example'>Well...</span> — pause. <span class='example'>You know...</span> — seek connection. <span class='example'>Actually...</span> — correct a mistake. <span class='example'>Anyway...</span> — change topic. Use them naturally.",
+            "How do you structure a 2-minute speech on a given topic?": "1. Opening (15s): Greet + state topic. 2. Main point 1 (30s): Explain + example. 3. Main point 2 (30s): Explain + example. 4. Conclusion (15s): Summarize + final thought. Practice timing!",
+            "How do you answer 'Why do you think...?' questions in IELTS Speaking?": "Use: <span class='example'>I think because...</span> + reason. <span class='example'>For example...</span> + example. <span class='example'>That’s why...</span> + result. Don’t just say 'yes'. Give reasons and examples.",
+            "What are common fillers in spoken English and how to avoid them?": "Fillers: 'um', 'uh', 'like', 'you know'. Avoid by: pausing silently, breathing, practicing, recording yourself. Replace with: 'well', 'actually', 'in my opinion' — more professional.",
+            "How do you use conditionals in everyday conversation?": "Use real conditionals: <span class='example'>If it rains, I’ll stay home.</span> Hypothetical: <span class='example'>If I had more money, I’d travel.</span> Mixed: <span class='example'>If I had studied harder, I’d have a better job now.</span>",
+            "How do you describe a graph or chart in an oral presentation?": "Start: <span class='example'>This chart shows...</span>. Then: <span class='example'>It increased from X to Y.</span> <span class='example'>There was a sharp rise in...</span> <span class='example'>The highest point was...</span> <span class='example'>In contrast...</span> Use past tense for past data.",
+            "How do you give an opinion with reasons and examples?": "Say: <span class='example'>I believe that...</span> + reason 1 + <span class='example'>for example...</span> + reason 2 + <span class='example'>another example...</span> + <span class='example'>That’s why I think...</span> Always support your opinion.",
+            "What are strategies to improve listening comprehension?": "1. Listen daily (podcasts, songs). 2. Focus on keywords. 3. Predict content. 4. Take notes. 5. Listen for intonation. 6. Repeat and shadow (copy speech). 7. Use subtitles first, then remove.",
+            "How do you take notes while listening to a lecture?": "Use abbreviations (w/, b/c, →). Focus on main ideas, examples, numbers, names. Use symbols: ↑ for increase, ↓ for decrease. Organize by topic. Don’t write everything — capture key points.",
+            "Who is William Shakespeare? Name two of his famous plays.": "<span class='term'>William Shakespeare</span> was an English playwright and poet (1564–1616). He wrote 37 plays and 154 sonnets. Famous plays: <span class='example'>Romeo and Juliet</span>, <span class='example'>Hamlet</span>, <span class='example'>Macbeth</span>, <span class='example'>Othello</span>.",
+            "What is the theme of 'Romeo and Juliet'?": "The theme is <span class='term'>love vs. hate</span>. It explores how intense love between two young people leads to tragedy because of family conflict and societal hatred. It also shows fate, impulsive actions, and the cost of violence.",
+            "What is the significance of 'The Great Gatsby' in American literature?": "It critiques the American Dream — the idea that anyone can succeed through hard work. Gatsby’s rise and fall show that wealth doesn’t bring happiness, and the past cannot be changed. It’s a symbol of the Jazz Age’s excess and disillusionment.",
+            "Who is George Orwell? What is '1984' about?": "<span class='term'>George Orwell</span> was a British writer. <span class='term'>1984</span> is a dystopian novel about a totalitarian society ruled by Big Brother. It explores surveillance, propaganda, thought control, and loss of truth. It’s a warning about authoritarianism.",
+            "What is the difference between a novel and a short story?": "A <span class='term'>novel</span> is long (50,000+ words), has many characters, subplots, and develops themes over time. A <span class='term'>short story</span> is brief (under 10,000 words), focuses on one event, few characters, and one theme — often with a twist ending.",
+            "What is symbolism in literature? Give an example.": "Symbolism = using an object to represent an idea. Example: In 'The Great Gatsby', the green light at the end of Daisy’s dock symbolizes Gatsby’s hopes and dreams for the future.",
+            "What is irony? Explain with an example.": "Irony = when the opposite of what is expected happens. Example: A fire station burns down. Dramatic irony: Audience knows something a character doesn’t — e.g., in 'Romeo and Juliet', we know Juliet is alive, but Romeo thinks she’s dead.",
+            "What is the role of setting in a story?": "Setting = time and place. It creates mood, influences characters’ actions, and reflects themes. Example: In 'Frankenstein', the icy mountains reflect isolation and danger. Setting can be a character itself.",
+            "Who is Harper Lee? What is 'To Kill a Mockingbird' about?": "<span class='term'>Harper Lee</span> was an American author. <span class='term'>To Kill a Mockingbird</span> is about racial injustice in 1930s Alabama. Through the eyes of Scout Finch, it explores prejudice, morality, and compassion. Atticus Finch defends a Black man falsely accused of rape.",
+            "What is the difference between first-person and third-person narration?": "<span class='term'>First-person</span>: Narrator is a character ('I', 'me'). We see only their thoughts. Example: <span class='example'>I felt scared.</span> <span class='term'>Third-person</span>: Narrator is outside ('he', 'she'). Can be limited (one character’s thoughts) or omniscient (knows all thoughts)."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Hi! I'm your AI English tutor for 11th grade. I'll help you master grammar, vocabulary, reading, writing, speaking, and literature. Ask any question — I explain everything clearly with examples!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Sorry, I don't have an answer for this yet.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html> 
