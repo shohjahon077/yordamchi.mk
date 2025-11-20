@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Algebra AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a1035, #2b1a50, #150a28);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0c0c22;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #ff6ec7;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ff6ec7"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 10, 35, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(255, 110, 199, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 0, 15, 0.9);
+            color: #ff6ec7;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 110, 199, 0.3);
+            text-shadow: 0 0 10px rgba(255, 110, 199, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #8a2be2, #a052d9);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #ff6ec7, #ff9ecb);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ff6ec7;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 0, 15, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(255, 110, 199, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ff6ec7 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ff6ec7;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(40, 10, 60, 0.4);
+            color: #ff6ec7;
+            border: 1px solid rgba(255, 110, 199, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(255, 110, 199, 0.25);
+            border-color: #ff6ec7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 110, 199, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23ff6ec7"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Algebra AI Bot</div>
+        <div class="splash-subtext">Yuqori darajadagi tahlil — funksiyalar, hosilalar, integral, kompleks sonlar, ehtimollar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🧮 11-sinf Algebra AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Funksiyalar — 30 ta
+            "Funksiya nima? Uning aniqlanish sohasi va qiymatlar sohasini tushuntiring.",
+            "Chiziqli funksiya qanday ifodalanadi? Grafigi qanday?",
+            "Kvadrat funksiya grafigi — parabola. Uning xossalarini tahlil qiling.",
+            "Kasr-ratsional funksiyalarning grafigi qanday chiziladi?",
+            "Darajali funksiya: y = xⁿ. n > 0 va n < 0 hollari farqi?",
+            "Ildizli funksiya: y = √x. Uning xossalari?",
+            "Ko'rsatkichli funksiya: y = aˣ, a > 0. Uning xossalari?",
+            "Logarifmik funksiya: y = logₐx. Uning xossalari?",
+            "Trigonometrik funksiyalarning davriyligi, juft-toqligi, chegaralanganligi?",
+            "Funksiyalarning monotonligi va ekstremumlari qanday aniqlanadi?",
+            "Juft va toq funksiyalarni qanday farqlaymiz?",
+            "Davriy funksiyalarni qanday aniqlaymiz?",
+            "Teskari funksiya mavjudligi shartini tushuntiring.",
+            "Murakkab funksiya nima? Misollar keltiring.",
+            "Funksiya grafigini parallel ko'chirish, simmetriya, cho'zish qanday amalga oshiriladi?",
+            "Funksiya chegarasi ta’rifi nima? (ε-δ)",
+            "Funksiya uzluksizligi shartlari?",
+            "Chegarasi cheksiz bo'lgan funksiya qanday ifodalanadi?",
+            "Asimptotalar nima? Gorizontal, vertikal, yonilma asimptotalarni qanday topamiz?",
+            "Funksiya grafigini tahlil qilish uchun qanday bosqichlarni bajarish kerak?",
+            "O'suvchi va kamayuvchi funksiyalarni hosila orqali qanday aniqlaymiz?",
+            "Ekstremum nuqtalari va stasionar nuqtalar farqi?",
+            "Funksiyaning o'rtacha tezligi va oniy tezligi tushunchasi qanday bog'langan?",
+            "Funksiya grafigida burilish nuqtalari qanday aniqlanadi?",
+            "Funksiyaning konkavlik va konveksligi qanday aniqlanadi?",
+            "Funksiya grafigini to'liq tahlil qilish algoritmini keltiring.",
+            "Parametrli funksiyalarni tahlil qilish qanday amalga oshiriladi?",
+            "Funksiyaning qiymatlar sohasini analitik usulda qanday topish mumkin?",
+            "Funksiyaning aniqlanish sohasini qanday topamiz?",
+            "Funksiyalarni tengsizliklar orqali ifodalash nima uchun kerak?",
+
+            // Hosila — 30 ta
+            "Hosila nima? Uning fizik va geometrik ma'nosi?",
+            "Hosila ta’rifi (limit orqali).",
+            "Hosilani hisoblash qoidalarini keltiring.",
+            "Ko'paytma va bo'linma hosilasini qanday hisoblaymiz?",
+            "Murakkab funksiya hosilasini qanday topamiz?",
+            "Darajali funksiya hosilasi: (xⁿ)’ = ?",
+            "Ko'rsatkichli funksiya hosilasi: (aˣ)’ = ?",
+            "Logarifmik funksiya hosilasi: (ln x)’ = ?",
+            "Trigonometrik funksiyalarning hosilalari?",
+            "Teskari trigonometrik funksiyalarning hosilalari?",
+            "Ikkinchi tartibli hosilaning ma'nosi nima?",
+            "Funksiyaning o'sish va kamayish oraliqlarini hosila orqali qanday aniqlaymiz?",
+            "Maksimum va minimum nuqtalarni hosila orqali qanday topamiz?",
+            "Differensial nima? Uning geometrik ma'nosi?",
+            "Hosilani taqribiy hisoblashda differensial qanday ishlatiladi?",
+            "Oshkor va oshkormas funksiyalarning hosilasi?",
+            "Parametrli berilgan funksiyaning hosilasi?",
+            "Yuqori tartibli hosilalarni qanday hisoblaymiz?",
+            "Lagrange teoremasi nima? Uni qanday qo'llash mumkin?",
+            "Lopital qoidasi qachon qo'llaniladi?",
+            "Hosila orqali tenglamalar yechish mumkinmi?",
+            "Funksiyaning grafigiga o'tkazilgan urinma tenglamasini qanday yozamiz?",
+            "Normal tenglamasi nima?",
+            "Hosilani iqtisodiyotda qanday qo'llash mumkin?",
+            "Tezlik va tezlanish orasidagi bog'liqlik qanday?",
+            "Hosila yordamida grafikni qanday taxmin qilish mumkin?",
+            "Funksiyaning tekisligini hosila orqali qanday aniqlaymiz?",
+            "Agar hosila doim nolga teng bo'lsa, funksiya qanday bo'ladi?",
+            "Hosila ijobiy bo'lsa, funksiya qanday o'zgaradi?",
+            "Hosila manfiy bo'lsa, funksiya qanday o'zgaradi?",
+
+            // Integral hisob — 20 ta
+            "Integral nima? Uning geometrik ma'nosi?",
+            "Aniqsiz integral xossalari?",
+            "Integral jadvalini keltiring (asosiy funksiyalar uchun).",
+            "Almashtirish usuli bilan integral qanday hisoblanadi?",
+            "Bo'laklab integrallash usuli qanday ishlaydi?",
+            "Trigonometrik funksiyalarni integrallash qanday amalga oshiriladi?",
+            "Kasr-ratsional funksiyalarni integrallash qanday?",
+            "Aniq integral nima? Nyuton-Leybnits formulasi?",
+            "Aniq integral yordamida yuza qanday hisoblanadi?",
+            "Egri chiziqli trapetsiyaning yuzini hisoblash qanday amalga oshiriladi?",
+            "Ikki funksiya o'rtasidagi yuzani qanday topish mumkin?",
+            "Aylana, ellips, parabola yuzini integral yordamida qanday hisoblaymiz?",
+            "Jism hajmini integral yordamida qanday hisoblaymiz?",
+            "Aylanma jism hajmini hisoblash qanday amalga oshiriladi?",
+            "Egri chiziq uzunligini integral yordamida qanday hisoblaymiz?",
+            "Aniq integralning taqribiy hisoblash usullari (trapesiya, Simpson)?",
+            "Integral yordamida fizik masalalarni qanday yechish mumkin?",
+            "Harakatlanayotgan jism yo'lini integral yordamida qanday topamiz?",
+            "Energiya, ish kabi kattaliklarni integral yordamida qanday hisoblaymiz?",
+            "Xususiy integral va umumiy yechim farqi?",
+
+            // Kompleks sonlar — 15 ta
+            "Kompleks son nima? Uning algebraik shakli?",
+            "Mнимiy birlik nima? i² = ?",
+            "Kompleks sonlarni qo'shish, ayirish, ko'paytirish, bo'lish qanday amalga oshiriladi?",
+            "Kompleks sonning moduli va argumenti nima?",
+            "Kompleks sonning trigonometrik shakli?",
+            "Moivre formulasi nima uchun kerak?",
+            "Kompleks sonning n-darajali ildizi qanday hisoblanadi?",
+            "Kompleks sonlar tekisligi nima?",
+            "Euler formulasi: e^(ix) = cos x + i sin x. Uning ahamiyati?",
+            "Kvadrat tenglamalarda haqiqiy ildiz bo'lmasa, kompleks ildizlar qanday topiladi?",
+            "Kompleks sonlarni darajaga ko'tarish qanday amalga oshiriladi?",
+            "Kompleks sonlarda tenglamalarni yechish qanday amalga oshiriladi?",
+            "Kompleks sonlarni grafikda qanday ifodalaymiz?",
+            "Kon'yugat kompleks son nima?",
+            "Kompleks sonlar qo'llaniladigan sohalarni keltiring.",
+
+            // Ehtimollar nazariyasi — 15 ta
+            "Ehtimollik nima? Tushuncha va uning ahamiyati.",
+            "Hodisaning ehtimoli qanday hisoblanadi?",
+            "Tasodifiy hodisa, muqarrar hodisa, imkonsiz hodisa farqi?",
+            "Qo'shish teoremasi: birgalikda sodir bo'lmaydigan hodisalar uchun.",
+            "Ko'paytirish teoremasi: bog'liq va bog'liqsiz hodisalar uchun.",
+            "Shartli ehtimollik nima? Formulasi?",
+            "To'liq ehtimollik formulasi — Bayes teoremasi bilan bog'liqligi?",
+            "Bernulli sxemasi nima? U qanday qo'llaniladi?",
+            "Tasodifiy miqdor nima? Uning taqsimot qonuni?",
+            "Matematik kutish nima? U qanday hisoblanadi?",
+            "Dispersiya va o'rtacha kvadratik chetlanish nima?",
+            "Binomial taqsimot qachon qo'llaniladi?",
+            "Puasson taqsimoti qanday hodisalarga qo'llaniladi?",
+            "Normal taqsimotning xossalari?",
+            "Statistik ehtimollik va klassik ehtimollik farqi?",
+
+            // Qo'shimcha murakkab mavzular — 10 ta
+            "Tenglamalar sistemasini matritsalar yordamida qanday yechish mumkin?",
+            "Determinantlar va ularning xossalari?",
+            "Vektorlarning skalyar va vektor ko'paytmasi — qo'llanilishi?",
+            "Limitlarni Lopital qoidasiz qanday hisoblash mumkin?",
+            "Funksiyaning Taylor qatoriga yoyilishi nima uchun kerak?",
+            "Makloren qatori nima?",
+            "Grafiklarni hosila va ikkinchi hosila yordamida qanday taxmin qilish mumkin?",
+            "Parametrli tenglamalar orqali berilgan egri chiziq uzunligi?",
+            "O'zgaruvchan oqimda integral qanday hisoblanadi?",
+            "Funksiya chegarasining chegarasi mavjudligi shartlari?"
+        ];
+
+        const responses = {
+            "Funksiya nima? Uning aniqlanish sohasi va qiymatlar sohasini tushuntiring.": "<span class='math'>Funksiya</span> — bu X to'plamdagi har bir <i>x</i> elementga Y to'plamdan bitta y elementni mos qiluvchi qoidadir. <b>Aniqlanish sohasi</b> (D(f)) — funksiya aniqlangan barcha <i>x</i> qiymatlari. <b>Qiymatlar sohasi</b> (E(f)) — funksiya qabul qiluvchi barcha <i>y</i> qiymatlari.",
+            "Chiziqli funksiya qanday ifodalanadi? Grafigi qanday?": "<span class='math'>y = kx + b</span> — chiziqli funksiya. <i>k</i> — burchak koeffitsienti, <i>b</i> — OY o'qini kesish nuqtasi. Grafigi to'g'ri chiziq. Agar <i>k > 0</i> — o'suvchi, <i>k < 0</i> — kamayuvchi.",
+            "Kvadrat funksiya grafigi — parabola. Uning xossalarini tahlil qiling.": "<span class='math'>y = ax² + bx + c</span>. Agar <i>a > 0</i> — tarmoqlari yuqoriga, <i>a < 0</i> — pastga qaragan parabola. Uchi nuqtada: <i>x₀ = -b/(2a)</i>, <i>y₀ = f(x₀)</i>. Simmetriya o'qi: <i>x = x₀</i>.",
+            "Kasr-ratsional funksiyalarning grafigi qanday chiziladi?": "Oldin vertikal asimptotalar (maxraj nolga aylanadigan <i>x</i>), gorizontal/yonilma asimptotalarni topamiz. So'ngra nollari, ishorasi, ekstremumlari, monotonlik oraliqlarini aniqlab, grafigini chizamiz.",
+            "Darajali funksiya: y = xⁿ. n > 0 va n < 0 hollari farqi?": "Agar <i>n</i> juft — <i>y = xⁿ</i> juft funksiya, <i>n</i> toq — toq funksiya. <i>n > 0</i> — 0 dan o'tadi, <i>n < 0</i> — 0 da aniqlanmagan, giperbola shaklida.",
+            "Ildizli funksiya: y = √x. Uning xossalari?": "Aniqlanish sohasi: <i>x ≥ 0</i>. Qiymatlar sohasi: <i>y ≥ 0</i>. O'suvchi, konkav (pastga egilgan), (0,0) dan o'tadi.",
+            "Ko'rsatkichli funksiya: y = aˣ, a > 0. Uning xossalari?": "<i>a > 1</i> — o'suvchi, <i>0 < a < 1</i> — kamayuvchi. Aniqlanish sohasi: ℝ, qiymatlar sohasi: (0, +∞). OX o'qi gorizontal asimptota. (0,1) nuqtadan o'tadi.",
+            "Logarifmik funksiya: y = logₐx. Uning xossalari?": "<i>a > 1</i> — o'suvchi, <i>0 < a < 1</i> — kamayuvchi. Aniqlanish sohasi: (0, +∞), qiymatlar sohasi: ℝ. OY o'qi vertikal asimptota. (1,0) nuqtadan o'tadi.",
+            "Trigonometrik funksiyalarning davriyligi, juft-toqligi, chegaralanganligi?": "<i>sin x, cos x</i> — 2π davriy, <i>sin</i> — toq, <i>cos</i> — juft. <i>tg x</i> — π davriy, toq. Barchasi chegaralangan, faqat <i>tg x</i> chegaralanmagan.",
+            "Funksiyalarning monotonligi va ekstremumlari qanday aniqlanadi?": "Hosila orqali: <i>f’(x) > 0</i> — o'suvchi, <i>f’(x) < 0</i> — kamayuvchi. Agar <i>f’(x)</i> ishorasini o'zgartirsa — ekstremum nuqta (maksimum yoki minimum).",
+            "Juft va toq funksiyalarni qanday farqlaymiz?": "Agar <i>f(-x) = f(x)</i> — juft (grafik OY ga nisbatan simmetrik). Agar <i>f(-x) = -f(x)</i> — toq (grafik koordinata boshiga nisbatan simmetrik).",
+            "Davriy funksiyalarni qanday aniqlaymiz?": "Agar <i>f(x + T) = f(x)</i> bo'lsa, T — davr. Eng kichik musbat T — asosiy davr. Masalan: <i>sin(x + 2π) = sin x</i>.",
+            "Teskari funksiya mavjudligi shartini tushuntiring.": "Funksiya biyektiv (bitta qiymatga bitta argument) bo'lishi kerak. Ko'pincha — faqat monoton (doim o'suvchi yoki kamayuvchi) funksiyalarga teskari funksiya mavjud.",
+            "Murakkab funksiya nima? Misollar keltiring.": "<span class='math'>y = f(g(x))</span>. Masalan: <i>y = sin(x²)</i> — tashqi funksiya <i>sin u</i>, ichki funksiya <i>u = x²</i>.",
+            "Funksiya grafigini parallel ko'chirish, simmetriya, cho'zish qanday amalga oshiriladi?": "<i>y = f(x - a) + b</i> — OX bo'ylab <i>a</i>, OY bo'ylab <i>b</i> ga siljitish. <i>y = -f(x)</i> — OX ga nisbatan simmetriya. <i>y = k·f(x)</i> — OY bo'ylab <i>k</i> marta cho'zish.",
+            "Funksiya chegarasi ta’rifi nima? (ε-δ)": "Agar ixtiyoriy ε > 0 uchun shunday δ > 0 topilsaki, |x - a| < δ da |f(x) - L| < ε bo'lsa, demak <i>limₓ→ₐ f(x) = L</i>.",
+            "Funksiya uzluksizligi shartlari?": "1) <i>f(a)</i> mavjud; 2) <i>limₓ→ₐ f(x)</i> mavjud; 3) <i>limₓ→ₐ f(x) = f(a)</i>.",
+            "Chegarasi cheksiz bo'lgan funksiya qanday ifodalanadi?": "Masalan: <i>limₓ→₀ 1/x² = +∞</i>. Bu funksiya <i>x → 0</i> da chegaraga ega emas, lekin cheksiz o'sadi.",
+            "Asimptotalar nima? Gorizontal, vertikal, yonilma asimptotalarni qanday topamiz?": "Vertikal — <i>limₓ→ₐ f(x) = ±∞</i>. Gorizontal — <i>limₓ→±∞ f(x) = L</i>. Yonilma — <i>limₓ→±∞ [f(x) - (kx + b)] = 0</i>, bunda <i>k = lim f(x)/x</i>, <i>b = lim [f(x) - kx]</i>.",
+            "Funksiya grafigini tahlil qilish uchun qanday bosqichlarni bajarish kerak?": "1) D(f), E(f); 2) juft-toqligi, davriyligi; 3) asimptotalar; 4) nollari; 5) ishorasi; 6) hosila → monotonlik, ekstremum; 7) ikkinchi hosila → burilish nuqtalari, konkavlik.",
+            "O'suvchi va kamayuvchi funksiyalarni hosila orqali qanday aniqlaymiz?": "Agar <i>f’(x) > 0</i> — o'suvchi, <i>f’(x) < 0</i> — kamayuvchi. Agar <i>f’(x) = 0</i> — stasionar nuqta (ekstremum bo'lishi ham, bo'lmasligi ham mumkin).",
+            "Ekstremum nuqtalari va stasionar nuqtalar farqi?": "Stasionar nuqta — <i>f’(x) = 0</i>. Ekstremum nuqta — stasionar nuqta, lekin hosila ishorasini o'zgartirsa. Har bir ekstremum stasionar, lekin har bir stasionar ekstremum emas.",
+            "Funksiyaning o'rtacha tezligi va oniy tezligi tushunchasi qanday bog'langan?": "O'rtacha tezlik — <i>Δs/Δt</i>. Oniy tezlik — <i>lim_(Δt→0) Δs/Δt = s’(t)</i> — ya'ni yo'lning hosilasi.",
+            "Funksiya grafigida burilish nuqtalari qanday aniqlanadi?": "Ikkinchi hosila <i>f''(x)</i> nolga teng yoki mavjud emas bo'lgan nuqtada, agar <i>f''(x)</i> ishorasini o'zgartirsa — burilish nuqtasi.",
+            "Funksiyaning konkavlik va konveksligi qanday aniqlanadi?": "Agar <i>f''(x) > 0</i> — konveks (yuqoriga egilgan), <i>f''(x) < 0</i> — konkav (pastga egilgan).",
+            "Funksiya grafigini to'liq tahlil qilish algoritmini keltiring.": "Yuqorida aytib o'tilgani kabi: D(f), E(f), simmetriya, asimptotalar, nollari, ishorasi, hosila → monotonlik/ekstremum, ikkinchi hosila → burilish/konkavlik. Keyin nuqtalarni hisoblab, grafigini chizamiz.",
+            "Parametrli funksiyalarni tahlil qilish qanday amalga oshiriladi?": "Agar <i>x = φ(t), y = ψ(t)</i>, unda <i>dy/dx = (dy/dt) / (dx/dt)</i>. So'ngra odatdagidek tahlil qilinadi.",
+            "Funksiyaning qiymatlar sohasini analitik usulda qanday topish mumkin?": "1) Tenglama <i>y = f(x)</i> dan <i>x</i> ni <i>y</i> orqali ifodalash; 2) hosil bo'lgan tenglamada <i>x</i> haqiqiy bo'lishi uchun <i>y</i> chegaralarni aniqlash; 3) diskriminant ≥ 0 sharti orqali.",
+            "Funksiyaning aniqlanish sohasini qanday topamiz?": "Maxrajdagi ifoda ≠ 0, ildiz ostidagi ifoda ≥ 0, logarifm argumenti > 0 — shu qoidalarga asoslanamiz.",
+            "Funksiyalarni tengsizliklar orqali ifodalash nima uchun kerak?": "Funksiyaning ishorasini, monotonligini, qiymatlar sohasini aniqlashda, shuningdek, grafik chizishda foydali.",
+
+            "Hosila nima? Uning fizik va geometrik ma'nosi?": "Hosila — funksiyaning oniy o'zgarish tezligi. Fizik ma'nosi — tezlik. Geometrik ma'nosi — grafiga o'tkazilgan urinma burchak koeffitsienti.",
+            "Hosila ta’rifi (limit orqali).": "<i>f’(x) = lim_(h→0) [f(x + h) - f(x)] / h</i>",
+            "Hosilani hisoblash qoidalarini keltiring.": "(u ± v)’ = u’ ± v’; (uv)’ = u’v + uv’; (u/v)’ = (u’v - uv’) / v².",
+            "Ko'paytma va bo'linma hosilasini qanday hisoblaymiz?": "Yuqorida keltirilgan qoidalar asosida. Masalan: (x²·sin x)’ = 2x·sin x + x²·cos x.",
+            "Murakkab funksiya hosilasini qanday topamiz?": "Tashqi funksiya hosilasini ichki funksiya bo'yicha ko'paytiramiz: <i>d/dx f(g(x)) = f’(g(x))·g’(x)</i>.",
+            "Darajali funksiya hosilasi: (xⁿ)’ = ?": "<i>(xⁿ)’ = n·xⁿ⁻¹</i>",
+            "Ko'rsatkichli funksiya hosilasi: (aˣ)’ = ?": "<i>(aˣ)’ = aˣ·ln a</i>. Agar <i>a = e</i>, unda <i>(eˣ)’ = eˣ</i>.",
+            "Logarifmik funksiya hosilasi: (ln x)’ = ?": "<i>(ln x)’ = 1/x</i>; <i>(logₐx)’ = 1/(x ln a)</i>.",
+            "Trigonometrik funksiyalarning hosilalari?": "(sin x)’ = cos x; (cos x)’ = -sin x; (tg x)’ = 1/cos²x; (ctg x)’ = -1/sin²x.",
+            "Teskari trigonometrik funksiyalarning hosilalari?": "(arcsin x)’ = 1/√(1 - x²); (arccos x)’ = -1/√(1 - x²); (arctg x)’ = 1/(1 + x²).",
+            "Ikkinchi tartibli hosilaning ma'nosi nima?": "Funksiyaning o'zgarish tezligining o'zgarish tezligi — tezlanish. Geometrik jihatdan — grafigning egilish darajasini ko'rsatadi.",
+            "Funksiyaning o'sish va kamayish oraliqlarini hosila orqali qanday aniqlaymiz?": "Hosilani nolga tenglab, interval qilamiz. Har bir intervalda ishorasini tekshiramiz.",
+            "Maksimum va minimum nuqtalarni hosila orqali qanday topamiz?": "Stasionar nuqtalarda hosila ishorasini o'zgartirishini tekshiramiz: + dan - ga — maksimum, - dan + ga — minimum.",
+            "Differensial nima? Uning geometrik ma'nosi?": "<i>dy = f’(x)·dx</i>. U — funksiya orttirmasining chiziqli asosiy qismi. Geometrik jihatdan — urinma bo'ylab o'tilgan yo'l.",
+            "Hosilani taqribiy hisoblashda differensial qanday ishlatiladi?": "<i>f(x₀ + Δx) ≈ f(x₀) + f’(x₀)·Δx</i>.",
+            "Oshkor va oshkormas funksiyalarning hosilasi?": "Oshkor: <i>y = f(x)</i>. Oshkormas: <i>F(x, y) = 0</i>. Oshkormasda <i>dy/dx = -Fₓ/Fᵧ</i>.",
+            "Parametrli berilgan funksiyaning hosilasi?": "<i>dy/dx = (dy/dt) / (dx/dt)</i>.",
+            "Yuqori tartibli hosilalarni qanday hisoblaymiz?": "Birinchi hosilani yana hosilasini olamiz: <i>f''(x) = (f’(x))’</i> va h.k.",
+            "Lagrange teoremasi nima? Uni qanday qo'llash mumkin?": "Agar <i>f</i> [a,b] da uzluksiz, (a,b) da hosilaga ega bo'lsa, unda <i>f(b) - f(a) = f’(c)(b - a)</i> bo'ladigan <i>c ∈ (a,b)</i> mavjud.",
+            "Lopital qoidasi qachon qo'llaniladi?": "Chegarada <i>0/0</i> yoki <i>∞/∞</i> shakli bo'lsa: <i>lim f/g = lim f’/g’</i>.",
+            "Hosila orqali tenglamalar yechish mumkinmi?": "To'g'ridan-to'g'ri emas, lekin tenglamaning yechimlar sonini, ildizlarni taxmin qilishda, funksiyaning monotonligini tekshirishda foydalaniladi.",
+            "Funksiyaning grafigiga o'tkazilgan urinma tenglamasini qanday yozamiz?": "<i>y = f(x₀) + f’(x₀)(x - x₀)</i>.",
+            "Normal tenglamasi nima?": "Urinnaga perpendikulyar to'g'ri chiziq: <i>y = f(x₀) - (1/f’(x₀))(x - x₀)</i>.",
+            "Hosilani iqtisodiyotda qanday qo'llash mumkin?": "Chegaraviy daromad, chegaraviy xarajat, foyda maksimallashtirish — barchasi hosila orqali hisoblanadi.",
+            "Tezlik va tezlanish orasidagi bog'liqlik qanday?": "Tezlik — yo'lning hosilasi; tezlanish — tezlikning hosilasi (ya’ni yo'lning ikkinchi hosilasi).",
+            "Hosila yordamida grafikni qanday taxmin qilish mumkin?": "Hosila ishorasidan o'sish/kamayish, nollardan ekstremum, ikkinchi hosiladan burilish nuqtalari aniqlanadi.",
+            "Funksiyaning tekisligini hosila orqali qanday aniqlaymiz?": "Agar <i>|f’(x)| ≤ k</i> (k < 1) bo'lsa, funksiya tekis (Lipschits sharti).",
+            "Agar hosila doim nolga teng bo'lsa, funksiya qanday bo'ladi?": "Doim o'zgarmas (konstanta).",
+            "Hosila ijobiy bo'lsa, funksiya qanday o'zgaradi?": "Funksiya o'sadi.",
+            "Hosila manfiy bo'lsa, funksiya qanday o'zgaradi?": "Funksiya kamayadi.",
+
+            "Integral nima? Uning geometrik ma'nosi?": "Integral — funksiya ostidagi yuzani ifodalaydi. Aniqsiz integral — barcha boshlang'ich funksiyalarni ifodalaydi.",
+            "Aniqsiz integral xossalari?": "1) <i>∫(f + g) dx = ∫f dx + ∫g dx</i>; 2) <i>∫k·f dx = k·∫f dx</i>; 3) <i>d/dx (∫f dx) = f(x)</i>.",
+            "Integral jadvalini keltiring (asosiy funksiyalar uchun).": "<i>∫xⁿ dx = xⁿ⁺¹/(n+1) + C</i> (n ≠ -1); <i>∫1/x dx = ln|x| + C</i>; <i>∫eˣ dx = eˣ + C</i>; <i>∫sin x dx = -cos x + C</i>; <i>∫cos x dx = sin x + C</i>.",
+            "Almashtirish usuli bilan integral qanday hisoblanadi?": "<i>∫f(g(x))·g’(x) dx = ∫f(u) du</i>, bunda <i>u = g(x)</i>.",
+            "Bo'laklab integrallash usuli qanday ishlaydi?": "<i>∫u dv = uv - ∫v du</i>. Masalan: <i>∫x·eˣ dx = x·eˣ - ∫eˣ dx = x·eˣ - eˣ + C</i>.",
+            "Trigonometrik funksiyalarni integrallash qanday amalga oshiriladi?": "Darajasini pasaytirish, yig'indi/formulalar, almashtirish yoki bo'laklab integrallash usullari qo'llaniladi.",
+            "Kasr-ratsional funksiyalarni integrallash qanday?": "Algebraviy yoki maxrajni ko'paytuvchilarga ajratib, qismli kasrlarga yoyish orqali.",
+            "Aniq integral nima? Nyuton-Leybnits formulasi?": "<i>∫ₐᵇ f(x) dx = F(b) - F(a)</i>, bunda <i>F’(x) = f(x)</i>.",
+            "Aniq integral yordamida yuza qanday hisoblanadi?": "<i>S = ∫ₐᵇ f(x) dx</i> — OX o'qi, x=a, x=b va y=f(x) chegaralagan yuza.",
+            "Egri chiziqli trapetsiyaning yuzini hisoblash qanday amalga oshiriladi?": "Yuqoridagi formula asosida hisoblanadi.",
+            "Ikki funksiya o'rtasidagi yuzani qanday topish mumkin?": "<i>S = ∫ₐᵇ |f(x) - g(x)| dx</i>.",
+            "Aylana, ellips, parabola yuzini integral yordamida qanday hisoblaymiz?": "Tenglamasini y = f(x) ko'rinishiga keltirib, simmetriyadan foydalanamiz.",
+            "Jism hajmini integral yordamida qanday hisoblaymiz?": "<i>V = ∫ₐᵇ S(x) dx</i>, bunda <i>S(x)</i> — kesim yuzi.",
+            "Aylanma jism hajmini hisoblash qanday amalga oshiriladi?": "Disk usuli: <i>V = π∫ₐᵇ [f(x)]² dx</i>.",
+            "Egri chiziq uzunligini integral yordamida qanday hisoblaymiz?": "<i>L = ∫ₐᵇ √(1 + [f’(x)]²) dx</i>.",
+            "Aniq integralning taqribiy hisoblash usullari (trapesiya, Simpson)?": "Trapesiya: <i>∫ₐᵇ f ≈ (b-a)/n · [ (f₀+fₙ)/2 + f₁+...+fₙ₋₁ ]</i>. Simpson: to'rtburchak o'rniga parabola.",
+            "Integral yordamida fizik masalalarni qanday yechish mumkin?": "Yo'l = ∫v(t)dt, ish = ∫F(x)dx, elektr zaryad = ∫I(t)dt.",
+            "Harakatlanayotgan jism yo'lini integral yordamida qanday topamiz?": "<i>s(t) = s₀ + ∫₀ᵗ v(τ) dτ</i>.",
+            "Energiya, ish kabi kattaliklarni integral yordamida qanday hisoblaymiz?": "Ish = ∫F·dx, potensial energiya = -∫F·dx.",
+            "Xususiy integral va umumiy yechim farqi?": "Umumiy yechim — ixtiyoriy o'zgarmasli. Xususiy yechim — boshlang'ich shartlar asosida topilgan yechim.",
+
+            "Kompleks son nima? Uning algebraik shakli?": "<i>z = a + bi</i>, bunda <i>a, b ∈ ℝ</i>, <i>i² = -1</i>.",
+            "Mнимiy birlik nima? i² = ?": "<i>i</i> — mavhum birlik, <i>i² = -1</i>.",
+            "Kompleks sonlarni qo'shish, ayirish, ko'paytirish, bo'lish qanday amalga oshiriladi?": "Qo'shish/ayirish: <i>(a+bi) ± (c+di) = (a±c) + (b±d)i</i>. Ko'paytirish: <i>(a+bi)(c+di) = (ac - bd) + (ad + bc)i</i>. Bo'lish: kon'yugatdan foydalanib.",
+            "Kompleks sonning moduli va argumenti nima?": "Modul: <i>|z| = √(a² + b²)</i>. Argument: <i>arg z = arctg(b/a)</i> (kvadrantga qarab).",
+            "Kompleks sonning trigonometrik shakli?": "<i>z = r(cos φ + i sin φ)</i>, bunda <i>r = |z|</i>, <i>φ = arg z</i>.",
+            "Moivre formulasi nima uchun kerak?": "<i>[r(cos φ + i sin φ)]ⁿ = rⁿ(cos nφ + i sin nφ)</i> — darajaga ko'tarish uchun.",
+            "Kompleks sonning n-darajali ildizi qanday hisoblanadi?": "<i>ⁿ√z = ⁿ√r [ cos((φ + 2kπ)/n) + i sin((φ + 2kπ)/n) ]</i>, k = 0,1,...,n-1.",
+            "Kompleks sonlar tekisligi nima?": "Gorizontalka — haqiqiy o'q (Re), vertikalka — mavhum o'q (Im). Har bir son — tekislikdagi nuqta.",
+            "Euler formulasi: e^(ix) = cos x + i sin x. Uning ahamiyati?": "Trigonometrik va ko'rsatkichli funksiyalarni bog'laydi. Hisoblashlarni sodda qiladi.",
+            "Kvadrat tenglamalarda haqiqiy ildiz bo'lmasa, kompleks ildizlar qanday topiladi?": "Diskriminant manfiy bo'lsa: <i>x = [-b ± i√|D|]/(2a)</i>.",
+            "Kompleks sonlarni darajaga ko'tarish qanday amalga oshiriladi?": "Trigonometrik shaklda Moivre formulasi orqali.",
+            "Kompleks sonlarda tenglamalarni yechish qanday amalga oshiriladi?": "Algebraik shaklda yoki trigonometrik shaklda ifodalab, tenglamani yechamiz.",
+            "Kompleks sonlarni grafikda qanday ifodalaymiz?": "Kompleks tekislikda nuqta sifatida: (a, b) → a + bi.",
+            "Kon'yugat kompleks son nima?": "<i>z = a + bi</i> uchun <i>z̄ = a - bi</i>. Modullari bir xil, argumentlari qarama-qarshi.",
+            "Kompleks sonlar qo'llaniladigan sohalarni keltiring.": "Elektrotexnika, kvant mexanikasi, signalni qayta ishlash, gidrodinamika, boshqaruv nazariyasi.",
+
+            "Ehtimollik nima? Tushuncha va uning ahamiyati.": "Tasodifiy hodisaning sodir bo'lish ehtimoli — 0 va 1 orasidagi son. U hodisaning qandaylik darajasini ifodalaydi.",
+            "Hodisaning ehtimoli qanday hisoblanadi?": "<i>P(A) = m/n</i>, bunda <i>m</i> — A hodisa yaxshi natijalar soni, <i>n</i> — barcha teng ehtimolli natijalar soni.",
+            "Tasodifiy hodisa, muqarrar hodisa, imkonsiz hodisa farqi?": "Tasodifiy — sodir bo'lishi ham, bo'lmasligi ham mumkin. Muqarrar — doim sodir bo'ladi (P=1). Imkonsiz — hech qachon sodir bo'lmaydi (P=0).",
+            "Qo'shish teoremasi: birgalikda sodir bo'lmaydigan hodisalar uchun.": "<i>P(A ∪ B) = P(A) + P(B)</i>, agar <i>A ∩ B = ∅</i>.",
+            "Ko'paytirish teoremasi: bog'liq va bog'liqsiz hodisalar uchun.": "Bog'liqsiz: <i>P(A ∩ B) = P(A)·P(B)</i>. Bog'liq: <i>P(A ∩ B) = P(A)·P(B|A)</i>.",
+            "Shartli ehtimollik nima? Formulasi?": "<i>P(B|A) = P(A ∩ B) / P(A)</i>, agar <i>P(A) > 0</i>.",
+            "To'liq ehtimollik formulasi — Bayes teoremasi bilan bog'liqligi?": "To'liq: <i>P(A) = Σ P(Hᵢ)·P(A|Hᵢ)</i>. Bayes: <i>P(Hᵢ|A) = [P(Hᵢ)·P(A|Hᵢ)] / P(A)</i>.",
+            "Bernulli sxemasi nima? U qanday qo'llaniladi?": "n marta mustaqil tajriba, har birida hodisa ehtimoli p. <i>Pₙ(k) = Cₙᵏ·pᵏ·(1-p)ⁿ⁻ᵏ</i>.",
+            "Tasodifiy miqdor nima? Uning taqsimot qonuni?": "Qiymatlari tasodifiy bo'lgan kattalik. Taqsimot qonuni — qiymatlar va ularning ehtimollarini ifodalaydi.",
+            "Matematik kutish nima? U qanday hisoblanadi?": "<i>M(X) = Σ xᵢ·pᵢ</i> — o'rtacha qiymat.",
+            "Dispersiya va o'rtacha kvadratik chetlanish nima?": "<i>D(X) = M[(X - M(X))²] = M(X²) - [M(X)]²</i>. O'rtacha kvadratik: <i>σ = √D</i>.",
+            "Binomial taqsimot qachon qo'llaniladi?": "Bernulli sxemasida — n marta tajriba, k marta muvaffaqiyat.",
+            "Puasson taqsimoti qanday hodisalarga qo'llaniladi?": "Kam sodir bo'ladigan hodisalar uchun: radiatsiya zarralari, chaqiruvlar soni.",
+            "Normal taqsimotning xossalari?": "Gauss egri chizig'i. M(X) = a, D(X) = σ². Simmetrik, belgilangan parametrlarga ega.",
+            "Statistik ehtimollik va klassik ehtimollik farqi?": "Klassik — natijalar soniga asoslangan. Statistik — katta sonli tajribalarga asoslangan: <i>P*(A) = m/n</i> (n → ∞).",
+            "Tenglamalar sistemasini matritsalar yordamida qanday yechish mumkin?": "AX = B → X = A⁻¹B (agar A teskari mavjud bo'lsa). Yoki Kramer qoidasi: <i>xᵢ = Δᵢ/Δ</i>.",
+            "Determinantlar va ularning xossalari?": "Matritsaga mos son. Xossalari: satrlarni almashtirish ishorani o'zgartiradi; satr nolga teng bo'lsa, determinant 0.",
+            "Vektorlarning skalyar va vektor ko'paytmasi — qo'llanilishi?": "Skalyar: <i>a·b = |a||b|cosθ</i> — burchak, proyeksiya. Vektor: <i>a×b</i> — yuz, moment.",
+            "Limitlarni Lopital qoidasiz qanday hisoblash mumkin?": "Tenglama almashtirish, bo'linish, maxrajni qo'shimcha ko'paytuvchi bilan kengaytirish, trigonometrik ayniyatlar.",
+            "Funksiyaning Taylor qatoriga yoyilishi nima uchun kerak?": "Murakkab funksiyalarni ko'phadlar bilan taqribiy ifodalash uchun. Hisoblashlarni soddalashtiradi.",
+            "Makloren qatori nima?": "Taylor qatori a = 0 da: <i>f(x) = f(0) + f’(0)x + f''(0)x²/2! + ...</i>",
+            "Grafiklarni hosila va ikkinchi hosila yordamida qanday taxmin qilish mumkin?": "Birinchi hosiladan qiyalik, ikkinchisidan egilish. Nuqtalarni bog'lab, taxminiy grafik chiziladi.",
+            "Parametrli tenglamalar orqali berilgan egri chiziq uzunligi?": "<i>L = ∫ₐᵇ √[(dx/dt)² + (dy/dt)²] dt</i>",
+            "O'zgaruvchan oqimda integral qanday hisoblanadi?": "Har bir vaqtdagi oqim tezligini integrallash: <i>Q = ∫v(t)·S dt</i>.",
+            "Funksiya chegarasining chegarasi mavjudligi shartlari?": "Chap va o'ng chegaralar mavjud va ular teng bo'lishi kerak."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Algebra darsligi bo'yicha murakkab tushunchalarni tushuntiruvchi AI yordamchiman. Quyidagi tugmalardan birini tanlang!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
