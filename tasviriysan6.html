@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Tasviriy San’at AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff0f5, #ffcdd2, #ef9a9a);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #e91e63;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #e91e63, #c2185b);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(233, 30, 99, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #e91e63, #c2185b, #e91e63);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(233, 30, 99, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(233, 30, 99, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #880e4f;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #c2185b, #e91e63);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(233, 30, 99, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(233, 30, 99, 0.9);
+      background: linear-gradient(45deg, #880e4f, #d81b60);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #880e4f;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(233, 30, 99, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #e91e63;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #c2185b, #e91e63);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(233, 30, 99, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(255, 240, 245, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #e91e63, #c2185b);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #fff0f5, #ffcdd2);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #e91e63;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e91e63;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(255, 240, 245, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #e91e63;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #c2185b, #e91e63);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(233, 30, 99, 0.7);
+      background: linear-gradient(45deg, #880e4f, #d81b60);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(233, 30, 99, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #e91e63;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🎨</div>
+      <h1 class="title">ASCO Tasviriy San’at AI</h1>
+      <p class="subtitle">Rasm chizish, ranglar, kompozitsiya yoki o'zbek san’atini o'rganishda qiyinchilik tug'ilmaydi! Men — sizning shaxsiy tasviriy san’at o'qituvchingiz. Portret, peyzaj, g'ilof, dekorativ san’at — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🖌️</div>
+        <h2>Tasviriy San’at AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Ranglar va ularning turlari')">Ranglar</button>
+          <button class="btn-3d" onclick="sendMessage('Shakllar va ularning turlari')">Shakllar</button>
+          <button class="btn-3d" onclick="sendMessage('Kompozitsiya')">Kompozitsiya</button>
+          <button class="btn-3d" onclick="sendMessage('Portret chizish')">Portret</button>
+          <button class="btn-3d" onclick="sendMessage('Peyzaj chizish')">Peyzaj</button>
+          <button class="btn-3d" onclick="sendMessage('G\'ilof san\'ati')">G'ilof</button>
+          <button class="btn-3d" onclick="sendMessage('Dekorativ san\'at')">Dekorativ</button>
+          <button class="btn-3d" onclick="sendMessage('Rasm turlari')">Rasm turlari</button>
+          <button class="btn-3d" onclick="sendMessage('O\'zbek san\'ati')">O'zbek san'ati</button>
+          <button class="btn-3d" onclick="sendMessage('San\'at tarixi')">San'at tarixi</button>
+          <button class="btn-3d" onclick="sendMessage('Rasm chizish qoidalari')">Rasm chizish</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'g\'irchoq chizish')">Qo'g'irchoq</button>
+          <button class="btn-3d" onclick="sendMessage('Tabiatni tasvirlash')">Tabiat</button>
+          <button class="btn-3d" onclick="sendMessage('San\'at materiallari')">Materiallar</button>
+          <button class="btn-3d" onclick="sendMessage('Ranglar aralashmasi')">Ranglar aralashmasi</button>
+          <button class="btn-3d" onclick="sendMessage('Chiziq va nuqta')">Chiziq va nuqta</button>
+          <button class="btn-3d" onclick="sendMessage('Tasviriy san\'atda ifoda')">Ifoda</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('San\'at bilan ifodalash')">San'at bilan ifodalash</button>
+          <button class="btn-3d" onclick="sendMessage('Ijodiy loyiha')">Ijodiy loyiha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning tasviriy san’at o’qituvchingiz. Rasm chizish, ranglar, portret yoki g’ilof haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF TASVIRIY SAN’AT — ASCO LOYIHASI
+
+      if (lower.includes("ranglar") || lower.includes("rang")) {
+        response = "Ranglar — san’atning asosi!\n\nAsosiy ranglar:\n• Qizil\n• Ko'k\n• Sariq\n\nIkkinchi darajali ranglar:\n• Qizil + Ko'k = Binafsha\n• Qizil + Sariq = Qizil-sariq (o'rgimchi)\n• Ko'k + Sariq = Yashil\n\nRanglar hissiyotni ifodalaydi:\n• Qizil — jasorat, sevgi\n• Ko'k — tinchlik, barakat\n• Yashil — tabiat, o'sish\n• Sariq — quvonch, nuriylik\n\n💡 Ranglar aralashmasi — rasmga jon beradi!";
+      } else if (lower.includes("shakllar")) {
+        response = "Shakllar — rasmning qurilishi!\n\nAsosiy shakllar:\n• Aylana — yumshoq, tabiiy (quyosh, meva)\n• To'rtburchak — qattiq, tashkil etilgan (uy, kitob)\n• Uchburchak — harakat, kuch (tugun, tog')\n• Chiziq — to'g'ri, egri (daryo, shamol)\n\n💡 Rasmda shakllarni aralashtiring — rasm jonlanadi!";
+      } else if (lower.includes("kompozitsiya")) {
+        response = "Kompozitsiya — rasmning tuzilishi!\n\nAsosiy qoidalar:\n\n1. **Markaziy kompozitsiya** — asosiy ob'ekt markazda\n2. **Simmetriya** — ikki tomon bir xil\n3. **Asimetriya** — teng emas, lekin muvozanatli\n4. **Ko'rish chizig'i** — ko'zni rasmga olib boradigan chiziq\n\nMisol: \"Quyosh\" rasmida:\n- Quyosh — markazda\n- Bulutlar — atrofida\n- Daryo — pastdan o'tadi\n\n💡 Kompozitsiya — rasmning \"musiqasi\"!";
+      } else if (lower.includes("portret")) {
+        response = "Portret — odamni rasmga tushirish!\n\nQadamlari:\n\n1. **Bosh shakli** — yumshoq to'rtburchak yoki aylana\n2. **Ko'zlar** — o'rtada, bir xil balandlikda\n3. **Burun** — ko'zlar va og'iz o'rtasida\n4. **Og'iz** — burunning pastida\n5. **Sochlar** — bosh shakliga mos\n\n💡 Portretda hissiyotni ifodalash — muhim! Qo'rqinchli, xursand, o'ylab turgan!";
+      } else if (lower.includes("peyzaj")) {
+        response = "Peyzaj — tabiatni rasmga tushirish!\n\nQadamlari:\n\n1. **Orqa fon** — uzoqda: tog'lar, osmon\n2. **O'rtaki fon** — o'rtada: daraxtlar, uy\n3. **Oldingi fon** — yaqinda: o't, g'isht, tosh\n\nRanglar:\n• Uzoqda — sovuq ranglar (ko'k, binafsha)\n• Yaqinda — issiq ranglar (yashil, sariq)\n\n💡 Peyzajda masofani ifodalash — rasmga chuqurlik beradi!";
+      } else if (lower.includes("g'ilof")) {
+        response = "G'ilof — o'zbek san’atining ajoyib qismi!\n\nXususiyatlari:\n• Qo'lda chizilgan\n• Geometrik shakllar (uchburchak, aylana)\n• Qo'ng'iroq, gullar, o'tlar\n• Qizil, ko'k, sariq, yashil ranglar\n\nMisol: \"G'ilof qo'g'irchoq\" — qo'g'irchoqning kiyimida g'ilof naqshlari\n\n💡 G'ilof — O'zbekiston madaniyatining qalbi!";
+      } else if (lower.includes("dekorativ")) {
+        response = "Dekorativ san’at — narsalarni go'zal qilish!\n\nMisol:\n• Qo'g'irchoqni naqsh bilan bezash\n• Qog'ozga g'ilof chizish\n• Kiyimga naqsh qo'yish\n• Qutini rangli qog'oz bilan bezash\n\n💡 Dekorativ san’at — hayotni go'zal qiladi!";
+      } else if (lower.includes("rasm turlari")) {
+        response = "Rasm turlari:\n\n1. **Portret** — odam\n2. **Peyzaj** — tabiat\n3. **Natura morta** — o'lik tabiat (meva, kitob)\n4. **Dekorativ** — naqsh, g'ilof\n5. **Ijodiy** — xayoliy rasm\n\n💡 Har bir tur — o'zining hissiyoti va usuli!";
+      } else if (lower.includes("o'zbek san'ati")) {
+        response = "O'zbek san’ati — qadimiy va go'zal!\n\nAsosiy turlari:\n\n• **G'ilof** — qo'lda chizilgan naqshlar\n• **Suzma** — ip bilan bezash\n• **Keramika** — g'isht va porcelan\n• **Ko'rak** — qo'g'irchoq\n• **Mashhur mehnat** — o'zbek o'g'ri, o'zbek qo'g'irchoq\n\nMashhur joylar:\n• Samarqand — g'ilof\n• Bukhoro — keramika\n• Andijon — suzma\n\n💡 O'zbek san’ati — dunyoga tanilgan!";
+      } else if (lower.includes("san'at tarixi")) {
+        response = "San’at tarixi — insonning ijodiy yutuqlari!\n\nQadimda:\n• 5000 yil avval — g'ilof naqshlari\n• 1000 yil avval — qo'g'irchoqlar\n• 1800-yillar — portretlar\n\nZamonaviy:\n• Rasm chizish\n• Kompyuterda rasm\n• Rasm bilan ifodalash\n\n💡 San’at — insonning qalbiy qo'lining o'zini ifodalash usuli!";
+      } else if (lower.includes("rasm chizish")) {
+        response = "Rasm chizish qoidalari:\n\n1. **Boshlang'ich shakl** — qo'lda osongina chiziladigan shakl\n2. **Detallar** — ko'z, burun, oyoq\n3. **Ranglar** — aralashuv, qorong'ulik\n4. **Fon** — rasmga muvozanat beradi\n5. **Tasvir** — hissiyotni ifodalash\n\n💡 Rasm chizish — tajriba bilan o'rganiladi!";
+      } else if (lower.includes("qo'g'irchoq")) {
+        response = "Qo'g'irchoq — san’atning qiziqarli turi!\n\nQanday chizish?\n\n1. Bosh — aylana\n2. Tanasi — to'rtburchak\n3. Qo'llari — chiziq\n4. Oyoqlari — chiziq\n5. Naqsh — g'ilof yoki rangli chiziq\n\n💡 Qo'g'irchoq — sizning xayolingizni rasmga tushirish!";
+      } else if (lower.includes("tabiat")) {
+        response = "Tabiatni tasvirlash — rasmning eng go'zal turi!\n\nQadamlari:\n\n1. **Ob'ekt tanlash** — daraxt, bulut, daryo\n2. **Shakl chizish** — oddiy shakllar bilan\n3. **Ranglar** — tabiat ranglari (yashil, ko'k, sariq)\n4. **Fon** — osmon, tog'lar\n5. **Detallar** — barglar, toshlar\n\n💡 Tabiat — eng yaxshi model!";
+      } else if (lower.includes("materiallar")) {
+        response = "San’at materiallari:\n\n• **Ranglar** — suvli, pastel, marker\n• **Qog'oz** — qalin, yengil, rasm uchun\n• **Qalam** — qora, rangli, qalqon\n• **Qo'g'irchoq** — qog'ozdan, g'ishtdan\n• **Yapishqoq** — naqshlarni ulash\n\n💡 Har bir material — o'zining xususiyatiga ega!";
+      } else if (lower.includes("ranglar aralashmasi")) {
+        response = "Ranglar aralashmasi — rasmga jon beradi!\n\nAsosiy aralashmalar:\n\n• Qizil + Sariq = Qizil-sariq (o'rgimchi)\n• Ko'k + Sariq = Yashil\n• Qizil + Ko'k = Binafsha\n• Qizil + Yashil = Qo'ng'ir\n\n💡 Qanday aralashtirish?\n1. Qalqon bilan aralashtiring\n2. Qog'ozga chizib ko'ring\n3. Qanday rang hosil bo'lganini tekshiring!";
+      } else if (lower.includes("chiziq va nuqta")) {
+        response = "Chiziq va nuqta — rasmning asosi!\n\n• **Chiziq** — shakl, harakat, yo'nalish\n• **Nuqta** — diqqat, joy, nuqta\n\nMisol:\n\n• Qalqon bilan chiziq — daryo\n• Nuqta — yulduz\n• Chiziq + nuqta — qo'g'irchoq\n\n💡 Chiziq — rasmning qo'li, nuqta — uning ko'zi!";
+      } else if (lower.includes("ifoda")) {
+        response = "San’atda ifoda — hissiyotni rasmga tushirish!\n\nQanday ifodalash?\n\n• Qizil rang — jasorat\n• Egri chiziq — xavf\n• Qorong'ulik — qo'rqinch\n• Yorug'lik — quvonch\n\nMisol:\n\n\"Qo'rqinchli kundalik\" rasmida:\n• Qorong'ulik\n• Egri chiziq\n• Qizil rang\n\n💡 San’at — hissiyotlarni so'zlar emas, rasm bilan ifodalash!";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nRasm chizing: \"Ko'k osmon, qizil quyosh, yashil daraxt\"\n\n✅ Qadamlari:\n1. Osmon — ko'k rang\n2. Quyosh — aylana, qizil\n3. Daraxt — yashil, to'rtburchak tanasi\n\n💡 Rasmni qo'lingiz bilan chizing — bu sizning ijodiy yechimingiz!";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Qaysi rang ikkinchi darajali?\n   a) Qizil\n   b) Yashil ✅\n   c) Sariq\n\n2. Portretda qaysi qism eng muhim?\n   a) Ko'zlar ✅\n   b) Oyoq\n   c) Soch\n\n3. G'ilof qanday naqsh?\n   a) Geometrik ✅\n   b) Hayvonlar\n   c) Qo'g'irchoq\n\n💡 Test — bilimingizni tekshirish!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nDunyodagi eng qadimiy rasm — 40 000 yil avval Indoneziyada chizilgan!\n\nBu rasm — qo'g'irchoq va hayvonlar!\n\n💡 Inson — qadimdan rasm chizadi, chunki rasm — uning qalbi!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men qo'g'irchoq emasman, lekin men bilan qo'g'irchoq yasaladi.\nMen qog'oz emasman, lekin men bilan qog'oz go'zal bo'ladi.\nMen nima?\"\n\n💡 Javob: **Naqsh** 🖌️\n\nYana biri:\n\"Men qo'ng'iroq emasman, lekin rasmda qo'ng'iroqni chizishda kerak.\nMen nima?\"\n💡 Javob: **Qalam** ✏️";
+      } else if (lower.includes("san'at bilan ifodalash")) {
+        response = "San'at bilan ifodalash — hissiyotlarni rasm orqali aytish!\n\nMasalan:\n\n• Xursand bo'lsangiz — yorug' ranglar, aylana shakllar\n• Qo'rqinsangiz — qorong'ulik, egri chiziq\n• O'ylab tursangiz — sovuq ranglar, to'g'ri chiziq\n\n💡 San'at — so'zlar emas, rasm bilan gapiradi!";
+      } else if (lower.includes("ijodiy loyiha")) {
+        response = "Ijodiy loyiha: \"Mening xayoliy dunyom\"\n\nQadamlari:\n\n1. Qanday dunyo? — qo'g'irchoqlar, osmon, o'tlar\n2. Ranglar — qaysi ranglar?\n3. Ob'ektlar — nima bor?\n4. Naqsh — g'ilof yoki dekorativ?\n\n💡 Loyiha — sizning ijodiy dunyongiz! Uni rasmga tushiring!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning tasviriy san’at o'qituvchingizman. Rasm chizish, ranglar yoki g'ilof haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 San'at — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli tasviriy san’at o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf tasviriy san’atda yordam berishga tayyorman. Iltimos, \"ranglar\", \"portret\", \"g'ilof\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
