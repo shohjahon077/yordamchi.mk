@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Informatika (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00695C; /* To'q yashil — texnologiya va dasturlash */
+            --secondary: #009688;
+            --accent: #FFC107; /* Sariq — kod, yorqinlik */
+            --light: #FFFFFF;
+            --bg: #E0F2F1;
+            --text: #004D40;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(0, 105, 92, 0.15);
+            --border: #B2DFDB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #004D40);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E0F2F1;
+            color: #004D40;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === CODE STYLE === */
+        .code {
+            background: #E0F2F1;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 600;
+            color: #004D40;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E8F5E9;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #004D40;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0,105,92,0.2);
+        }
+
+        .quick-button:hover {
+            background: #004D40;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(0,105,92,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Informatika</h1>
+        <p>9-sinf uchun: Dasturlash, algoritmlar, tarmoqlar, cyberxavfsizlik — IT dunyosiga xush kelibsiz!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">💻</div>
+            <h2>Informatika Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligiga mos — Dasturlash, algoritmlar, Python, tarmoqlar, cyberxavfsizlik</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Informatika ma'lumotlar bazasi (9-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Dasturlash, tarmoqlar, sun'iy intellekt — IT dunyosiga xush kelibsiz! Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "🐍 Python dasturlash", key: "python" },
+                    { text: "📊 Algoritmlar", key: "algoritm" },
+                    { text: "🌐 Internet & Tarmoqlar", key: "tarmoq" },
+                    { text: "🔒 Cyberxavfsizlik", key: "cyber" },
+                    { text: "🧠 Sun'iy Intellekt", key: "si" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "python": {
+                text: "Python — dasturlash tillarining eng osoni. Qanday dasturlashni o'rganamiz?",
+                buttons: [
+                    { text: "O'zgaruvchilar", key: "ozgaruvchi" },
+                    { text: "Shart operatori", key: "shart" },
+                    { text: "Tsikllar", key: "tsikl" },
+                    { text: "Funksiyalar", key: "funksiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ozgaruvchi": {
+                text: "<span class='code'>O'zgaruvchilar:</span><br>• Raqam: <code>son = 10</code><br>• Matn: <code>ism = 'Ali'</code><br>• Rostlik: <code>toq = True</code><br>• Ro'yxat: <code>mevalar = ['olma', 'banan']</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "python", isHome: true }]
+            },
+            "shart": {
+                text: "<span class='code'>Shart operatori:</span><br><code>if yosh > 18:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Kattasi')<br>else:<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Kichik')</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "python", isHome: true }]
+            },
+            "tsikl": {
+                text: "<span class='code'>Tsikllar:</span><br><code>for i in range(5):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)</code><br><br><code>while a < 10:<br>&nbsp;&nbsp;&nbsp;&nbsp;a += 1</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "python", isHome: true }]
+            },
+            "funksiya": {
+                text: "<span class='code'>Funksiyalar:</span><br><code>def salom_ber():<br>&nbsp;&nbsp;&nbsp;&nbsp;print('Salom!')</code><br><br><code>def kvadrat(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;return x ** 2</code>",
+                buttons: [{ text: "⬅️ Orqaga", key: "python", isHome: true }]
+            },
+            "algoritm": {
+                text: "Algoritm — muammoni qadamma-qadam hal qilish tartibi.",
+                buttons: [
+                    { text: "Algoritm xususiyatlari", key: "xususiyatlar" },
+                    { text: "Algoritm turlari", key: "turlar" },
+                    { text: "Grafik algoritm", key: "grafik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "xususiyatlar": {
+                text: "<span class='example'>Algoritm xususiyatlari:</span><br>• Aniqlik — har bir qadam tushunarli<br>• Raqamlilik — cheklangan qadamlar<br>• Natija — maqsadga erishish<br>• Umumiylik — bir xil turdagi masalalar uchun",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritm", isHome: true }]
+            },
+            "turlar": {
+                text: "<span class='example'>Algoritm turlari:</span><br>• Chiziqli — barcha buyruqlar ketma-ket<br>• Tarmoqli — shartga qarab yo'nalish o'zgaradi<br>• Tsiklli — qayta-qayta takrorlanadi",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritm", isHome: true }]
+            },
+            "grafik": {
+                text: "<span class='example'>Grafik algoritm (blok-sxema):</span><br>• Oval — boshlanish/oxir<br>• To'rtburchak — buyruq<br>• Romb — shart<br>• Parallellogramm — kiritish/chiqarish",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritm", isHome: true }]
+            },
+            "tarmoq": {
+                text: "Internet va tarmoqlar — axborotni uzatish tizimi.",
+                buttons: [
+                    { text: "Tarmoq turlari", key: "tarmoq_turlari" },
+                    { text: "IP manzil", key: "ip_manzil" },
+                    { text: "Protokollar", key: "protokol" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tarmoq_turlari": {
+                text: "<span class='example'>Tarmoq turlari:</span><br>• LAN — lokal (uy, maktab)<br>• WAN — global (internet)<br>• WiFi — simsiz tarmoq<br>• Ethernet — simli tarmoq",
+                buttons: [{ text: "⬅️ Orqaga", key: "tarmoq", isHome: true }]
+            },
+            "ip_manzil": {
+                text: "<span class='example'>IP manzil:</span><br>• 192.168.1.1 — uy tarmog'i<br>• 8.8.8.8 — Google DNS<br>• IPv4 va IPv6 — manzil formatlari",
+                buttons: [{ text: "⬅️ Orqaga", key: "tarmoq", isHome: true }]
+            },
+            "protokol": {
+                text: "<span class='example'>Protokollar:</span><br>• HTTP — veb-sahifa ochish<br>• HTTPS — himoyalangan HTTP<br>• FTP — fayl uzatish<br>• TCP/IP — internet uzatish qoidasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "tarmoq", isHome: true }]
+            },
+            "cyber": {
+                text: "Cyberxavfsizlik — internetda xavfsizlik.",
+                buttons: [
+                    { text: "Parollar himoyasi", key: "parol" },
+                    { text: "Viruslar", key: "virus" },
+                    { text: "Phishing", key: "phishing" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "parol": {
+                text: "<span class='example'>Kuchli parol:</span><br>• 8 ta belgidan ortiq<br>• Raqam, katta/kichik harf, belgi<br>• 'Ali123!' — yaxshi<br>• '123456' — xavfli",
+                buttons: [{ text: "⬅️ Orqaga", key: "cyber", isHome: true }]
+            },
+            "virus": {
+                text: "<span class='example'>Viruslar:</span><br>• Kompyuterni shaffof ishlamaydi<br>• Foydalanuvchi bilan o'zaro ta'sir qiladi<br>• Antivirus dasturlari — Kaspersky, Avast",
+                buttons: [{ text: "⬅️ Orqaga", key: "cyber", isHome: true }]
+            },
+            "phishing": {
+                text: "<span class='example'>Phishing:</span><br>• Soxta veb-sahifa — login/parol so'raydi<br>• E-mailda 'bankingiz' kabi xabarlar<br>• Faqat rasmiy manbalarga kirish kerak",
+                buttons: [{ text: "⬅️ Orqaga", key: "cyber", isHome: true }]
+            },
+            "si": {
+                text: "Sun'iy Intellekt (AI) — kompyuterlarga fikrlashni o'rgatish.",
+                buttons: [
+                    { text: "AI qo'llanilishi", key: "ai_qo'llanish" },
+                    { text: "Chatbotlar", key: "chatbot" },
+                    { text: "Rasm va ovoz tanish", key: "tanish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ai_qo'llanish": {
+                text: "<span class='example'>AI qo'llanilishi:</span><br>• Google Translate — tarjima<br>• Siri, Google Assistant — ovozli yordamchi<br>• TikTok, YouTube — tafsiya tizimlari<br>• Avtomobillar — avtonom haydovchilik",
+                buttons: [{ text: "⬅️ Orqaga", key: "si", isHome: true }]
+            },
+            "chatbot": {
+                text: "<span class='example'>Chatbotlar:</span><br>• Siz bilan suhbatlashadi<br>• Savollarga javob beradi<br>• Python, TensorFlow, Dialogflow kabi texnologiyalar bilan yasaladi<br>• Siz endi buni o'z qo'lingizda ishlatmoqdasiz!",
+                buttons: [{ text: "⬅️ Orqaga", key: "si", isHome: true }]
+            },
+            "tanish": {
+                text: "<span class='example'>Rasm va ovoz tanish:</span><br>• Rasm — kompyuter odamni tanidi<br>• Ovoz — kompyuter so'zni tushunadi<br>• OpenCV, SpeechRecognition — Python kutubxonalari",
+                buttons: [{ text: "⬅️ Orqaga", key: "si", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Python testi", key: "test_python" },
+                    { text: "Algoritm testi", key: "test_algoritm" },
+                    { text: "Tarmoq testi", key: "test_tarmoq" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_python": {
+                text: "1. Python kodida 5 ** 2 natijasi nima?\nA) 10\nB) 7\nC) 25",
+                buttons: [
+                    { text: "A)", key: "test_python_a" },
+                    { text: "B)", key: "test_python_b" },
+                    { text: "C)", key: "test_python_c" }
+                ]
+            },
+            "test_python_c": {
+                text: "✅ To'g'ri! 5 ** 2 = 25 (5 ning kvadrati).",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_algoritm": {
+                text: "2. Agar a = 5, b = 3 bo'lsa, 'a > b' natijasi?\nA) False\nB) True\nC) 2",
+                buttons: [
+                    { text: "A)", key: "test_algoritm_a" },
+                    { text: "B)", key: "test_algoritm_b" },
+                    { text: "C)", key: "test_algoritm_c" }
+                ]
+            },
+            "test_algoritm_b": {
+                text: "✅ Ajoyib! 5 > 3 — to'g'ri, ya'ni True.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_tarmoq": {
+                text: "3. HTTPS nimani anglatadi?\nA) Oddiy veb-sahifa\nB) Himoyalangan veb-sahifa\nC) Rasm sahifasi",
+                buttons: [
+                    { text: "A)", key: "test_tarmoq_a" },
+                    { text: "B)", key: "test_tarmoq_b" },
+                    { text: "C)", key: "test_tarmoq_c" }
+                ]
+            },
+            "test_tarmoq_b": {
+                text: "✅ To'g'ri! HTTPS — himoyalangan veb-sahifa, ma'lumotlar shifrlangan.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
