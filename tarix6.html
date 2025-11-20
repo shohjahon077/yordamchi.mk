@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Tarix AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f9f7c9, #ffecb3, #ffd54f);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #ff8f00;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #ff8f00, #e65100);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(255, 143, 0, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff8f00, #e65100, #ff8f00);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(255, 143, 0, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(255, 143, 0, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #bf360c;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #e65100, #ff8f00);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(255, 143, 0, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(255, 143, 0, 0.9);
+      background: linear-gradient(45deg, #bf360c, #ff6d00);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #bf360c;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(255, 143, 0, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #ff8f00;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #e65100, #ff8f00);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(255, 143, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(253, 253, 239, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #ff8f00, #e65100);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #f9f7c9, #ffecb3);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #ff8f00;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff8f00;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(253, 253, 239, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #ff8f00;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #e65100, #ff8f00);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(255, 143, 0, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(255, 143, 0, 0.7);
+      background: linear-gradient(45deg, #bf360c, #ff6d00);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 143, 0, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #ff8f00;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">📜</div>
+      <h1 class="title">ASCO Tarix AI</h1>
+      <p class="subtitle">Tarixda qiyinchilik tug'ilmaydi! Men — sizning shaxsiy tarix o'qituvchingiz. Qadimiy dunyo, O‘rta Osiyo, Xitoy, Hindiston, Yunoniston, Rim, O‘zbekiston tarixi — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🏺</div>
+        <h2>Tarix AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Tarix nima?')">Tarix nima?</button>
+          <button class="btn-3d" onclick="sendMessage('Qadimiy dunyo')">Qadimiy dunyo</button>
+          <button class="btn-3d" onclick="sendMessage('Xitoy tarixi')">Xitoy</button>
+          <button class="btn-3d" onclick="sendMessage('Hindiston tarixi')">Hindiston</button>
+          <button class="btn-3d" onclick="sendMessage('Yunoniston tarixi')">Yunoniston</button>
+          <button class="btn-3d" onclick="sendMessage('Rim tarixi')">Rim</button>
+          <button class="btn-3d" onclick="sendMessage('O\'rta Osiyo tarixi')">O'rta Osiyo</button>
+          <button class="btn-3d" onclick="sendMessage('Qadimiy O\'zbekiston')">Qadimiy O'zbekiston</button>
+          <button class="btn-3d" onclick="sendMessage('So\'g\'diyona')">So'g'diyona</button>
+          <button class="btn-3d" onclick="sendMessage('Toharlar')">Toharlar</button>
+          <button class="btn-3d" onclick="sendMessage('Ahamoniylar davlati')">Ahamoniylar</button>
+          <button class="btn-3d" onclick="sendMessage('Samarqand')">Samarqand</button>
+          <button class="btn-3d" onclick="sendMessage('Buxoro')">Buxoro</button>
+          <button class="btn-3d" onclick="sendMessage('Amir Temur')">Amir Temur</button>
+          <button class="btn-3d" onclick="sendMessage('Alisher Navoiy')">Alisher Navoiy</button>
+          <button class="btn-3d" onclick="sendMessage('Movarounnahr')">Movarounnahr</button>
+          <button class="btn-3d" onclick="sendMessage('Islom tarixi')">Islom</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa va san\'at')">Musiqa va san’at</button>
+          <button class="btn-3d" onclick="sendMessage('Til va adabiyot')">Til va adabiyot</button>
+          <button class="btn-3d" onclick="sendMessage('Mustaqillik davri')">Mustaqillik davri</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Tarixiy shaxslar')">Tarixiy shaxslar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning tarix o'qituvchingiz. Qadimiy dunyo, O'rta Osiyo, Xitoy, yoki O'zbekiston tarixi haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF TARIX — ASCO LOYIHASI
+
+      if (lower.includes("tarix nima") || lower.includes("tarix")) {
+        response = "Tarix — o'tmishni o'rganish fanidir.\n\nTarix nima haqida?\n\n• Qachon sodir bo'ldi?\n• Kim qatnashdi?\n• Sababi nima?\n• Natijasi nima?\n\nTarix — bizni o'tmishdan o'rgatadi, kelajakka tayyorlaydi.\n\n💡 Tarix — aqlli bo'lish yo'lidagi asosiy qadam!";
+      } else if (lower.includes("qadimiy dunyo")) {
+        response = "Qadimiy dunyo — miloddan avvalgi 3000-yillar.\n\nAsosiy sivilizatsiyalar:\n\n1. **Mesopotamiya** — dunyoning beqinasli — Tigr va Eufrat daryolari\n2. **Misr** — Nil daryosi, piramidalar\n3. **Hindiston** — Ind va Gang daryolari\n4. **Xitoy** — Xuanxey daryosi\n\n💡 Bu sivilizatsiyalar — bugungi zamonaviy dunyoning asosi!";
+      } else if (lower.includes("xitoy")) {
+        response = "Xitoy — qadimiy sivilizatsiya.\n\nTarixi:\n\n• Miloddan avvalgi 2000-yillar — Shang sulolasi\n• Miloddan avvalgi 221-yil — Qin sulolasi (birinchi imperator)\n• Xitoy — kompas, qog'oz, barut, chopish san'atini ixtiro qildi\n\n💡 Xitoy — aql va ijod dunyosi!";
+      } else if (lower.includes("hindiston")) {
+        response = "Hindiston — qadimiy sivilizatsiya.\n\nTarixi:\n\n• Miloddan avvalgi 2500-yillar — Xarappa madaniyati\n• Miloddan avvalgi 322-yil — Maurya imperiyasi\n• Ashoka — buddaviylikni tarqatdi\n• Brahmanizm, hinduizm, buddaviylik — Hindistonda vujudga keldi\n\n💡 Hindiston — ruhiy va ilmiy rivojlanish markazi!";
+      } else if (lower.includes("yunoniston")) {
+        response = "Yunoniston — qadimiy demokratiya.\n\nTarixi:\n\n• Miloddan avvalgi 800–146-yillar\n• Afin — demokratiyaning tug'ilgan joyi\n• Sparta — jangchi qabilasi\n• Afsaneviy qahramonlar: Gerakl, Odissey\n• Falsafa: Aristotel, Platon, Sokrat\n\n💡 Yunoniston — dunyo madaniyatining beqinasli!";
+      } else if (lower.includes("rim")) {
+        response = "Rim imperiyasi — qadimiy qudrat.\n\nTarixi:\n\n• Miloddan avvalgi 753-yil — Rim shahri tashkil etildi\n• Miloddan avvalgi 509-yil — Rim Respublikasi\n• Milod 27-yil — Rim imperiyasi (Avgust)\n• Rim — qonunlar, yo'llar, arxitektura orqali ta'sir qildi\n\n💡 Rim — tushuncha emas, balki dunyo!";
+      } else if (lower.includes("o'rta osiyo")) {
+        response = "O'rta Osiyo — madaniyatlar kesishgan joyi.\n\nXususiyatlari:\n\n• Samarqand, Buxoro, Xiva, Qarshi\n• Ipak yo'li — savdo va madaniyat yo'li\n• So'g'diyona, Toharlar, Xorazm\n• Hunlar, arablar, mo'g'ullar — O'rta Osiyoga tashrif buyurdi\n\n💡 O'rta Osiyo — dunyoning yuragi!";
+      } else if (lower.includes("qadimiy o'zbekiston")) {
+        response = "Qadimiy O'zbekiston — qadimiy sivilizatsiyalar vujudga kelgan joy.\n\n• Miloddan avvalgi 1500-yillar — Toharlar\n• Miloddan avvalgi 800-yillar — So'g'diyona\n• Xorazm — qadimiy shahar\n• Samarqand — Ipak yo'lining markazi\n\n💡 O'zbekiston — qadimdan madaniy va ilmiy markaz!";
+      } else if (lower.includes("so'g'diyona")) {
+        response = "So'g'diyona — qadimiy sivilizatsiya (bugungi Samarqand, Buxoro atrofi).\n\nXususiyatlari:\n\n• Savdogarlar — Ipak yo'li bo'ylab savdo qilgan\n• Zardushtiylikni qabul qilgan\n• Shaharlari: Afrosiob, Panjikent\n• Arablar bilan jang qilgan\n\n💡 So'g'diyonaliklar — dunyoga keng ko'z bilan qaragan madaniyat!";
+      } else if (lower.includes("toharlar")) {
+        response = "Toharlar — O'zbekistonning qadimiy xalqi (miloddan avvalgi 1500–500-yillar).\n\nXususiyatlari:\n\n• Bugungi Buxoro, Xorazm, Qashqadaryo hududida yashagan\n• Dehqonchilik va chorvachilik bilan shug'ullangan\n• O'z yozuv tizimiga ega bo'lgan\n• Xun sulolasi bilan bog'liq\n\n💡 Toharlar — O'zbekistonning birinchi madaniyati!";
+      } else if (lower.includes("ahamoniylar")) {
+        response = "Ahamoniylar davlati — qadimiy imperiya (miloddan avvalgi 550–330).\n\n• Asoschisi — Kir I\n• Poytaxti — Sus (bugungi Eron)\n• O'rta Osiyoga ham hukmronlik qilgan\n• Dariy — Ahamoniylar qiroli, Ipak yo'lida nazorat qilgan\n• Aleksandr Makedonskiy — Ahamoniylarni mag'lub etdi\n\n💡 Ahamoniylar — jahon tarixida katta iz qoldirdi!";
+      } else if (lower.includes("samarqand")) {
+        response = "Samarqand — dunyoning qadimiy shaharlari qatoriga kiradi.\n\nTarixi:\n\n• Miloddan avvalgi — So'g'diyona markazi\n• IX–X asr — Islom madaniyati markazi\n• XIV asr — Amir Temur poytaxti\n• Registon — dunyoga mashhur me'moriy yodgorlik\n\n💡 Samarqand — go'zallik, ilm va madaniyat shahri!";
+      } else if (lower.includes("buxoro")) {
+        response = "Buxoro — yana bir qadimiy shahar.\n\nTarixi:\n\n• Miloddan avvalgi — So'g'diyona shahri\n• IX asrdan — islom ilmi markazi\n• Buxoro xonligi — mustaqil davlat\n• Poyi Kalon — dunyoga tanilgan yodgorlik\n\n💡 Buxoro — ruhoniylar shahri!";
+      } else if (lower.includes("amir temur")) {
+        response = "Amir Temur — buyuk sarkarda (1336–1405).\n\nQanday inson?\n\n• Samarqandni poytaxt qildi\n• Temuriylar davlatini tashkil qildi\n• \"Yer sharini adolat bilan boshqarish\" degan maqsad qo'ldi\n• Samarqandni go'zal shaharga aylantirdi\n\n💡 Amir Temur — jahon tarixidagi buyuk shaxslardan biri!";
+      } else if (lower.includes("alisher navoiy")) {
+        response = "Alisher Navoiy — o'zbek adabiyotining otasi (1441–1501).\n\nAsarlari:\n\n• \"Xamsa\" — 5 doston\n• \"Muhokamat al-lughatayn\" — o'zbek tilining afzalligi\n• \"Lison ut-tayr\" — falsafiy asar\n\nNavoiy — insonparvar, olim, mutafakkir\n\n💡 Navoiy — o'zbek tilining xaloskorligi!";
+      } else if (lower.includes("movarounnahr")) {
+        response = "Movarounnahr — „daryoning narigi mamlakat“.\n\nHududi:\n\n• Amudaryo va Sirdaryo orasidagi hudud\n• Bugungi O'zbekiston, Tojikiston, Janubi-g'arbiy Qirg'iziston\n\nTarixi:\n\n• Arablar — islomni tarqatdi\n• Samoniylar — madaniy va ilmiy rivojlanish\n• Amir Temur — Movarounnahrga hukmronlik qildi\n\n💡 Movarounnahr — madaniyat va ilm markazi!";
+      } else if (lower.includes("islom")) {
+        response = "Islom — din va madaniyat.\n\nO'rta Osiyoga tarqalishi:\n\n• VII asr — arablar bilan birga\n• IX asr — islom keng tarqadi\n• Samoniylar davri — islom madaniyati rivojlandi\n• Madrasalar, masjidlar, kutubxonalar qurildi\n\n💡 Islom — ilm, adolat va insonparvarlikni o'rgatdi!";
+      } else if (lower.includes("musiqa va san'at")) {
+        response = "O'rta Osiyo — musiqa va san'at markazi.\n\n• Shashmaqom — klassik musiqa\n• Miniatura — rasm san'ati\n• G'ilof va naqsh — qo'lda ish\n• Amir Temur davri — me'moriy rivojlanish\n\n💡 San'at — inson ruhining oynasi!";
+      } else if (lower.includes("til va adabiyot")) {
+        response = "O'rta Osiyo — adabiyot markazi.\n\n• Alisher Navoiy — o'zbek adabiyotining otasi\n• Beruniy, Ibn Sino — olimlar\n• Bobur — \"Boburnoma\" muallifi\n• Fors, arab, o'zbek tillari — birgalikda rivojlangan\n\n💡 Adabiyot — xalq hikmati, tarixi, ongini aks ettiradi!";
+      } else if (lower.includes("mustaqillik davri")) {
+        response = "O'zbekiston mustaqillikka erishdi — 1991-yil 31-avgust.\n\nQanday o'zgarishlar?\n\n• O'zbekiston Respublikasi e'lon qilindi\n• O'zbek tili — davlat tili\n• Milliy bayramlar — yangi rasmiy bayramlar\n• Tarix — xalq tarixi sifatida o'rganildi\n\n💡 Mustaqillik — erkinlik, hurmat va kelajak!";
+      } else if (lower.includes("tarixiy shaxslar")) {
+        response = "Mashhur tarixiy shaxslar:\n\n• **Amir Temur** — buyuk sarkarda\n• **Alisher Navoiy** — adabiyot otasi\n• **Beruniy** — olim, astronom\n• **Ibn Sino** — tibbiyot otasi\n• **Bobur** — sarkarda, yozuvchi\n\n💡 Har bir shaxs — o'z davrining yulduzi!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nSamarqanddagi Registon maydoni — YUNESKO obidalari ro'yxatiga kiritilgan.\n\nUning qurilishi — 15-asrga tegishli.\n\n💡 Registon — O'zbekistonning go'zallik ramzi!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men shahar emasman, lekin mening nomim bor.\nMen qiroq emasman, lekin meni hamma eslaydi.\nMen qachon tug'ilganimni hamma biladi.\nMen nima?\"\n\n💡 Javob: **Tarix** 📜\n\nYana biri:\n\"Men kitob emasman, lekin men daftar.\nMen so'z emasman, lekin hikoya.\nMen nima?\"\n💡 Javob: **O'tmish**";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Qaysi sivilizatsiya Nil daryosi bo'yida vujudga keldi?\n   a) Mesopotamiya\n   b) Misr ✅\n   c) Xitoy\n\n2. Alisher Navoiy qaysi asarida o'zbek tilini himoya qilgan?\n   a) Xamsa\n   b) Muhokamat al-lughatayn ✅\n   c) Lison ut-tayr\n\n3. O'zbekiston mustaqillikka qachon erishdi?\n   a) 1990\n   b) 1991 ✅\n   c) 1992\n\n💡 Test — bilimingizni tekshirish!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning tarix o'qituvchingizman. Qadimiy dunyo, Amir Temur yoki mustaqillik davri haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Tarix — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli tarix o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf tarixida yordam berishga tayyorman. Iltimos, \"Qadimiy dunyo\", \"Amir Temur\", \"Mustaqillik\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
