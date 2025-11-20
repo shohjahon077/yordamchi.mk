@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Kimyo AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1d1b3a, #2a265f, #141229);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0d22;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #a020f0;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23a020f0"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(20, 18, 45, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(160, 32, 240, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 3, 20, 0.9);
+            color: #a020f0;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(160, 32, 240, 0.3);
+            text-shadow: 0 0 10px rgba(160, 32, 240, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #6a0dad, #7b1fa2);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #a020f0, #ba55d3);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #a020f0;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 3, 20, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(160, 32, 240, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #a020f0 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #a020f0;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(30, 20, 60, 0.4);
+            color: #a020f0;
+            border: 1px solid rgba(160, 32, 240, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(160, 32, 240, 0.25);
+            border-color: #a020f0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(160, 32, 240, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23a020f0"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+            color: #e0b0ff;
+        }
+
+        .element {
+            font-family: 'Courier New', monospace;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Kimyo AI Bot</div>
+        <div class="splash-subtext">Organik kimyo, elektroliz, kimyoviy reaksiyalar, termodinamika, atom tuzilishi</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🧪 11-sinf Kimyo AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Kimyoviy reaksiyalar — 20 ta
+            "Kimyoviy reaksiya tenglamasini qanday tenglashtirish kerak?",
+            "Oksidlanish-qaytarilish reaksiyalari nima?",
+            "Elektron balans usuli qanday ishlaydi?",
+            "Elektroliz nima? Uni qanday amalga oshirish mumkin?",
+            "Erigan moddalarning dissotsiatsiyasi nima?",
+            "Kuchli va zaif elektrolitlar farqi?",
+            "Ion almashinish reaksiyalari qachon sodir bo'ladi?",
+            "Kimyoviy muvozanat qanday o'rnatiladi?",
+            "Le Chatelier prinsipi nima uchun kerak?",
+            "Kimyoviy reaksiya tezligini qanday ta'sir qiluvchi omillar?",
+            "Katalizator nima? U qanday ishlaydi?",
+            "Gomogen va geterogen reaksiyalar farqi?",
+            "Issiqlik effekti nima? Eksotermik va endotermik reaksiyalar?",
+            "Kimyoviy reaksiyaning entalpiyasi qanday hisoblanadi?",
+            "Reaksiya tezligi qonuni qanday ifodalanadi?",
+            "Faol to'qnashuv nazariyasi nima?",
+            "Kimyoviy muvozanat doimiysi qanday aniqlanadi?",
+            "Suvning ion ko'paytmasi nimaga teng?",
+            "pH nima? Uni qanday hisoblaymiz?",
+            "Bffer eritmalari nima? Ularning ahamiyati?",
+
+            // Organik kimyo — 30 ta
+            "Gomologik qator nima?",
+            "Alkanlar umumiy formulasini ayting.",
+            "Alkenlar va alkinlar farqi?",
+            "Arenlar nima? Eng sodda areni ayting.",
+            "Funksional guruh nima? Misollar keltiring.",
+            "Alkogollar turlari va ularning xossalari?",
+            "Aldegidlar va ketonlar orasidagi farq?",
+            "Karbon kislotalar qanday xossalarga ega?",
+            "Efilar nima? Ularni qanday hosil qilish mumkin?",
+            "Aminokislotalar tuzilishi qanday?",
+            "Oqsillar tuzilishi va ularning darajalari?",
+            "Nuklein kislotalar turlari?",
+            "DNK va RNK tuzilish farqlari?",
+            "Polimerlar nima? Ularni qanday sintez qilish mumkin?",
+            "Kondensatsiya va qo'shilish polimerizatsiyasi farqi?",
+            "Izomeriya tushunchasi? Turlari?",
+            "Geometrik izomeriya qachon sodir bo'ladi?",
+            "Optik faollik nima?",
+            "Aromatik birikmalar nima?",
+            "Benzol halqasining xossalari?",
+            "Fenollar xossalari va ularning kislotali xususiyati?",
+            "Alkil va aril guruhlarini farqlang.",
+            "Spirt, fenol, karbon kislota qaysi biri kuchliroq kislota?",
+            "Neytralizatsiya reaksiyasi organik kimyoda qanday sodir bo'ladi?",
+            "Esterifikatsiya reaksiyasi nima?",
+            "Gidroliz nima? Organik birikmalar uchun qanday ahamiyatga ega?",
+            "Dehidratatsiya reaksiyasi nima?",
+            "Galojen almashinish reaksiyalari nima?",
+            "Nitrolash va sulfonlanish reaksiyalari?",
+            "Aminokislotalarning izoelektrik nuqtasi nima?",
+
+            // Atom tuzilishi va davriy qonun — 20 ta
+            "Atom tarkibini tushuntiring.",
+            "Izotoplar nima? Misollar keltiring.",
+            "Elektron konfiguratsiyasini qanday yozish mumkin?",
+            "Kvant sonlar nima? Ularning mazmuni?",
+            "Pauli prinsipi, Gunds qoidasi, Aufbau prinsipi nima?",
+            "Davriy qonun kim tomonidan kashf qilingan?",
+            "Davriy jadvaldagi guruh va davrlar nima ma'noni anglatadi?",
+            "Metallar va metallmaslar xossalari?",
+            "Elektr manfiyligi qanday o'zgaradi?",
+            "Ionlanish energiyasi qanday o'zgaradi?",
+            "Atom radiusi qanday o'zgaradi?",
+            "Elektron qo'shilish energiyasi nima?",
+            "Inert gazlar nima uchun barqaror?",
+            "d-elementlar xossalari?",
+            "f-elementlar nima?",
+            "Elektron formulasi <span class='element'>1s² 2s² 2p⁶</span> bo'lgan elementni aniqlang.",
+            "Xromning elektron konfiguratsiyasida nima g'alati?",
+            "Davriy qonunning zamonaviy shakli qanday?",
+            "Atomning magnit xossalari qanday aniqlanadi?",
+            "Kvant mexanikasining atom tuzilishiga ta'siri?",
+
+            // Elektrokimyo — 15 ta
+            "Galvanik element nima?",
+            "Standart elektrod potensiali nima?",
+            "Nernst tenglamasi qanday ifodalanadi?",
+            "Batareyalar va akkumulyatorlar farqi?",
+            "Kislota-oltingugurtli akkumulyator qanday ishlaydi?",
+            "Elektrolizda katodda nima ajraladi?",
+            "Anodda qanday jarayon sodir bo'ladi?",
+            "Faradey qonunlari nima?",
+            "Elektrolit eritmasidagi tok tashuvchilari kimlar?",
+            "Metallarni elektroliz orqali qanday qayta tiklash mumkin?",
+            "Korroziya nima? Uni qanday oldini olish mumkin?",
+            "Himoya qiluvchi galvanik juftlik nima?",
+            "Elektrokimyoviy korroziya mexanizmi?",
+            "Elektrolizda ajralgan modda massasi qanday hisoblanadi?",
+            "Tok kuchi va elektroliz tezligi orasidagi bog'lanish?",
+
+            // Kimyoviy termodinamika va eritmalari — 15 ta
+            "Eritma nima? Uni tarkibiy qismlari?",
+            "Erigan modda va erituvchi farqi?",
+            "Suyuqlikda moddani eritish jarayoni issiqlik beradimi yoki yutadimi?",
+            "Erituvchanlik qanday omillarga bog'liq?",
+            "To'yingan, to'yinmagan, ortiqcha eritma farqi?",
+            "Molyar, normal, protsentli konsentratsiyalar qanday hisoblanadi?",
+            "Mol ulush nima?",
+            "Kolloid eritmalarning xususiyatlari?",
+            "Termodinamikaning birinchi qonuni kimyoda qanday qo'llaniladi?",
+            "Gibbs energiyasi nima? Reaksiya imkonini qanday aniqlaydi?",
+            "Entropiya kimyoviy jarayonlarda qanday rol o'ynaydi?",
+            "Kimyoviy tenglikda entalpiya va entropiya o'rtasidagi munosabat?",
+            "Gibbs tenglamasi qanday ifodalanadi?",
+            "Kimyoviy reaksiyaning spontanligi qanday aniqlanadi?",
+            "Fazaviy muvozanat — erituvchanlik muvozanati nima?"
+        ];
+
+        const responses = {
+            "Kimyoviy reaksiya tenglamasini qanday tenglashtirish kerak?": "Reaksiya tenglamasini tenglashtirishda reagentlar va mahsulotlarda har bir element atomlari soni teng bo'lishi kerak. Oddiy usul — koeffitsientlarni taxmin qilish, murakkabroq — oksidlanish sonlari yoki elektron balans usuli.",
+            "Oksidlanish-qaytarilish reaksiyalari nima?": "Bunda bir modda elektron beradi (oksidlanadi), ikkinchisi — qabul qiladi (qaytariladi). Oksidlanish soni o'zgaradi.",
+            "Elektron balans usuli qanday ishlaydi?": "1) Oksidlanish sonlarini topish; 2) oksidlanuvchi va qaytaruvchini aniqlash; 3) elektron almashinuvi sonini tenglash; 4) koeffitsientlarni qo'yish.",
+            "Elektroliz nima? Uni qanday amalga oshirish mumkin?": "Elektr toki yordamida eritma yoki suyuq elektrolitda kimyoviy reaksiya olib borish. Katodda qaytarilish, anodda oksidlanish sodir bo'ladi.",
+            "Erigan moddalarning dissotsiatsiyasi nima?": "Elektrolit suvda ionlarga ajralishi. Masalan: <span class='element'>NaCl → Na⁺ + Cl⁻</span>.",
+            "Kuchli va zaif elektrolitlar farqi?": "Kuchli elektrolitlar deyarli to'liq ionlarga ajraladi (HCl, NaOH). Zaif elektrolitlar qisman ajraladi (CH₃COOH, NH₃·H₂O).",
+            "Ion almashinish reaksiyalari qachon sodir bo'ladi?": "Agar mahsulotlarda cho'kma, gaz yoki zaif elektrolit (suv) hosil bo'lsa.",
+            "Kimyoviy muvozanat qanday o'rnatiladi?": "Teskari reaksiyalar tezligi tenglashganda muvozanat o'rnatiladi: <i>v_to'g'ri = v_teskari</i>.",
+            "Le Chatelier prinsipi nima uchun kerak?": "Tashqi ta'sir (harorat, bosim, konsentratsiya) o'zgarishiga tizim qarama-qarshi yo'nalishda javob beradi.",
+            "Kimyoviy reaksiya tezligini qanday ta'sir qiluvchi omillar?": "Konsentratsiya, harorat, bosim (gazlar uchun), maydon, katalizator.",
+            "Katalizator nima? U qanday ishlaydi?": "Reaksiya tezligini oshiruvchi, lekin o'zgarmaydigan modda. Faol to'qnashuvlarni osonlashtiradi.",
+            "Gomogen va geterogen reaksiyalar farqi?": "Gomogen — barcha moddalar bir fazada (masalan, gazlar aralashmasi). Geterogen — har xil fazalarda (suyuqlik + qattiq).",
+            "Issiqlik effekti nima? Eksotermik va endotermik reaksiyalar?": "Eksotermik — issiqlik ajraladi (ΔH < 0). Endotermik — issiqlik yutiladi (ΔH > 0).",
+            "Kimyoviy reaksiyaning entalpiyasi qanday hisoblanadi?": "ΔH = ΣΔH_f(mahsulotlar) - ΣΔH_f(reagentlar)",
+            "Reaksiya tezligi qonuni qanday ifodalanadi?": "<span class='formula'>v = k·[A]ᵐ·[B]ⁿ</span> — reaksiya tezligi konsentratsiyaga bog'liq.",
+            "Faol to'qnashuv nazariyasi nima?": "Reaksiya sodir bo'lishi uchun zarralar etarlicha energiyaga ega (aktivatsiya energiyasi) va to'g'ri yo'naltirilgan to'qnashuvga ega bo'lishi kerak.",
+            "Kimyoviy muvozanat doimiysi qanday aniqlanadi?": "<span class='formula'>K = [C]ᶜ[D]ᵈ / [A]ᵃ[B]ᵇ</span> — faqat erigan yoki gaz moddalar uchun.",
+            "Suvning ion ko'paytmasi nimaga teng?": "<span class='formula'>K_w = [H⁺][OH⁻] = 1·10⁻¹⁴</span> (25°C da).",
+            "pH nima? Uni qanday hisoblaymiz?": "<span class='formula'>pH = -log[H⁺]</span>. 7 — neytral, <7 — kislota, >7 — ishqor.",
+            "Bffer eritmalari nima? Ularning ahamiyati?": "Kislota va uning tuzi (yoki ishqor va uning tuzi) aralashmasi. pH ni barqaror saqlaydi (masalan, qon).",
+
+            "Gomologik qator nima?": "Bir xil funksional guruhga ega, lekin CH₂ guruhiga farq qiluvchi birikmalar ketma-ketligi. Masalan: metan, etan, propan...",
+            "Alkanlar umumiy formulasini ayting.": "<span class='formula'>CₙH₂ₙ₊₂</span>",
+            "Alkenlar va alkinlar farqi?": "Alkenlar — bir ikki bog'li (C=C), umumiy formula <i>CₙH₂ₙ</i>. Alkinlar — uch bog'li (C≡C), <i>CₙH₂ₙ₋₂</i>.",
+            "Arenlar nima? Eng sodda areni ayting.": "Aromatik uglevodorodlar. Eng sodda — <span class='element'>benzol (C₆H₆)</span>.",
+            "Funksional guruh nima? Misollar keltiring.": "Birikmaning kimyoviy xossalarini belgilovchi atom yoki guruh. Masalan: –OH (spirt), –COOH (kislota), –NH₂ (amin).",
+            "Alkogollar turlari va ularning xossalari?": "Bir atomli (metanol), ko'p atomli (etilenglikol). Nordon, suvda eriydi, gidrogen bog' hosil qiladi.",
+            "Aldegidlar va ketonlar orasidagi farq?": "Aldegidlar — –CHO (oxiri), ketonlar — –CO– (o'rtasi). Aldegidlar oksidlanadi, ketonlar — yo'q.",
+            "Karbon kislotalar qanday xossalarga ega?": "Kislotali (H⁺ beradi), sho'r ta'm, NaHCO₃ bilan CO₂ ajratadi.",
+            "Efilar nima? Ularni qanday hosil qilish mumkin?": "Spirt + kislota → efil + suv (esterifikatsiya). Masalan: <span class='element'>CH₃COOH + C₂H₅OH → CH₃COOC₂H₅ + H₂O</span>.",
+            "Aminokislotalar tuzilishi qanday?": "–NH₂ (amin guruhi) va –COOH (karboksil guruhi) hamda R guruhi bor: <span class='element'>H₂N–CHR–COOH</span>.",
+            "Oqsillar tuzilishi va ularning darajalari?": "1° — aminokislotalar zanjiri; 2° — spirallar; 3° — uch o'lchovli tuzilma; 4° — bir nechta zanjir birlashmasi.",
+            "Nuklein kislotalar turlari?": "DNK (deoksiribonuklein kislota) va RNK (ribonuklein kislota).",
+            "DNK va RNK tuzilish farqlari?": "DNK — deoksiriboza, timin (T), ikki zanjirli. RNK — riboza, uratsil (U), bitta zanjirli.",
+            "Polimerlar nima? Ularni qanday sintez qilish mumkin?": "Monomerlarning bir-biriga qo'shilishidan hosil bo'lgan katta molekulalar. Masalan: etilen → polietilen.",
+            "Kondensatsiya va qo'shilish polimerizatsiyasi farqi?": "Qo'shilish — monomerlar qo'shiladi, boshqa mahsulot chiqmaydi. Kondensatsiya — suv yoki boshqa modda chiqadi.",
+            "Izomeriya tushunchasi? Turlari?": "Bir xil formula, har xil tuzilma. Turlari: tuzilish izomeriyasi, fazoviy izomeriya (geometrik, optik).",
+            "Geometrik izomeriya qachon sodir bo'ladi?": "Ikki bog' atrofida erkin aylanish bo'lmasa (masalan, alkenlarda yoki halqali birikmalarda).",
+            "Optik faollik nima?": "Molekula simmetriya tekisligiga ega bo'lmasa, yorug'likni aylantiradi (xiral markaz).",
+            "Aromatik birikmalar nima?": "Delokalizatsiyalangan π-elektronlarga ega bo'lgan barqaror halqali birikmalar (benzol, naftalin).",
+            "Benzol halqasining xossalari?": "Rezonans tufayli barqaror; qo'shilish emas, almashinish reaksiyalari oson ketadi.",
+            "Fenollar xossalari va ularning kislotali xususiyati?": "Benzolga –OH birikkan. Oddiy spirtlardan kuchliroq kislota — aromat halqa elektronlarni tortadi.",
+            "Alkil va aril guruhlarini farqlang.": "Alkil — alkanlardan hosil bo'lgan (–CH₃). Aril — arenlardan (–C₆H₅ — fenil).",
+            "Spirt, fenol, karbon kislota qaysi biri kuchliroq kislota?": "Karbon kislota > fenol > spirt.",
+            "Neytralizatsiya reaksiyasi organik kimyoda qanday sodir bo'ladi?": "Kislota + ishqor → tuz + suv. Masalan: <span class='element'>CH₃COOH + NaOH → CH₃COONa + H₂O</span>.",
+            "Esterifikatsiya reaksiyasi nima?": "Karboksil kislota + spirt → efil + suv. Kislota katalizatorida.",
+            "Gidroliz nima? Organik birikmalar uchun qanday ahamiyatga ega?": "Suv bilan parchalanish. Efil → kislota + spirt; oqsil → aminokislotalar.",
+            "Dehidratatsiya reaksiyasi nima?": "Suv ajralib ketadi. Masalan: spirt → alken + H₂O.",
+            "Galojen almashinish reaksiyalari nima?": "Uglevodoroddagi vodorod galogen bilan almashtiriladi. Masalan: <span class='element'>CH₄ + Cl₂ → CH₃Cl + HCl</span> (yorug'likda).",
+            "Nitrolash va sulfonlanish reaksiyalari?": "Benzolga –NO₂ yoki –SO₃H guruhini kiritish. Kislotali sharoitda.",
+            "Aminokislotalarning izoelektrik nuqtasi nima?": "pH qiymati bo'lib, aminokislota molekulasi zaryadsiz (kation ham, anion ham emas) bo'ladi.",
+
+            "Atom tarkibini tushuntiring.": "Yadro (protonlar, neytronlar) va elektronlar. Proton — +1, neytron — 0, elektron — –1.",
+            "Izotoplar nima? Misollar keltiring.": "Bir xil proton, har xil neytron soni. Masalan: <span class='element'>¹²C, ¹³C, ¹⁴C</span>.",
+            "Elektron konfiguratsiyasini qanday yozish mumkin?": "Kvant sonlar bo'yicha: 1s, 2s, 2p, 3s, 3p, 4s, 3d... Masalan: <span class='element'>O: 1s² 2s² 2p⁴</span>.",
+            "Kvant sonlar nima? Ularning mazmuni?": "n — energetik daraja, l — orbital turi (s,p,d,f), m — orbital yo'nalishi, s — elektron spin.",
+            "Pauli prinsipi, Gunds qoidasi, Aufbau prinsipi nima?": "Pauli — bir orbitada 2 ta elektron bo'lishi mumkin (spin qarama-qarshi). Gunds — orbitallar birin-ketin to'ldiriladi. Aufbau — past energiyalidan boshlab to'ldiriladi.",
+            "Davriy qonun kim tomonidan kashf qilingan?": "D.I. Mendeleyev (1869).",
+            "Davriy jadvaldagi guruh va davrlar nima ma'noni anglatadi?": "Guruh — valent elektronlar soni. Davr — energetik darajalar soni.",
+            "Metallar va metallmaslar xossalari?": "Metallar — elektron beradi, yaltiroq, o'tkazuvchan. Metallmaslar — elektron qabul qiladi.",
+            "Elektr manfiyligi qanday o'zgaradi?": "Chapdan o'ngga — ortadi, yuqoridan pastga — kamayadi. F — eng yuqori.",
+            "Ionlanish energiyasi qanday o'zgaradi?": "Chapdan o'ngga — ortadi, yuqoridan pastga — kamayadi.",
+            "Atom radiusi qanday o'zgaradi?": "Chapdan o'ngga — kamayadi, yuqoridan pastga — ortadi.",
+            "Elektron qo'shilish energiyasi nima?": "Atomga elektron qo'shilganda ajraladigan energiya. Galogennarda eng yuqori.",
+            "Inert gazlar nima uchun barqaror?": "Tashqi qavatlari to'liq — elektron almashinmaydi.",
+            "d-elementlar xossalari?": "O'tish metallari, ko'p valentlik, rangli birikmalar, katalizator sifatida ishlaydi.",
+            "f-elementlar nima?": "Lantanoidlar va aktinoidlar. Radioaktiv (aktinoidlar).",
+            "Elektron formulasi <span class='element'>1s² 2s² 2p⁶</span> bo'lgan elementni aniqlang.": "Neon (Ne), 10 ta elektron.",
+            "Xromning elektron konfiguratsiyasida nima g'alati?": "<span class='element'>Cr: [Ar] 4s¹ 3d⁵</span> — yarim to'ldirilgan d-orbital barqaror.",
+            "Davriy qonunning zamonaviy shakli qanday?": "Xossalari atom raqamiga (proton soniga) davriy ravishda bog'liq.",
+            "Atomning magnit xossalari qanday aniqlanadi?": "Agar juftlanmagan elektron bo'lsa — paramagnit, barcha juft bo'lsa — diamagnit.",
+            "Kvant mexanikasining atom tuzilishiga ta'siri?": "Elektronlarni orbitallar deb qarash — ehtimoliy elektron buluti — kvant mexanikasi asosida.",
+
+            "Galvanik element nima?": "Kimyoviy energiyani elektr energiyasiga aylantiruvchi qurilma (masalan, Daniyel elementi).",
+            "Standart elektrod potensiali nima?": "Elektrodning vodorod elektrodiga nisbatan potensiali (25°C, 1M, 1 atm).",
+            "Nernst tenglamasi qanday ifodalanadi?": "<span class='formula'>E = E⁰ - (RT/nF) lnQ</span> — konsentratsiyaga bog'liq potensial.",
+            "Batareyalar va akkumulyatorlar farqi?": "Batareyalar — qaytarilmas (batareya). Akkumulyatorlar — qayta zaryadlanadi.",
+            "Kislota-oltingugurtli akkumulyator qanday ishlaydi?": "Plyus — PbO₂, minus — Pb, elektrolit — H₂SO₄. Zaryadlanishda PbSO₄ → Pb + PbO₂.",
+            "Elektrolizda katodda nima ajraladi?": "Kationlar qaytariladi: metall yoki vodorod.",
+            "Anodda qanday jarayon sodir bo'ladi?": "Anionlar oksidlanadi yoki anod eriydi.",
+            "Faradey qonunlari nima?": "1) Ajralgan modda massasi tok kuchi va vaqtga proporsional. 2) Bir xil zaryad uchun ekvivalent massalar proporsional.",
+            "Elektrolit eritmasidagi tok tashuvchilari kimlar?": "Ionlar (katyonlar va anionlar).",
+            "Metallarni elektroliz orqali qanday qayta tiklash mumkin?": "Erıtma yoki suyuq tuzdan elektroliz qilish — katodda toza metall ajraladi.",
+            "Korroziya nima? Uni qanday oldini olish mumkin?": "Metallning atrof-muhit ta'sirida vayron bo'lishi. Himoya: bo'yash, galvanika, qurbon qiluvchi metall.",
+            "Himoya qiluvchi galvanik juftlik nima?": "Kamroq nobud bo'luvchi metallni himoya qilish uchun unga ko'proq nobud bo'luvchi metallni ulash (masalan, rux — temirni himoya qiladi).",
+            "Elektrokimyoviy korroziya mexanizmi?": "Metall sirtida mikrogalvanik elementlar hosil bo'ladi — anodda metal eriydi.",
+            "Elektrolizda ajralgan modda massasi qanday hisoblanadi?": "<span class='formula'>m = (M·I·t)/(n·F)</span>, F = 96500 C/mol.",
+            "Tok kuchi va elektroliz tezligi orasidagi bog'lanish?": "Tok kuchi ortsa, elektroliz tezligi oshadi (Faradey qonuni).",
+
+            "Eritma nima? Uni tarkibiy qismlari?": "Erigan modda (solute) + erituvchi (solvent).",
+            "Erigan modda va erituvchi farqi?": "Erigan modda — kam miqdorda (tuz). Erituvchi — ko'p miqdorda (suv).",
+            "Suyuqlikda moddani eritish jarayoni issiqlik beradimi yoki yutadimi?": "Bog' uzilishida — yutiladi, yangi bog' hosil bo'lganda — beriladi. Natijaviy — endo yoki ekzotermik bo'ladi.",
+            "Erituvchanlik qanday omillarga bog'liq?": "Harorat, bosim (gazlar uchun), erituvchi tabiati (\"o'xshash — o'xshashni eritadi\").",
+            "To'yingan, to'yinmagan, ortiqcha eritma farqi?": "To'yingan — erituvchanlik chegarasida. To'yinmagan — kam. Ortiqcha — cho'kma bor.",
+            "Molyar, normal, protsentli konsentratsiyalar qanday hisoblanadi?": "Molyar (mol/l), normal (ekvivalent/l), protsentli = (erigan modda massasi / eritma massasi) × 100%.",
+            "Mol ulush nima?": "Erigan modda mollar soni / umumiy mollar soni.",
+            "Kolloid eritmalarning xususiyatlari?": "Zarralar 1–100 nm, Tyndall effekti, cho'kmaydi.",
+            "Termodinamikaning birinchi qonuni kimyoda qanday qo'llaniladi?": "ΔU = Q - W — ichki energiya o'zgarishi.",
+            "Gibbs energiyasi nima? Reaksiya imkonini qanday aniqlaydi?": "<span class='formula'>ΔG = ΔH - TΔS</span>. Agar ΔG < 0 — reaksiya spontan.",
+            "Entropiya kimyoviy jarayonlarda qanday rol o'ynaydi?": "Tartibsizlik oshsa (ΔS > 0), reaksiya imkoniyati ortadi.",
+            "Kimyoviy tenglikda entalpiya va entropiya o'rtasidagi munosabat?": "ΔG = 0 bo'lganda: <span class='formula'>T = ΔH/ΔS</span> — muvozanat harorati.",
+            "Gibbs tenglamasi qanday ifodalanadi?": "<span class='formula'>ΔG = ΔG⁰ + RT lnQ</span>.",
+            "Kimyoviy reaksiyaning spontanligi qanday aniqlanadi?": "ΔG < 0 — spontan, ΔG > 0 — spontan emas, ΔG = 0 — muvozanat.",
+            "Fazaviy muvozanat — erituvchanlik muvozanati nima?": "Erigan modda tezligi = cho'kma tezligi — to'yingan eritma."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Kimyo darsligi bo'yicha AI yordamchiman. Organik kimyo, elektroliz, atom tuzilishi, kimyoviy reaksiyalar — barchasini chuqur tushuntirishga tayyorman. Savollarni tanlang!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
