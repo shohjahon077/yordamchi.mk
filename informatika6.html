@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Informatika AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f7fa, #b3e5fc, #81d4fa);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #0288d1;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #0288d1, #01579b);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(2, 136, 209, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #0288d1, #01579b, #0288d1);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(2, 136, 209, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(2, 136, 209, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #01579b;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #01579b, #0288d1);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(2, 136, 209, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(2, 136, 209, 0.9);
+      background: linear-gradient(45deg, #014a80, #0277bd);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #01579b;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(2, 136, 209, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #0288d1;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #01579b, #0288d1);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(2, 136, 209, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 253, 255, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #0288d1, #01579b);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e0f7fa, #b3e5fc);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #0288d1;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #0288d1;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 253, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #0288d1;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #01579b, #0288d1);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(2, 136, 209, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(2, 136, 209, 0.7);
+      background: linear-gradient(45deg, #014a80, #0277bd);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(2, 136, 209, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #0288d1;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">💻</div>
+      <h1 class="title">ASCO Informatika AI</h1>
+      <p class="subtitle">6-sinf informatikasida qiyinchilik tug'ilmaydi! Men — sizning shaxsiy informatika o'qituvchingiz. Kompyuter, fayllar, algoritmlar, dasturlash, xavfsizlik — barchasini oddiy va qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🖱️</div>
+        <h2>Informatika AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Axborot nima?')">Axborot nima?</button>
+          <button class="btn-3d" onclick="sendMessage('Kompyuter qurilmalari')">Kompyuter qurilmalari</button>
+          <button class="btn-3d" onclick="sendMessage('Fayl tizimi')">Fayl tizimi</button>
+          <button class="btn-3d" onclick="sendMessage('Algoritm')">Algoritm</button>
+          <button class="btn-3d" onclick="sendMessage('Blok-sxema')">Blok-sxema</button>
+          <button class="btn-3d" onclick="sendMessage('Dasturlash asoslari')">Dasturlash</button>
+          <button class="btn-3d" onclick="sendMessage('Pythonga kirish')">Python</button>
+          <button class="btn-3d" onclick="sendMessage('Internet xavfsizligi')">Internet xavfsizligi</button>
+          <button class="btn-3d" onclick="sendMessage('Matn muharriri')">Matn muharriri</button>
+          <button class="btn-3d" onclick="sendMessage('Grafik muharrir')">Grafik muharrir</button>
+          <button class="btn-3d" onclick="sendMessage('Axborot xavfsizligi')">Axborot xavfsizligi</button>
+          <button class="btn-3d" onclick="sendMessage('Fayl va papka')">Fayl va papka</button>
+          <button class="btn-3d" onclick="sendMessage('Operatsion tizim')">Operatsion tizim</button>
+          <button class="btn-3d" onclick="sendMessage('Shaxsiy ma\'lumotlar')">Shaxsiy ma'lumotlar</button>
+          <button class="btn-3d" onclick="sendMessage('Kiberhavfsizlik')">Kiberhavfsizlik</button>
+          <button class="btn-3d" onclick="sendMessage('Parol')">Parol</button>
+          <button class="btn-3d" onclick="sendMessage('Dasturlash tillari')">Dasturlash tillari</button>
+          <button class="btn-3d" onclick="sendMessage('Robototexnika')">Robototexnika</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Kompyuter tarixi')">Tarixi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning 6-sinf informatika o'qituvchingiz. Kompyuter qurilmalari, algoritmlar, fayllar, internet xavfsizligi yoki dasturlash haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF INFORMATIKA — ASCO LOYIHASI
+
+      if (lower.includes("axborot nima") || lower.includes("axborot")) {
+        response = "Axborot — bizga ma'lumot beruvchi narsa. U:\n\n• So'z (gap, kitob)\n• Rasm (surat, diagramma)\n• Ovoz (musiqa, nutq)\n• Raqam (sonlar, statistika)\n\nMasalan:\n- O'qituvchining dars so'zlari — axborot\n- Ob-havo prognozi — axborot\n\nAxborot — bilim olishning manbai!";
+      } else if (lower.includes("kompyuter qurilmalari")) {
+        response = "Asosiy kompyuter qurilmalari:\n\n1. **Kirish qurilmalari**:\n   - Klaviatura\n   - Sichqoncha\n   - Mikrofon\n2. **Chiqish qurilmalari**:\n   - Monitor\n   - Printer\n   - Dinamik\n3. **Xotira**:\n   - Operativ xotira (RAM)\n   - Doimiy xotira (SSD, HDD)\n4. **Markaziy protsessor (CPU)** — \"miya\"\n\nHammasi birgalikda ishlaydi!";
+      } else if (lower.includes("fayl tizimi")) {
+        response = "Fayl tizimi — fayl va papkalarni tashkil qilish usuli.\n\n• **Fayl** — ma'lumot saqlanadigan hujjat (matn.docx, rasm.jpg)\n• **Papka** — fayllarni guruhlash uchun \"quti\"\n\nMasalan:\n📄 Darslar/\n   ├── Matematika.docx\n   ├── Informatika.txt\n   └── Rasm/\n       └── Tabiat.jpg\n\nPapkalarni daraxt shaklida tuzish — tashkilotga yordam beradi!";
+      } else if (lower.includes("algoritm")) {
+        response = "Algoritm — maqsadga erishish uchun ketma-ket bajariladigan qadamlar to'plami.\n\nXususiyatlari:\n1. Aniqlik (har bir qadam tushunarli)\n2. Ketma-ketlik (tartibli)\n3. Natija (oxiri bo'lishi kerak)\n\nMisol: Non yasash algoritmi\n1. Un va suv aralashtir\n2. Xamir qil\n3. 30 daqiqa kut\n4. Nonni pishir\n\nAlgoritm har kuni hayotda ham ishlatiladi!";
+      } else if (lower.includes("blok-sxema")) {
+        response = "Blok-sxema — algoritmni grafik ko'rinishda ifodalash.\n\nAsosiy bloklar:\n• 🟦 Boshlash / Tugatish\n• 🟨 Kirish / Chiqish\n• 🟩 Amal (hisoblash, o'zgartirish)\n• 🟥 Shart (yo'nalish tanlash)\n\nMisol: Ikki sonni qo'shish\n[Boshlash] → [a, b ni kiritish] → [s = a + b] → [s ni chiqarish] → [Tugatish]\n\nBlok-sxema — dasturlashning birinchi qadami!";
+      } else if (lower.includes("dasturlash asoslari") || lower.includes("dasturlash")) {
+        response = "Dasturlash — kompyuterga buyruq berish san'ati.\n\n6-sinfda asoslar:\n1. Buyruq tushunchasi\n2. Ketma-ketlik\n3. Shartli o'tish\n4. Takrorlash\n\nMisol (so'zda):\n\"Agar yomg'ir yogsa, paypoq kiying, aks holda — krossovkani kiying.\"\n\nBu — shartli operator!\n\nKeyingi bosqich: visual dasturlash (Scratch, Blockly)";
+      } else if (lower.includes("python")) {
+        response = "Python — oddiy va kuchli dasturlash tili. 6-sinf uchun birinchi kod:\n\n```python\nprint(\"Salom, dunyo!\")\n```\n\nNatija: Salom, dunyo!\n\nYana bir misol:\n```python\na = 5\nb = 3\nprint(a + b)\n```\nNatija: 8\n\nPython — o'quvchilar, olimlar, dasturchilar orasida juda mashhur!";
+      } else if (lower.includes("internet xavfsizligi") || lower.includes("kiberhavfsizlik")) {
+        response = "Internetda xavfsiz bo'lish — muhim!\n\nQoidalari:\n✅ Parolni hech kimga bermang\n✅ Noma'lum saytlarga kirmang\n✅ G'ayrioddiy xabarlarga ishonmang\n✅ Shaxsiy ma'lumotlarni tarqatmang\n✅ Antivirusdan foydalaning\n\nEslatma:\n\"Sizga 1 million so'm beramiz!\" — bu ALDASH!\n\nHar doim ota-onangiz bilan maslahatlashing!";
+      } else if (lower.includes("matn muharriri")) {
+        response = "Matn muharriri — matn yozish dasturi.\n\nMashhurlari:\n• Microsoft Word\n• Google Docs\n• Bloknot (Notepad)\n\nAsosiy imkoniyatlar:\n• Matn yozish\n• Shrifty o'zgartirish\n• Rasm qo'shish\n• Tekshirish (xatolarni topish)\n\nMaslahat: Har doim \"Saqlash\" tugmasini bosing! 💾";
+      } else if (lower.includes("grafik muharrir")) {
+        response = "Grafik muharrir — rasm chizish dasturi.\n\nMashhurlari:\n• Paint (Windowsda)\n• Photoshop (professional)\n• Canva (onlayn)\n\nAsosiy vositalar:\n• Qalam\n• Rangsizlagich\n• Shakllar (doira, to'rtburchak)\n• Matn qo'shish\n\nIjod qiling — rasm chizing! 🎨";
+      } else if (lower.includes("axborot xavfsizligi")) {
+        response = "Axborot xavfsizligi — ma'lumotlarni himoya qilish.\n\nXavfli holatlar:\n• Viruslar\n• Parolni o'g'irlash\n• Fayllarni o'chirib yuborish\n\nHimoya choralari:\n1. Parol qo'yish\n2. Ma'lumotlarni nusxalash (backup)\n3. Faqat ishonchli dasturlardan foydalanish\n\nEslatma: USB drayvni noma'lum kompyuterga ulamang!";
+      } else if (lower.includes("fayl va papka")) {
+        response = "FARQLAR:\n\n• **Fayl** — ma'lumot saqlanadigan hujjat (masalan: dars.pdf, rasm.jpg)\n• **Papka** — fayllar uchun \"quti\" (masalan: \"Rasmlar\", \"Darslar\")\n\nMuhim qoida:\n- Faylni o'chirish — ma'lumot yo'qoladi\n- Papkani o'chirish — barcha ichidagi fayllar ham o'chadi!\n\nMaslahat: Fayllaringizni mantiqiy papkalarga joylang!";
+      } else if (lower.includes("operatsion tizim")) {
+        response = "Operatsion tizim (OT) — kompyuterning asosiy dasturi.\n\nVazifalari:\n• Barcha qurilmalarni boshqarish\n• Dasturlarni ishlatish\n• Fayllarni saqlash\n\nMashhur OT lar:\n• Windows (Microsoft)\n• macOS (Apple)\n• Linux (ochiq manbali)\n• Android, iOS (mobil)\n\nSizning kompyuteringizda — ehtimol, Windows yoki macOS!";
+      } else if (lower.includes("shaxsiy ma'lumotlar")) {
+        response = "Shaxsiy ma'lumotlar — kimligingizni aniqlashga yordam beradigan axborot:\n\n• Ism-familyangiz\n• Tug'ilgan sanangiz\n• Maktabingiz\n• Telefon raqamingiz\n• Manzilingiz\n\n⚠️ Internetda hech qachon:\n❌ To'liq ism-familyangizni bermang\n❌ Maktabingiz nomini yozmang\n❌ Rasm jo'nating (shaxsiy)\n\nDoim ota-onangiz bilan maslahatlashing!";
+      } else if (lower.includes("parol")) {
+        response = "Xavfsiz parol — kuchli parol!\n\n✅ Yaxshi parol:\n- Kamida 8 ta belgi\n- Son + harf + maxsus belgi (!, @, #)\n- Mantiqsiz ketma-ketlik: N3sP@ssW0rd!\n\n❌ Yomon parol:\n- 123456\n- password\n- ismingiz\n- tug'ilgan sanangiz\n\nMaslahat: Har bir sayt uchun alohida parol qo'ying!\nParolni qog'ozga yozib saqlang (internetda emas)!";
+      } else if (lower.includes("dasturlash tillari")) {
+        response = "Dasturlash tillari — kompyuterga buyruq berish vositasi.\n\nTurlari:\n• **Dastlabki**: Python, JavaScript, C++\n• **Visual**: Scratch, Blockly (6-sinf uchun a'lo!)\n• **Maxsus**: HTML (veb), SQL (ma'lumotlar bazasi)\n\n6-sinfda:\n- Scratch yoki Blockly orqali dasturlashni o'rganasiz\n- Keyinchalik — Python\n\nHar bir til — yangi imkoniyat!";
+      } else if (lower.includes("robototexnika")) {
+        response = "Robototexnika — robotlarni yasash va boshqarish.\n\n6-sinfda:\n• Qanday robotlar mavjudligi\n• Oddiy robotning tuzilishi (motor, sensor, mikrokontroller)\n• Algoritm asosida harakat qiladi\n\nMashhur platformalar:\n• LEGO Mindstorms\n• Arduino (boshlang'ich)\n\nRobototexnika — kelajak kasblaridan biri!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men so'z emasman, lekin gapiraman.\nMen rasm emasman, lekin ko'rsataman.\nMen klaviatura emasman, lekin yozaman.\nMen nima?\"\n\n💡 Javob: **Kompyuter monitori**!\n\nYana biri:\n\"Men yonmayman, lekin nur sochaman.\nMen suv emasman, lekin sovitaman.\nMen nima?\"\n💡 Javob: **Protsessor**!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nBirinchi kompyuter (ENIAC) 1945-yilda yasalgan.\n\nUning xususiyatlari:\n• Og'irligi: 27 TONNA!\n• Xonaga sig'adi\n• Bugungi kalkulyatordan ham sekinroq hisoblagan\n\nBugungi smartfoningiz — ENIACdan million marta kuchliroq! 📱";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nFayl tizimini chizing:\n\n• Papka: \"Maktab\"\n  → Papka: \"6-sinf\"\n    → Fayl: \"Informatika.docx\"\n    → Fayl: \"Matematika.pdf\"\n  → Papka: \"Rasmlar\"\n    → Fayl: \"Sinfga_rasm.jpg\"\n\nKeyin unga yo'lni yozing:\n\n✅ Javob: Maktab/6-sinf/Informatika.docx";
+      } else if (lower.includes("kompyuter tarixi")) {
+        response = "Kompyuter tarixi:\n\n• Qadimda: Abak — hisoblash uchun\n• 1642: Blez Paskal — birinchi mexanik hisoblovchi\n• 1837: Charles Babbage — \"Analitik mashina\" (dasturlanadigan kompyuter g'oyasi)\n• 1945: ENIAC — birinchi elektron kompyuter\n• 1981: IBM PC — shaxsiy kompyuterlar boshlandi\n\nBugun: Smartfonlar — kichik kompyuter!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning 6-sinf informatika o'qituvchingizman. Kompyuter, algoritm, fayllar yoki internet xavfsizligi haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Informatikani o'rganish — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli informatika o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf informatikasida yordam berishga tayyorman. Iltimos, \"algoritm\", \"fayl tizimi\", \"internet xavfsizligi\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
