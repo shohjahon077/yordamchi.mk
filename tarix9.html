@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Tarix (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Tarix</h1>
+        <p>9-sinf uchun: Mo'g'ul istilosi, Amir Temur, XIX–XX asrlar, jahon urushlari, Sovet davri, mustaqillik — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📜</div>
+            <h2>Tarix Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligiga mos — O'rtа Osiyo, Mo'g'ul istilosi, Temur, XIX–XX asrlar, Sovet davri, mustaqillik</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ TARIX ma'lumotlar bazasi (9-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Tarix — o'tmishni tushunish orqali kelajakni qurish fanidir. Qaysi davr qiziqarli?",
+                buttons: [
+                    { text: "🛡️ Mo'g'ul istilosi", key: "mogul_istilosi" },
+                    { text: "🦁 Amir Temur", key: "amir_temur" },
+                    { text: "🌍 XIX asr", key: "xix_asr" },
+                    { text: "💣 Birinchi jahon urushi", key: "birinchi_urush" },
+                    { text: "⚡ Ikkinchi jahon urushi", key: "ikkinchi_urush" },
+                    { text: "☭ Sovet davri", key: "sovet_davri" },
+                    { text: "🇺🇿 Mustaqillik", key: "mustaqillik_9" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mogul_istilosi": {
+                text: "1219–1224-yillarda Chingizxon O'rtа Osiyoni bosib oldi. Natijasi qanday bo'ldi?",
+                buttons: [
+                    { text: "Bosib olish jarayoni", key: "bosib_olish" },
+                    { text: "Xorazmshoh davlati", key: "xorazmshoh" },
+                    { text: "Miras", key: "mogul_miras" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "bosib_olish": {
+                text: "<span class='location'>Mo'g'ul istilosi</span> — 1219-yilda boshlandi. Samarqand, Buxoro, Urganch qo'lga kiritildi. Shaharlar vayron qilindi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mogul_istilosi", isHome: true }]
+            },
+            "xorazmshoh": {
+                text: "<span class='location'>Xorazmshoh Muhammad</span> — O'zbekistonning oxirgi mustaqil hukmdori. Mo'g'ullarga qarshi qarshilik ko'rsatdi, lekin g'alaba qozona olmadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mogul_istilosi", isHome: true }]
+            },
+            "mogul_miras": {
+                text: "<span class='fact'>Qiziq fakt: Mo'g'ullar O'rtа Osiyoda qatag'on o'tkazdilar, ammo keyinchalik qonun (Yasa) kiritdilar. Savdo yo'llari qayta tiklandi.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "mogul_istilosi", isHome: true }]
+            },
+            "amir_temur": {
+                text: "Amir Temur — 14-asrda O'zbekistonning buyuk davlat arbobi. U qanday imperiya qurdi?",
+                buttons: [
+                    { text: "Temurning tug'ilishi", key: "temur_tugilishi" },
+                    { text: "Samarqand poytaxt", key: "temur_samarqand" },
+                    { text: "G'azotlar", key: "temur_ghazotlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "temur_tugilishi": {
+                text: "<span class='location'>Amir Temur</span> — 1336-yilda Sirdaryo bo'yidagi Kesh (Shahrisabz) shahrida tug'ilgan. Barlas qabilasiga mansub bo'lgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "amir_temur", isHome: true }]
+            },
+            "temur_samarqand": {
+                text: "<span class='location'>Samarqand</span> — Temurning poytaxti. U shaharni dunyoning eng go'zal shahri qildi. Registon, Bibi Xonim, G'uri Amir — uning merosi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "amir_temur", isHome: true }]
+            },
+            "temur_ghazotlar": {
+                text: "<span class='location'>G'azotlar</span> — Temur 35 ta g'azot uyushtirgan. Hindiston, Shimoliy Xitoy, Hindiston, Turkiya, Rossiya hududlariga kirib borgan.",
+                buttons: [{ text: "⬅️ Orqaga", key: "amir_temur", isHome: true }]
+            },
+            "xix_asr": {
+                text: "XIX asrda Rossiya imperiyasi O'zbekiston hududiga kirib keldi. Natijasi qanday bo'ldi?",
+                buttons: [
+                    { text: "Toshkent bosib olish", key: "toshkent_bosib" },
+                    { text: "Buxoro va Xiva amirliklari", key: "buxoro_xiva" },
+                    { text: "Jadidlar harakati", key: "jadidlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "toshkent_bosib": {
+                text: "<span class='location'>Toshkent</span> — 1865-yilda general M.G. Chernyaev tomonidan bosib olingan. Bu Rossiyaning O'zbekistonga kirish boshi bo'ldi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "xix_asr", isHome: true }]
+            },
+            "buxoro_xiva": {
+                text: "<span class='location'>Buxoro va Xiva amirliklari</span> — 1873-yilda Rossiya vassaliga aylandi. Ichki ishlarida mustaqillik saqlangan, lekin tashqi siyosat Rossiya nazoratida.",
+                buttons: [{ text: "⬅️ Orqaga", key: "xix_asr", isHome: true }]
+            },
+            "jadidlar": {
+                text: "<span class='fact'>Qiziq fakt: Jadidlar — yangi usul maktablari. Abdulla Avloniy, Mahmudxo'ja Behbudiy — jadidlar harakati yetakchilari.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "xix_asr", isHome: true }]
+            },
+            "birinchi_urush": {
+                text: "Birinchi jahon urushi — 1914–1918-yillarda bo'lib o'tdi. O'zbekiston qanday ta'sirga uchradi?",
+                buttons: [
+                    { text: "Sabablari", key: "birinchi_sabab" },
+                    { text: "O'zbekiston roli", key: "o'zbekiston_birinchi" },
+                    { text: "Natijasi", key: "birinchi_natija" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "birinchi_sabab": {
+                text: "Sabablari: millatchilik, imperializm, qurolli poyga, mafquriylik. Sarajevoda Frants Ferdinand o'ldirilishi urush boshlanishiga sabab bo'ldi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "birinchi_urush", isHome: true }]
+            },
+            "o'zbekiston_birinchi": {
+                text: "<span class='location'>O'zbekiston</span> — Rossiya tarkibida bo'lgani uchun urushga qatnashdi. 500 mingdan ortiq o'zbek askarlari yuborildi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "birinchi_urush", isHome: true }]
+            },
+            "birinchi_natija": {
+                text: "Natijasi: Germaniya mag'lubiyatga uchradi. Rossiya imperiyasi quladi. O'zbekistonda sovet hokimiyati o'rnatiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "birinchi_urush", isHome: true }]
+            },
+            "ikkinchi_urush": {
+                text: "Ikkinchi jahon urushi — 1939–1945-yillarda bo'lib o'tdi. O'zbekiston ham katta qurbonlik qildi.",
+                buttons: [
+                    { text: "Sabablari", key: "ikkinchi_sabab" },
+                    { text: "O'zbekiston qatnashuvi", key: "o'zbekiston_ikkinchi" },
+                    { text: "Evakuatsiya", key: "evakuatsiya" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ikkinchi_sabab": {
+                text: "Sabablari: Germaniya revansh (qasos) istagi, fashizm tarqalishi, mudofaa qilishning kamligi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ikkinchi_urush", isHome: true }]
+            },
+            "o'zbekiston_ikkinchi": {
+                text: "<span class='location'>O'zbekiston</span> — 1 milliondan ortiq askar yubordi. Ulardan 450 mingdan ortiq halok bo'ldi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ikkinchi_urush", isHome: true }]
+            },
+            "evakuatsiya": {
+                text: "<span class='fact'>Qiziq fakt: Urush davrida 1200 dan ortiq korxona, 100 mingdan ortiq odam Toshkentga evakuatsiya qilindi.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "ikkinchi_urush", isHome: true }]
+            },
+            "sovet_davri": {
+                text: "1924–1991-yillarda O'zbekiston — Sovet Ittifoqining tarkibiy qismi bo'ldi.",
+                buttons: [
+                    { text: "O'zbekiston SSR", key: "uzbek_ssr" },
+                    { text: "Iqtisodiy o'zgarishlar", key: "iqtisodiy_ozgarish" },
+                    { text: "Xalq ta'limi", key: "ta'lim_sovet" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "uzbek_ssr": {
+                text: "<span class='location'>O'zbekiston SSR</span> — 1924-yilda tashkil etildi. Poytaxti — Toshkent. 15 respublikadan biri bo'ldi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sovet_davri", isHome: true }]
+            },
+            "iqtisodiy_ozgarish": {
+                text: "<span class='location'>Iqtisodiy o'zgarishlar</span> — paxtachilik keng joriy qilindi. Qaynon, Farg'ona vodiysi — paxta yetishtirish markaziga aylandi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sovet_davri", isHome: true }]
+            },
+            "ta'lim_sovet": {
+                text: "<span class='location'>Xalq ta'limi</span> — 7 yillik, so'ngra o'rta ta'lim joriy etildi. O'zbek tilida o'qitish qisqartirildi. Rus tili majburiy qilindi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sovet_davri", isHome: true }]
+            },
+            "mustaqillik_9": {
+                text: "1991-yilda O'zbekiston mustaqillikka erishdi. Qanday bosqichlarni bosib o'tdi?",
+                buttons: [
+                    { text: "Mustaqillik e'loni", key: "mustaqillik_elon" },
+                    { text: "Konstitutsiya", key: "konstitutsiya_9" },
+                    { text: "Davlat qurilishi", key: "davlat_qurilishi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mustaqillik_elon": {
+                text: "<span class='location'>1991-yil 31-avgust</span> — O'zbekiston Oliy Kengashi tomonidan mustaqillik e'lon qilindi. Bu sana — Milliy bayram.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik_9", isHome: true }]
+            },
+            "konstitutsiya_9": {
+                text: "<span class='location'>1992-yil 8-dekabr</span> — O'zbekiston Respublikasining Konstitutsiyasi qabul qilindi. Davlat tuzumi — prezidentlik respublikasi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik_9", isHome: true }]
+            },
+            "davlat_qurilishi": {
+                text: "<span class='location'>Davlat qurilishi</span> — prezident, Oliy Majlis, Hukumat, Oliy Sud. Fuqarolar huquqlari va ozodliklari kafolatlandi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mustaqillik_9", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Mo'g'ul istilosi", key: "test_mogul" },
+                    { text: "Amir Temur", key: "test_temur" },
+                    { text: "Ikkinchi jahon urushi", key: "test_ikkinchi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_mogul": {
+                text: "1. Mo'g'ul istilosi qachon boshlandi?\nA) 1215   B) 1219   C) 1225",
+                buttons: [
+                    { text: "A) 1215", key: "test_mogul_a" },
+                    { text: "B) 1219", key: "test_mogul_b" },
+                    { text: "C) 1225", key: "test_mogul_c" }
+                ]
+            },
+            "test_mogul_b": {
+                text: "✅ To'g'ri! Mo'g'ul istilosi 1219-yilda boshlandi. Chingizxon O'rtа Osiyoga hujum qildi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_temur": {
+                text: "2. Amir Temurning poytaxti qayer edi?\nA) Buxoro   B) Toshkent   C) Samarqand",
+                buttons: [
+                    { text: "A) Buxoro", key: "test_temur_a" },
+                    { text: "B) Toshkent", key: "test_temur_b" },
+                    { text: "C) Samarqand", key: "test_temur_c" }
+                ]
+            },
+            "test_temur_c": {
+                text: "✅ Ajoyib! Amir Temurning poytaxti — Samarqand. U shaharni dunyoning eng go'zal shahri qildi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_ikkinchi": {
+                text: "3. Ikkinchi jahon urushi qachon tugadi?\nA) 1944   B) 1945   C) 1946",
+                buttons: [
+                    { text: "A) 1944", key: "test_ikkinchi_a" },
+                    { text: "B) 1945", key: "test_ikkinchi_b" },
+                    { text: "C) 1946", key: "test_ikkinchi_c" }
+                ]
+            },
+            "test_ikkinchi_b": {
+                text: "✅ To'g'ri! Ikkinchi jahon urushi 1945-yil 2-sentyabrda tugadi. Yaponiya taslim bo'ldi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
