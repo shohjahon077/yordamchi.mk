@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — English AI for 6th Grade</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff3e0, #ffccbc, #ffb74d);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #ff9800;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #ff9800, #e65100);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(255, 152, 0, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff9800, #e65100, #ff9800);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(255, 152, 0, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(255, 152, 0, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #bf360c;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(255, 152, 0, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(255, 152, 0, 0.9);
+      background: linear-gradient(45deg, #bf360c, #ff8a00);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #bf360c;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(255, 152, 0, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #ff9800;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(255, 152, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(255, 248, 230, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #ff9800, #e65100);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #fff3e0, #ffccbc);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #ff9800;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff9800;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(255, 248, 230, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #ff9800;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(255, 152, 0, 0.7);
+      background: linear-gradient(45deg, #bf360c, #ff8a00);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 152, 0, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #ff9800;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">📚</div>
+      <h1 class="title">ASCO English AI</h1>
+      <p class="subtitle">You're struggling with 6th grade English? I'm your personal English teacher! I'll explain vocabulary, grammar, sentences, and tenses in a fun, easy way. Use buttons or type your question!</p>
+      <button class="start-btn" onclick="startChat()">Start</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🗣️</div>
+        <h2>English AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Alphabet')">Alphabet</button>
+          <button class="btn-3d" onclick="sendMessage('Greetings')">Greetings</button>
+          <button class="btn-3d" onclick="sendMessage('Present Simple')">Present Simple</button>
+          <button class="btn-3d" onclick="sendMessage('Present Continuous')">Present Continuous</button>
+          <button class="btn-3d" onclick="sendMessage('Past Simple')">Past Simple</button>
+          <button class="btn-3d" onclick="sendMessage('There is / There are')">There is / There are</button>
+          <button class="btn-3d" onclick="sendMessage('Plural Nouns')">Plural Nouns</button>
+          <button class="btn-3d" onclick="sendMessage('Articles')">Articles</button>
+          <button class="btn-3d" onclick="sendMessage('Pronouns')">Pronouns</button>
+          <button class="btn-3d" onclick="sendMessage('Adjectives')">Adjectives</button>
+          <button class="btn-3d" onclick="sendMessage('Prepositions')">Prepositions</button>
+          <button class="btn-3d" onclick="sendMessage('Daily Routines')">Daily Routines</button>
+          <button class="btn-3d" onclick="sendMessage('Family Members')">Family Members</button>
+          <button class="btn-3d" onclick="sendMessage('School Subjects')">School Subjects</button>
+          <button class="btn-3d" onclick="sendMessage('Food and Drinks')">Food and Drinks</button>
+          <button class="btn-3d" onclick="sendMessage('Animals')">Animals</button>
+          <button class="btn-3d" onclick="sendMessage('Colors')">Colors</button>
+          <button class="btn-3d" onclick="sendMessage('Numbers')">Numbers</button>
+          <button class="btn-3d" onclick="sendMessage('Questions')">Questions</button>
+          <button class="btn-3d" onclick="sendMessage('Can / Can't')">Can / Can't</button>
+          <button class="btn-3d" onclick="sendMessage('Like / Dislike')">Like / Dislike</button>
+          <button class="btn-3d" onclick="sendMessage('Practice')">Practice</button>
+          <button class="btn-3d" onclick="sendMessage('Riddle')">Riddle</button>
+          <button class="btn-3d" onclick="sendMessage('Fun Fact')">Fun Fact</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Hello! I'm your 6th grade English teacher. I'll help you with grammar, vocabulary, sentences, and tenses — in a fun and easy way! Use the buttons below or type your question!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("You", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "You" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6TH GRADE ENGLISH — ASCO PROJECT
+
+      if (lower.includes("alphabet") || lower.includes("letters")) {
+        response = "The English alphabet has 26 letters:\n\nA B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n\nVowels: A, E, I, O, U (sometimes Y)\nConsonants: All other letters\n\n💡 Tip: Practice writing them daily — even in your notebook!";
+      } else if (lower.includes("greetings")) {
+        response = "Common greetings:\n\n• Hello / Hi — informal\n• Good morning / afternoon / evening — formal\n• How are you? — I'm fine, thank you. And you?\n• Nice to meet you!\n• Goodbye / Bye / See you later!\n\n💡 Use 'Hi' with friends, 'Good morning' with teachers!";
+      } else if (lower.includes("present simple")) {
+        response = "Present Simple — for habits, facts, routines.\n\n✅ Structure:\n- I/You/We/They + verb (play, eat, go)\n- He/She/It + verb + s (plays, eats, goes)\n\nExamples:\n• I play football every Saturday.\n• She watches TV in the evening.\n\n❌ Don't use 's' with I/You/We/They!\n\nQuestions: Do you like apples? Yes, I do.\nNegatives: I don't like broccoli.";
+      } else if (lower.includes("present continuous")) {
+        response = "Present Continuous — for actions happening NOW.\n\n✅ Structure: am/is/are + verb-ing\n\nExamples:\n• I am reading a book now.\n• She is cooking dinner.\n• They are playing football.\n\n❌ Not for habits! (Don't say: 'I am playing football every day.')\n\nClues: now, at the moment, right now, listen!, look!";
+      } else if (lower.includes("past simple")) {
+        response = "Past Simple — for completed actions in the past.\n\n✅ Regular verbs: verb + ed (played, watched, cleaned)\n\nExamples:\n• I played football yesterday.\n• She watched a movie last night.\n\n❌ Irregular verbs: went, ate, saw, did, had\n\nQuestions: Did you go to school? Yes, I did.\nNegatives: I didn't eat breakfast.";
+      } else if (lower.includes("there is / there are")) {
+        response = "There is / There are — to say something exists.\n\n• There is + singular noun (There is a book on the table.)\n• There are + plural noun (There are three chairs in the room.)\n\nNegatives:\n• There isn't a cat. (There is not)\n• There aren't any apples.\n\nQuestions:\n• Is there a library? Yes, there is.\n• Are there any students? Yes, there are.";
+      } else if (lower.includes("plural nouns")) {
+        response = "Making nouns plural:\n\n✅ Add -s: cat → cats, book → books\n✅ Add -es: box → boxes, watch → watches (after s, sh, ch, x, z)\n✅ Change -y to -ies: baby → babies, city → cities\n✅ Irregular: child → children, man → men, woman → women\n\n💡 Tip: 'Fish' stays the same — one fish, two fish!";
+      } else if (lower.includes("articles")) {
+        response = "Articles: a, an, the\n\n• 'a' — before consonant sounds: a book, a cat\n• 'an' — before vowel sounds: an apple, an hour\n• 'the' — for specific things: the book I bought, the sun\n\nExamples:\n• I want an orange. (any orange)\n• I want the orange on the table. (this one!)\n\n💡 No article for plural or uncountable nouns: I like cats. I drink water.";
+      } else if (lower.includes("pronouns")) {
+        response = "Personal Pronouns:\n\nSubject: I, you, he, she, it, we, they\nObject: me, you, him, her, it, us, them\n\nExamples:\n• I love music. → He loves music.\n• She gave me a gift. → He gave her a gift.\n\n💡 Subject = who does the action\nObject = who receives the action";
+      } else if (lower.includes("adjectives")) {
+        response = "Adjectives describe nouns:\n\n• Color: red, blue, green\n• Size: big, small, tall\n• Feelings: happy, sad, tired\n• Shape: round, square, long\n\nExamples:\n• She has a beautiful dress.\n• It's a very interesting book.\n\n💡 Order: Opinion + Size + Age + Shape + Color + Origin + Material + Purpose\n→ 'a lovely small old round wooden table'";
+      } else if (lower.includes("prepositions")) {
+        response = "Common prepositions (place & time):\n\nPlace:\n• in — in the room, in London\n• on — on the table, on the wall\n• under — under the chair\n• next to — next to the door\n• between — between two books\n\nTime:\n• at — at 5 o'clock, at night\n• on — on Monday, on July 5th\n• in — in the morning, in 2025\n\n💡 Remember: 'in the car', 'on the bus'!";
+      } else if (lower.includes("daily routines")) {
+        response = "Daily routines — what you do every day:\n\n• I wake up at 7 a.m.\n• I brush my teeth.\n• I go to school.\n• I have lunch at 1 p.m.\n• I do my homework.\n• I watch TV in the evening.\n• I go to bed at 10 p.m.\n\n💡 Use Present Simple for routines!\nUse time expressions: every day, at 7, in the morning, after school.";
+      } else if (lower.includes("family members")) {
+        response = "Family members:\n\n• mother / mom\n• father / dad\n• brother\n• sister\n• grandfather / grandpa\n• grandmother / grandma\n• uncle\n• aunt\n• cousin\n\nExample sentence:\n• My mom is a teacher. My dad is a doctor.\n• I have one brother and one sister.\n\n💡 Use 'has got' or 'have got':\n• I have got two cousins.\n• She has got a pet dog.";
+      } else if (lower.includes("school subjects")) {
+        response = "Common school subjects:\n\n• English\n• Mathematics (Math)\n• Science\n• History\n• Geography\n• Art\n• Music\n• Physical Education (PE)\n• Computer Science\n\nExample:\n• I like Science because it's interesting.\n• I don't like History — it's boring.\n\n💡 Use 'I like' or 'I don't like' + subject.\nUse 'My favorite subject is...' for preference.";
+      } else if (lower.includes("food and drinks")) {
+        response = "Food and drinks:\n\n• Food: bread, rice, meat, fruit, vegetables, cheese\n• Drinks: water, milk, juice, tea, coffee\n\nCountable: apples, eggs, sandwiches\nUncountable: water, rice, sugar\n\nExamples:\n• I eat an apple every day.\n• I drink milk for breakfast.\n• I don't like coffee — it's too bitter.\n\n💡 Use 'some' for uncountable: I need some water.\nUse 'a lot of' for both: I have a lot of friends.";
+      } else if (lower.includes("animals")) {
+        response = "Animals:\n\n• Pets: dog, cat, rabbit, hamster\n• Farm animals: cow, pig, chicken, sheep\n• Wild animals: lion, tiger, elephant, monkey\n• Birds: eagle, parrot, pigeon, owl\n\nExamples:\n• I have a pet dog named Max.\n• Elephants are big and smart.\n• Parrots can talk!\n\n💡 Use 'It' for animals: The cat is sleeping. It is cute.";
+      } else if (lower.includes("colors")) {
+        response = "Basic colors:\n\nRed, blue, yellow, green, orange, purple, pink, brown, black, white, gray\n\nExamples:\n• My bag is blue.\n• The sky is blue.\n• I like green apples.\n\n💡 Use 'What color is...?' to ask:\n• What color is your pen? — It's red.";
+      } else if (lower.includes("numbers")) {
+        response = "Numbers 1-20:\n\n1 one, 2 two, 3 three, 4 four, 5 five, 6 six, 7 seven, 8 eight, 9 nine, 10 ten\n11 eleven, 12 twelve, 13 thirteen, 14 fourteen, 15 fifteen, 16 sixteen, 17 seventeen, 18 eighteen, 19 nineteen, 20 twenty\n\nTens: 30 thirty, 40 forty, 50 fifty, 60 sixty, 70 seventy, 80 eighty, 90 ninety\n\nExamples:\n• I have 17 books.\n• She is 13 years old.\n• There are 45 students in our class.";
+      } else if (lower.includes("questions")) {
+        response = "Question words:\n\n• Who? — person\n• What? — thing\n• Where? — place\n• When? — time\n• Why? — reason\n• How? — way/manner\n\nExamples:\n• Who is your best friend?\n• What is your favorite food?\n• Where do you live?\n• When do you get up?\n• Why do you like English?\n• How old are you?\n\n💡 Start question with question word + auxiliary verb (do, does, is, are).";
+      } else if (lower.includes("can / can't")) {
+        response = "'Can' = ability or permission\n\n• I can swim. (I know how to swim)\n• She can play the piano.\n• We can go outside now.\n\nNegative: can't = cannot\n• I can't ride a bike.\n• He can't speak French.\n\nQuestions: Can you help me?\nYes, I can. / No, I can't.\n\n💡 Use 'can' for skills, not habits!";
+      } else if (lower.includes("like / dislike")) {
+        response = "Like / Dislike — express preferences:\n\n• I like apples.\n• She likes music.\n• They don't like math.\n• He doesn't like spicy food.\n\nQuestions:\n• Do you like pizza? Yes, I do. / No, I don't.\n• Does she like dancing? Yes, she does.\n\n💡 Use 'I like to...' for actions:\n• I like to read books.\n• I like playing football.";
+      } else if (lower.includes("practice")) {
+        response = "Try this practice:\n\nMake a sentence:\n\nWords: 'She / every day / reads / a book'\n\n✅ Answer: She reads a book every day.\n\nNow try: 'They / in the evening / watch / TV'\n\n✅ Answer: They watch TV in the evening.\n\n💡 Remember: Present Simple for habits! Use 's' for he/she/it!";
+      } else if (lower.includes("riddle")) {
+        response = "Riddle:\n\n'I have keys but no locks.\nI have space but no room.\nYou can enter but can't go inside.\nWhat am I?'\n\n💡 Answer: A keyboard! 🎹\n\nAnother one:\n'I'm tall when I'm young, short when I'm old. What am I?'\n💡 Answer: A candle! 🕯️";
+      } else if (lower.includes("fun fact")) {
+        response = "🌟 Fun Fact:\n\nThe word 'robot' comes from the Czech word 'robota', which means 'forced labor'!\n\nThe first robot was invented in 1921 — in a play called 'R.U.R.'\n\n💡 English is full of surprises — keep learning!";
+      } else if (lower.includes("hello") || lower.includes("hi") || lower.includes("assalomu alaykum")) {
+        response = "Hello! 😊 I'm your 6th grade English teacher. Need help with grammar, vocabulary, or sentences? Just ask!";
+      } else if (lower.includes("thank you") || lower.includes("thanks")) {
+        response = "You're welcome! 😊 I'm happy to help. Ask me anything else — I'm always ready!";
+      } else if (lower.includes("good") || lower.includes("nice")) {
+        response = "Great! You're doing well! 😊 What else would you like to learn?";
+      } else if (lower.includes("who are you") || lower.includes("what is your name")) {
+        response = "I'm ASCO's AI English teacher, specially designed for 6th grade students! I explain grammar, vocabulary, and sentences in a fun, easy way. I love teaching you!";
+      } else {
+        response = "That's a new question for me! 😊 I'm here to help you with 6th grade English — vocabulary, grammar, or tenses. Try asking about 'Present Simple', 'like/dislike', or 'riddle'!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let enVoice = voices.find(v => v.lang.startsWith('en'));
+      if (!enVoice) enVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (enVoice) utterance.voice = enVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Repeat';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^You:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
