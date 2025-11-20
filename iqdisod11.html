@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Iqtisodiyot AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #2c1b18, #3e2723, #1e120f);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a0f0c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #ff9800;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ff9800"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(30, 20, 15, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(255, 152, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(10, 5, 0, 0.9);
+            color: #ff9800;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 152, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #e65100, #ff6d00);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #ff9800, #ffad33);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ff9800;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(10, 5, 0, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(255, 152, 0, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ff9800 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ff9800;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(50, 30, 10, 0.4);
+            color: #ff9800;
+            border: 1px solid rgba(255, 152, 0, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(255, 152, 0, 0.25);
+            border-color: #ff9800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23ff9800"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .term {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            color: #ffcc80;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Iqtisodiyot AI Bot</div>
+        <div class="splash-subtext">Bozor iqtisodiyoti, moliya, bank, byudjet, soliq, xalqaro savdo, korporativ menejment</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">📈 11-sinf Iqtisodiyot AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Iqtisodiyot asoslari — 20 ta
+            "Iqtisodiyot nima? Uning asosiy maqsadi?",
+            "Cheklangan resurslar va cheksiz ehtiyojlar nima ma'noni anglatadi?",
+            "Iqtisodiy tizim tushunchasi va turlari?",
+            "An'anaviy iqtisodiyot qanday ishlaydi?",
+            "Bozor iqtisodiyoti qanday tashkil etilgan?",
+            "Rejalashtirilgan (markazlashtirilgan) iqtisodiyotning kamchiliklari?",
+            "Aralash iqtisodiyot nima?",
+            "Talab qonuni nima?",
+            "Taklif qonuni nima?",
+            "Bozor muvozanati qanday o'rnatiladi?",
+            "Elastiklik tushunchasi — narxga bo'lgan talab elastikligi?",
+            "Iqtisodiy foyda nima?",
+            "Imkoniyat (alternativ) xarajatlar nima?",
+            "Marginal (chegaraviy) tahlil nima?",
+            "Ishlab chiqarish imkoniyatlari chegarasi nima?",
+            "Xususiy mulk huquqi iqtisodiyotda qanday rol o'ynaydi?",
+            "Raqobat qanday iqtisodiy samaradorlikka olib keladi?",
+            "Monopoliya nima? U qanday zarar yetkazadi?",
+            "Davlat iqtisodiyotdagi roli qanday?",
+            "Milliy daromad (MD) va yalpi ichki mahsulot (YIM) farqi?",
+
+            // Moliya va bank — 25 ta
+            "Moliya tizimi nima? Uning tarkibiy qismlari?",
+            "Markaziy bankning asosiy vazifalari?",
+            "Tijorat banklari qanday ishlaydi?",
+            "Depozit va kredit tushunchalari?",
+            "Foiz stavkasi nima? U iqtisodiyotga qanday ta'sir qiladi?",
+            "Inflyatsiya nima? Uning sabablari?",
+            "Inflyatsiya turilari (kutilgan, kutilmagan, galopiruyushchi, giperinflyatsiya)?",
+            "Pulning vazifalari?",
+            "Pul massasi tushunchasi?",
+            "Valyuta kursi qanday shakllanadi?",
+            "Devalvatsiya va revalvatsiya nima?",
+            "Inflyatsiyaga qarshi davlat siyosati?",
+            "Kredit tarixi nima uchun muhim?",
+            "Bank krediti olish uchun qanday shartlar kerak?",
+            "Kredit qaytarish jadvalini qanday hisoblaymiz?",
+            "Kapitalizatsiya nima?",
+            "Foyda va foyiz (dividend) farqi?",
+            "Korporativ moliya nima?",
+            "Byudjet tushunchasi — shaxsiy, korxona, davlat byudjeti?",
+            "Soliq tizimi — to'g'ri va bilvosita soliq tushunchalari?",
+            "Daromad solig'i qanday hisoblanadi?",
+            "Qo'shimcha qiymat solig'i (QQS) nima?",
+            "Moliyaviy savodxonlik nima uchun kerak?",
+            "Investitsiya tushunchasi va turlari?",
+            "Risk va foyda o'rtasidagi bog'liqlik?",
+
+            // Xalqaro iqtisodiy munosabatlar — 15 ta
+            "Globalizatsiya nima?",
+            "Xalqaro savdo afzalliklari?",
+            "Mutlaq va nisbiy afzallik nazariyasi?",
+            "Import va eksport nima?",
+            "Savdo tarziqlari nima?",
+            "Valyuta birligi va valyuta kursi farqi?",
+            "Milliy valyuta nima uchun himoyalangan bo'lishi kerak?",
+            "Xalqaro valyuta fondi (XVF) qanday ishlaydi?",
+            "Jahon banki qanday loyihalarni moliyalashtiradi?",
+            "Savdo defitsiti va superflitsiti nima?",
+            "O'zbekistonning Xitoy, Rossiya, Yevropa Ittifoqi bilan savdo aloqalari?",
+            "Xalqaro investitsiyalar O'zbekistonga qanday ta'sir qiladi?",
+            "Xalqaro mehnat bozori va migratsiya?",
+            "Xalqaro standartlar (ISO, GOST) nima uchun kerak?",
+            "Bojxona boshqarmasi qanday ishlaydi?",
+
+            // Korxona va biznes — 20 ta
+            "Korxona tushunchasi va turlari?",
+            "Sobiq xo'jalik yurituvchi sub'ektlari?",
+            "Xususiy tadbirkorlikning rivojlanish shartlari?",
+            "Biznes reja nima uchun kerak?",
+            "Marketing nima? Uning 4P modeli?",
+            "Korporativ menejment nima?",
+            "HR (inson resurslari) bo'limi vazifalari?",
+            "Korxona foydasi qanday hisoblanadi?",
+            "Amortizatsiya nima?",
+            "Foydadan soliq qanday hisoblanadi?",
+            "Kichik biznesning ahamiyati?",
+            "Startup nima?",
+            "Innovatsion loyihalar nima uchun muhim?",
+            "Kooperativlar qanday ishlaydi?",
+            "Aksiyadorlik jamiyati nima?",
+            "Davlat korxonalari va xususiy korxonalarning farqi?",
+            "Korrupsiya iqtisodiyotga qanday zarar yetkazadi?",
+            "Ish o'rinlari yaratish iqtisodiy rivojlanishga qanday hissa qo'shadi?",
+            "Ish haqi va uning turlari?",
+            "Kasaba uyushmalari nima uchun tashkil etiladi?",
+
+            // Davlat iqtisodiyoti — 20 ta
+            "Davlat byudjeti tushunchasi?",
+            "Byudjet daromadlar manbalari?",
+            "Byudjet xarajatlari turlari?",
+            "Defitsit byudjet nima?",
+            "Davlat qarzi xavfli-mi?",
+            "Makroiqtisodiy siyosat turlari?",
+            "Fiskal siyosat nima?",
+            "Monetar siyosat nima?",
+            "Davlat xaridlarini o'tkazish tartibi?",
+            "Davlat dasturlari — ijtimoiy xarajatlar ahamiyati?",
+            "Nodavlat notijorat tashkilotlar (NNT) iqtisodiyotda qanday rol o'ynaydi?",
+            "Ijtimoiy sug'urta tizimi qanday ishlaydi?",
+            "Pensiya tizimi O'zbekistonda qanday?",
+            "Davlat tomonidan ta'minlangan bepul ta'lim va sog'liqni saqlash xizmatlari?",
+            "Iqtisodiy barqarorlik nima?",
+            "Iqtisodiy o'sish ko'rsatkichlari?",
+            "Ishsizlik darajasi qanday hisoblanadi?",
+            "Iqtisodiy tsikllar — depressiya, tanazzul, o'sish?",
+            "Iqtisodiy barqarorlikni saqlashda Markaziy bank roli?",
+            "Davlat iqtisodiy rejalashtiruvi (5 yillik dasturlar) nima maqsadda?"
+        ];
+
+        const responses = {
+            "Iqtisodiyot nima? Uning asosiy maqsadi?": "<span class='term'>Iqtisodiyot</span> — cheklangan resurslardan foydalanib, cheksiz inson ehtiyojlarini qondirishning eng samarali usullarini o'rganuvchi fan. Maqsadi — <span class='term'>resurslarni optimal taqsimlash</span>.",
+            "Cheklangan resurslar va cheksiz ehtiyojlar nima ma'noni anglatadi?": "Tabiat resurslari (yer, suv, neft) cheklangan, lekin inson ehtiyojlari (ovqat, kiyim, uy, ta'lim) doim o'sib boradi — shu ziddiyat iqtisodiyotni vujudga keltirgan.",
+            "Iqtisodiy tizim tushunchasi va turlari?": "Iqtisodiy tizim — resurslarni qanday taqsimlash, kim qaror qilishi, kim nazorat qilishini belgilovchi tizim. Turlari: <span class='term'>an'anaviy, bozor, rejalashtirilgan, aralash</span>.",
+            "An'anaviy iqtisodiyot qanday ishlaydi?": "Qarorlar urf-odat, an'ana asosida qabul qilinadi. Masalan: qishloq xo'jaligida ota-bobolardan o'rganilgan usullar qo'llaniladi.",
+            "Bozor iqtisodiyoti qanday tashkil etilgan?": "Mulk <span class='term'>xususiy</span>, bozor mexanizmlari (<span class='term'>talab-taklif</span>) resurslarni boshqaradi, davlat minimal rol o'ynaydi.",
+            "Rejalashtirilgan (markazlashtirilgan) iqtisodiyotning kamchiliklari?": "Yetishmovchiliklar, sifatsiz mahsulotlar, raqobatsizlik, innovatsiyalarning kamligi. Masalan: sobiq SSSR.",
+            "Aralash iqtisodiyot nima?": "Bozor mexanizmlari va davlat aralashuvi birgalikda mavjud. O'zbekiston bugungi kunda shu yo'lda rivojlanmoqda.",
+            "Talab qonuni nima?": "Narx oshsa, talab kamayadi; narx pasaysa, talab oshadi — boshqa shartlar o'zgarmasa.",
+            "Taklif qonuni nima?": "Narx oshsa, ishlab chiqaruvchilar ko'proq mahsulot taklif qiladi.",
+            "Bozor muvozanati qanday o'rnatiladi?": "Talab miqdori taklif miqdoriga teng bo'lganda muvozanat narxi va miqdori shakllanadi.",
+            "Elastiklik tushunchasi — narxga bo'lgan talab elastikligi?": "<span class='formula'>E = (%ΔQ) / (%ΔP)</span>. Agar |E| > 1 — elastik, |E| < 1 — noelastik.",
+            "Iqtisodiy foyda nima?": "Umumiy daromad minus umumiy xarajat. Agar >0 — foyda, <0 — zarar.",
+            "Imkoniyat (alternativ) xarajatlar nima?": "Bir variantni tanlaganingizda yo'qotgan ikkinchi yaxshi variant. Masalan: universitetga borish — ishlashdan voz kechish.",
+            "Marginal (chegaraviy) tahlil nima?": "Qo'shimcha birlik mahsulot yoki xarajatga qarab qaror qilish. Masalan: yana bir xodim qabul qilish foydasi xarajatdan ortiqmi?",
+            "Ishlab chiqarish imkoniyatlari chegarasi nima?": "Mavjud resurslar bilan ishlab chiqarish mumkin bo'lgan maksimal mahsulot kombinatsiyasini ko'rsatuvchi egri chiziq.",
+            "Xususiy mulk huquqi iqtisodiyotda qanday rol o'ynaydi?": "Mulk egasi unga g'amxo'rlik qiladi, samarali foydalanadi, investitsiya kiritadi — bu iqtisodiy o'sishni rag'batlantiradi.",
+            "Raqobat qanday iqtisodiy samaradorlikka olib keladi?": "Raqobat — sifatni oshirish, narxni pasaytirish, innovatsiyalarni rag'batlantirishga majbur qiladi.",
+            "Monopoliya nima? U qanday zarar yetkazadi?": "Bozorda bitta sotuvchi. U narxni oshiradi, sifatni pasaytiradi, raqobatni yo'q qiladi.",
+            "Davlat iqtisodiyotdagi roli qanday?": "Bozor muvozanatini saqlash, ijtimoiy xarajatlarni qoplash, bepul ta'lim/so'g'liqni ta'minlash, inflyatsiya va ishsizlikka qarshi kurashish.",
+            "Milliy daromad (MD) va yalpi ichki mahsulot (YIM) farqi?": "<span class='term'>YIM</span> — mamlakat hududida ishlab chiqarilgan barcha mahsulotlar qiymati. <span class='term'>MD</span> — mamlakat fuqarolarining daromadi (chet elda ishlaganlar ham qo'shiladi).",
+
+            "Moliya tizimi nima? Uning tarkibiy qismlari?": "Mablag'larni to'plash, taqsimlash va foydalanish tizimi. Tarkibiy qismlari: <span class='term'>davlat moliyasi, korxona moliyasi, shaxsiy moliya, bank tizimi</span>.",
+            "Markaziy bankning asosiy vazifalari?": "1) Pulni nazorat qilish; 2) Banklar uchun bank bo'lish; 3) Valyuta kursini barqaror saqlash; 4) Inflyatsiyaga qarshi kurashish.",
+            "Tijorat banklari qanday ishlaydi?": "Aholi va korxonalar uchun xizmat ko'rsatadi: <span class='term'>depozit qabul qilish</span>, <span class='term'>kredit berish</span>, pul o'tkazmalari.",
+            "Depozit va kredit tushunchalari?": "<span class='term'>Depozit</span> — pulni bankga qo'yish (foiz olinadi). <span class='term'>Kredit</span> — bankdan qarz olish (foiz to'lanadi).",
+            "Foiz stavkasi nima? U iqtisodiyotga qanday ta'sir qiladi?": "Pul uchun to'lanadigan narx. Foiz pasaysa — kredit oson bo'ladi → investitsiya oshadi → iqtisodiy o'sish.",
+            "Inflyatsiya nima? Uning sabablari?": "Pul qiymatining pasayishi, tovar narxlarining umumiy o'sishi. Sabablari: <span class='term'>pul massasining ortishi</span>, <span class='term'>taklifning kamayishi</span>.",
+            "Inflyatsiya turilari (kutilgan, kutilmagan, galopiruyushchi, giperinflyatsiya)?": "<span class='term'>Kutilgan</span> — bashorat qilinadi. <span class='term'>Galopiruyushchi</span> — 20-200% yilda. <span class='term'>Giperinflyatsiya</span> — oyiga 50% dan ortiq (Zimbabve, 2008).",
+            "Pulning vazifalari?": "1) Almashish vositasi; 2) Qiymat o'lchovi; 3) Mablag'larni saqlash vositasi.",
+            "Pul massasi tushunchasi?": "Iqtisodiyotda aylanishdagi barcha pul miqdori. M1 = naqd + joriy hisoblar; M2 = M1 + vaxdlar.",
+            "Valyuta kursi qanday shakllanadi?": "Valyuta bozorida <span class='term'>talab-taklif</span> asosida. Agar AQSH dollari talabi oshsa, uning kursi oshadi.",
+            "Devalvatsiya va revalvatsiya nima?": "<span class='term'>Devalvatsiya</span> — milliy valyutani qadrdan qo'yish (kursni sun'iy pasaytirish). <span class='term'>Revalvatsiya</span> — aksincha.",
+            "Inflyatsiyaga qarshi davlat siyosati?": "1) Foiz stavkasini oshirish; 2) Byudjet xarajatlarini qisqartirish; 3) Pul massasini cheklash.",
+            "Kredit tarixi nima uchun muhim?": "Bank kredit berishdan oldin mijozning <span class='term'>kredit tarixini</span> tekshiradi — oldingi qarzlarni vaqtida to'laganmi?",
+            "Bank krediti olish uchun qanday shartlar kerak?": "1) Doimiy daromad; 2) Kredit tarixi; 3) Kafolat yoki garov; 4) Tushunarli maqsad.",
+            "Kredit qaytarish jadvalini qanday hisoblaymiz?": "Annuitet — har oy bir xil summa. Differensial — har oy qarz qoldig'iga qarab kamayib boradi.",
+            "Kapitalizatsiya nima?": "Foydani reinvestitsiya qilish — biznes kengaytirish, yangi jihozlar sotib olish.",
+            "Foyda va foyiz (dividend) farqi?": "<span class='term'>Foyda</span> — korxona daromadi. <span class='term'>Foyiz/dividend</span> — aksiyadorlarga taqsimlangan foydaning qismi.",
+            "Korporativ moliya nima?": "Korxonaning moliyaviy qarorlarini boshqarish: <span class='term'>investitsiya</span>, <span class='term'>kredit</span>, <span class='term'>foyda taqsimoti</span>.",
+            "Byudjet tushunchasi — shaxsiy, korxona, davlat byudjeti?": "<span class='term'>Shaxsiy</span> — kirim-chiqim rejas. <span class='term'>Korxona</span> — yillik daromad-xarajat rejas. <span class='term'>Davlat</span> — mamlakatning yillik moliya rejas.",
+            "Soliq tizimi — to'g'ri va bilvosita soliq tushunchalari?": "<span class='term'>To'g'ri soliq</span> — bevosita daromaddan olinadi (daromad solig'i). <span class='term'>Bilvosita</span> — tovar narxiga qo'shiladi (QQS).",
+            "Daromad solig'i qanday hisoblanadi?": "O'zbekistonda jismoniy shaxslar uchun progressiv: 0% (minimal ish haqigacha), 12% (ortiqcha qismga).",
+            "Qo'shimcha qiymat solig'i (QQS) nima?": "Har bir ishlab chiqarish bosqichida mahsulotga qo'shilgan qiymatdan olinadigan soliq. O'zbekistonda — 12%.",
+            "Moliyaviy savodxonlik nima uchun kerak?": "Shaxs pulini to'g'ri boshqarishi, kreditlarni aqlli foydalanishi, investitsiya qilishi, pul tejamkorligi uchun.",
+            "Investitsiya tushunchasi va turlari?": "Kelajakda foyda olish maqsadida mablag' qo'yish. Turlari: <span class='term'>real</span> (jihoz, uy), <span class='term'>moliyaviy</span> (aktsiya, obligatsiya).",
+            "Risk va foyda o'rtasidagi bog'liqlik?": "Risk yuqori bo'lsa, foyda ham yuqori bo'ladi. Masalan: bank depoziti — past risk/past foyda; aktsiya — yuqori risk/yuqori foyda.",
+
+            "Globalizatsiya nima?": "Dunyoning iqtisodiy, siyosiy, madaniy jihatdan bir-biriga yaqinlashuvi. Xalqaro savdo, investitsiya, axborot almashinuvi ortadi.",
+            "Xalqaro savdo afzalliklari?": "1) Arzon tovarlar; 2) Tanlov ko'payadi; 3) Iqtisodiy o'sishni rag'batlantiradi; 4) Innovatsiyalarni tarqatadi.",
+            "Mutlaq va nisbiy afzallik nazariyasi?": "<span class='term'>Mutlaq afzallik</span> — kam xarajat bilan ko'proq ishlab chiqarish. <span class='term'>Nisbiy afzallik</span> — nisbatan arzon ishlab chiqarish imkoniyati.",
+            "Import va eksport nima?": "<span class='term'>Import</span> — tashqaridan tovar kiritish. <span class='term'>Eksport</span> — mahalliy tovarlarni tashqari mamlakatlarga sotish.",
+            "Savdo tarziqlari nima?": "Davlat tomonidan importni cheklash vositalari: <span class='term'>bojxona solig'i</span>, <span class='term'>kvotalar</span>, <span class='term'>importga taqiqlar</span>.",
+            "Valyuta birligi va valyuta kursi farqi?": "<span class='term'>Valyuta birligi</span> — mamlakat puli (so'm, dollar). <span class='term'>Valyuta kursi</span> — bir valyutaning boshqasiga nisbatan narxi.",
+            "Milliy valyuta nima uchun himoyalangan bo'lishi kerak?": "Agar valyuta tez arzonlashsa, import qimmatlashadi, inflyatsiya oshadi, iqtisodiy barqarorlik vayron bo'ladi.",
+            "Xalqaro valyuta fondi (XVF) qanday ishlaydi?": "A'zo mamlakatlarga moliyaviy yordam (kredit) beradi, inflyatsiya, byudjet defitsitiga qarshi dasturlarni qo'llab-quvvatlaydi.",
+            "Jahon banki qanday loyihalarni moliyalashtiradi?": "Rivojlanayotgan mamlakatlarda <span class='term'>ta'lim</span>, <span class='term'>so'g'liqni saqlash</span>, <span class='term'>infrotuzilma</span> loyihalarini moliyalashtiradi.",
+            "Savdo defitsiti va superflitsiti nima?": "<span class='term'>Defitsit</span> — import > eksport. <span class='term'>Superflitsit</span> — eksport > import.",
+            "O'zbekistonning Xitoy, Rossiya, Yevropa Ittifoqi bilan savdo aloqalari?": "Xitoy — asosiy savdo hamkori (import — elektronika, eksport — paxta). Rossiya — mehnat migratsiyasi, neft-gaz. YE — investitsiya, sanoat hamkorligi.",
+            "Xalqaro investitsiyalar O'zbekistonga qanday ta'sir qiladi?": "Ish o'rinlari yaratiladi, zamonaviy texnologiyalar kiritiladi, eksport salohiyati oshadi.",
+            "Xalqaro mehnat bozori va migratsiya?": "Mehnat migratsiyasi — ishchi kuchi yetishmayotgan mamlakatlarga ko'chish. O'zbekiston — Rossiyaga mehnat migratsiyasi.",
+            "Xalqaro standartlar (ISO, GOST) nima uchun kerak?": "Mahsulot sifatini ta'minlash, xalqaro bozorga chiqish imkonini berish.",
+            "Bojxona boshqarmasi qanday ishlaydi?": "Import/eksport qilingan tovarlarni nazorat qilish, bojxona to'lovlarni undirish, qonunbuzarliklarga to'sqinlik qilish.",
+
+            "Korxona tushunchasi va turlari?": "Tovar yoki xizmat ishlab chiqaruvchi tashkilot. Turlari: <span class='term'>davlat</span>, <span class='term'>xususiy</span>, <span class='term'>kooperativ</span>, <span class='term'>aksiyadorlik jamiyati</span>.",
+            "Sobiq xo'jalik yurituvchi sub'ektlari?": "Sovet davrida barcha korxonalar <span class='term'>davlat mulki</span> bo'lgan — xo'jalik sovetlar, boshqarmalar tomonidan boshqarilgan.",
+            "Xususiy tadbirkorlikning rivojlanish shartlari?": "1) Xususiy mulk huquqining kafolati; 2) Qonuniy muhit; 3) Raqobat; 4) Moliyaviy resurslarga kirish imkoniyati.",
+            "Biznes reja nima uchun kerak?": "Biznes g'oyasining amalga oshirilishi rejasini ifodalaydi — investorlarni jalb qilish, moliyaviy rejalashtirish uchun.",
+            "Marketing nima? Uning 4P modeli?": "Mijoz ehtiyojlarini qondirish orqali savdo qilish san'ati. <span class='term'>4P</span>: <span class='term'>Mahsulot</span>, <span class='term'>Narx</span>, <span class='term'>Tarqatish</span>, <span class='term'>Reklama</span>.",
+            "Korporativ menejment nima?": "Korxonani samarali boshqarish tizimi — foydadorlik, shaffoflik, hisobdorlikni ta'minlash.",
+            "HR (inson resurslari) bo'limi vazifalari?": "Xodimlarni qabul qilish, o'qitish, motivatsiya qilish, ish haqini hisoblash, korporativ madaniyatni shakllantirish.",
+            "Korxona foydasi qanday hisoblanadi?": "<span class='formula'>Foyda = Umumiy daromad – Umumiy xarajat</span>",
+            "Amortizatsiya nima?": "Jihoz, binolarning eskirishini hisobga olish — xarajatlarga kiritiladi.",
+            "Foydadan soliq qanday hisoblanadi?": "O'zbekistonda yuridik shaxslar uchun — 12% (asosiy daromad), 7.5% (kichik biznes).",
+            "Kichik biznesning ahamiyati?": "Ish o'rinlarini yaratish, mahalliy iqtisodiyotni rivojlantirish, raqobatni kuchaytirish.",
+            "Startup nima?": "Yangi g'oyaga asoslangan, o'sish salohiyati yuqori bo'lgan yangi tashkil etilgan biznes.",
+            "Innovatsion loyihalar nima uchun muhim?": "Iqtisodiyotni raqobatbardosh qilish, zamonaviy texnologiyalarni joriy qilish, eksport imkoniyatlarini kengaytirish.",
+            "Kooperativlar qanday ishlaydi?": "A'zolar tomonidan boshqariladigan, foyda a'zolar o'rtasida taqsimlanadigan hamkorlik tashkiloti.",
+            "Aksiyadorlik jamiyati nima?": "Kapitali aksiyalarga bo'lingan korxona. Aksiyadorlar — mulkdorlar.",
+            "Davlat korxonalari va xususiy korxonalarning farqi?": "Davlat korxonasi — foydadan ko'ra, ijtimoiy maqsadlar ustun. Xususiy — foyda olish asosiy maqsad.",
+            "Korrupsiya iqtisodiyotga qanday zarar yetkazadi?": "Investitsiyalarni qo'rqitadi, ish o'rinlarini kamaytiradi, bekor xarajatlarni keltirib chiqaradi.",
+            "Ish o'rinlari yaratish iqtisodiy rivojlanishga qanday hissa qo'shadi?": "Aholi daromadini oshiradi, ichki talabni kuchaytiradi, ijtimoiy barqarorlikka xizmat qiladi.",
+            "Ish haqi va uning turlari?": "<span class='term'>Oylik</span>, <span class='term'>soatlik</span>, <span class='term'>premiyalı</span>, <span class='term'>komissiya</span> (sotuvdan).",
+            "Kasaba uyushmalari nima uchun tashkil etiladi?": "Xodimlarning huquqlarini himoya qilish, ish sharoitini yaxshilash, ish haqini oshirish uchun.",
+
+            "Davlat byudjeti tushunchasi?": "Davlatning bir yil ichidagi <span class='term'>daromad</span> va <span class='term'>xarajatlari</span> rejasidir.",
+            "Byudjet daromadlar manbalari?": "Soliqlar (QQS, daromad solig'i), bojxona to'lovlari, davlat mulkidan tushumlar, grantlar.",
+            "Byudjet xarajatlari turlari?": "1) <span class='term'>Joriy</span> (maosh, kommunal xizmatlar); 2) <span class='term'>Kapital</span> (binolar, yo'llar qurish).",
+            "Defitsit byudjet nima?": "Xarajatlar daromaddan ko'p bo'lgan byudjet. Qoplash uchun davlat qarz oladi.",
+            "Davlat qarzi xavfli-mi?": "Agar qarz YIM dan 60% dan oshib ketsa — xavfli. O'zbekistonda hozir nisbatan past.",
+            "Makroiqtisodiy siyosat turlari?": "1) <span class='term'>Fiskal siyosat</span> (byudjet orqali); 2) <span class='term'>Monetar siyosat</span> (pul orqali).",
+            "Fiskal siyosat nima?": "Davlat tomonidan <span class='term'>solixlar</span> va <span class='term'>byudjet xarajatlari</span> orqali iqtisodiyotni boshqarish.",
+            "Monetar siyosat nima?": "Markaziy bank tomonidan <span class='term'>foiz stavkasi</span> va <span class='term'>pul massasi</span> orqali iqtisodiyotni boshqarish.",
+            "Davlat xaridlarini o'tkazish tartibi?": "Tender orqali — eng arzon va sifatli taklif qiluvchi tanlanadi (O'zbekistonda — «Do'stlik» elektron tizimi).",
+            "Davlat dasturlari — ijtimoiy xarajatlar ahamiyati?": "Ta'lim, sog'liqni saqlash, pensiya — aholi hayot sifatini oshiradi, ijtimoiy adolatni ta'minlaydi.",
+            "Nodavlat notijorat tashkilotlar (NNT) iqtisodiyotda qanday rol o'ynaydi?": "Ijtimoiy muammolarni hal qilishga yordam beradi, davlatga muqobil xizmat ko'rsatadi, fuqarolik jamiyatini rivojlantiradi.",
+            "Ijtimoiy sug'urta tizimi qanday ishlaydi?": "Ish beruvchi va xodim ma'lum foiz to'laydi — kasallik, homiladorlik, nogironlik holatlarida to'lov olinadi.",
+            "Pensiya tizimi O'zbekistonda qandilish?": "Ish haqining 1% pensiya jamg'armasiga o'tkaziladi. 60 yoshdan keyin (erkaklar) pensiya beriladi.",
+            "Davlat tomonidan ta'minlangan bepul ta'lim va sog'liqni saqlash xizmatlari?": "Konstitutsiya asosida — har bir fuqaroga bepul o'rta ta'lim, bepul dori-darmonlar, kasalxona yotqizish huquqi berilgan.",
+            "Iqtisodiy barqarorlik nima?": "Inflyatsiya, ishsizlik, byudjet defitsiti nazorat ostida bo'lishi — iqtisodiy o'sishning barqarorligi.",
+            "Iqtisodiy o'sish ko'rsatkichlari?": "YIM o'sish sur'ati, sanoat ishlab chiqarish hajmi, eksport hajmi, investitsiya hajmi.",
+            "Ishsizlik darajasi qanday hisoblanadi?": "<span class='formula'>Ishsizlik = (Ishsizlar soni / Mehnatga qodir aholi) × 100%</span>",
+            "Iqtisodiy tsikllar — depressiya, tanazzul, o'sish?": "<span class='term'>Tanazzul</span> — YIM kamayadi. <span class='term'>Depressiya</span> — chuqur tanazzul. <span class='term'>O'sish</span> — YIM oshadi.",
+            "Iqtisodiy barqarorlikni saqlashda Markaziy bank roli?": "Inflyatsiyani nazorat qilish, valyuta kursini barqaror saqlash, bank tizimini nazorat qilish.",
+            "Davlat iqtisodiy rejalashtiruvi (5 yillik dasturlar) nima maqsadda?": "Uzoq muddatli iqtisodiy rivojlanish yo'nalishlarini belgilash, investitsiya, infratuzilma, ijtimoiy sohalarni rivojlantirish."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf «Iqtisodiy bilimlar asoslari» darsliklariga asoslangan AI yordamchiman. Bozor mexanizmlari, moliya, bank, soliq, xalqaro savdo, korporativ menejment — barcha mavzular bo'yicha tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
