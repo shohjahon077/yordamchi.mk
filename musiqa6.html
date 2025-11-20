@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Musiqa AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #3949ab;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #3949ab, #1a237e);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(57, 73, 171, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #3949ab, #1a237e, #3949ab);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(57, 73, 171, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(57, 73, 171, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #1a237e;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #1a237e, #3949ab);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(57, 73, 171, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(57, 73, 171, 0.9);
+      background: linear-gradient(45deg, #0d1b4a, #303f9f);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #1a237e;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(57, 73, 171, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #3949ab;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #1a237e, #3949ab);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(57, 73, 171, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 248, 255, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #3949ab, #1a237e);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #3949ab;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3949ab;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 248, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #3949ab;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #1a237e, #3949ab);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(57, 73, 171, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(57, 73, 171, 0.7);
+      background: linear-gradient(45deg, #0d1b4a, #303f9f);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(57, 73, 171, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #3949ab;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🎵</div>
+      <h1 class="title">ASCO Musiqa AI</h1>
+      <p class="subtitle">Musiqa nazariyasi, qo'shiq yozish, asboblar yoki o'zbek musiqa merosini o'rganishda qiyinchilik tug'ilmaydi! Men — sizning shaxsiy musiqa o'qituvchingiz. Ritmlar, melodiya, tonlar, guruhlar — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🎶</div>
+        <h2>Musiqa AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Musiqa elementlari')">Musiqa elementlari</button>
+          <button class="btn-3d" onclick="sendMessage('Ritm va uning turlari')">Ritm</button>
+          <button class="btn-3d" onclick="sendMessage('Melodiya')">Melodiya</button>
+          <button class="btn-3d" onclick="sendMessage('Tonlar va skala')">Tonlar va skala</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa asboblari')">Musiqa asboblari</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shiq turlari')">Qo'shiq turlari</button>
+          <button class="btn-3d" onclick="sendMessage('O\'zbek musiqa merosi')">O'zbek musiqa merosi</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqiy jadval')">Musiqiy jadval</button>
+          <button class="btn-3d" onclick="sendMessage('Guruh va khor')">Guruh va khor</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa tarixi')">Musiqa tarixi</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shiq yozish')">Qo'shiq yozish</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa bilan ifodalash')">Musiqa bilan ifodalash</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa turlari')">Musiqa turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqiy belgilar')">Musiqiy belgilar</button>
+          <button class="btn-3d" onclick="sendMessage('Notoqash')">Notoqash</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shiq qismi')">Qo'shiq qismi</button>
+          <button class="btn-3d" onclick="sendMessage('Musiqa va hissiyot')">Musiqa va hissiyot</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Ijodiy loyiha')">Ijodiy loyiha</button>
+          <button class="btn-3d" onclick="sendMessage('Dastlabki qo\'shiq')">Dastlabki qo'shiq</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning musiqa o'qituvchingiz. Ritmlar, melodiya, qo'shiq yozish yoki o'zbek musiqa merosini o'rganishga yordam beraman. Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF MUSIQA — ASCO LOYIHASI
+
+      if (lower.includes("musiqa elementlari") || lower.includes("elementlar")) {
+        response = "Musiqa asosiy elementlari:\n\n1. **Ritm** — vaqt va harakat\n2. **Melodiya** — qo'shiqning asosiy qismi (noutlar ketma-ketligi)\n3. **Harmoniya** — bir nechta noutlar birga o'ynash\n4. **Tonalik** — tonlar tizimi (do, re, mi...)\n5. **Dinamika** — ovoz kuchi (kuchli, osongina)\n6. **Timbr** — asbob yoki ovozning rangi\n\n💡 Musiqa — bu elementlarning aralashmasi!";
+      } else if (lower.includes("ritm") || lower.includes("ritm turlari")) {
+        response = "Ritm — musiqaning qalbi! U vaqt va harakatni bildiradi.\n\nTurlari:\n\n• **2/4** — \"1-2, 1-2\" (march)\n• **3/4** — \"1-2-3, 1-2-3\" (vals)\n• **4/4** — \"1-2-3-4, 1-2-3-4\" (eng ko'p ishlatiladi)\n\nMisol:\n\nMarch: \"Tik-tak, tik-tak\" — 2/4\nVals: \"Tik-tak-tak, tik-tak-tak\" — 3/4\n\n💡 Ritmlarni qo'l bilan urib o'rganing — bu eng yaxshi usul!";
+      } else if (lower.includes("melodiya")) {
+        response = "Melodiya — qo'shiqning asosiy qismi. Bu — noutlar ketma-ketligi.\n\nMisol:\n\n\"Do - Re - Mi - Fa - Sol - La - Si - Do\"\n\nMelodiyaning xususiyatlari:\n\n• Qisqa yoki uzun\n• Ko'tariladigan yoki pasayadigan\n• Qiziqarli yoki oddiy\n\n💡 Melodiya — sizning qo'shiqingizning \"so'zi\"!";
+      } else if (lower.includes("tonlar") || lower.includes("skala")) {
+        response = "Skala — noutlar ketma-ketligi. Eng mashhuri — **do-major skala**:\n\nDo - Re - Mi - Fa - Sol - La - Si - Do\n\nHar bir nout — ovozning balandligi.\n\nMusiqa qo'shiqlari:\n\n• Do — boshlang'ich nout\n• Sol — kuchli nout\n• Mi — yorqin nout\n\n💡 Skala — musiqa tilining alifbosi!";
+      } else if (lower.includes("musiqa asboblari")) {
+        response = "Musiqa asboblarining turlari:\n\n1. **Ko'p ovozli** — pianino, gitar, akkordeon\n2. **Vokal** — odam ovozi\n3. **Chiziladigan** — violoncello, skripka\n4. **Udirladigan** — baraban, timpani\n5. **Elektron** — sintezator\n\nMashhur O'zbek asboblari:\n• Dutar\n• Rubob\n• Doira\n• Sato\n\n💡 Har bir asbob — o'zining ovozi va hissiyoti!";
+      } else if (lower.includes("qo'shiq turlari")) {
+        response = "Qo'shiq turlari:\n\n1. **Mars** — harakatli, kuchli (masalan: \"O'zbekiston marsi\")\n2. **Vals** — yumshoq, aylanuvchi (masalan: \"Qizil qo'g'irchoq\")\n3. **Qo'shiq** — hissiy, o'ziga xos (masalan: \"Yomg'ir\")\n4. **Ko'ngil ochuvchi** — quvonchli, qiziqarli\n5. **Jangovar** — kuchli, jasoratli\n\n💡 Qo'shiq turi — uning hissiyotini belgilaydi!";
+      } else if (lower.includes("o'zbek musiqa merosi")) {
+        response = "O'zbek musiqa merosi — qadimiy va go'zal!\n\nAsosiy turlari:\n\n• **Makom** — qadimiy musiqa tizimi (Buxoro, Samarqand)\n• **Dutar** — ikki tarmoqli asbob\n• **Rubob** — qo'lda o'ynaladigan asbob\n• **Doira** — qo'g'irchoq, qo'lda uriladigan asbob\n• **Qo'shiqchilik** — xalq qo'shiqlari (\"Ko'k qo'g'irchoq\", \"Yomg'ir\")\n\n💡 O'zbek musiqa — dunyoga tanilgan!";
+      } else if (lower.includes("musiqiy jadval")) {
+        response = "Musiqiy jadval — noutlarni yozish usuli.\n\nAsosiy belgilar:\n\n• **Nout** — do, re, mi, fa, sol, la, si\n• **O'zgaruvchi** — ♯ (kuchaytirish), ♭ (kamaytirish)\n• **Vaqt belgisi** — 4/4, 3/4, 2/4\n• **Dinamika** — p (osongina), f (kuchli)\n\nMisol:\n\nDo - Re - Mi (3 ta nout) → 4/4 da 3 ta vaqt\n\n💡 Jadval — musiqa so'zlarini yozish usuli!";
+      } else if (lower.includes("guruh") || lower.includes("khor")) {
+        response = "Guruh — bir nechta odamlar birga qo'shiq aytish.\n\nTurlari:\n\n• **Khor** — barcha ovozlar bir xil (masalan: maktab khor)\n• **Duet** — ikki odam\n• **Triy** — uchta odam\n\nMisol:\n\n\"Ko'k qo'g'irchoq\" — khor bilan aytish\n\n💡 Guruh — birlik va muvozanat!\nHar bir ovoz — bir qism, lekin birlashganda — go'zal musiqa!";
+      } else if (lower.includes("musiqa tarixi")) {
+        response = "Musiqa tarixi — insonning qalbiy tarixi!\n\nQadimda:\n• 5000 yil avval — qo'g'irchoq, doira\n• 1000 yil avval — dutar, rubob\n• 1800-yillar — piano, skripka\n\nZamonaviy:\n• Elektron musiqa\n• Pop, rock, hip-hop\n\n💡 Musiqa — hech qachon o'lmaydi, faqat o'zgaradi!";
+      } else if (lower.includes("qo'shiq yozish")) {
+        response = "Qo'shiq yozish — 4 qadam:\n\n1. **Mavzu** — nima haqida? (do'stlik, tabiat, ota-onalar)\n2. **Ritm** — qanday ritm? (2/4, 3/4)\n3. **Melodiya** — noutlar ketma-ketligi\n4. **So'zlar** — qo'shiq so'zlari\n\nMisol:\n\nMavzu: \"Do'stlik\"\nRitm: 4/4\nMelodiya: Do - Re - Mi - Sol\nSo'zlar: \"Do'stim, do'stim, sen bilan men...\"\n\n💡 Qo'shiq yozish — sizning ijodiy ovozingiz!";
+      } else if (lower.includes("musiqa bilan ifodalash")) {
+        response = "Musiqa bilan ifodalash — hissiyotlarni ovoz bilan aytish!\n\n• **Kuchli** — jasorat, g'azab\n• **Yumshoq** — sevgi, tinchlik\n• **Tez** — quvonch, harakat\n• **Sekin** — o'ylash, qo'rqinch\n\nMisol:\n\n\"Qo'rqinchli kundalik\" — sekin, osongina, kichik ovoz\n\"Quvonchli kun\" — tez, kuchli, yorqin\n\n💡 Musiqa — so'zlar emas, hissiyotlar!";
+      } else if (lower.includes("musiqa turlari")) {
+        response = "Musiqa turlari:\n\n• **Klassik** — Bach, Mozart\n• **Pop** — keng tarqalgan, ovozli\n• **Rock** — kuchli, gitarali\n• **Folk** — xalq qo'shiqlari\n• **Elektron** — sintezator, kompyuter\n• **O'zbek xalq** — dutar, rubob\n\n💡 Har bir tur — o'zining dunyosi!";
+      } else if (lower.includes("musiqiy belgilar")) {
+        response = "Musiqiy belgilar — musiqa tilining alifbosi!\n\n• **Noutlar** — do, re, mi, fa, sol, la, si\n• **Dinamika** — p (piano — osongina), f (forte — kuchli)\n• **Temp** — qanchalik tez\n• **Bar** — qo'shiqning qismi\n• **Clef** — noutlarni qayerda boshlash\n\n💡 Belgilar — musiqa so'zlarini yozish usuli!";
+      } else if (lower.includes("notoqash")) {
+        response = "Notoqash — musiqada o'zgaruvchi nout.\n\nMisol:\n\nDo - Re - Mi - Fa - Sol - La - Si - Do\n\nAgar \"Mi\" o'rniga \"Mi♯\" (Mi kuchaytirilgan) bo'lsa — bu notoqash!\n\n💡 Notoqash — musiqaga rang beradi!";
+      } else if (lower.includes("qo'shiq qismi")) {
+        response = "Qo'shiqning qismlari:\n\n1. **Kuplet** — asosiy qism, so'zlar o'zgaradi\n2. **Refrain** — takrorlanadigan qism, eng o'ziga xos\n3. **Intro** — boshlanish\n4. **Outro** — tugash\n\nMisol:\n\n\"Ko'k qo'g'irchoq\" — kuplet + refrain\n\n💡 Refrain — qo'shiqning \"yuragi\"!";
+      } else if (lower.includes("musiqa va hissiyot")) {
+        response = "Musiqa — hissiyotlarni ifodalashning eng kuchli usuli!\n\n• **Qizil** — jasorat, kuch\n• **Ko'k** — tinchlik, sevgi\n• **Sariq** — quvonch\n• **Qora** — o'ylash, qo'rqinch\n\nMisol:\n\n\"Ko'k qo'g'irchoq\" — tinchlik\n\"Mars\" — jasorat\n\n💡 Musiqa — so'zlar emas, hissiyotlar!";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nQo'shiq yozing: \"Ota-onam\" (4/4 ritmida)\n\n✅ Qadamlari:\n1. Mavzu: Ota-onam\n2. Ritmi: 4/4\n3. Melodiya: Do - Re - Mi - Sol\n4. So'zlar: \"Ota-onam, sen meni o'rgatgan...\"\n\n💡 Qo'shiq — sizning ovozingiz!";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Qaysi ritm valsga mos?\n   a) 2/4\n   b) 3/4 ✅\n   c) 4/4\n\n2. Qaysi asbob O'zbekistonda keng tarqalgan?\n   a) Dutar ✅\n   b) Gitara\n   c) Piano\n\n3. \"Do - Re - Mi\" — bu nima?\n   a) Melodiya ✅\n   b) Ritm\n   c) Dinamika\n\n💡 Test — bilimingizni tekshirish!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nDunyodagi eng uzun qo'shiq — 8 soat 37 minut davom etadi!\n\nBu qo'shiq — \"Longplayer\" deb ataladi va 2000-yildan beri aylanmoqda!\n\n💡 Musiqa — hech qachon to'xtamaydi!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men qo'g'irchoq emasman, lekin men bilan qo'g'irchoq aylanadi.\nMen qo'shiq emasman, lekin men bilan qo'shiq aytiladi.\nMen nima?\"\n\n💡 Javob: **Ritm** 🥁\n\nYana biri:\n\"Men qalam emasman, lekin men bilan qo'shiq yoziladi.\nMen nima?\"\n💡 Javob: **Musiqiy jadval** 📜";
+      } else if (lower.includes("ijodiy loyiha")) {
+        response = "Ijodiy loyiha: \"Mening qo'shiqim\"\n\nQadamlari:\n\n1. Mavzu: \"Do'stlik\"\n2. Ritmi: 4/4\n3. Melodiya: Do - Re - Mi - Sol - La\n4. So'zlar: \"Do'stim, sen meni tushunasan...\"\n5. Asbob: Qo'l bilan urish\n\n💡 Qo'shiq — sizning ijodiy ovozingiz!";
+      } else if (lower.includes("dastlabki qo'shiq")) {
+        response = "Dastlabki qo'shiq — \"Do - Re - Mi - Fa - Sol - La - Si - Do\"\n\nBu — musiqa alifbosi!\n\nHar bir nout — ovozning balandligi.\n\nQo'l bilan:\n\n1. Barmoq 1 — Do\n2. Barmoq 2 — Re\n3. Barmoq 3 — Mi\n4. Barmoq 4 — Fa\n5. Barmoq 5 — Sol\n\n💡 Bu qo'shiq — barcha musiqaning boshlanishi!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning musiqa o'qituvchingizman. Ritmlar, qo'shiq yozish yoki o'zbek musiqa merosi haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Musiqa — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli musiqa o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf musiqasida yordam berishga tayyorman. Iltimos, \"ritm\", \"melodiya\", \"qo'shiq\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
