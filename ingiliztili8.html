@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — English Language (Grade 8)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === GRAMMAR STYLE === */
+        .grammar {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — English Language</h1>
+        <p>Grade 8: Grammar, Vocabulary, Reading, Writing — Master English with AI!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">📚</div>
+            <h2>English Language Tutor</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">Aligned with Grade 8 English Curriculum — Grammar, Vocabulary, Reading & Writing</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ English Language Database (Grade 8 Curriculum)
+        const database = {
+            "main_menu": {
+                text: "Hello! Ready to master English? Choose a topic:",
+                buttons: [
+                    { text: "📝 Grammar", key: "grammar" },
+                    { text: "📖 Vocabulary", key: "vocabulary" },
+                    { text: "🔍 Reading", key: "reading" },
+                    { text: "✍️ Writing", key: "writing" },
+                    { text: "✅ Quizzes", key: "quiz_menu" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "grammar": {
+                text: "Let’s explore key grammar rules for Grade 8:",
+                buttons: [
+                    { text: "Present Perfect", key: "present_perfect" },
+                    { text: "Past Continuous", key: "past_continuous" },
+                    { text: "Passive Voice", key: "passive_voice" },
+                    { text: "Conditionals", key: "conditionals" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "present_perfect": {
+                text: "<span class='grammar'>Present Perfect</span>: Used for actions that happened at an unspecified time or continue to now.<br><br><span class='example'>I have visited Paris.</span><br><span class='example'>She has just finished her homework.</span>",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "past_continuous": {
+                text: "<span class='grammar'>Past Continuous</span>: Describes ongoing actions in the past.<br><br><span class='example'>I was reading when the phone rang.</span><br><span class='example'>They were playing football at 5 PM.</span>",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "passive_voice": {
+                text: "<span class='grammar'>Passive Voice</span>: Focuses on the action, not the doer.<br><br><span class='example'>Active: The chef cooked the meal.</span><br><span class='example'>Passive: The meal was cooked by the chef.</span>",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "conditionals": {
+                text: "<span class='grammar'>Conditionals</span>: Real and unreal situations.<br><br><span class='example'>First Conditional: If it rains, we will stay home.</span><br><span class='example'>Second Conditional: If I had money, I would travel.</span>",
+                buttons: [{ text: "⬅️ Back", key: "grammar", isHome: true }]
+            },
+            "vocabulary": {
+                text: "Expand your Grade 8 vocabulary with these themes:",
+                buttons: [
+                    { text: "Science & Tech", key: "vocab_science" },
+                    { text: "Environment", key: "vocab_environment" },
+                    { text: "Health", key: "vocab_health" },
+                    { text: "Emotions", key: "vocab_emotions" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "vocab_science": {
+                text: "<span class='example'>Science & Tech:</span><br>• Algorithm • Satellite • Renewable • Digital • Innovation<br>• Data • Network • Microscope • Experiment • Hypothesis",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "vocab_environment": {
+                text: "<span class='example'>Environment:</span><br>• Pollution • Deforestation • Biodiversity • Conservation • Carbon footprint<br>• Emission • Recycle • Sustainable • Ecosystem • Climate change",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "vocab_health": {
+                text: "<span class='example'>Health:</span><br>• Nutrition • Exercise • Hygiene • Immune system • Chronic illness<br>• Vaccination • Diet • Mental health • Sedentary • Preventive care",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "vocab_emotions": {
+                text: "<span class='example'>Emotions:</span><br>• Frustrated • Overwhelmed • Enthusiastic • Anxious • Relieved<br>• Delighted • Disappointed • Confident • Nervous • Proud",
+                buttons: [{ text: "⬅️ Back", key: "vocabulary", isHome: true }]
+            },
+            "reading": {
+                text: "Improve your reading skills with these types:",
+                buttons: [
+                    { text: "Main Idea", key: "reading_main_idea" },
+                    { text: "Inference", key: "reading_inference" },
+                    { text: "Vocabulary in Context", key: "reading_voc_context" },
+                    { text: "Author's Purpose", key: "reading_author_purpose" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "reading_main_idea": {
+                text: "<span class='example'>Main Idea:</span> The central point of a passage.<br><br>Example: 'Many students struggle with time management. Planning ahead helps reduce stress.'<br><br>→ Main idea: Time management improves academic performance.",
+                buttons: [{ text: "⬅️ Back", key: "reading", isHome: true }]
+            },
+            "reading_inference": {
+                text: "<span class='example'>Inference:</span> Read between the lines.<br><br>Example: 'She closed the door quietly and sighed.'<br><br>→ Inference: She was tired or upset.",
+                buttons: [{ text: "⬅️ Back", key: "reading", isHome: true }]
+            },
+            "reading_voc_context": {
+                text: "<span class='example'>Vocabulary in Context:</span> Guess meaning from surrounding words.<br><br>Example: 'The arid desert had little vegetation.'<br><br>→ 'Arid' means dry.",
+                buttons: [{ text: "⬅️ Back", key: "reading", isHome: true }]
+            },
+            "reading_author_purpose": {
+                text: "<span class='example'>Author’s Purpose:</span> Why did the author write this?<br><br>Types: To inform, persuade, entertain, explain.<br><br>Example: An article about recycling → Purpose: To persuade.",
+                buttons: [{ text: "⬅️ Back", key: "reading", isHome: true }]
+            },
+            "writing": {
+                text: "Practice these writing skills for Grade 8:",
+                buttons: [
+                    { text: "Paragraph Structure", key: "writing_paragraph" },
+                    { text: "Essay Introduction", key: "writing_intro" },
+                    { text: "Using Transitions", key: "writing_transitions" },
+                    { text: "Editing Tips", key: "writing_editing" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "writing_paragraph": {
+                text: "<span class='grammar'>Paragraph Structure:</span><br>1. Topic sentence<br>2. Supporting details<br>3. Concluding sentence<br><br>Example: 'Exercise is important for health. It improves heart function and reduces stress. Therefore, students should exercise daily.'",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "writing_intro": {
+                text: "<span class='grammar'>Essay Introduction:</span><br>Hook → Background → Thesis<br><br>Example: 'Imagine a world without clean water. Millions face this daily. This essay will discuss solutions to global water scarcity.'",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "writing_transitions": {
+                text: "<span class='grammar'>Useful Transitions:</span><br>• Addition: furthermore, moreover<br>• Contrast: however, on the other hand<br>• Cause: therefore, as a result<br>• Example: for instance, such as",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "writing_editing": {
+                text: "<span class='grammar'>Editing Checklist:</span><br>✔ Spelling & punctuation<br>✔ Subject-verb agreement<br>✔ Complete sentences<br>✔ Clear paragraph structure<br>✔ Formal tone (no slang)",
+                buttons: [{ text: "⬅️ Back", key: "writing", isHome: true }]
+            },
+            "quiz_menu": {
+                text: "Take a quick quiz:",
+                buttons: [
+                    { text: "Grammar Quiz", key: "quiz_grammar" },
+                    { text: "Vocabulary Quiz", key: "quiz_vocabulary" },
+                    { text: "Reading Quiz", key: "quiz_reading" },
+                    { text: "🏠 Main Menu", key: "main_menu", isHome: true }
+                ]
+            },
+            "quiz_grammar": {
+                text: "1. Which sentence uses the present perfect correctly?<br>A) I go to school yesterday.<br>B) I have gone to school today.<br>C) I went to school yesterday.",
+                buttons: [
+                    { text: "A)", key: "quiz_grammar_a" },
+                    { text: "B)", key: "quiz_grammar_b" },
+                    { text: "C)", key: "quiz_grammar_c" }
+                ]
+            },
+            "quiz_grammar_b": {
+                text: "✅ Correct! 'I have gone to school today' — present perfect for recent/unspecified time.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "quiz_vocabulary": {
+                text: "2. What does 'sustainable' mean?<br>A) Very expensive<br>B) Can be maintained long-term<br>C) Very old",
+                buttons: [
+                    { text: "A)", key: "quiz_vocabulary_a" },
+                    { text: "B)", key: "quiz_vocabulary_b" },
+                    { text: "C)", key: "quiz_vocabulary_c" }
+                ]
+            },
+            "quiz_vocabulary_b": {
+                text: "✅ Correct! 'Sustainable' means can be maintained long-term without harming the environment.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            },
+            "quiz_reading": {
+                text: "3. What is the author’s purpose in this text?<br>'Recycling reduces landfill waste and saves energy. Everyone should recycle.'",
+                buttons: [
+                    { text: "To inform", key: "quiz_reading_a" },
+                    { text: "To persuade", key: "quiz_reading_b" },
+                    { text: "To entertain", key: "quiz_reading_c" }
+                ]
+            },
+            "quiz_reading_b": {
+                text: "✅ Excellent! The author is trying to convince readers to recycle — purpose: to persuade.",
+                buttons: [{ text: "🏠 Main Menu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Functions
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("This topic is not available yet.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Start
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
