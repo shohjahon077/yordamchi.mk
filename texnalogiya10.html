@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Robototexnika / Sun'iy intellekt (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Robototexnika / Sun'iy intellekt</h1>
+        <p>10-sinf uchun: AI tushunchasi, algoritmlar, sensorlar, robotlar, etika, kelajak kasblar — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🤖</div>
+            <h2>AI va Robototexnika Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — AI asoslari, robot mexanikasi, sensorlar, dasturlash, etika, kelajak kasblar</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ ROBOTOTEXNIKA / SUN'IY INTELLEKT ma'lumotlar bazasi (10-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Sun’iy intellekt va robototexnika — kelajakning asosiy kuchlari. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "🧠 Sun’iy intellekt (AI)", key: "suniiy_intellekt" },
+                    { text: "🤖 Robototexnika", key: "robototexnika" },
+                    { text: "🧮 Algoritmlar", key: "algoritmlar" },
+                    { text: "📡 Sensorlar", key: "sensorlar" },
+                    { text: "⚙️ Mexanika va harakat", key: "mexanika" },
+                    { text: "💻 Dasturlash", key: "dasturlash" },
+                    { text: "⚖️ AI etikasi", key: "etika" },
+                    { text: "🚀 Kelajak kasblar", key: "kelajak_kasblar" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "suniiy_intellekt": {
+                text: "Sun’iy intellekt — inson aqlini takrorlovchi tizimlar. Qanday turlari bor?",
+                buttons: [
+                    { text: "AI tushunchasi", key: "ai_tushuncha" },
+                    { text: "AI turlari", key: "ai_turlar" },
+                    { text: "AI qo‘llanilishi", key: "ai_qollanish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ai_tushuncha": {
+                text: "<span class='location'>Sun’iy intellekt (AI)</span> — kompyuterlarning inson kabi o‘ylash, o‘rganish, qaror qabul qilish qobiliyatidir.",
+                buttons: [{ text: "⬅️ Orqaga", key: "suniiy_intellekt", isHome: true }]
+            },
+            "ai_turlar": {
+                text: "<span class='location'>AI turlari</span>:<br>• Tor AI — bir vazifani bajaradi (masalan, shaxsni tanish).<br>• Umumiy AI — inson kabi ko‘p narsani o‘rganadi (hozir mavjud emas).",
+                buttons: [{ text: "⬅️ Orqaga", key: "suniiy_intellekt", isHome: true }]
+            },
+            "ai_qollanish": {
+                text: "<span class='fact'>Qiziq fakt: AI tibbiyotda bemorlarni diagnostika qilishda, qishloq xo‘jaligida hosilni bashorat qilishda, o‘quvchilarga yordam berishda qo‘llaniladi!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "suniiy_intellekt", isHome: true }]
+            },
+            "robototexnika": {
+                text: "Robototexnika — robotlarni loyihalash, qurish va boshqarish san’ati. U qanday ishlaydi?",
+                buttons: [
+                    { text: "Robot tuzilishi", key: "robot_tuzilish" },
+                    { text: "Boshqaruv tizimi", key: "boshqaruv" },
+                    { text: "Robot turlari", key: "robot_turlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "robot_tuzilish": {
+                text: "<span class='location'>Robot tuzilishi</span>:<br>• Sensorlar — atrofni sezadi.<br>• Protsessor — miya.<br>• Aktuatorlar — harakat qiluvchi qismlar (motorlar, pistonlar).",
+                buttons: [{ text: "⬅️ Orqaga", key: "robototexnika", isHome: true }]
+            },
+            "boshqaruv": {
+                text: "<span class='location'>Boshqaruv tizimi</span> — dastur yoki AI orqali robot harakatlarini boshqaradi. Masalan: mikrokontroller, Raspberry Pi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "robototexnika", isHome: true }]
+            },
+            "robot_turlar": {
+                text: "<span class='location'>Robot turlari</span>:<br>• Sanoat (ishlab chiqarish liniyalari)<br>• Xizmat ko‘rsatuvchi (o‘qituvchi robot)<br>• Tibbiyot (jarrohlik robotlari)<br>• Qishloq xo‘jaligi (ekish robotlari)",
+                buttons: [{ text: "⬅️ Orqaga", key: "robototexnika", isHome: true }]
+            },
+            "algoritmlar": {
+                text: "Algoritm — muammoni hal qilish uchun buyruqlar ketma-ketligi. AI uchun qanday ahamiyatga ega?",
+                buttons: [
+                    { text: "Algoritm xususiyatlari", key: "algoritm_xususiyat" },
+                    { text: "AI algoritmlari", key: "ai_algoritmlar" },
+                    { text: "Mashinaviy o‘qish", key: "mashinaviy_oqish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "algoritm_xususiyat": {
+                text: "<span class='location'>Algoritm xususiyatlari</span>:<br>1) Aniqlik<br>2) Cheklangan qadamlar<br>3) Natijaga olib kelish<br>4) Umumiylik",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "ai_algoritmlar": {
+                text: "<span class='location'>AI algoritmlari</span> — ma'lumotlarni tahlil qilish, namunani tanib olish, bashorat qilish uchun ishlatiladi. Masalan: neyron tarmoqlar.",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "mashinaviy_oqish": {
+                text: "<span class='fact'>Qiziq fakt: Mashinaviy o‘qishda robot dastlabki ma'lumotlar asosida o‘zini o‘qitadi. Masalan: 10 000 ta rasm orqali mushukni tanishni o‘rganadi.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "sensorlar": {
+                text: "Sensorlar — robotlarning “hissiyot organlari”. Qanday turlari mavjud?",
+                buttons: [
+                    { text: "Ultratovushli sensor", key: "ultratovushli" },
+                    { text: "Infraqizil sensor", key: "infraqizil" },
+                    { text: "Giroskop", key: "giroskop" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ultratovushli": {
+                text: "<span class='location'>Ultratovushli sensor</span> — masofani tovush to‘lqinlari orqali o‘lchaydi. Masalan: robot to‘siqqa urilmasligi uchun.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sensorlar", isHome: true }]
+            },
+            "infraqizil": {
+                text: "<span class='location'>Infraqizil sensor</span> — issiqlikni sezadi. Masalan: odamni aniqlash, yonayotgan narsani topish.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sensorlar", isHome: true }]
+            },
+            "giroskop": {
+                text: "<span class='location'>Giroskop</span> — robotning burilish burchagini va muvozanatini nazorat qiladi. Masalan: balansli robotlarda.",
+                buttons: [{ text: "⬅️ Orqaga", key: "sensorlar", isHome: true }]
+            },
+            "mexanika": {
+                text: "Mexanika — robotlarning jismoniy harakatini ta’minlovchi tizim. Qanday qurilma ishlatiladi?",
+                buttons: [
+                    { text: "Motorlar", key: "motorlar" },
+                    { text: "Shkiv va tasma", key: "shkiv_tasma" },
+                    { text: "Ko‘prikli harakat", key: "koprik_harakat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "motorlar": {
+                text: "<span class='location'>Motorlar</span> — elektr energiyasini harakatga aylantiradi. DC motorlar robotlarda keng qo‘llaniladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "shkiv_tasma": {
+                text: "<span class='location'>Shkiv va tasma</span> — motor quvvatini boshqa qismga uzatish uchun ishlatiladi. Masalan: robot qo‘l harakati.",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "koprik_harakat": {
+                text: "<span class='fact'>Qiziq fakt: “Ko‘prikli harakat” — robot qo‘l yoki oyoqning koordinatali harakatini ta’minlaydi. 3D-printer ham shu prinsipda ishlaydi!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "mexanika", isHome: true }]
+            },
+            "dasturlash": {
+                text: "AI va robotlarni boshqarish uchun dasturlash zarur. Qaysi tillar qo‘llaniladi?",
+                buttons: [
+                    { text: "Python", key: "python_robot" },
+                    { text: "Arduino", key: "arduino" },
+                    { text: "Bloklar orqali dasturlash", key: "blok_dastur" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "python_robot": {
+                text: "<span class='location'>Python</span> — AI dasturlashning eng ommabop tili. Oddiy sintaksis, keng kutubxonalar (TensorFlow, OpenCV).",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "arduino": {
+                text: "<span class='location'>Arduino</span> — mikrokontrollerlar uchun dasturlash. Sensorlarni o‘qish, motorlarni boshqarish uchun ishlatiladi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "blok_dastur": {
+                text: "<span class='location'>Bloklar orqali dasturlash</span> — Scratch, MakeCode kabi platformalarda. O‘quvchilar uchun sodda, vizual dasturlash usuli.",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "etika": {
+                text: "AI etikasi — sun’iy intellektni qanday qo‘llash kerak? Qanday xavflar mavjud?",
+                buttons: [
+                    { text: "Maxfiylik", key: "maxfiylik" },
+                    { text: "Ish o‘rinlari", key: "ish_sozlari" },
+                    { text: "AI nazorati", key: "ai_nazorat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "maxfiylik": {
+                text: "<span class='location'>Maxfiylik</span> — AI kamera yoki mikrofon orqali shaxsiy ma'lumotlarni yig‘ishi xavfli bo‘lishi mumkin.",
+                buttons: [{ text: "⬅️ Orqaga", key: "etika", isHome: true }]
+            },
+            "ish_sozlari": {
+                text: "<span class='location'>Ish o‘rinlari</span> — AI ba’zi kasblarni avtomatlashtirishi mumkin (masalan, kassir, haydovchi). Biroq yangi kasblar ham yaratadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "etika", isHome: true }]
+            },
+            "ai_nazorat": {
+                text: "<span class='fact'>Qiziq fakt: 2023-yilda Yevropa Ittifoqi “AI qonuni”ni qabul qilishni boshladi — xavfli AI tizimlarini cheklash uchun.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "etika", isHome: true }]
+            },
+            "kelajak_kasblar": {
+                text: "AI va robototexnika davrida qanday kasblar talab qilinadi?",
+                buttons: [
+                    { text: "AI dasturchi", key: "ai_dasturchi" },
+                    { text: "Robototexnika muhandisi", key: "robot_muhandis" },
+                    { text: "Ma'lumotlar tahlilchisi", key: "malumot_tahlil" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ai_dasturchi": {
+                text: "<span class='location'>AI dasturchi</span> — sun’iy intellekt tizimlarini yaratadi. Python, matematika, statistika bilish kerak.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kelajak_kasblar", isHome: true }]
+            },
+            "robot_muhandis": {
+                text: "<span class='location'>Robototexnika muhandisi</span> — robotlarni loyihalaydi, quradi, sinovdan o‘tkazadi. Mexanika, elektronika, dasturlash bilish kerak.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kelajak_kasblar", isHome: true }]
+            },
+            "malumot_tahlil": {
+                text: "<span class='location'>Ma'lumotlar tahlilchisi</span> — katta ma'lumotlarni tahlil qilib, qaror qabul qilish uchun foydali ma'lumot ajratib beradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kelajak_kasblar", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Sun’iy intellekt", key: "test_ai" },
+                    { text: "Robototexnika", key: "test_robot" },
+                    { text: "Sensorlar", key: "test_sensor" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_ai": {
+                text: "1. Tor AI nima uchun mo‘ljallangan?\nA) Har qanday vazifani bajarish\nB) Bitta aniqlangan vazifani bajarish\nC) Inson kabi o‘ylash",
+                buttons: [
+                    { text: "A) Har qanday vazifani bajarish", key: "test_ai_a" },
+                    { text: "B) Bitta aniqlangan vazifani bajarish", key: "test_ai_b" },
+                    { text: "C) Inson kabi o‘ylash", key: "test_ai_c" }
+                ]
+            },
+            "test_ai_b": {
+                text: "✅ To'g'ri! Tor AI — bitta vazifani yaxshi bajaradi, masalan: shaxsni tanish yoki tarjima qilish.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_robot": {
+                text: "2. Robotning “miyasi” nima?\nA) Sensor\nB) Aktuator\nC) Protsessor",
+                buttons: [
+                    { text: "A) Sensor", key: "test_robot_a" },
+                    { text: "B) Aktuator", key: "test_robot_b" },
+                    { text: "C) Protsessor", key: "test_robot_c" }
+                ]
+            },
+            "test_robot_c": {
+                text: "✅ Ajoyib! Protsessor — robotning boshqaruv markazi, “miyasi” deb ham ataladi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_sensor": {
+                text: "3. Qaysi sensor masofani o‘lchaydi?\nA) Infraqizil\nB) Ultratovushli\nC) Giroskop",
+                buttons: [
+                    { text: "A) Infraqizil", key: "test_sensor_a" },
+                    { text: "B) Ultratovushli", key: "test_sensor_b" },
+                    { text: "C) Giroskop", key: "test_sensor_c" }
+                ]
+            },
+            "test_sensor_b": {
+                text: "✅ To'g'ri! Ultratovushli sensor — tovush to‘lqinlari orqali masofani aniqlaydi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
