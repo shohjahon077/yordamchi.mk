@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Algebra va Analiz (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #311B92; /* To‘q binafsha — matematik mantiq */
+            --secondary: #6A1B9A;
+            --accent: #FFD54F; /* Sariq — yorqin fikr */
+            --light: #FFFFFF;
+            --bg: #EDE7F6;
+            --text: #311B92;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(49, 27, 146, 0.15);
+            --border: #D1C4E9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ede7f6, #d1c4e9);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #311B92);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #EDE7F6;
+            color: #311B92;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === MATH STYLE === */
+        .math {
+            background: #EDE7F6;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #5E35B1;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #EDE7F6;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #311B92;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(49,27,146,0.2);
+        }
+
+        .quick-button:hover {
+            background: #311B92;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(49,27,146,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Algebra va Analiz</h1>
+        <p>10-sinf uchun: Funksiyalar, trigonometriya, logarifmlar, hosilalar — sonlarning go‘zalligi bilan tanishing!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🧮</div>
+            <h2>Algebra va Analiz Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Funksiyalar, trigonometriya, logarifmlar, hosilalar, chegaralar</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Algebra va analiz asoslari ma'lumotlar bazasi (10-sinf darsligiga mos)
+        const database = {
+            "main_menu": {
+                text: "Salom! Sonlar, funksiyalar, hosilalar — ularning sirini ochishga tayyormisiz?",
+                buttons: [
+                    { text: "📈 Funksiyalar", key: "funksiyalar" },
+                    { text: "🔬 Trigonometriya", key: "trig" },
+                    { text: "㏒ Logarifmlar", key: "logarifm" },
+                    { text: "📊 Hosilalar", key: "hosila" },
+                    { text: "♾️ Chegaralar", key: "chegara" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "funksiyalar": {
+                text: "Funksiya — har bir x ga y bir qiymat mos keladi. 10-sinfda nimalarni o‘rganamiz?",
+                buttons: [
+                    { text: "Funksiya turlari", key: "funk_turlari" },
+                    { text: "Grafiklar", key: "grafik" },
+                    { text: "Monotonlik", key: "monoton" },
+                    { text: "Juft/toq funksiyalar", key: "juft_toq" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "funk_turlari": {
+                text: "<span class='math'>Funksiya turlari:</span><br>• Chiziqli: y = 2x + 3<br>• Kvadratik: y = x² – 4<br>• Ratsional: y = 1/(x – 2)<br>• Irratsional: y = √(x + 1)",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "grafik": {
+                text: "<span class='example'>Grafiklar:</span><br>• y = x — to‘g‘ri chiziq<br>• y = x² — parabola<br>• y = 1/x — giperbola<br>• Grafik — funksiyaning vizual ifodasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "monoton": {
+                text: "<span class='math'>Monotonlik:</span><br>• O‘suvchi: x₁ < x₂ ⇒ f(x₁) < f(x₂)<br>• Kamayuvchi: x₁ < x₂ ⇒ f(x₁) > f(x₂)<br>• Misol: y = x³ — o‘suvchi, y = –x — kamayuvchi",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "juft_toq": {
+                text: "<span class='math'>Juft/toq funksiyalar:</span><br>• Juft: f(–x) = f(x) → y = x²<br>• Toq: f(–x) = –f(x) → y = x³<br>• Grafikda: juft — Oy ga nisbatan simmetrik",
+                buttons: [{ text: "⬅️ Orqaga", key: "funksiyalar", isHome: true }]
+            },
+            "trig": {
+                text: "Trigonometriya — burchaklar va ularning funksiyalari dunyosi.",
+                buttons: [
+                    { text: "Asosiy funksiyalar", key: "trig_asos" },
+                    { text: "Ayniyatlar", key: "ayniyatlar" },
+                    { text: "Tenglamalar", key: "trig_tenglama" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "trig_asos": {
+                text: "<span class='math'>Asosiy trigonometrik funksiyalar:</span><br>• sin α, cos α, tan α, cot α<br>• Birlik aylana: x = cos α, y = sin α<br>• sin²α + cos²α = 1",
+                buttons: [{ text: "⬅️ Orqaga", key: "trig", isHome: true }]
+            },
+            "ayniyatlar": {
+                text: "<span class='math'>Muhim ayniyatlar:</span><br>• sin(–α) = –sin α<br>• cos(–α) = cos α<br>• tan(α + π) = tan α<br>• sin(π/2 – α) = cos α",
+                buttons: [{ text: "⬅️ Orqaga", key: "trig", isHome: true }]
+            },
+            "trig_tenglama": {
+                text: "<span class='example'>Trigonometrik tenglamalar:</span><br>• sin x = 1 → x = π/2 + 2πn<br>• cos x = 0 → x = π/2 + πn<br>• tan x = √3 → x = π/3 + πn, n ∈ ℤ",
+                buttons: [{ text: "⬅️ Orqaga", key: "trig", isHome: true }]
+            },
+            "logarifm": {
+                text: "Logarifm — darajaga ko‘tarishning teskari amali.",
+                buttons: [
+                    { text: "Ta’rifi", key: "log_tarif" },
+                    { text: "Xossalari", key: "log_xossa" },
+                    { text: "Tenglamalar", key: "log_tenglama" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "log_tarif": {
+                text: "<span class='math'>Ta’rifi:</span><br>logₐb = c ⇔ a<sup>c</sup> = b (a > 0, a ≠ 1, b > 0)<br>Misol: log₂8 = 3, chunki 2³ = 8",
+                buttons: [{ text: "⬅️ Orqaga", key: "logarifm", isHome: true }]
+            },
+            "log_xossa": {
+                text: "<span class='math'>Xossalari:</span><br>• logₐ(xy) = logₐx + logₐy<br>• logₐ(x/y) = logₐx – logₐy<br>• logₐ(x<sup>k</sup>) = k·logₐx<br>• logₐa = 1, logₐ1 = 0",
+                buttons: [{ text: "⬅️ Orqaga", key: "logarifm", isHome: true }]
+            },
+            "log_tenglama": {
+                text: "<span class='example'>Logarifmik tenglamalar:</span><br>• log₂(x + 1) = 3 → x + 1 = 8 → x = 7<br>• log₃x + log₃(x–2) = 1 → log₃[x(x–2)] = 1 → x² – 2x = 3 → x = 3",
+                buttons: [{ text: "⬅️ Orqaga", key: "logarifm", isHome: true }]
+            },
+            "hosila": {
+                text: "Hosila — funksiyaning o‘zgarish tezligi.",
+                buttons: [
+                    { text: "Hosila ta’rifi", key: "hosila_tarif" },
+                    { text: "Asosiy formulalar", key: "hosila_form" },
+                    { text: "Grafikda ma’nosi", key: "hosila_grafik" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hosila_tarif": {
+                text: "<span class='math'>Ta’rifi:</span><br>f′(x) = lim<sub>h→0</sub> [f(x+h) – f(x)] / h<br>Bu — funksiyaning x nuqtadagi tezligi",
+                buttons: [{ text: "⬅️ Orqaga", key: "hosila", isHome: true }]
+            },
+            "hosila_form": {
+                text: "<span class='math'>Asosiy hosilalar:</span><br>• (x<sup>n</sup>)′ = n·x<sup>n–1</sup><br>• (sin x)′ = cos x<br>• (cos x)′ = –sin x<br>• (e<sup>x</sup>)′ = e<sup>x</sup><br>• (ln x)′ = 1/x",
+                buttons: [{ text: "⬅️ Orqaga", key: "hosila", isHome: true }]
+            },
+            "hosila_grafik": {
+                text: "<span class='example'>Grafikda:</span><br>• Hosila > 0 → funksiya o‘suvchi<br>• Hosila < 0 → funksiya kamayuvchi<br>• Hosila = 0 → ekstremum nuqtasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "hosila", isHome: true }]
+            },
+            "chegara": {
+                text: "Chegara (limit) — funksiya qiymati qanday songa intilishini ko‘rsatadi.",
+                buttons: [
+                    { text: "Ta’rifi", key: "chegara_tarif" },
+                    { text: "Oddiy misollar", key: "chegara_misol" },
+                    { text: "Chegarasiz ifodalar", key: "chegara_ifoda" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "chegara_tarif": {
+                text: "<span class='math'>Ta’rifi:</span><br>lim<sub>x→a</sub> f(x) = L → x, a ga yaqinlashganda f(x), L ga yaqinlashadi",
+                buttons: [{ text: "⬅️ Orqaga", key: "chegara", isHome: true }]
+            },
+            "chegara_misol": {
+                text: "<span class='math'>Misol:</span><br>• lim<sub>x→2</sub> (x² – 4)/(x – 2) = lim (x+2) = 4<br>• lim<sub>x→0</sub> sin x / x = 1",
+                buttons: [{ text: "⬅️ Orqaga", key: "chegara", isHome: true }]
+            },
+            "chegara_ifoda": {
+                text: "<span class='example'>Chegarasiz ifodalar:</span><br>• ∞/∞, 0/0, ∞ – ∞ — ularni soddalashtirish kerak<br>Misol: (x² – 9)/(x – 3) = x + 3 (x≠3)",
+                buttons: [{ text: "⬅️ Orqaga", key: "chegara", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Funksiyalar testi", key: "test_funksiya" },
+                    { text: "Trigonometriya testi", key: "test_trig" },
+                    { text: "Hosilalar testi", key: "test_hosila" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_funksiya": {
+                text: "1. y = x³ funksiya qanday?\nA) Juft\nB) Toq\nC) Na juft, na toq",
+                buttons: [
+                    { text: "A)", key: "test_funksiya_a" },
+                    { text: "B)", key: "test_funksiya_b" },
+                    { text: "C)", key: "test_funksiya_c" }
+                ]
+            },
+            "test_funksiya_b": {
+                text: "✅ To'g'ri! f(–x) = (–x)³ = –x³ = –f(x) → Toq funksiya.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_trig": {
+                text: "2. sin(π/2) + cos(π) = ?\nA) 0\nB) 1\nC) 2",
+                buttons: [
+                    { text: "A)", key: "test_trig_a" },
+                    { text: "B)", key: "test_trig_b" },
+                    { text: "C)", key: "test_trig_c" }
+                ]
+            },
+            "test_trig_a": {
+                text: "✅ Ajoyib! sin(π/2) = 1, cos(π) = –1 → 1 + (–1) = 0.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_hosila": {
+                text: "3. f(x) = x⁴ hosilasi nima?\nA) 4x³\nB) x³\nC) 3x⁴",
+                buttons: [
+                    { text: "A)", key: "test_hosila_a" },
+                    { text: "B)", key: "test_hosila_b" },
+                    { text: "C)", key: "test_hosila_c" }
+                ]
+            },
+            "test_hosila_a": {
+                text: "✅ To'g'ri! (x⁴)′ = 4x³.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
