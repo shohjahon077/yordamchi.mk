@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Texnologiya (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === TECH STYLE === */
+        .tech {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Texnologiya</h1>
+        <p>8-sinf uchun: Tikuvchilik, elektr asboblar, uy bezash, xavfsizlik — texnologiya dunyosiga xush kelibsiz!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🛠️</div>
+            <h2>Texnologiya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — Tikuvchilik, elektr, mehnat madaniyati, xavfsizlik</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Texnologiya faniga oid ma'lumotlar bazasi (8-sinf)
+        const database = {
+            "main_menu": {
+                text: "Salom! Texnologiya — hayotni yaxshilash san’ati. Qaysi sohani o'rganishni xohlaysiz?",
+                buttons: [
+                    { text: "🧵 Tikuvchilik", key: "tikuvchilik" },
+                    { text: "🔌 Elektr texnologiya", key: "elektr" },
+                    { text: "🏠 Uy bezash", key: "uy_bezash" },
+                    { text: "♻️ Ekotexnologiya", key: "ekotex" },
+                    { text: "⚠️ Xavfsizlik qoidalari", key: "xavfsizlik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "tikuvchilik": {
+                text: "Tikuvchilik — kiyim yasash va tikish san’ati. 8-sinfda nimalarni o'rganamiz?",
+                buttons: [
+                    { text: "Mashina turi", key: "mashina_turi" },
+                    { text: "Tikuv bosqichi", key: "tikuv_bosqich" },
+                    { text: "Gul tikish", key: "gul_tikish" },
+                    { text: "📐 O'lchov qilish", key: "olchov" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mashina_turi": {
+                text: "<span class='tech'>Tikuv mashinalari:</span><br>– Qo'lda ishlaydigan (oddiy)<br>– Elektr tikuv mashinalari<br>– Kompyuterli (avtomatik) mashinalar<br><br>8-sinflar uchun asosiy — oddiy va elektr mashinalar.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tikuvchilik", isHome: true }]
+            },
+            "tikuv_bosqich": {
+                text: "<span class='example'>Tikish bosqichlari:</span><br>1. Loyihalash → 2. Gazlama tanlash → 3. O'lchov olish → 4. Pattern yasash → 5. Tikish → 6. Sifatni tekshirish",
+                buttons: [{ text: "⬅️ Orqaga", key: "tikuvchilik", isHome: true }]
+            },
+            "gul_tikish": {
+                text: "<span class='tech'>Gul tikish — dekorativ usul.</span><br>Qo'lda yoki mashinada amalga oshiriladi. 'Toshkent guli', 'navoiy naqshi' kabi an’anaviy naqshlar ham bor.",
+                buttons: [{ text: "⬅️ Orqaga", key: "tikuvchilik", isHome: true }]
+            },
+            "olchov": {
+                text: "<span class='tech'>Asosiy o'lchovlar:</span><br>• Bo'y (growth)<br>• Ko'krak aylanası<br>• Bel aylanası<br>• Yonbo'l uzunligi<br><br>O'lchovni 1 sm xatolikdan ortiq qilmaslik kerak!",
+                buttons: [{ text: "⬅️ Orqaga", key: "tikuvchilik", isHome: true }]
+            },
+            "elektr": {
+                text: "Elektr asboblar bilan ishlash — 8-sinf Texnologiyasining muhim qismi.",
+                buttons: [
+                    { text: "Sxema o'qish", key: "sxema" },
+                    { text: "Lampa ulash", key: "lampa_ulash" },
+                    { text: "Qisqa tizim", key: "qisqa_tizim" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sxema": {
+                text: "<span class='tech'>Elektr sxemasi:</span><br>– Chiziq: sim<br>– ● : ulanish nuqtasi<br>– 💡 : lampa<br>– ⏚ : yerlov<br><br>Har doim sxemani tushunib, so'ng ulang!",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "lampa_ulash": {
+                text: "<span class='example'>Lampochka ulash tartibi:</span><br>1. Elektr tokini o'chiring!<br>2. Simlarni tozalang.<br>3. Faza (qora) va nol (ko'k) simlarini ulang.<br>4. Xavfsizlik qoidalari — Muhim!",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "qisqa_tizim": {
+                text: "<span class='tech'>Qisqa tizim — xavfli!</span><br>Simlarni yolg'izlangan qismi bir-biriga tegsa, tok kuchi keskin oshadi — yong'in sodir bo'lishi mumkin.<br><br>👉 Har doim izolyatsiya qilingan simlardan foydalaning!",
+                buttons: [{ text: "⬅️ Orqaga", key: "elektr", isHome: true }]
+            },
+            "uy_bezash": {
+                text: "Uy — bu mehmonxona, o'simliklar, ranglar orqali ifodalangan shaxsiy fazo.",
+                buttons: [
+                    { text: "Mehmonxona", key: "mehmonxona" },
+                    { text: "Gullar", key: "gullar" },
+                    { text: "Rang tanlovi", key: "rang" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "mehmonxona": {
+                text: "<span class='example'>Mehmonxona bezash:</span><br>• Yorug'lik — tabiiy yoki sun’iy<br>• Mebellar — qulay va estetik<br>• Qandillar, guldasta — mexmonlarni qadrlash belgisi",
+                buttons: [{ text: "⬅️ Orqaga", key: "uy_bezash", isHome: true }]
+            },
+            "gullar": {
+                text: "Gullar — uyga hayot keltiradi.<br><br>Qulay gullar: sansevieriya, gerbera, bonsay daraxti. Ularni suv qilish — har kungi mehnat madaniyati.",
+                buttons: [{ text: "⬅️ Orqaga", key: "uy_bezash", isHome: true }]
+            },
+            "rang": {
+                text: "<span class='tech'>Rang psixologiyasi:</span><br>• Ko'k — tinchlik<br>• Sariq — quvonch<br>• Yashil — sog'lomlik<br>• Qizil — energiya<br><br>Uyingizni rang bilan boshqaring!",
+                buttons: [{ text: "⬅️ Orqaga", key: "uy_bezash", isHome: true }]
+            },
+            "ekotex": {
+                text: "Ekotexnologiya — atrof-muhitni asrashga qaratilgan texnologiyalar.",
+                buttons: [
+                    { text: "Qayta ishlash", key: "qayta_ishlash" },
+                    { text: "Quyosh batareyasi", key: "quyosh_bat" },
+                    { text: "Suv tejash", key: "suv_tejash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "qayta_ishlash": {
+                text: "<span class='example'>Qayta ishlash:</span><br>• Qog'oz → yangi qog'oz<br>• Plastik → idishlar, mebellar<br>• Metall → yangi buyumlar<br><br>8-sinf loyihasi: 'Qayta ishlashdan qilingan portfel'.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekotex", isHome: true }]
+            },
+            "quyosh_bat": {
+                text: "Quyosh batareyasi — toza energiya manbai.<br><br>Maktab loyihasi: Quyosh batareyasi bilan ishlovchi suv sovutkich modeli.",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekotex", isHome: true }]
+            },
+            "suv_tejash": {
+                text: "<span class='tech'>Suv tejash usullari:</span><br>• Yiqin paytida kranni yoping<br>• Suvni tozalab qayta ishlash<br>• Yomg'ir suvidan foydalanish tizimlari",
+                buttons: [{ text: "⬅️ Orqaga", key: "ekotex", isHome: true }]
+            },
+            "xavfsizlik": {
+                text: "Mehnat xavfsizligi — eng muhim qoida!",
+                buttons: [
+                    { text: "Tikuv mashinasi", key: "xavf_tikuv" },
+                    { text: "Elektr ishlari", key: "xavf_elektr" },
+                    { text: "Kesish asboblari", key: "xavf_kesish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "xavf_tikuv": {
+                text: "<span class='tech'>Tikuv mashinasi xavfsizligi:</span><br>❌ Qo'lingizni tikuv nuqtasiga yaqin qo'ymang!<br>✅ Gazlamani qo'lda siljitish — faqat tikuv to'xtaganida.<br>✅ Igni doim toza va o'tkir saqlang.",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "xavf_elektr": {
+                text: "⚠️ Elektr ishlari qilishdan oldin:<br>• Tokni o'chiring<br>• Simlarni tekshiring<br>• Quruq qo'l bilan ishlang<br>• Rezina qo'lqop kiyib ishlang",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "xavf_kesish": {
+                text: "<span class='example'>Qaychi yoki pichoq bilan ishlashda:</span><br>• Barmoqlaringizni himoyalang<br>• Asbobni doim qo'lqopli ushlang<br>• Ish joyi toza bo'lsin",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Tikuvchilik", key: "test_tikuv" },
+                    { text: "Elektr", key: "test_elektr" },
+                    { text: "Xavfsizlik", key: "test_xavf" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_tikuv": {
+                text: "1. Tikuvchilikda asosiy o'lchov qanday olinadi?\nA) Ko'z bilan\nB) Santimetr lenta bilan\nC) Qo'lda tortib",
+                buttons: [
+                    { text: "A)", key: "test_tikuv_a" },
+                    { text: "B)", key: "test_tikuv_b" },
+                    { text: "C)", key: "test_tikuv_c" }
+                ]
+            },
+            "test_tikuv_b": {
+                text: "✅ To'g'ri! Santimetr lenta — aniq o'lchov vositasi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_elektr": {
+                text: "2. Elektr sxemasida lampochka qanday belgilanadi?\nA) ⚡\nB) 💡\nC) 🔌",
+                buttons: [
+                    { text: "A)", key: "test_elektr_a" },
+                    { text: "B)", key: "test_elektr_b" },
+                    { text: "C)", key: "test_elektr_c" }
+                ]
+            },
+            "test_elektr_b": {
+                text: "✅ Ajoyib! Sxemada lampa — 💡 belgisi bilan ifodalanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_xavf": {
+                text: "3. Elektr ishlarida nima qilish kerak?\nA) Nam qo'l bilan ishlash\nB) Tok yonib tursa ishlash\nC) Tokni o'chirib ishlash",
+                buttons: [
+                    { text: "A)", key: "test_xavf_a" },
+                    { text: "B)", key: "test_xavf_b" },
+                    { text: "C)", key: "test_xavf_c" }
+                ]
+            },
+            "test_xavf_c": {
+                text: "✅ To'g'ri! Xavfsizlik — avvalo tokni o'chirishdan boshlanadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
