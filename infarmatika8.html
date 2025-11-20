@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Informatika (8-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1;
+            --secondary: #009688;
+            --accent: #FFC107;
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #b3e5fc);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === LOCATION STYLE === */
+        .location {
+            background: #E1F5FE;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #01579B;
+        }
+
+        /* === FACT EXAMPLE === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E0F7FA;
+            border-left: 3px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #006064;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Informatika</h1>
+        <p>8-sinf uchun: Kompyuter tizimlari, dasturlash, internet, xavfsizlik, algoritmlar — barchasi bir joyda!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">💻</div>
+            <h2>Informatika Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">8-sinf darsligiga mos — Kompyuter, dasturlash, internet, ma'lumotlar, xavfsizlik</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ INFORMATIKA ma'lumotlar bazasi (8-sinf darsligiga mos) — BARCHA "text:" TO'G'RILANDI!
+        const database = {
+            "main_menu": {
+                text: "Salom! Informatika dunyosiga xush kelibsiz! Qaysi mavzu bo'yicha yordam kerak?",
+                buttons: [
+                    { text: "🖥️ Kompyuter tizimi", key: "kompyuter_tizim" },
+                    { text: "🧩 Algoritmlar", key: "algoritmlar" },
+                    { text: "🐍 Dasturlash asoslari", key: "dasturlash" },
+                    { text: "🌐 Internet va veb", key: "internet" },
+                    { text: "🔒 Xavfsizlik", key: "xavfsizlik" },
+                    { text: "📊 Ma'lumotlar", key: "malumotlar" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "kompyuter_tizim": {
+                text: "Kompyuter tizimi — bu dasturiy va apparat vositalarining birligi. Asosiy qismlari qanday?",
+                buttons: [
+                    { text: "Apparat vositalari", key: "apparat" },
+                    { text: "Dasturiy ta'minot", key: "dasturiy" },
+                    { text: "Operatsion tizim", key: "operatsion" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "apparat": {
+                text: "<span class='location'>Apparat vositalari</span> — CPU, RAM, HDD/SSD, klaviatura, monitor. Bu kompyuterning jismoniy qismlari.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kompyuter_tizim", isHome: true }]
+            },
+            "dasturiy": {
+                text: "<span class='location'>Dasturiy ta'minot</span> — foydalanuvchi uchun dasturlar: Word, browser, o'yinlar. Ikkita turi: tizim va ilovaviy.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kompyuter_tizim", isHome: true }]
+            },
+            "operatsion": {
+                text: "<span class='location'>Operatsion tizim</span> — kompyuterni boshqaradi. Masalan: Windows, Linux, macOS. U barcha dasturlarni ishga tushiradi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "kompyuter_tizim", isHome: true }]
+            },
+            "algoritmlar": {
+                text: "Algoritm — muammoni hal qilish uchun qadam-qadam ko'rsatma. Masalan: qanday qilib choy qo'yish?",
+                buttons: [
+                    { text: "Algoritm xususiyatlari", key: "algoritm_xususiyat" },
+                    { text: "Blok-sxema", key: "blok_sxema" },
+                    { text: "Misollar", key: "algoritm_misollar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "algoritm_xususiyat": {
+                text: "Algoritm 5 asosiy xususiyatga ega: aniq, tushunarli, natijaga olib keladi, cheklangan qadamlar, umumiy.",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "blok_sxema": {
+                text: "<span class='location'>Blok-sxema</span> — algoritmni vizual ifodalash. Turtburchaklar — amallar, romb — shart, o'q — ketma-ketlik.",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "algoritm_misollar": {
+                text: "<span class='fact'>Qiziq fakt: Eng qadimiy algoritm — Euklid algoritmi (miloddan avvalgi 300-yil). Ikki sonning EKUBini topadi.</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "algoritmlar", isHome: true }]
+            },
+            "dasturlash": {
+                text: "Dasturlash — kompyuterga buyruqlar berish. 8-sinfda Python dasturlash tilini o'rganamiz.",
+                buttons: [
+                    { text: "Python nima?", key: "python_nima" },
+                    { text: "O'zgaruvchilar", key: "ozgaruvchilar" },
+                    { text: "Shartlar", key: "shartlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "python_nima": {
+                text: "<span class='location'>Python</span> — o'qish va yozish oson, tushunarli dasturlash tili. Dastlabki dasturlar: print(), input().",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "ozgaruvchilar": {
+                text: "O'zgaruvchi — ma'lumotni saqlash uchun nomlangan xotira. Masalan: `ism = 'Ali'` yoki `yosh = 14`.",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "shartlar": {
+                text: "Shart — dasturda qaror qabul qilish. Masalan: `if yosh >= 18: print('Kattalar')`",
+                buttons: [{ text: "⬅️ Orqaga", key: "dasturlash", isHome: true }]
+            },
+            "internet": {
+                text: "Internet — dunyoning eng katta tarmog'i. U qanday ishlaydi?",
+                buttons: [
+                    { text: "IP manzil", key: "ip_manzil" },
+                    { text: "Veb-sayt", key: "web_sayt" },
+                    { text: "URL", key: "url" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ip_manzil": {
+                text: "<span class='location'>IP manzil</span> — har bir qurilma uchun unikal raqam. Masalan: 192.168.1.1. Bu qurilmalarni bog'laydi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "web_sayt": {
+                text: "<span class='location'>Veb-sayt</span> — HTML, CSS, JavaScript bilan yozilgan sahifalar to'plami. Masalan: google.com.",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "url": {
+                text: "<span class='location'>URL</span> — veb-sahifaning manzili. Tarkibi: protokol (https://) + domen (example.com) + yo'l (/page).",
+                buttons: [{ text: "⬅️ Orqaga", key: "internet", isHome: true }]
+            },
+            "xavfsizlik": {
+                text: "Xavfsizlik — ma'lumotlaringizni himoya qilish. Qanday qilish kerak?",
+                buttons: [
+                    { text: "Parollar", key: "parollar" },
+                    { text: "Viruslar", key: "viruslar" },
+                    { text: "Fayl yuklash", key: "fayl_yuklash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "parollar": {
+                text: "Parol — kamida 8 belgi, katta/kichik harflar, raqamlar va belgilar bilan. Har 3 oyda o'zgartiring!",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "viruslar": {
+                text: "<span class='location'>Viruslar</span> — dasturlarning zaharli turlari. Ular fayllarni o'chiradi, ma'lumotlarni o'g'irlaydi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "fayl_yuklash": {
+                text: "Fayl yuklashdan oldin — fayl manbasini tekshiring! .exe, .bat, .scr kengaytmalari xavfli bo'lishi mumkin.",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "malumotlar": {
+                text: "Ma'lumotlar — qanday tashkil etiladi? Raqamli, matnli, audio, rasmlar.",
+                buttons: [
+                    { text: "Ma'lumot turlari", key: "malumot_turlari" },
+                    { text: "Fayl turlari", key: "fayl_turlari" },
+                    { text: "Ma'lumotlar o'lchov birligi", key: "olchov_birligi" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "malumot_turlari": {
+                text: "Ma'lumotlar: matn (text), raqam (number), rasim (image), audio, video. Har biri kompyuterda 0 va 1 larda saqlanadi.",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "fayl_turlari": {
+                text: "<span class='location'>Fayl turlari</span>: .txt (matn), .jpg (rasm), .mp3 (audio), .pdf (hujjat), .py (Python dasturi).",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "olchov_birligi": {
+                text: "<span class='fact'>Qiziq fakt: 1 KB = 1024 bayt, 1 MB = 1024 KB, 1 GB = 1024 MB. Kompyuter ikkilik sanoq sistemasida ishlaydi!</span>",
+                buttons: [{ text: "⬅️ Orqaga", key: "malumotlar", isHome: true }]
+            },
+            "test_menu": {
+                text: "Test tanlang:",
+                buttons: [
+                    { text: "Kompyuter tizimi", key: "test_kompyuter" },
+                    { text: "Algoritmlar", key: "test_algoritm" },
+                    { text: "Dasturlash", key: "test_dasturlash" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_kompyuter": {
+                text: "1. Quyidagilardan qaysi biri apparat vositasidir?\nA) Windows   B) RAM   C) Microsoft Word",
+                buttons: [
+                    { text: "A) Windows", key: "test_kompyuter_a" },
+                    { text: "B) RAM", key: "test_kompyuter_b" },
+                    { text: "C) Microsoft Word", key: "test_kompyuter_c" }
+                ]
+            },
+            "test_kompyuter_b": {
+                text: "✅ To'g'ri! RAM — kompyuterning apparat vositasidir. Bu xotira qurilmasi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_algoritm": {
+                text: "2. Algoritmning qaysi xususiyati uning aniq bo'lishini anglatadi?\nA) Tushunarli   B) Cheklangan qadamlar   C) Natijaga olib keladi",
+                buttons: [
+                    { text: "A) Tushunarli", key: "test_algoritm_a" },
+                    { text: "B) Cheklangan qadamlar", key: "test_algoritm_b" },
+                    { text: "C) Natijaga olib keladi", key: "test_algoritm_c" }
+                ]
+            },
+            "test_algoritm_b": {
+                text: "✅ Ajoyib! Algoritm cheklangan qadamlarga ega bo'lishi kerak — bu uning aniq va bajarilishi mumkinligini anglatadi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_dasturlash": {
+                text: "3. Python da 'print()' funksiyasining vazifasi nima?\nA) Foydalanuvchidan ma'lumot so'rash   B) Natijani ekranga chiqarish   C) Shart qo'yish",
+                buttons: [
+                    { text: "A) Foydalanuvchidan ma'lumot so'rash", key: "test_dasturlash_a" },
+                    { text: "B) Natijani ekranga chiqarish", key: "test_dasturlash_b" },
+                    { text: "C) Shart qo'yish", key: "test_dasturlash_c" }
+                ]
+            },
+            "test_dasturlash_b": {
+                text: "✅ To'g'ri! print() — ekranga matn, raqam yoki natijani chiqarish uchun ishlatiladi.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            let processedText = next.text
+                                .replace(/<span class='([^']+)'>/g, '<span class="$1">')
+                                .replace(/<\/span>/g, '</span>');
+                            addMessage(processedText, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
