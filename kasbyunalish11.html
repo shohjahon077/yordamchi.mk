@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Psixologiya AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a0f1f, #2a1233, #0f0814);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a050d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #e94e77;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23e94e77"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(20, 10, 30, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(233, 78, 119, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(8, 3, 12, 0.9);
+            color: #e94e77;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(233, 78, 119, 0.3);
+            text-shadow: 0 0 10px rgba(233, 78, 119, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #b91c1c, #d32f2f);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #e94e77, #f48fb1);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #e94e77;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(8, 3, 12, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(233, 78, 119, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #e94e77 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #e94e77;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(40, 20, 50, 0.4);
+            color: #e94e77;
+            border: 1px solid rgba(233, 78, 119, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(233, 78, 119, 0.25);
+            border-color: #e94e77;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(233, 78, 119, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23e94e77"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .concept {
+            color: #f8bbd0;
+            font-weight: bold;
+        }
+
+        .example {
+            background: rgba(30, 15, 40, 0.3);
+            padding: 8px 12px;
+            border-left: 4px solid #e94e77;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .note {
+            color: #fce4ec;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Psixologiya AI Bot</div>
+        <div class="splash-subtext">Shaxsiyat, kasb tanlash, motivatsiya, stres, guruh dinamikasi, psixologik testlar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🧠 11-sinf Psixologiya / Kasbiy Yo‘naltirish AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Psixologiya asoslari — 20 ta
+            "Psixologiya nima? Uning asosiy yo‘nalishlari?",
+            "Inson psixikasining tarkibiy qismlari?",
+            "Shaxsiyat nima? U qanday shakllanadi?",
+            "Freydning psixoseksual rivojlanish bosqichlari?",
+            "Eriksonning psixosotsial rivojlanish nazariyasi?",
+            "Piyajening kognitiv rivojlanish bosqichlari?",
+            "Qobiliyat, iste’dod va geniyat farqi?",
+            "Xarakter va temperament farqi?",
+            "Gippokratning temperament turlari?",
+            "Meyers-Briggs (MBTI) shaxsiyat testi nima?",
+            "Big Five (OCHBT) shaxsiyat modeli nima?",
+            "Motivatsiya nima? Turlari?",
+            "Maslowning ehtiyojlar ierarxiyasi?",
+            "Kognitiv va emotsional motivatsiya farqi?",
+            "Ichki va tashqi motivatsiya farqi?",
+            "Stress nima? Uning sabablari?",
+            "Stresga qarshi strategiyalar?",
+            "Koping mexanizmlari nima?",
+            "Psixologik barqarorlik nima?",
+            "Insonning o‘zini anglashi nima uchun muhim?",
+
+            // Kasbiy yo‘naltirish — 25 ta
+            "Kasb tanlashda qanday omillar ahamiyatga ega?",
+            "Kasbiy shaxsiyat tushunchasi (Y. Klimov modeli)?",
+            "Kasbni tanlashda qanday testlardan foydalanish mumkin?",
+            "O‘z kasbini qanday topish mumkin?",
+            "Karyera rejalashtirish qanday amalga oshiriladi?",
+            "CV (résumé) va motivatsion xat qanday tuziladi?",
+            "Suhbatga tayyorgarlik qanday ko‘riladi?",
+            "Zamonaviy kasblar ro‘yxati (2025 yil uchun)?",
+            "AI, robototexnika, kriptovalyutalar — kelajak kasblari?",
+            "Gumanitar, aniq, tabiiy, ijtimoiy fanlar yo‘nalishlarining afzalliklari?",
+            "Kasbni tanlashda ota-onaning roli?",
+            "Kasbga moslikni qanday aniqlash mumkin?",
+            "“Men nima bo‘laman?” degan savolga qanday javob topish kerak?",
+            "Kasb tanlashda xato qilmaslik uchun nima qilish kerak?",
+            "Kasbni o‘zgartirish — qachon va qanday?",
+            "Freelance, remote ish — zamonaviy tendentsiyalar?",
+            "Kasbiy burnout (charchoq) nima?",
+            "Kasbda muvaffaqiyatga erishish uchun qanday xususiyatlar kerak?",
+            "Kasb va hayot muvozanati?",
+            "Kasbda o‘z-o‘zini rivojlantirish strategiyalari?",
+            "Kasbda raqobatbardoshlikni qanday ta’minlash mumkin?",
+            "O‘zbekistonda talabl qilinadigan kasblar?",
+            "Xalqaro kasblarda ishlash uchun qanday qobiliyatlar kerak?",
+            "Kasbiy yo‘naltirishda maktablar qanday rol o‘ynaydi?",
+            "Kasbiy yo‘naltirish bo‘yicha O‘zbekistonda qanday dasturlar mavjud?",
+
+            // Psixologik testlar va amaliyot — 20 ta
+            "Ravenning progressiv matritsalar testi nima?",
+            "Eysenck shaxsiyat testi nima?",
+            "Spielberger xavotir testi qanday?",
+            "Kettell 16 PF testi nima?",
+            "Luscher ranglar testi qanday ishlaydi?",
+            "Rorschach dog‘ testi nima?",
+            "Kasbga yo‘naltiruvchi psixologik testlar qanday?",
+            "Test natijalarini qanday tahlil qilish kerak?",
+            "Testlarda manipulyatsiyadan qanday saqlanish kerak?",
+            "O‘zini-o‘zi baholash testlari qanday ishlaydi?",
+            "Psixodramada ro‘l o‘yinlarining ahamiyati?",
+            "Arts-terapiya nima?",
+            "Psixologga murojaat qilishdan qo‘rqish normalmi?",
+            "Guruh psixoterapiyasining afzalliklari?",
+            "Kasbiy yo‘naltiruvchi konsultatsiya qanday o‘tkaziladi?",
+            "Kasb tanlashda qanday xatolar qilinadi?",
+            "“Menda hech qanday qobiliyat yo‘q” degan hissiyatni qanday hal qilish mumkin?",
+            "Kasbda tanqidiy xato qilishdan qanday saqlanish mumkin?",
+            "Kasbni o‘zgartirishda qanday qo‘llab-quvvatlash kerak?",
+            "Maktab bitiruvchilari uchun kasbiy yo‘naltirish yo‘riqnomasi?",
+
+            // Shaxsiy rivojlanish — 15 ta
+            "O‘z-o‘zini tushunish nima uchun muhim?",
+            "Shaxsiy kuchli va zaif tomonlarni qanday aniqlash mumkin?",
+            "O‘zini o‘zini rivojlantirish rejasi qanday tuziladi?",
+            "Mehnatsevarlik, intizom, javobgarlik — ularni qanday rivojlantirish mumkin?",
+            "Qaror qabul qilish qobiliyatini qanday rivojlantirish mumkin?",
+            "Vaqt boshqaruvi strategiyalari?",
+            "Maqsad qo‘yish san’ati (SMART maqsadlar)?",
+            "Shaxsiy jamoat (personal brand) nima?",
+            "Raqobatda ishonchli bo‘lish qanday amalga oshiriladi?",
+            "Guruhlarda samarali muloqot qanday amalga oshiriladi?",
+            "Rahbarlik qobiliyatini qanday rivojlantirish mumkin?",
+            "Emotsional intellekt (EQ) nima?",
+            "Empatiya va simpatiya farqi?",
+            "Shaxsiy chegaralarni qanday belgilash kerak?",
+            "Hayotda muvaffaqiyatga erishish uchun 5 asosiy qoida?",
+
+            // Guruh psixologiyasi — 10 ta
+            "Guruh dinamikasi nima?",
+            "Guruhdagi liderlik turlari?",
+            "Guruhda konfliktlarni hal qilish strategiyalari?",
+            "Guruh bosimi (peer pressure) nima?",
+            "Kollektiv fikrlash (groupthink) xavfi?",
+            "Guruhdagi ro‘l modellari (Belbin modeli)?",
+            "Guruhdagi samaradorlikni qanday oshirish mumkin?",
+            "Guruhda ishonchni qanday qurish mumkin?",
+            "Guruhda tanqidiy fikrlashni qanday rivojlantirish mumkin?",
+            "Guruhda o‘z fikrini qanday aytish kerak?"
+        ];
+
+        const responses = {
+            "Psixologiya nima? Uning asosiy yo‘nalishlari?": "<span class='concept'>Psixologiya</span> — insonning ruhiy jarayonlarini, xulq-atvorini, shaxsiyatini o‘rganuvchi fan. Asosiy yo‘nalishlari: <span class='concept'>umumiy psixologiya</span>, <span class='concept'>rivojlanish psixologiyasi</span>, <span class='concept'>kasbiy psixologiya</span>, <span class='concept'>ijtimoiy psixologiya</span>, <span class='concept'>klinik psixologiya</span>.",
+            "Inson psixikasining tarkibiy qismlari?": "Psixika — <span class='concept'>miyoning ishlashi natijasidir</span>. Tarkibiy qismlari: <span class='concept'>psixik jarayonlar</span> (idrok, xotira, fikrlash), <span class='concept'>psixik xususiyatlar</span> (qobiliyat, temperament, xarakter), <span class='concept'>psixik holatlar</span> (kayfiyat, stres, hayajon).",
+            "Shaxsiyat nima? U qanday shakllanadi?": "<span class='concept'>Shaxsiyat</span> — insonning jamiyatdagi mavqeini, ijtimoiy munosabatlarini, aql-idrok darajasini, axloqiy me’yorlarini ifodalaydigan butunlik. U <span class='concept'>irsiy omillar</span>, <span class='concept'>muhit</span>, <span class='concept'>ta’lim</span>, <span class='concept'>ijtimoiy tajriba</span> orqali shakllanadi.",
+            "Freydning psixoseksual rivojlanish bosqichlari?": "Sigmund Freyd — 5 bosqichni taklif qilgan: <span class='concept'>Og‘iz (0–1 yosh)</span>, <span class='concept'>Anal (1–3)</span>, <span class='concept'>Fallografik (3–6)</span>, <span class='concept'>Latent (6–12)</span>, <span class='concept'>Genital (12+)</span>. Har bir bosqichda libidoning (seksual energiya) fokuslanishi farq qiladi.",
+            "Eriksonning psixosotsial rivojlanish nazariyasi?": "Erik Erikson — hayotning 8 bosqichini aniqlagan. Har bir bosqichda inson <span class='concept'>ikki qarama-qarshi hissga</span> duch keladi. Masalan: <span class='concept'>ishonch vs shubha</span> (0–1 yosh), <span class='concept'>autonomiya vs sharm</span> (1–3), <span class='concept'>shaxsiy identifikatsiya vs chalkashlik</span> (12–18).",
+            "Piyajening kognitiv rivojlanish bosqichlari?": "Jean Piaget — 4 bosqich: <span class='concept'>Sensor-motor (0–2)</span> — harakat orqali o‘rganish; <span class='concept'>Pre-operatsion (2–7)</span> — tasavvur; <span class='concept'>Konkret operatsion (7–11)</span> — mantiqiy fikrlash; <span class='concept'>Formal operatsion (12+)</span> — abstrakt fikrlash.",
+            "Qobiliyat, iste’dod va geniyat farqi?": "<span class='concept'>Qobiliyat</span> — ma’lum faoliyatda yuqori natija berish imkoniyati. <span class='concept'>Iste’dod</span> — bir nechta sohalarda yuqori qobiliyat. <span class='concept'>Geniyat</span> — insoniyat rivojiga hissa qo‘shadigan noyob iste’dod (Masalan: A. Qodiriy, I. Nyuton).",
+            "Xarakter va temperament farqi?": "<span class='concept'>Temperament</span> — tug‘ma, biologik asosli (Gippokrat: sangvinik, xolerik, flegmatik, melanxolik). <span class='concept'>Xarakter</span> — ijtimoiy sharoitda shakllanadi, insonning axloqiy jihatlari (mehribon, adolatli, bexabar).",
+            "Gippokratning temperament turlari?": "1) <span class='concept'>Sangvinik</span> — harakatchan, ijtimoiy; 2) <span class='concept'>Xolerik</span> — jadal, g‘azabli; 3) <span class='concept'>Flegmatik</span> — sovuqqon, tinch; 4) <span class='concept'>Melanxolik</span> — nozik, sezgir, o‘zini yolg‘iz his qiladi.",
+            "Meyers-Briggs (MBTI) shaxsiyat testi nima?": "MBTI — 4 parametr bo‘yicha shaxsiyatni aniqlaydi: <span class='concept'>E/I</span> (extrovert/introvert), <span class='concept'>S/N</span> (sensor/intuitsiya), <span class='concept'>T/F</span> (mantiq/xislat), <span class='concept'>J/P</span> (sud/ijdod). Natijada 16 tur: INFJ, ENTP, ISTJ va h.k.",
+            "Big Five (OCHBT) shaxsiyat modeli nima?": "5 asosiy xususiyat: <span class='concept'>Ochiq (Openness)</span> — yangilikka qanday munosabat?; <span class='concept'>Xamjihatlik (Conscientiousness)</span> — intizom; <span class='concept'>Hamjihatlik (Agreeableness)</span> — mehribonlik; <span class='concept'>Neurotiklik</span> — stresga qarshilik; <span class='concept'>Ekstraversiya</span> — ijtimoiylik.",
+            "Motivatsiya nima? Turlari?": "<span class='concept'>Motivatsiya</span> — inson harakatga undovchi kuch. Turlari: <span class='concept'>Ichki</span> (qiziqish, sevgi), <span class='concept'>Tashqi</span> (pul, mukofot); <span class='concept'>Kognitiv</span> (bilish istagi), <span class='concept'>Emotsional</span> (his-tuyg‘ular).",
+            "Maslowning ehtiyojlar ierarxiyasi?": "Abraham Maslow — 5 bosqichli ierarxiya: 1) <span class='concept'>Fiziologik</span> (ovqat, suv); 2) <span class='concept'>Xavfsizlik</span>; 3) <span class='concept'>Ijtimoiy</span> (sevgi, do‘stlik); 4) <span class='concept'>Mehnatsevarlik</span> (hurmat); 5) <span class='concept'>O‘zini amalga oshirish</span> (potentsialni to‘liq ishlatish).",
+            "Kognitiv va emotsional motivatsiya farqi?": "<span class='concept'>Kognitiv motivatsiya</span> — bilish, tushunish, bilim olish istagi. <span class='concept'>Emotsional motivatsiya</span> — sevgi, g‘azab, qo‘rquv kabi his-tuyg‘ular orqali harakatga kelish.",
+            "Ichki va tashqi motivatsiya farqi?": "<span class='concept'>Ichki motivatsiya</span> — faoliyatning o‘zi qiziqarli: <span class='example'>Rasm chizish, kitob o‘qish</span>. <span class='concept'>Tashqi motivatsiya</span> — natija uchun: <span class='example'>Imtihondan yaxshi baho olish, pul topish</span>.",
+            "Stress nima? Uning sabablari?": "<span class='concept'>Stress</span> — organizmning nozik muvozanatli sharoitga javobi. Sabablari: <span class='concept'>maktab bosimi</span>, <span class='concept'>oilaviy nizolar</span>, <span class='concept'>kelajakni qo‘rquvi</span>, <span class='concept'>kasb tanlash qiyinchiligi</span>.",
+            "Stresga qarshi strategiyalar?": "1) <span class='concept'>Nafas mashqlari</span>; 2) <span class='concept'>Fizik mashqlar</span>; 3) <span class='concept'>Do‘stlar bilan muloqot</span>; 4) <span class='concept'>Mehnatni rejalashtirish</span>; 5) <span class='concept'>Ijobiy fikrlash</span>.",
+            "Koping mexanizmlari nima?": "<span class='concept'>Koping</span> — stressli vaziyatda muammo bilan muloqot qilish usullari. Turlari: <span class='concept'>Muammoni hal qilish</span> (faol), <span class='concept'>Chetga surish</span> (passiv — filmda uzoqlashish).",
+            "Psixologik barqarorlik nima?": "<span class='concept'>Psixologik barqarorlik</span> — kundalik muammolarga chidamli bo‘lish, his-tuyg‘ularni boshqarish, o‘z-o‘ziga ishonch, muvozanatli kayfiyat saqlash qobiliyati.",
+            "Insonning o‘zini anglashi nima uchun muhim?": "O‘zini tushunish — <span class='concept'>kasb tanlash</span>, <span class='concept'>maqsad qo‘yish</span>, <span class='concept'>muvaffaqiyatga erishish</span>, <span class='concept'>baxtli bo‘lish</span> uchun asos. “O‘zingni bil” — so‘fiylikdan yuqori daraja hisoblanadi.",
+            "Kasb tanlashda qanday omillar ahamiyatga ega?": "1) <span class='concept'>Shaxsiy qiziqishlar</span>; 2) <span class='concept'>Qobiliyatlar</span>; 3) <span class='concept'>Kasb bozoridagi talab</span>; 4) <span class='concept'>Ijtimoiy ta’sir</span> (ota-ona, do‘stlar); 5) <span class='concept'>Moliyaviy barqarorlik</span>.",
+            "Kasbiy shaxsiyat tushunchasi (Y. Klimov modeli)?": "Yevgeniy Klimov — insonlarni 5 yo‘nalish bo‘yicha tasniflagan: <span class='concept'>Inson–tabiat</span> (biolog, ekolog); <span class='concept'>Inson–texnika</span> (muhandis); <span class='concept'>Inson–inson</span> (o‘qituvchi, shifokor); <span class='concept'>Inson–belgili tizim</span> (dasturchi, hisobchi); <span class='concept'>Inson–san’at</span> (rassom, aktyor).",
+            "Kasbni tanlashda qanday testlardan foydalanish mumkin?": "1) <span class='concept'>Klimov testi</span>; 2) <span class='concept'>Holland testi</span> (RIASEC modeli); 3) <span class='concept'>MBTI</span>; 4) <span class='concept'>Big Five</span>; 5) <span class='concept'>Kasbga yo‘naltiruvchi testlar</span> (maktablarda beriladi).",
+            "O‘z kasbini qanday topish mumkin?": "1) <span class='concept'>O‘z qiziqishlaringizni yozing</span>; 2) <span class='concept'>20 ta kasb ro‘yxatini tuzing</span>; 3) <span class='concept'>Har birini tahlil qiling</span>; 4) <span class='concept'>Psixologik test topshiring</span>; 5) <span class='concept'>Bir nechta kasb bo‘yicha suhbat oling</span>.",
+            "Karyera rejalashtirish qanday amalga oshiriladi?": "1) <span class='concept'>Uzoq muddatli maqsad</span>; 2) <span class='concept'>Qisqa muddatli bosqichlar</span>; 3) <span class='concept'>Talablarni tahlil qilish</span>; 4) <span class='concept'>Talim yo‘nalishini tanlash</span>; 5) <span class='concept'>Praktika, loyihalar, tarmoq</span>."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf “Psixologiya / Kasbiy yo‘naltirish” fani bo‘yicha AI yordamchiman. Shaxsiyat rivojlanishi, kasb tanlash, motivatsiya, stres, psixologik testlar — barchasini tushuntirishga tayyorman! Savolingizni tanlang.", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savol hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
