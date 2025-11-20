@@ -1,0 +1,655 @@
+```html
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Ona Tili AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f7fa, #b2ebf2, #80deea);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #4fc3f7;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #4fc3f7, #00b0ff);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(79, 195, 247, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #4fc3f7, #00b0ff, #4fc3f7);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(79, 195, 247, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(79, 195, 247, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #00796b;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #555;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(79, 195, 247, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(79, 195, 247, 0.9);
+      background: linear-gradient(45deg, #0091d4, #3bb8f5);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #00796b;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(79, 195, 247, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #00b0ff;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(79, 195, 247, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 255, 255, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e0f7fa, #b2ebf2);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #00b0ff;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00b0ff;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 255, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #4fc3f7;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(79, 195, 247, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(79, 195, 247, 0.7);
+      background: linear-gradient(45deg, #0091d4, #3bb8f5);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(79, 195, 247, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #4fc3f7;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+
+      .message.user .action {
+        bottom: -25px;
+        right: 12px;
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">📚</div>
+      <h1 class="title">ASCO Ona Tili AI</h1>
+      <p class="subtitle">Siz 6-sinf ona tili darslarida qiyinchilik tug'ila olmaysiz! Men — sizning shaxsiy ona tili o'qituvchingiz. Har bir qoida, misol, mashq va qo'shimchani qiziqarli tarzda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🗣️</div>
+        <h2>Ona Tili AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('So'z turlari')">So'z turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Gap turlari')">Gap turlari</button>
+          <button class="btn-3d" onclick="sendMessage('Sohibgap')">Sohibgap</button>
+          <button class="btn-3d" onclick="sendMessage('Birikma so\'zlar')">Birikma so'zlar</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimchalar')">Qo'shimchalar</button>
+          <button class="btn-3d" onclick="sendMessage('So\'z tuzilishi')">So'z tuzilishi</button>
+          <button class="btn-3d" onclick="sendMessage('Sifat')">Sifat</button>
+          <button class="btn-3d" onclick="sendMessage('Sifatli gap')">Sifatli gap</button>
+          <button class="btn-3d" onclick="sendMessage('Tarkibiy gap')">Tarkibiy gap</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Mazmuni')">Mazmuni</button>
+          <button class="btn-3d" onclick="sendMessage('Tilga muhabbat')">Tilga muhabbat</button>
+          <button class="btn-3d" onclick="sendMessage('Shoirlar')">Shoirlar</button>
+          <button class="btn-3d" onclick="sendMessage('Muhokama')">Muhokama</button>
+          <button class="btn-3d" onclick="sendMessage('O\'zbekcha so\'z')">O'zbekcha so'z</button>
+          <button class="btn-3d" onclick="sendMessage('Gap qurish')">Gap qurish</button>
+          <button class="btn-3d" onclick="sendMessage('Savol-javob')">Savol-javob</button>
+          <button class="btn-3d" onclick="sendMessage('Izohli so\'zlar')">Izohli so'zlar</button>
+          <button class="btn-3d" onclick="sendMessage('So\'zlar oilasi')">So'zlar oilasi</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimcha mashq')">Qo'shimcha mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimcha')">Qo'shimcha</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimcha')">Qo'shimcha</button>
+          <button class="btn-3d" onclick="sendMessage('Qo\'shimcha')">Qo'shimcha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Assalomu alaykum! Men sizning 6-sinf ona tili darslaridagi shaxsiy o'qituvchingizman. So'z turlari, qo'shimchalar, so'z tuzilishi — barchasini qiziqarli misollar bilan tushuntiraman. Qanday mavzuda yordam beray? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF ONA TILI DARS LARI UCHUN MAXSUS JAVOBLAR — ASCO KAMPANIYASI UCHUN
+
+      if (lower.includes("so'z turlari")) {
+        response = "6-sinfda so'z turlari 7 ta:\n\n1. Etilgan so'z — narsa, hodisa, xususiyat nomi (kitob, o'qish, go'zal)\n2. So'zlar — narsa, odam, joy nomi (o'quvchi, shahar)\n3. Sifat — narsaning xususiyatini bildiradi (katta, chiroyli, qizil)\n4. Son — sonni bildiradi (bir, ikki, olti)\n5. O'zgaruvchi so'z — gapda o'zgaradi (o'qiyman, o'qiyapsan)\n6. Qo'shimcha — so'zga qo'shiladi, ma'nini o'zgartiradi (-lar, -ni, -da)\n7. Birikma so'z — ikki yoki undan ko'p so'zdan tashkil topgan (qo'qonlik, toshkentlik)\n\n💡 Eslatma: 6-sinfda so'z turlarini gapdagi vazifasiga qarab ham ajratamiz!";
+      } else if (lower.includes("gap turlari")) {
+        response = "Gap turlari — gapning maqsadiga qarab 4 turga bo'linadi:\n\n1. Fikr bildiruvchi gap — ma'lumot beradi. (Masalan: O'quvchilar darsga keldilar.)\n2. Savol beruvchi gap — savol beradi. (Masalan: Dars qachon boshlanadi?)\n3. Buyruq beruvchi gap — buyruq beradi. (Masalan: Kitobni oling!)\n4. His-tuyg'ularni bildiruvchi gap — his-tuyg'ularni ifodalaydi. (Masalan: Qanday chiroyli kun!)\n\n💡 Qo'shimcha: \"Ajoyib!\" — his-tuyg'ulardan biri, bu gapda fikr emas, hissiyot ifodalanadi!";
+      } else if (lower.includes("sohibgap")) {
+        response = "Sohibgap — gapdagi asosiy qism bo'lib, nima qilayotganini, qanday bo'lganini bildiradi. U ikki qismdan iborat:\n\n1. Mavzu — kim? nima? (Masalan: O'quvchi)\n2. Predikat — nima qildi? qanday? (Masalan: darsni o'qidi)\n\nMasalan: \"O'quvchi darsni o'qidi.\"\n— Mavzu: O'quvchi\n— Predikat: darsni o'qidi\n\n💡 Eslatma: Sohibgapni topish uchun \"Kim?\" va \"Nima qildi?\" degan savollarga javob toping!";
+      } else if (lower.includes("birikma so'zlar")) {
+        response = "Birikma so'zlar — ikki yoki undan ko'p so'zdan tashkil topgan so'zlar.\n\nMasalan:\n• Qo'qonlik — Qo'qon + -lik\n• Toshkentlik — Toshkent + -lik\n• O'qituvchi — o'qit + -uvchi\n• O'qish — o'q + -ish\n\n💡 Qo'shimcha: Birikma so'zlar — o'zbek tilining ajoyib xususiyati! Ulardan yangi so'zlar hosil qilinadi. Masalan: \"o'qish\" so'zi \"o'q\" ildizidan o'sadi!";
+      } else if (lower.includes("qo'shimchalar")) {
+        response = "Qo'shimchalar — so'zga qo'shiladigan qism, ma'nini o'zgartiradi.\n\nTurli turlari:\n\n1. Shakl qo'shimchasi — so'z shaklini o'zgartiradi: -lar, -ni, -da\n2. Ma'no qo'shimchasi — yangi ma'no beradi: -uvchi, -lik, -chi\n3. Ildiz qo'shimchasi — ildizga qo'shiladi: -ish, -uv, -ish\n\nMasalan:\n• \"o'q\" → \"o'qish\" (-ish)\n• \"o'q\" → \"o'qituvchi\" (-it + -uvchi)\n\n💡 Qo'shimchalar bilan so'zlar oilasi hosil bo'ladi!";
+      } else if (lower.includes("so'z tuzilishi")) {
+        response = "So'z tuzilishi — so'zni qanday qilib hosil qilishni o'rganish.\n\nSo'zning 3 asosiy qismi:\n\n1. Ildiz — so'zning asosiy ma'nosini beradi (o'q)\n2. Qo'shimcha — ma'noni o'zgartiradi (-ish, -uvchi)\n3. Oxirgi qo'shimcha — so'z shaklini belgilaydi (-lar, -da)\n\nMasalan: \"o'qituvchilardan\"\n• Ildiz: o'q\n• Qo'shimchalar: -it + -uvchi\n• Oxirgi qo'shimcha: -lar + -dan\n\n💡 So'z tuzilishini bilish — so'zlar oilasini tushunishning kaliti!";
+      } else if (lower.includes("sifat")) {
+        response = "Sifat — narsaning xususiyatini bildiruvchi so'z.\n\nTurli turlari:\n\n• Rangli sifatlar: qizil, ko'k, sariq\n• Shakl sifatlar: katta, kichik, uzun\n• His-tuyg'u sifatlar: xavfli, xursand, qo'rqinchli\n• Sifatli so'zlar: chiroyli, ajoyib, qiziqarli\n\nSifat gapda \"nima qanday?\" degan savolga javob beradi.\n\nMasalan: \"Chiroyli kitob\" — chiroyli — sifat!";
+      } else if (lower.includes("sifatli gap")) {
+        response = "Sifatli gap — so'zlar orqali narsaning xususiyatini aytib beruvchi gap.\n\nMasalan:\n\"Katta, chiroyli va yorqin uyda oila turadi.\"\n\nBu gapda:\n• \"katta\" — sifat\n• \"chiroyli\" — sifat\n• \"yorqin\" — sifat\n\nSifatli gap — tasvirga, rasmga o'xshaydi! Siz o'qiyotgan payt, aynan shu uyni ko'rishingiz mumkin.\n\n💡 Qo'shimcha: Ko'p sifatlar bir-biridan vergul bilan ajratiladi!";
+      } else if (lower.includes("tarkibiy gap")) {
+        response = "Tarkibiy gap — ikki yoki undan ko'p oddiy gapdan tashkil topgan gap.\n\nMasalan:\n\"O'quvchi darsga keldi, chunki u o'qishni sevadi.\"\n\nBu gapda:\n1. O'quvchi darsga keldi. — oddiy gap\n2. U o'qishni sevadi. — oddiy gap\n\nUlarni \"chunki\" so'zi bog'laydi. Tarkibiy gap — fikrni chuqurroq ifodalash uchun ishlatiladi!\n\n💡 Bog'lovchilar: chunki, lekin, yoki, va, agar, shuning uchun";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq: \n\"O'zim o'qishni sevaman, \nKo'p kitoblar bilan tanishaman. \nBir so'zim — qo'limda, \nMen nima?\"\n\n💡 Javob: Kitob 📚\n\nBir qo'shimcha: Kitob — o'qishni sevuvchilarning do'sti, bilimning oynasi!";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq: \n\nGapni to'g'ri tuzing: \n\"kitob, o'qish, sevaman, men, yangi\"\n\n✅ To'g'ri javob: \"Men yangi kitob o'qishni sevaman.\"\n\nTushunib oldingizmi? Bu gapda:\n- Mavzu: Men\n- Predikat: sevaman\n- Ob'ekt: yangi kitob o'qishni\n\nShunday gaplar tuzish — o'zbek tilini o'rganishning eng yaxshi usuli!";
+      } else if (lower.includes("mazmuni")) {
+        response = "Mazmuni — gapdagi asosiy ma'noni ifodalovchi qism. Mazmunni topish uchun quyidagi savolni berishingiz kerak:\n\n\"Gap qanday ma'noni bildiryapti?\"\n\nMasalan:\n\"O'quvchilar kitob o'qishdi.\"\n— Mazmuni: O'quvchilar kitob o'qishdi.\n\nAgar gapni o'chirib tashlasangiz, asosiy ma'no yo'qoladi — shu ma'no mazmun hisoblanadi!\n\n💡 Eslatma: Mazmuni — bu gapning \"asosiy ma'nosidir\"!";
+      } else if (lower.includes("tilga muhabbat")) {
+        response = "O'zbek tili — bizning vatanimizning o'ziga xos nafasi. U — ajoyib so'zlar, chiroyli gaplar va qadimiy hikoyalar oilasi. \n\nAgar siz o'zbek tilini sevasiz — siz o'zining katta qadriyatlaringizni bilasiz. \n\n💡 Tavsiya: Har kuni 1 ta so'zni kundalik hayotingizda qo'llang — va siz o'zbek tilini sevishni boshlaysiz!";
+      } else if (lower.includes("shoirlar")) {
+        response = "O'zbek adabiyotining buyuk shoirlari:\n\n1. Alisher Navoiy — \"Xamsa\" asari bilan dunyoga tanilgan.\n2. Abdulla Qodiriy — \"O'tkan kunlar\" romani — o'zbek adabiyotining qadriyati.\n3. O'tkir Hoshimov — \"Shum bola\" — o'quvchilar uchun qiziqarli asar.\n\nUlarning asarlarini o'qish — o'zbek tilini sevishning eng yaxshi usuli!";
+      } else if (lower.includes("muhokama")) {
+        response = "Muhokama — fikr almashish, so'zlashish. \n\nMasalan: \n— Sizga qaysi kitob yoqdi?\n— Men \"Shum bola\"ni yoqtirdim, chunki u o'qishni sevishga undaydi.\n\nMuhokama — so'z bilan yurish, fikrni o'zgartirish, do'stlikni rivojlantirishdir. \n\n💡 Siz ham biror narsa haqida fikringizni ayting — men siz bilan muhokama qilaman!";
+      } else if (lower.includes("o'zbekcha so'z")) {
+        response = "O'zbekcha so'zlar — bizning tilimizning ajoyib qismi!\n\nMasalan:\n• \"qo'qonlik\" — Qo'qondan kelgan\n• \"toshkentlik\" — Toshkentdan kelgan\n• \"o'qituvchi\" — o'qitishni biluvchi\n\nBu so'zlar — o'zbek tilining o'ziga xosligini namoyish etadi. \n\n💡 Siz ham biror shahar nomi bilan \"-lik\" qo'shimchasini qo'shing — qanday so'z hosil bo'ladi?";
+      } else if (lower.includes("gap qurish")) {
+        response = "Gap qurish mashqi:\n\nSo'zlar: \"kitob\", \"o'qish\", \"sevaman\", \"men\"\n\n✅ To'g'ri gap: \"Men kitob o'qishni sevaman.\"\n\nNima uchun? \n— \"Men\" — mavzu\n— \"kitob o'qishni\" — ob'ekt\n— \"sevaman\" — predikat\n\nGap qurish — o'zbek tilini o'rganishning eng qiziqarli o'yini!";
+      } else if (lower.includes("savol-javob")) {
+        response = "Savol: \n\"Dars qachon boshlanadi?\"\n\nJavob: \n\"Dars soat 9 da boshlanadi.\"\n\nBu — savol beruvchi gap! \n\n💡 Qanday savol qilishni bilasizmi? \n— \"Qanday?\" — xususiyat\n— \"Qachon?\" — vaqt\n— \"Qayerda?\" — joy\n— \"Nima?\" — narsa\n\nSavol qilish — bilim olishning dastlabki qadami!";
+      } else if (lower.includes("izohli so'zlar")) {
+        response = "Izohli so'zlar — tushunish qiyin bo'lgan so'zlar, ularning ma'nosi tushuntiriladi.\n\nMasalan:\n• \"Fikr\" — aqlli o'ylash, mantiqiy natija\n• \"Adabiyot\" — so'z san'ati, she'riyat va proza\n• \"Tilshunoslik\" — tilni o'rganish ilmi\n\n💡 Izohli so'zlar — o'zbek tilini chuqur o'rganish uchun kerak!";
+      } else if (lower.includes("so'zlar oilasi")) {
+        response = "So'zlar oilasi — bir xil ildizga ega bo'lgan so'zlarning guruhidir.\n\nMasalan:\nIldiz: \"o'q\"\n\nOilasi:\n• o'qish — o'qish faoliyati\n• o'qituvchi — o'qituvchi odam\n• o'qitish — o'qitish jarayoni\n• o'qigan — o'qishni bajargan\n\n💡 So'zlar oilasini bilish — so'zlar bilan o'ynashni o'rgatadi!";
+      } else if (lower.includes("qo'shimcha mashq")) {
+        response = "Qo'shimcha mashq:\n\nSo'z: \"o'q\"\n\nQo'shimchalar qo'shing:\n1. -ish → o'qish\n2. -uvchi → o'qituvchi\n3. -lik → o'qilishlik (bu so'z mavjud emas!) — ❌\n\n✅ To'g'ri: o'qish, o'qituvchi, o'qitish\n\n💡 Eslatma: Barcha qo'shimchalar ma'no beradi, lekin ular ildizga mos bo'lishi kerak!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning 6-sinf ona tili darslaridagi do'stingizman. Sizga qanday yordam beray? So'z turlari, qo'shimchalar yoki topishmoq haqida savol bering!";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Sizga yordam berishdan xursandman. Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("yaxshi")) {
+        response = "Yaxshi! Siz bilim olishni sevasiz — bu juda ajoyib! 😊 Qanday qo'shimcha mavzuda yordam beray?";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO kampaniyasi uchun maxsus tayyorlangan AI ona tili o'qituvchim. Men 6-sinf dasturiga mos ravishda so'z turlari, qo'shimchalar, so'z tuzilishi va mashqlarni qiziqarli tarzda tushuntiraman. Siz bilan o'qishni juda sevaman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf ona tili darslarida sizga yordam berishga tayyorman. Iltimos, \"so'z turlari\", \"qo'shimchalar\" yoki \"topishmoq\" kabi so'zlardan foydalaning — men sizga qiziqarli misollar bilan tushuntiraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        console.warn("TTS qo'llab-quvvatlanmaydi");
+        return;
+      }
+
+      speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+
+      let uzVoice = voices.find(v => v.lang.startsWith('uz') && v.name.includes('Male'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang === 'uz-UZ');
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+
+      if (uzVoice) {
+        utterance.voice = uzVoice;
+      }
+
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      utterance.volume = 1;
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
+```
