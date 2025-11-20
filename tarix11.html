@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Tarix AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #1a0f0f, #2d1717, #120a0a);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0707;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #c4914b;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23c4914b"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(25, 15, 15, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(196, 145, 75, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(10, 5, 5, 0.9);
+            color: #c4914b;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(196, 145, 75, 0.3);
+            text-shadow: 0 0 10px rgba(196, 145, 75, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #c4914b, #d2b48c);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #c4914b;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(10, 5, 5, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(196, 145, 75, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #c4914b transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #c4914b;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(50, 30, 20, 0.4);
+            color: #c4914b;
+            border: 1px solid rgba(196, 145, 75, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(196, 145, 75, 0.25);
+            border-color: #c4914b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(196, 145, 75, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23c4914b"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .term {
+            color: #e6cc9a;
+            font-weight: bold;
+        }
+
+        .date {
+            color: #d4af37;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Tarix AI Bot</div>
+        <div class="splash-subtext">XIX-XX asrlar, O'zbekiston tarixi, jahon tarixi, siyosiy harakatlar, urushlar, inqiloblar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">📜 11-sinf Tarix AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // XIX asr jahon tarixi — 20 ta
+            "XIX asrda industrializatsiya qanday rivojlandi?",
+            "Kapitalizmning rivojlanishiga qanday omillar ta'sir qildi?",
+            "Koloniyalizmning asosiy sabablari nima?",
+            "Afrika qit'asining bo'linishi qanday sodir bo'ldi?",
+            "Qizil qit'a tushunchasi nima?",
+            "XIX asrda imperatorliklar (Britaniya, Fransiya, Rossiya) qanday kengaydi?",
+            "Amerika Qo'shma Shtatlari qanday rivojlandi?",
+            "XIX asrda milliy harakatlar qanday shakllangan?",
+            "Italiya va Germaniyaning birlashuvi qanday amalga oshirildi?",
+            "1848 yilgi inqiloblar qanday natijalarga olib keldi?",
+            "Qarshilik harakatlari — Indoneziya, Hindiston, Afrika qanday qarshilik ko'rsatdi?",
+            "XIX asrda ishchilar harakati qanday rivojlandi?",
+            "Marksizm va leninizmning paydo bo'lishi?",
+            "Birinchi xalqaro ishchilar harakati (I Internatsional) nima?",
+            "Kommunistik manifest nima? Uning asosiy g'oyalari?",
+            "XIX asrda jinsiy tenglik harakati qanday rivojlandi?",
+            "XIX asrda ta'lim tizimi qanday o'zgardi?",
+            "XIX asrda ilmiy yutuqlar (Darvin, Mendel, Pavlov)?",
+            "Din va fan o'rtasidagi munosabatlar qanday bo'ldi?",
+            "XIX asrda xalqaro munosabatlar tizimi (Vena tizimi)?",
+
+            // XX asr jahon tarixi — 25 ta
+            "Birinchi jahon urushi sabablari nima?",
+            "Birinchi jahon urushida asosiy bloklar qanday tashkil topdi?",
+            "Troya qo'zg'oloni qanday sodir bo'ldi?",
+            "1917 yilgi Rossiya inqilobi (Fevral va Oktabr)?",
+            "Leninning "Barcha hokimiyat sovetlarga!" degan taktikasi nima?",
+            "Brest-Litovsk kelishuvi qanday shartlar bilan imzolandi?",
+            "Versal kelishuvi qanday tuzilgan?",
+            "Sovet Ittifoqining tashkil topishi?",
+            "Qo'shma Shtatlarning 1920-yillardagi "qizil qo'rqo'g'lik" siyosati?",
+            "Bolshoviklar qanday fuqarolar urushini g'alaba qozondi?",
+            "Xitoyda Kommunistik partiyaning tashkil topishi?",
+            "1929-1933 yillardagi jahon iqtisodiy inqirozi sabablari?",
+            "Fashizmning paydo bo'lishi (Italiya, Germaniya)?",
+            "Gitlearning "Yevropa yagona qit'a" g'oyasi nima?",
+            "Natsizmning asosiy g'oyasi qanday?",
+            "Jahon inqirozi va fashizm o'rtasidagi bog'liqlik?",
+            "Ikkinchi jahon urushining sabablari?",
+            "Ikkinchi jahon urushida asosiy bloklar?",
+            "Holokost nima? Uning natijalari?",
+            "Yaponiyaning Yaqin Sharq va Osiyoda kengayishi?",
+            "Pearl Harbor hujumi nima?",
+            "Hiroshima va Nagasaki atomi bombalari?",
+            "BMT tashkil topishi va uning maqsadi?",
+            "Yaponiyaning qo'zg'oloni va qo'zg'oloni natijalari?",
+            "Yevropada Sovet ta'siri va Yaqin Sharqda AQSH ta'siri?",
+
+            // O'zbekiston tarixi — 25 ta
+            "O'zbekiston hududida qadimiy madaniyatlar (Boktriya, Sog'diya) qanday rivojlangan?",
+            "XIV-XV asrlarda Timur davlati qanday tuzilgan?",
+            "Shayboniylar davrida O'zbekiston qanday holatda bo'ldi?",
+            "Qo'qon xonligi qanday tashkil topdi?",
+            "XIX asrda Rossiyaning Markaziy Osiyoga kirishi?",
+            "1865 yilda Toshkentni qo'lga kiritish qanday sodir bo'ldi?",
+            "XIX asr oxirida O'zbekiston hududida qanday iqtisodiy o'zgarishlar bo'ldi?",
+            "1917 yilgi fevral inqilobi O'zbekistonda qanday ta'sir qildi?",
+            "Bolsheviklar O'zbekistonga qanday kirib keldi?",
+            "1924 yilgi milliy hududiy bo'linish qanday amalga oshirildi?",
+            "Sovet davrida O'zbekistonda kollektivlashtirish qanday sodir bo'ldi?",
+            "1930-yillarda O'zbekistonda qo'zg'olonlar qanday boshlandi?",
+            "Ikkinchi jahon urushida O'zbekiston qanday hissa qo'shdi?",
+            "O'zbekistonda "O'zbekiston qo'zg'oloni" nima?",
+            "1966 yilgi Toshkent zilzilasi va uning oqibatlari?",
+            "Perestroika davrida O'zbekistonda milliy harakatlar qanday rivojlandi?",
+            "1989 yilgi Farg'ona hodisasi nima?",
+            "1990 yilda O'zbekiston mustaqillik e'lon qilish qanday sodir bo'ldi?",
+            "1991 yilda O'zbekiston mustaqilligi qanday tan olingan?",
+            "Mustaqillikdan keyin O'zbekistonning tashqi siyosati qanday bo'ldi?",
+            "O'zbekistonda qonuniylik va demokratiya rivojlanishi?",
+            "O'zbekistonda iqtisodiy reformalar qanday amalga oshirildi?",
+            "O'zbekistonda ta'lim tizimining o'zgarishi?",
+            "O'zbekistonda din va diniy hayotning o'zgarishi?",
+            "O'zbekistonning Xitoy, Rossiya, AQSH bilan munosabatlari?",
+
+            // Siyosiy harakatlar va inqiloblar — 15 ta
+            "Fashizm va kommunizm o'rtasidagi farq?",
+            "Demokratiya va totalitarizm tushunchalari?",
+            "Xalqaro siyosatda "sovuq urush" nima?",
+            "Qo'shma Shtatlarning "Truman doktrinasi" nima?",
+            "Sovet Ittifoqining "Molotov doktrinasi" nima?",
+            "NATO va Varshava pakti qanday tashkil topdi?",
+            "Qo'shma Shtatlarning "Konteynment" siyosati nima?",
+            "Koreya urushi sabablari va natijalari?",
+            "Vietnam urushi qanday sodir bo'ldi?",
+            "Kubada inqilob (1959) qanday sodir bo'ldi?",
+            "Afrika va Osiyoda dekolonizatsiya jarayoni?",
+            "Pax Americana nima?",
+            "Xalqaro terrorizmning paydo bo'lishi?",
+            "Jahon siyosatida "bir qutbli" va "ko'p qutbli" tizimlar?",
+            "BMTning roli va uning qarorlari?",
+
+            // Tarixiy tadqiqot usullari — 10 ta
+            "Tarixiy manbalar turlari (asosiy, ikkinchi darajali)?",
+            "Tarixiy manbalarni tahlil qilish qanday amalga oshiriladi?",
+            "Tarixiy voqealarni kronologik tartibga solish qanday?",
+            "Tarixiy tadqiqotda gipoteza qanday qo'llaniladi?",
+            "Tarixiy tadqiqotda kritik tahlil nima?",
+            "Tarixiy tadqiqotda kontekst tushunchasi nima?",
+            "Tarixiy tadqiqotda kuzatuv va qo'lda qayd qilish usullari?",
+            "Tarixiy tadqiqotda analiz va sintez qanday amalga oshiriladi?",
+            "Tarixiy tadqiqotda qo'llaniladigan asosiy metodlar?",
+            "Tarixiy tadqiqotda etik qoidalarning ahamiyati?"
+        ];
+
+        const responses = {
+            "XIX asrda industrializatsiya qanday rivojlandi?": "<span class='term'>Industrializatsiya</span> — mehnat resurslarini mekanizatsiyalash, zavodlar, temir yo'llar, dengiz transporti rivojlanishi. Boshlang'ich joy — Angliya, keyin Germaniya, AQSH, Fransiya.",
+            "Kapitalizmning rivojlanishiga qanday omillar ta'sir qildi?": "1) Koloniya resurslari; 2) Xalqaro savdo; 3) Bank tizimi; 4) Mehnat qo'li; 5) Yangi texnologiyalar (parovoy, elektr).",
+            "Koloniyalizmning asosiy sabablari nima?": "1) Iqtisodiy foyda (qimmatbaho resurslar); 2) Savdo bozorlarini kengaytirish; 3) Siyosiy ta'sir; 4) Din (Xristianlikni tarqatish); 5) "Sivilizatsiya" g'oyasi.",
+            "Afrika qit'asining bo'linishi qanday sodir bo'ldi?": "1884-1885 yillarda <span class='term'>Berlin konferensiyasi</span> — Yevropa mamlakatlari Afrikani o'z orasida bo'lishdi. O'zaro kelishuvlar, qo'zg'onlarga qarshi urushlar.",
+            "Qizil qit'a tushunchasi nima?": "Afrikani "qizil qit'a" deb atash — uning qimmatbaho resurslari (qo'rg'oshin, olmos, qo'ng'iroq) va Yevropaga qarab qizil rangda ko'rinadigan qo'rg'oshin qazishlariga ishora.",
+            "XIX asrda imperatorliklar (Britaniya, Fransiya, Rossiya) qanday kengaydi?": "Britaniya — Hindiston, Afrika, Avstraliya. Fransiya — Shimoliy Afrika, Janubiy Sharqiy Osiyo. Rossiya — Markaziy Osiyo, Sibir, Tinch okeani.",
+            "Amerika Qo'shma Shtatlari qanday rivojlandi?": "1861-1865 yillardagi fuqarolar urushidan keyin — qo'shni shtatlarning birlashuvi, temir yo'l tarmog'i, industrializatsiya, yirik biznes (Rokfeller, Kardnegi).",
+            "XIX asrda milliy harakatlar qanday shakllangan?": "Italiya va Germaniya — birlashuv; Polsha, Yunoniston, Bolgariya — mustaqillik uchun kurash; O'stirilgan milliy hissi, madaniy inkiloblar.",
+            "Italiya va Germaniyaning birlashuvi qanday amalga oshirildi?": "Italiya — Garibaldi va Cavour. Germaniya — Bismark — "qon va temir" siyosati, urushlar orqali (Daniya, Fransiya).",
+            "1848 yilgi inqiloblar qanday natijalarga olib keldi?": "Xalq qo'zg'oloni — demokratik konstitutsiyalar, parlamentlar tashkil topdi, lekin hech qaysi mamlakatda inqilob muvaffaqiyatli emas — qo'zg'olonlar bosib yozildi.",
+            "Qarshilik harakatlari — Indoneziya, Hindiston, Afrika qanday qarshilik ko'rsatdi?": "Indoneziya — Javada qo'zg'olonlar; Hindiston — 1857 yilgi qo'zg'olon; Afrika — Zulular (Shaka), Maasalar, Xozarlar — qo'zg'olonlar, g'azablar.",
+            "XIX asrda ishchilar harakati qanday rivojlandi?": "Ishchilar — 8 soatlik ish kunini, ish haqini, shart-nomani talab qilishdi. Birinchi ishchilar partiyalari, sindikatlar tashkil topdi.",
+            "Marksizm va leninizmning paydo bo'lishi?": "<span class='term'>Marksizm</span> — Karl Marks (1848) — sinf urushi, kapitalizmni yo'q qilish. <span class='term'>Leninizm</span> — Lenin — partiyaviy tashkilot, inqilobni boshqarish.",
+            "Birinchi xalqaro ishchilar harakati (I Internatsional) nima?": "1864 yilda Londonda tashkil topdi. Marks boshchiligidan — ishchilar xalqaro birlik, qo'zg'olonlar uchun qo'llab-quvvatlash.",
+            "Kommunistik manifest nima? Uning asosiy g'oyalari?": "1848 yilda Marks va Engelss tomonidan yozilgan. Asosiy g'oyalar: sinf urushi, kapitalizmni tugatish, kommunizm — sinfsiz, mulksiz jamiyat.",
+            "XIX asrda jinsiy tenglik harakati qanday rivojlandi?": "Ayollar — o'qish, ishga kirish, ovoz berish huquqi uchun kurash. AQSH va Angliyada "suffragistlar" harakati — 1920-yilda ovoz berish huquqi.",
+            "XIX asrda ta'lim tizimi qanday o'zgardi?": "Boshlang'ich ta'lim — majburiy; o'rta ta'lim — rivojlandi; universitetlar — ilmiy tadqiqotlar uchun; ayollar uchun ta'lim imkoniyatlari kengaydi.",
+            "XIX asrda ilmiy yutuqlar (Darvin, Mendel, Pavlov)?": "<span class='term'>Darvin</span> — evolyutsiya nazariyasi (1859). <span class='term'>Mendel</span> — genetika asoslari (1865). <span class='term'>Pavlov</span> — shartli reflekslar (1900).",
+            "Din va fan o'rtasidagi munosabatlar qanday bo'ldi?": "Darvinning evolyutsiya nazariyasi — diniy ta'limlarga qarshi. Din — "xudoy qo'liga qo'ygan", fan — "tabiiy tanlanish". Qarama-qarshiliklar kuchaydi.",
+            "XIX asrda xalqaro munosabatlar tizimi (Vena tizimi)?": "1815 yilda Vena kongressi — Napoleondan keyin Yevropa tizimi. Mamlakatlar — "konservativ tuzilma"ni saqlash, inqiloblarni bosib yozish.",
+
+            "Birinchi jahon urushi sabablari nima?": "1) Milliy qo'rqo'g'lik; 2) Imperatorliklar o'rtasidagi raqobat; 3) Harbiy ittifoqlar (Troiya); 4) Balkanlar muammosi; 5) Sarayevo hujumi (1914).",
+            "Birinchi jahon urushida asosiy bloklar qanday tashkil topdi?": "<span class='term'>Entanta</span> — Britaniya, Fransiya, Rossiya. <span class='term'>Markaziy ittifoq</span> — Germaniya, Avstriya-Vengriya, Osmon imperiyasi.",
+            "Troya qo'zg'oloni qanday sodir bo'ldi?": "1914 yil 28-iyun — Sarayevo shahrida avstriyalik arxiduk Frants Ferdinand o'ldirildi. Germaniya — Avstriyaga qo'llab-quvvatlash, Rossiya — Serbiyaga qo'llab-quvvatlash.",
+            "1917 yilgi Rossiya inqilobi (Fevral va Oktabr)?": "<span class='term'>Fevral inqilobi</span> — Tsar Nikolay II qo'zg'olonga qarshi qo'ng'iroq berdi. <span class='term'>Oktabr inqilobi</span> — Lenin — Sovetlar hokimiyatini qo'lga kiritdi.",
+            "Leninning \"Barcha hokimiyat sovetlarga!\" degan taktikasi nima?": "Hokimiyatni tsar va vaqtinchalik hukumatdan olib, sovetlarga (ishchilar va qishloq xo'jaligi deputatlari) o'tkazish — bu inqilobning asosiy sloganidir.",
+            "Brest-Litovsk kelishuvi qanday shartlar bilan imzolandi?": "1918 yil — Sovet Ittifoqi — Germaniyaga Ukraina, Baltika, Qafqoz, Polsha, Finlandiya, Estoniya, Latviya, Litva berdi. Urushdan chiqish uchun katta tergovlar.",
+            "Versal kelishuvi qanday tuzilgan?": "1919 yil — Germaniyaga jazolash: 13% hudud, 100 milliard mark, armiya cheklovlar, "urush jinoyatchilari"ga qarshi sud. Qo'zg'olonlarning sabablaridan biri.",
+            "Sovet Ittifoqining tashkil topishi?": "1922 yil — Rossiya, Ukraina, Belorusiya, Qafqoz — "Sovet Sotsialistik Respublikalar Ittifoqi" tashkil topdi. Lenin boshchiligidan.",
+            "Qo'shma Shtatlarning 1920-yillardagi \"qizil qo'rqo'g'lik\" siyosati?": "Kommunistik tashkilotlar, ishchilar sindikatlari, qo'zg'olonlar qarshisida qo'rqo'g'lik — o'zini qo'rqitish, qo'zg'olonlarni bosib yozish.",
+            "Bolshoviklar qanday fuqarolar urushini g'alaba qozondi?": "1918-1922 yillarda — Bolshoviklar — qizil armiya, Qo'zg'olonlar — qora armiya, Yevropa mamlakatlari — qo'llab-quvvatlash. Bolshoviklar — tashkilot, tizim, terror bilan g'alaba qozondi.",
+            "Xitoyda Kommunistik partiyaning tashkil topishi?": "1921 yilda — Xitoy Kommunistik partiyasi tashkil topdi. Leninizm asosida — Xitoyda kommunistik inqilobga tayyorgarlik.",
+            "1929-1933 yillardagi jahon iqtisodiy inqirozi sabablari?": "1) Bozorlarda oshib ketgan mahsulotlar; 2) Kreditlar ortishi; 3) Banklar yopilishi; 4) Xalqaro savdo kamayishi; 5) Sotuvlar qiyinchiliklari.",
+            "Fashizmning paydo bo'lishi (Italiya, Germaniya)?": "Italiya — Mussolini (1922). Germaniya — Gitle (1933). Qo'zg'olonlar, iqtisodiy inqiroz, milliy g'oyalar — fashizmga olib keldi.",
+            "Gitlearning \"Yevropa yagona qit'a\" g'oyasi nima?": "Germaniya — Yevropada yagona kuch bo'lishi kerak. Barcha millatlar — Germaniya ta'sirida. Yevropa — germaniyaliklar uchun.",
+            "Natsizmning asosiy g'oyasi qanday?": "Ariy xalqi — yuqori, yahudiylar — past. Milliy yagona, faqat Germaniya. Qo'rqo'g'lik, rasizm, totalitarizm — asosiy g'oyalar.",
+            "Jahon inqirozi va fashizm o'rtasidagi bog'liqlik?": "Inqiroz — ishsizlik, g'azab, iqtisodiy qiyinchiliklar. Fashizm — qo'rqo'g'lik, milliy g'oyalar, kuchli boshliq — xalqni qo'rqitishga qo'llanildi.",
+            "Ikkinchi jahon urushining sabablari?": "1) Versal kelishuvi; 2) Fashizmning kuchayishi; 3) Germaniyaning kengayishi; 4) Yaponiyaning kengayishi; 5) AQSH va Britaniyaning passivlik.",
+            "Ikkinchi jahon urushida asosiy bloklar?": "<span class='term'>Ittifoqchi</span> — AQSH, Britaniya, Sovet Ittifoqi. <span class='term'>Markaziy ittifoq</span> — Germaniya, Yaponiya, Italiya.",
+            "Holokost nima? Uning natijalari?": "Natsizm tomonidan yahudiylarni qirish. 6 million yahudiy o'ldirildi. O'sha paytda — eng katta insoniyat jinoyati.",
+            "Yaponiyaning Yaqin Sharq va Osiyoda kengayishi?": "1931 yilda Manchuriya, 1937 yilda Xitoy, 1941 yilda Filipin, Malayziya, Indoneziya, AQSH orollariga hujum qildi.",
+            "Pearl Harbor hujumi nima?": "1941 yil 7-dekabr — Yaponiya — AQSHning Pearl Harbor bazasiga hujum qildi. Bu — AQSHning Ikkinchi jahon urushiga kirishiga sabab bo'ldi.",
+            "Hiroshima va Nagasaki atomi bombalari?": "1945 yil avgust — AQSH — Yaponiyaga atomi bomba tashladi. 120 ming kishi halok bo'ldi. Yaponiya — qo'zg'olonni to'xtatdi.",
+            "BMT tashkil topishi va uning maqsadi?": "1945 yil — Ikkinchi jahon urushidan keyin. Maqsadi: urushlarni oldini olish, xalqaro barqarorlik, inson huquqlarini himoya qilish.",
+            "Yaponiyaning qo'zg'oloni va qo'zg'oloni natijalari?": "1945 yilda — Yaponiya — qo'zg'olonni to'xtatdi. AQSH — Yaponiyani demokratik tuzilma bilan qayta qurdi. Imperator — ramka, demokratiya — asos.",
+            "Yevropada Sovet ta'siri va Yaqin Sharqda AQSH ta'siri?": "Yevropa — Sovet Ittifoqi — sharqiy Yevropa mamlakatlari. Yaqin Sharq — AQSH — Israel, Irak, Iran — o'z ta'sirini kengaytirdi.",
+
+            "O'zbekiston hududida qadimiy madaniyatlar (Boktriya, Sog'diya) qanday rivojlangan?": "Boktriya — Xorazm, Sog'diya — Samarqand, Bukhoro. Qadimiy savdo yo'li — "Paxta yo'li" — Hindiston, Xitoy, Yevropa bilan aloqalar.",
+            "XIV-XV asrlarda Timur davlati qanday tuzilgan?": "Timur — markaziy hokimiyat, qo'shinda, yuqori hukumat, qonunlar, madaniy rivojlanish. Samarqand — markaz, madaniy, ilmiy meros.",
+            "Shayboniylar davrida O'zbekiston qanday holatda bo'ldi?": "16-asr — Shayboniylar — O'zbekiston hududida hokimiyat. Bukhoro, Xiva, Qo'qon — mustaqil xonliklar. Iqtisodiyot — qishloq xo'jaligi.",
+            "Qo'qon xonligi qanday tashkil topdi?": "1709 yilda — Qo'qon xonligi — O'zbekistonning sharqiy qismida. Iqtisodiyot — qishloq xo'jaligi, savdo, qo'rg'oshin. 1876 yilda Rossiya tomonidan qo'lga kiritildi.",
+            "XIX asrda Rossiyaning Markaziy Osiyoga kirishi?": "1865 yilda — Toshkent, 1873 yilda — Bukhoro, 1876 yilda — Qo'qon. Rossiya — "mamlakatlar qo'zg'oloni"ni bosib yozdi.",
+            "1865 yilda Toshkentni qo'lga kiritish qanday sodir bo'ldi?": "1865 yil 7-iyun — Rossiya qo'shinlari — Toshkentni qo'zg'olonlar bilan qo'lga kiritdi. Qo'zg'olonlar — o'zini qo'rqitish, qo'zg'olonlar bosib yozildi.",
+            "XIX asr oxirida O'zbekiston hududida qanday iqtisodiy o'zgarishlar bo'ldi?": "Temir yo'l, paxta ekilishi, qishloq xo'jaligi, savdo, transport rivojlandi. Rossiya — paxta eksporti uchun qo'zg'olonlarni qo'zg'atdi.",
+            "1917 yilgi fevral inqilobi O'zbekistonda qanday ta'sir qildi?": "Tsar hokimiyati tugadi. O'zbekiston — vaqtinchalik hukumat tashkil topdi. Milliy g'oyalar — o'zini qo'rqitish, milliy g'oyalar kengaydi.",
+            "Bolsheviklar O'zbekistonga qanday kirib keldi?": "1918-1920 yillarda — Sovet Ittifoqi — O'zbekistonga kirib keldi. Qo'zg'olonlar — qo'zg'olonlarni bosib yozdi. 1920 yilda — Xiva xonligi tugadi.",
+            "1924 yilgi milliy hududiy bo'linish qanday amalga oshirildi?": "Sovet Ittifoqi — O'zbekiston, Turkmaniston, Qirg'iziston, Tojikiston, Qozog'iston — milliy hududiy bo'linish. O'zbekiston SSR tashkil topdi.",
+            "Sovet davrida O'zbekistonda kollektivlashtirish qanday sodir bo'ldi?": "1929 yilda — qishloq xo'jaligini kollektivlashtirish. Fermerlar — qo'zg'olonlar, qo'zg'olonlar bosib yozildi. Paxta — asosiy mahsulot.",
+            "1930-yillarda O'zbekistonda qo'zg'olonlar qanday boshlandi?": "1930-yillarda — qo'zg'olonlar — kollektivlashtirishga qarshi. Sovetlar — qo'zg'olonlarni bosib yozdi. O'zbekiston — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar.",
+            "Ikkinchi jahon urushida O'zbekiston qanday hissa qo'shdi?": "O'zbekiston — paxta, tayoq, mehnat, qo'shing, o'q, zaryadlar, mehnat. 500 ming kishi frontga yuborildi. 100 ming kishi halok bo'ldi.",
+            "O'zbekistonda \"O'zbekiston qo'zg'oloni\" nima?": "1916 yilda — Rossiyaga qarshi qo'zg'olon. Qo'zg'olonlar — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar. 100 ming kishi halok bo'ldi.",
+            "1966 yilgi Toshkent zilzilasi va uning oqibatlari?": "1966 yil 26-aprel — Toshkentda katta zilzila. 300 ming kishi xonasi yo'qotdi. Sovetlar — Toshkentni qayta qurdi. "Qayta qurish" — milliy g'oyalar.",
+            "Perestroika davrida O'zbekistonda milliy harakatlar qanday rivojlandi?": "1980-yillarda — O'zbekiston — milliy g'oyalar, madaniy inkiloblar, qo'zg'olonlar. "O'zbekiston" — milliy g'oyalar, madaniy inkiloblar.",
+            "1989 yilgi Farg'ona hodisasi nima?": "1989 yil 12-iyun — Farg'ona — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar. 200 kishi halok bo'ldi. Sovetlar — qo'zg'olonlarni bosib yozdi.",
+            "1990 yilda O'zbekiston mustaqillik e'lon qilish qanday sodir bo'ldi?": "1990 yil 20-iyun — O'zbekiston SSR — mustaqillik e'lon qildi. 1991 yilda — O'zbekiston — mustaqil mamlakat bo'ldi.",
+            "1991 yilda O'zbekiston mustaqilligi qanday tan olingan?": "1991 yil 31-avgust — O'zbekiston — mustaqil mamlakat bo'ldi. 1992 yilda — BMTga qo'shildi. Dunyo mamlakatlari — tan olishdi.",
+            "Mustaqillikdan keyin O'zbekistonning tashqi siyosati qanday bo'ldi?": "O'zbekiston — "bog'liq emas" siyosati. Rossiya, Xitoy, AQSH, Yevropa — bilan aloqalar. Qo'shma Shtatlardan qo'rqish, Rossiya bilan aloqalar.",
+            "O'zbekistonda qonuniylik va demokratiya rivojlanishi?": "1992 yilda — konstitutsiya qabul qilindi. 1995 yilda — parlament tashkil topdi. 2003 yilda — prezidentlik qo'zg'olonlari. 2016 yilda — demokratiya rivojlandi.",
+            "O'zbekistonda iqtisodiy reformalar qanday amalga oshirildi?": "1990-yillarda — "o'zlashtirish", "bozor iqtisodiyoti", "valyuta", "soliq", "investitsiya" — reformalar. 2016 yilda — yangi reformalar.",
+            "O'zbekistonda ta'lim tizimining o'zgarishi?": "1992 yilda — ta'lim konstitutsiyasi. 2000-yillarda — ingliz tili, kompyuter, yangi dasturlar. 2016 yilda — yangi ta'lim dasturlari.",
+            "O'zbekistonda din va diniy hayotning o'zgarishi?": "1990-yillarda — din — o'sdi. 2000-yillarda — diniy g'oyalar — qo'rqo'g'lik. 2016 yilda — diniy g'oyalar — o'zgardi, diniy g'oyalar — qo'rqo'g'lik.",
+            "O'zbekistonning Xitoy, Rossiya, AQSH bilan munosabatlari?": "Xitoy — paxta, investitsiya, yo'l. Rossiya — mehnat, energiya, qo'zg'olonlar. AQSH — demokratiya, investitsiya, o'q, mehnat.",
+
+            "Fashizm va kommunizm o'rtasidagi farq?": "<span class='term'>Fashizm</span> — milliy g'oyalar, rasizm, totalitarizm. <span class='term'>Kommunizm</span> — sinf urushi, mulksizlik, milliy g'oyalar yo'q.",
+            "Demokratiya va totalitarizm tushunchalari?": "<span class='term'>Demokratiya</span> — xalq hokimiyati, ozodlik, huquq. <span class='term'>Totalitarizm</span> — bitta lider, qo'rqo'g'lik, qo'zg'olonlar.",
+            "Xalqaro siyosatda \"sovuq urush\" nima?": "1947-1991 yillarda — Sovet Ittifoqi va AQSH o'rtasidagi siyosiy, iqtisodiy, harbiy qarshilik. Urush yo'q, lekin qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar.",
+            "Qo'shma Shtatlarning \"Truman doktrinasi\" nima?": "1947 yilda — AQSH — Sovet Ittifoqini to'xtatish uchun qo'llab-quvvatlash. "Konteynment" — Sovet Ittifoqini to'xtatish.",
+            "Sovet Ittifoqining \"Molotov doktrinasi\" nima?": "1947 yilda — Sovet Ittifoqi — Yevropadagi mamlakatlarni o'z ta'sirida saqlash. "Molotov doktrinasi" — Sovet Ittifoqining ta'sirini kengaytirish.",
+            "NATO va Varshava pakti qanday tashkil topdi?": "1949 yilda — NATO — AQSH, Yevropa. 1955 yilda — Varshava pakti — Sovet Ittifoqi, Sharqiy Yevropa. Ikkalasi — qo'zg'olonlar, qo'zg'olonlar.",
+            "Qo'shma Shtatlarning \"Konteynment\" siyosati nima?": "Sovet Ittifoqini to'xtatish uchun qo'llab-quvvatlash. Qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar — Sovet Ittifoqini to'xtatish.",
+            "Koreya urushi sabablari va natijalari?": "1950-1953 yillarda — Shimoliy Koreya (Sovet Ittifoqi) va Janubiy Koreya (AQSH). Natijasi — 38-parallel — chegaraga bo'lingan.",
+            "Vietnam urushi qanday sodir bo'ldi?": "1955-1975 yillarda — Shimoliy Vietnam (Sovet Ittifoqi) va Janubiy Vietnam (AQSH). 1975 yilda — Shimoliy Vietnam g'alaba qozondi.",
+            "Kubada inqilob (1959) qanday sodir bo'ldi?": "1959 yilda — Fidel Kastro — Kubada inqilob. AQSH — qo'zg'olonlarni to'xtatishga harakat qildi. 1962 yilda — Kuba krizisi.",
+            "Afrika va Osiyoda dekolonizatsiya jarayoni?": "1950-1970-yillarda — Afrika va Osiyoda — mamlakatlar — mustaqillik e'lon qildi. Britaniya, Fransiya, Portugaliya — qo'zg'olonlar.",
+            "Pax Americana nima?": "AQSH — dunyoda yagona kuch bo'lishi. 1991 yildan keyin — AQSH — dunyoda yagona kuch.",
+            "Xalqaro terrorizmning paydo bo'lishi?": "1970-yillarda — terrorizm — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar. 2001 yilda — 11-sentabr — AQSH — terrorizmga qarshi kurash.",
+            "Jahon siyosatida \"bir qutbli\" va \"ko'p qutbli\" tizimlar?": "<span class='term'>Bir qutbli</span> — AQSH. <span class='term'>Ko'p qutbli</span> — AQSH, Rossiya, Xitoy, Yevropa, Hindiston.",
+            "BMTning roli va uning qarorlari?": "BMT — urushlarni oldini olish, inson huquqlarini himoya qilish, iqtisodiy rivojlanish. Qarorlar — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar.",
+
+            "Tarixiy manbalar turlari (asosiy, ikkinchi darajali)?": "<span class='term'>Asosiy manbalar</span> — voqea sodir bo'lgan paytda yozilgan (qo'lyozmalar, hujjatlar, xabarlar). <span class='term'>Ikkinchi darajali</span> — keyinroq yozilgan (tarixiy kitoblar).",
+            "Tarixiy manbalarni tahlil qilish qanday amalga oshiriladi?": "1) Manba manbai; 2) Muallif; 3) Maqsad; 4) Kontekst; 5) Tahlil — qanday ma'lumot beradi.",
+            "Tarixiy voqealarni kronologik tartibga solish qanday?": "Voqealarni sanalar bo'yicha tartiblash — qaysi voqea qachon sodir bo'lganligini aniqlash.",
+            "Tarixiy tadqiqotda gipoteza qanday qo'llaniladi?": "Gipoteza — taxmin. Masalan: "1917 yilda inqilob bo'ldi". Keyin — manbalarni tahlil qilish, taxminni tasdiqlash.",
+            "Tarixiy tadqiqotda kritik tahlil nima?": "Manbani tahlil qilish — uning ishonchli emasligi, o'ziga qarshilik, qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar.",
+            "Tarixiy tadqiqotda kontekst tushunchasi nima?": "Voqea sodir bo'lgan paytdagi iqtisodiy, siyosiy, madaniy sharoit. Voqea — kontekstda tushuniladi.",
+            "Tarixiy tadqiqotda kuzatuv va qo'lda qayd qilish usullari?": "Kuzatuv — voqea sodir bo'lgan paytda kuzatish. Qo'lda qayd qilish — qo'lyozma, hujjat, xabar, qo'zg'olonlar.",
+            "Tarixiy tadqiqotda analiz va sintez qanday amalga oshiriladi?": "Analiz — manbani qism-qism tahlil qilish. Sintez — qism-qismni birlashtirib, umumiy natijani chiqarish.",
+            "Tarixiy tadqiqotda qo'llaniladigan asosiy metodlar?": "Kronologik, analitik, sintetik, kritik, kontekstual, tahlil, qo'lda qayd qilish, kuzatuv.",
+            "Tarixiy tadqiqotda etik qoidalarning ahamiyati?": "Tarixiy tadqiqot — insoniyatga qarash. Etik qoidalar — qo'zg'olonlar, qo'zg'olonlar, qo'zg'olonlar — tarixiy manbalarni to'g'ri qo'llash."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Tarix darsligiga asoslangan AI yordamchiman. XIX-XX asrlar, O'zbekiston tarixi, jahon tarixi, siyosiy harakatlar, urushlar, inqiloblar — barcha mavzular bo'yicha chuqur tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
