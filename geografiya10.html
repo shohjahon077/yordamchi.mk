@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Geografiya (10-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0D47A1; /* Ko'k — Yer shar, okean, tabiat */
+            --secondary: #1976D2;
+            --accent: #FFB300; /* Sariq — energiya, quyosh, iqtisod */
+            --light: #FFFFFF;
+            --bg: #E3F2FD;
+            --text: #0D47A1;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(13, 71, 161, 0.15);
+            --border: #BBDEFB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #0D47A1);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === GEOGRAPHY STYLE === */
+        .geography {
+            background: #E3F2FD;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #1565C0;
+        }
+
+        /* === FACT BOX === */
+        .fact {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E1F5FE;
+            border-left: 3px solid #039BE5;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #01579B;
+            font-style: italic;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #FFF8E1;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #EF6C00;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(13,71,161,0.2);
+        }
+
+        .quick-button:hover {
+            background: #0D47A1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(13,71,161,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+                <!-- Globusda qit’alar shakli -->
+                <path d="M5 8C6 6 9 5 12 7C15 9 18 8 18 10C18 12 15 14 12 13C9 12 7 13 5 11C5 10 5 9 5 8Z" fill="white" opacity="0.6"/>
+                <path d="M8 16C9 15 11 15 13 16C15 17 17 18 17 19C17 20 15 21 12 20C9 19 8 18 8 16Z" fill="white" opacity="0.6"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Geografiya</h1>
+        <p>10-sinf uchun: Dunyo, O‘zbekiston, iqtisodiyot, tabiat, aholi, resurslar — Yerning sirli dunyosiga xush kelibsiz!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🌍</div>
+            <h2>Geografiya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">10-sinf darsligiga mos — Dunyo, O‘zbekiston, iqtisodiyot, tabiat, aholi, resurslar</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Geografiya ma'lumotlar bazasi (10-sinf darsligi asosida)
+        const database = {
+            "main_menu": {
+                text: "Salom! Geografiya — bu butun dunyo haqida bilim. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "🌏 Dunyo", key: "dunyo" },
+                    { text: "🇺🇿 O‘zbekiston", key: "uzbekiston" },
+                    { text: "🏭 Iqtisodiyot", key: "iqtisod" },
+                    { text: "🌳 Tabiat", key: "tabiat" },
+                    { text: "👥 Aholi", key: "aholi" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "dunyo": {
+                text: "Dunyo geografiyasi — qit’alar, mamlakatlar, iqtisodiy mintaqalar.",
+                buttons: [
+                    { text: "Qit’alar", key: "qitalar" },
+                    { text: "Iqtisodiy mintaqalar", key: "mintaqalar" },
+                    { text: "Rivojlangan mamlakatlar", key: "rivojlangan" },
+                    { text: "Rivojlanayotganlar", key: "rivojlanayotgan" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "qitalar": {
+                text: "<span class='geography'>Eng katta qit’alar:</span><br>• Osiyo — 44.5 mln km²<br>• Afrika — 30.3 mln km²<br>• Shimoliy Amerika — 24.7 mln km²<br>• Janubiy Amerika — 17.8 mln km²<br>• Antarktida — 14.0 mln km²<br>• Yevropa — 10.1 mln km²<br>• Avstraliya — 7.7 mln km²",
+                buttons: [{ text: "⬅️ Orqaga", key: "dunyo", isHome: true }]
+            },
+            "mintaqalar": {
+                text: "<span class='geography'>Iqtisodiy mintaqalar:</span><br>• Yevropa Ittifoqi (EU)<br>• AQSH, Kanada, Meksika (NAFTA → USMCA)<br>• Xitoy, Yaponiya, Koreya (Sharqiy Osiyo)<br>• GURK — Rossiya, O‘zbekiston, Qozog‘iston<br>• Afrika Ittifoqi (AU)",
+                buttons: [{ text: "⬅️ Orqaga", key: "dunyo", isHome: true }]
+            },
+            "rivojlangan": {
+                text: "<span class='geography'>Rivojlangan mamlakatlar:</span><br>• AQSH, Germaniya, Yaponiya, Fransiya, Buyuk Britaniya<br>• Yuqori GDP, inson rivojlanish indeksi (HDI > 0.8)<br>• Asosiy sanoat — texnologiya, xizmatlar, avtomobillar<br>• Masalan: AQSH — 25% global GDP",
+                buttons: [{ text: "⬅️ Orqaga", key: "dunyo", isHome: true }]
+            },
+            "rivojlanayotgan": {
+                text: "<span class='geography'>Rivojlanayotgan mamlakatlar:</span><br>• Hindiston, Braziliya, Indoneziya, O‘zbekiston<br>• Tez rivojlanuvchi iqtisodiyot<br>• Qishloq xo‘jaligi hamda sanoat aralash<br>• Masalan: Hindiston — 1.4 mlrd aholi, tez o‘suvchi IT sohasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "dunyo", isHome: true }]
+            },
+            "uzbekiston": {
+                text: "O‘zbekiston — Markaziy Osiyoning yuragida joylashgan davlat.",
+                buttons: [
+                    { text: "Hududi", key: "hudud" },
+                    { text: "Tumanlar", key: "tumanlar" },
+                    { text: "Resurslari", key: "resurslar" },
+                    { text: "Shaharlari", key: "shaharlar" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "hudud": {
+                text: "<span class='geography'>O‘zbekiston hududi:</span><br>• Maydoni: 448,5 ming km²<br>• 65% — cho‘l (Qoraqum)<br>• 25% — tog‘ (Pamir-Alay)<br>• 10% — tekislik (Farg‘ona, Amudaryo)<br>• Hududda 12 ta viloyat, 1 respublika (Toshkent)",
+                buttons: [{ text: "⬅️ Orqaga", key: "uzbekiston", isHome: true }]
+            },
+            "tumanlar": {
+                text: "<span class='geography'>Viloyatlar:</span><br>• Toshkent, Samarqand, Buxoro, Andijon, Namangan, Farg‘ona, Qashqadaryo, Surxondaryo, Navoiy, Jizzax, Sirdaryo, Xorazm, Qoraqalpog‘iston Respublikasi",
+                buttons: [{ text: "⬅️ Orqaga", key: "uzbekiston", isHome: true }]
+            },
+            "resurslar": {
+                text: "<span class='geography'>Tabiiy resurslar:</span><br>• Gaz — dunyoning 1% miqdorida<br>• Mis — Oltintosh koni (dunyoning eng kattasi)<br>• Oltin — Muruntosh, Kalmakir<br>• Uran — Navoiy atrofi<br>• Pахta — “oq oltin”<br>• Meva-sabzavot — Farg‘ona vodiysi",
+                buttons: [{ text: "⬅️ Orqaga", key: "uzbekiston", isHome: true }]
+            },
+            "shaharlar": {
+                text: "<span class='geography'>Asosiy shaharlar:</span><br>• Toshkent — poytaxt, 2.5 mln<br>• Samarqand — tarixiy markaz, 550 ming<br>• Buxoro — madaniyat poytaxti, 300 ming<br>• Namangan — meva, 600 ming<br>• Andijon — tekstil, 450 ming<br>• Nukus — Qoraqalpog‘iston poytaxti",
+                buttons: [{ text: "⬅️ Orqaga", key: "uzbekiston", isHome: true }]
+            },
+            "iqtisod": {
+                text: "Iqtisodiy geografiya — sanoat, qishloq xo‘jaligi, savdo.",
+                buttons: [
+                    { text: "Sanoat", key: "sanoat" },
+                    { text: "Qishloq xo‘jaligi", key: "qishloq" },
+                    { text: "Transport", key: "transport" },
+                    { text: "Savdo", key: "savdo" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sanoat": {
+                text: "<span class='geography'>Sanoat:</span><br>• Kimyo — Navoiy, Olot<br>• Metallurgiya — Almalyk, Bekobod<br>• Neft-gaz — Qorasuv, Muborak<br>• Energetika — Toshkent, Angren<br>• Elektronika — Toshkent, Farg‘ona",
+                buttons: [{ text: "⬅️ Orqaga", key: "iqtisod", isHome: true }]
+            },
+            "qishloq": {
+                text: "<span class='geography'>Qishloq xo‘jaligi:</span><br>• Paxta — asosiy eksport<br>• G‘alla — bug‘doy, arpa, makkajo‘xori<br>• Meva — olma, uzum, nok<br>• Yog‘och — terak, tol<br>• Chorvachilik — qo‘y, echki, mol, tovuq",
+                buttons: [{ text: "⬅️ Orqaga", key: "iqtisod", isHome: true }]
+            },
+            "transport": {
+                text: "<span class='geography'>Transport:</span><br>• Temir yo‘l — 4,600 km<br>• Avtomagistral — 87,000 km<br>• Havo orqali — Toshkent, Samarkand, Urganch<br>• Daryo transporti — Amudaryo, Sirdaryo (cheklangan)<br>• Trans-Afghanistan yo‘li — Xorazm — Turkmaniston — Afg‘oniston",
+                buttons: [{ text: "⬅️ Orqaga", key: "iqtisod", isHome: true }]
+            },
+            "savdo": {
+                text: "<span class='geography'>Savdo:</span><br>• Asosiy sheriklar: Xitoy, Rossiya, Turkiya, Koreya<br>• Eksport: gaz, paxta, metallar, meva<br>• Import: mashinalar, elektronika, kimyo mahsulotlari<br>• Bozorlar: Toshkent, Samarqand, Farg‘ona",
+                buttons: [{ text: "⬅️ Orqaga", key: "iqtisod", isHome: true }]
+            },
+            "tabiat": {
+                text: "O‘zbekiston tabiatining asosiy jihatlari.",
+                buttons: [
+                    { text: "Iqlimi", key: "iqlim" },
+                    { text: "O‘simliklar", key: "osimlik" },
+                    { text: "Hayvonlar", key: "hayvon" },
+                    { text: "Daryolar", key: "daryo" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "iqlim": {
+                text: "<span class='geography'>Iqlim:</span><br>• Kontinental: issiq yoz, sovuq qish<br>• Yoz: +35°C gacha<br>• Qish: -10°C gacha<br>• Cho‘lda — yog‘ingarchilik kam (100–200 mm/yil)<br>• Tog‘larda — 800 mm/yil",
+                buttons: [{ text: "⬅️ Orqaga", key: "tabiat", isHome: true }]
+            },
+            "osimlik": {
+                text: "<span class='geography'>O‘simliklar:</span><br>• Cho‘l: saxar, g‘o‘za, sarvon<br>• Tekislik: daraxtlar, bog‘lar, ekinlar<br>• Tog‘: archa, terak, olma, no’xot<br>• Farg‘ona vodiysi — yashil zonaning yuragi",
+                buttons: [{ text: "⬅️ Orqaga", key: "tabiat", isHome: true }]
+            },
+            "hayvon": {
+                text: "<span class='geography'>Hayvonlar:</span><br>• Tog‘: bo‘ri, tulki, qo‘ng‘iroq, itburun<br>• Savanna: siyohuy, quyon, qushlar<br>• Daryo bo‘yi: ot, egizak, qushlar<br>• Qoraqalpoq: flamingo, turna",
+                buttons: [{ text: "⬅️ Orqaga", key: "tabiat", isHome: true }]
+            },
+            "daryo": {
+                text: "<span class='geography'>Asosiy daryolar:</span><br>• Amudaryo — 1415 km, Afg‘oniston, Tojikiston, O‘zbekiston, Turkmaniston<br>• Sirdaryo — 2212 km, Qo‘qon, Bekobod, Toshkent<br>• Zarafshon — Samarqand, Navoiy<br>• Vaxsh — Tojikistonda, Amudaryoga quyiladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "tabiat", isHome: true }]
+            },
+            "aholi": {
+                text: "Aholi soni, tarkibi, tarqalishi.",
+                buttons: [
+                    { text: "Son", key: "son" },
+                    { text: "Millatlar", key: "millat" },
+                    { text: "Shahar va qishloq", key: "shahar_qishloq" },
+                    { text: "Tarqalish", key: "tarqalish" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "son": {
+                text: "<span class='geography'>Aholi soni:</span><br>• 36 million (2025)<br>• Har yili ~300 mingga o‘sadi<br>• O‘rtacha yosh — 28 yil<br>• Eng yosh aholi — O‘zbekiston, Niger, Uganda",
+                buttons: [{ text: "⬅️ Orqaga", key: "aholi", isHome: true }]
+            },
+            "millat": {
+                text: "<span class='geography'>Millatlar:</span><br>• O‘zbeklar — 80%<br>• Ruslar — 5%<br>• Tatarlar — 4%<br>• Qozoqlar — 3%<br>• Tojiklar — 3%<br>• Qoraqalpoqlar — 2%<br>• Boshqa — 3%",
+                buttons: [{ text: "⬅️ Orqaga", key: "aholi", isHome: true }]
+            },
+            "shahar_qishloq": {
+                text: "<span class='geography'>Shahar va qishloq:</span><br>• Shaharda — 50%<br>• Qishloqda — 50%<br>• Shahar aholisi har yili 2% o‘sadi<br>• Toshkent — eng katta shahar",
+                buttons: [{ text: "⬅️ Orqaga", key: "aholi", isHome: true }]
+            },
+            "tarqalish": {
+                text: "<span class='geography'>Tarqalish:</span><br>• Eng zich: Toshkent, Farg‘ona vodiysi<br>• Kam zich: Qoraqum cho‘li, Tyan-Shan tog‘lari<br>• O‘rtacha zichlik: 80 kishi/km²<br>• Farg‘onada — 400 kishi/km²",
+                buttons: [{ text: "⬅️ Orqaga", key: "aholi", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Dunyo testi", key: "test_dunyo" },
+                    { text: "O‘zbekiston testi", key: "test_uzb" },
+                    { text: "Tabiat testi", key: "test_tabiat" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_dunyo": {
+                text: "1. Eng katta qit’ani belgilang:\nA) Afrika\nB) Osiyo\nC) Shimoliy Amerika",
+                buttons: [
+                    { text: "A)", key: "test_dunyo_a" },
+                    { text: "B)", key: "test_dunyo_b" },
+                    { text: "C)", key: "test_dunyo_c" }
+                ]
+            },
+            "test_dunyo_b": {
+                text: "✅ To'g'ri! Osiyo — eng katta qit’alar — 44.5 mln km².",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_uzb": {
+                text: "2. O‘zbekiston maydoni necha ming km²?\nA) 348.5\nB) 448.5\nC) 548.5",
+                buttons: [
+                    { text: "A)", key: "test_uzb_a" },
+                    { text: "B)", key: "test_uzb_b" },
+                    { text: "C)", key: "test_uzb_c" }
+                ]
+            },
+            "test_uzb_b": {
+                text: "✅ Ajoyib! O‘zbekiston maydoni — 448.5 ming km².",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_tabiat": {
+                text: "3. Qaysi daryo Farg‘ona vodiysidan o‘tmaydi?\nA) Amudaryo\nB) Sirdaryo\nC) Zarafshon",
+                buttons: [
+                    { text: "A)", key: "test_tabiat_a" },
+                    { text: "B)", key: "test_tabiat_b" },
+                    { text: "C)", key: "test_tabiat_c" }
+                ]
+            },
+            "test_tabiat_a": {
+                text: "✅ To'g'ri! Amudaryo Farg‘ona vodiysidan o‘tmaydi — u janubda.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
