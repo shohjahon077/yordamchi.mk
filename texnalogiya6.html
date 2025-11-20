@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — Texnologiya AI 6-Sinf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff3e0, #ffccbc, #ffb74d);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #ff9800;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #ff9800, #e65100);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(255, 152, 0, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff9800, #e65100, #ff9800);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(255, 152, 0, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(255, 152, 0, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #bf360c;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #444;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(255, 152, 0, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(255, 152, 0, 0.9);
+      background: linear-gradient(45deg, #bf360c, #ff8a00);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #bf360c;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(255, 152, 0, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #ff9800;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(255, 152, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(255, 248, 230, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #ff9800, #e65100);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #fff3e0, #ffccbc);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #ff9800;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff9800;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(255, 248, 230, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #ff9800;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #e65100, #ff9800);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(255, 152, 0, 0.7);
+      background: linear-gradient(45deg, #bf360c, #ff8a00);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 152, 0, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #ff9800;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">🔧</div>
+      <h1 class="title">ASCO Texnologiya AI</h1>
+      <p class="subtitle">6-sinf texnologiyasida qiyinchilik tug'ilmaydi! Men — sizning shaxsiy texnologiya o'qituvchingiz. Qo'lda ish, loyihalash, oziq-ovqat, qurilish, kasb tanlash — barchasini qiziqarli tilda tushuntiraman. Tugmalardan foydalaning yoki savolingizni yozing!</p>
+      <button class="start-btn" onclick="startChat()">Boshlash</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🛠️</div>
+        <h2>Texnologiya AI</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Qo\'l mehnati')">Qo'lda ish</button>
+          <button class="btn-3d" onclick="sendMessage('Materiallar')">Materiallar</button>
+          <button class="btn-3d" onclick="sendMessage('Loyiha tuzish')">Loyiha tuzish</button>
+          <button class="btn-3d" onclick="sendMessage('Oziq-ovqat tayyorlash')">Oziq-ovqat</button>
+          <button class="btn-3d" onclick="sendMessage('Qurilish asoslari')">Qurilish</button>
+          <button class="btn-3d" onclick="sendMessage('Texnik qurilmalar')">Texnik qurilmalar</button>
+          <button class="btn-3d" onclick="sendMessage('Ishlab chiqarish jarayoni')">Ishlab chiqarish</button>
+          <button class="btn-3d" onclick="sendMessage('Kasb tanlash')">Kasb tanlash</button>
+          <button class="btn-3d" onclick="sendMessage('Biznes reja')">Biznes reja</button>
+          <button class="btn-3d" onclick="sendMessage('Energiya manbalari')">Energiya manbalari</button>
+          <button class="btn-3d" onclick="sendMessage('Axborot texnologiyalari')">Axborot texnologiyalari</button>
+          <button class="btn-3d" onclick="sendMessage('Mashina va uskunalari')">Mashina va uskunalar</button>
+          <button class="btn-3d" onclick="sendMessage('Mehnat qoidalari')">Mehnat qoidalari</button>
+          <button class="btn-3d" onclick="sendMessage('Xavfsizlik qoidalari')">Xavfsizlik</button>
+          <button class="btn-3d" onclick="sendMessage('Yengil sanoat')">Yengil sanoat</button>
+          <button class="btn-3d" onclick="sendMessage('Qo'g'irchoq qilish')">Qo'g'irchoq qilish</button>
+          <button class="btn-3d" onclick="sendMessage('Papka va qog'oz')">Papka va qog'oz</button>
+          <button class="btn-3d" onclick="sendMessage('Tasviriy san'at')">Tasviriy san'at</button>
+          <button class="btn-3d" onclick="sendMessage('Mashq')">Mashq</button>
+          <button class="btn-3d" onclick="sendMessage('Test savollari')">Test savollari</button>
+          <button class="btn-3d" onclick="sendMessage('Qiziqarli fakt')">Qiziqarli fakt</button>
+          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq</button>
+          <button class="btn-3d" onclick="sendMessage('O'zbekiston sanoati')">O'zbekiston sanoati</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Salom! Men — sizning 6-sinf texnologiya o'qituvchingiz. Qo'lda ish, loyihalash, oziq-ovqat tayyorlash yoki kasb tanlash haqida savolingiz bormi? Tugmalardan foydalaning yoki savolingizni yozing!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Siz", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // 6-SINF TEXNOLOGIYA — ASCO LOYIHASI
+
+      if (lower.includes("qo'lda ish") || lower.includes("qo'l mehnati")) {
+        response = "Qo'lda ish — qo'l bilan ishlab chiqarish.\n\nMisol:\n• Qog'ozdan qo'g'irchoq\n• G'ishtdan xona\n• Parchalardan kiyim\n\nAfzalliklari:\n- Qimmat emas\n- O'z fikringiz bilan qilinadi\n- Kreativlikni rivojlantiradi\n\nQo'lda ish — kichik loyihalarning asosi!";
+      } else if (lower.includes("materiallar")) {
+        response = "Asosiy materiallar:\n\n1. **Qog'oz** — yengil, qayta ishlanadi\n2. **G'isht** — qattiq, uzoq muddatli\n3. **Plastmassa** — qulay, lekin ekologik emas\n4. **Metall** — kuchli, sovuq\n5. **Tabiiy materiallar** — yog'och, paxta, ip\n\nMehnatda materialni tanlash — muhim!\nMasalan: Qog'ozdan qo'g'irchoq, yog'ochdan o'yinchoq.";
+      } else if (lower.includes("loyiha tuzish")) {
+        response = "Loyiha tuzish — 4 bosqich:\n\n1. **Dastlabki fikr** — nima yasaymiz?\n2. **Tayyorgarlik** — materiallar, uskunalar\n3. **Bajarish** — qo'lda ish\n4. **Tekshirish** — natija to'g'rimi?\n\nMisol: \"Qog'ozdan kutubxona\" loyihasi:\n- Dastlabki fikr: Kitoblar uchun qutini yasaymiz\n- Tayyorgarlik: Qog'oz, qaychi, yapishqoq\n- Bajarish: Kutubxonani quramiz\n- Tekshirish: Kitoblar sig'adimi?";
+      } else if (lower.includes("oziq-ovqat")) {
+        response = "Oziq-ovqat tayyorlash — qo'lda ishning ajoyib turi!\n\nMisol: \"Osh\" tayyorlash:\n1. Piyozni qovur\n2. Go'shtni qo'sh\n3. Suv qo'sh\n4. G'uruchni qo'sh\n5. 30 daqiqa pishir\n\nMuhim qoidalari:\n• O'zgarishlar — o'zgartirish\n• Toza — toza\n• Tuz — tuz\n\nOsh tayyorlash — O'zbekiston madaniyatining qismi!";
+      } else if (lower.includes("qurilish")) {
+        response = "Qurilish asoslari:\n\n1. **Asos** — qattiq, tekis\n2. **Devorlar** — qo'ng'iroq, qo'g'irchoq\n3. **Qattiqlik** — qo'shimcha qo'llanish\n4. **Tasmasizlik** — barcha qismlar to'g'ri\n\nMisol: \"Papka kutubxona\":\n- Asos: qattiq qog'oz\n- Devorlar: qo'g'irchoq\n- Qattiqlik: qo'shimcha qog'oz\n- Tasmasizlik: barcha tomonlar teng\n\nQurilish — tarmoq, emas, tuzilish!";
+      } else if (lower.includes("texnik qurilmalar")) {
+        response = "Texnik qurilmalar — mehnatni osonlashtiruvchi asboblar:\n\n• Qaychi — kesish\n• Qog'oz kesgich — to'g'ri kesish\n• Yapishqoq — ulash\n• Termometr — harorat\n• O'lchagich — uzunlik\n\nMehnatda qurilmalardan foydalanish — samaradorlik!\n\n💡 Eslatma: Qo'ng'iroq, qaychi — o'z kuchingiz bilan ishlashingiz kerak!";
+      } else if (lower.includes("ishlab chiqarish")) {
+        response = "Ishlab chiqarish jarayoni — narsani yaratish:\n\n1. **Material tanlash**\n2. **Dastlabki dizayn**\n3. **Qurilish**\n4. **Tekshirish**\n5. **Sotish**\n\nMasalan: \"Qog'ozdan qo'g'irchoq\":\n- Material: qog'oz\n- Dizayn: qo'g'irchoq shakli\n- Qurilish: qog'ozni qo'g'irchoqga aylantirish\n- Tekshirish: qo'g'irchoq to'g'rimi?\n- Sotish: do'stingizga berish!\n\nIshlab chiqarish — hayotda doimiy jarayon!";
+      } else if (lower.includes("kasb tanlash")) {
+        response = "Kasb tanlash — kelajagingizni belgilash!\n\nQanday tanlash?\n\n1. Qanday narsa qilishni yaxshi ko'rasiz?\n2. Qanday ishda o'zini ko'rasiz?\n3. Qanday kasbda o'zini yaxshi his qilasiz?\n\nMisol:\n- Qo'lda ishni sevasiz → Dizayner, qo'g'irchoqchi\n- Texnikani sevasiz → Injener, dasturchi\n- Oziq-ovqatni sevasiz → Pishiruvchi, oziq-ovqat mutaxassisi\n\n💡 Kasb — bu faqat ish emas, balki sizning qobiliyatingiz!";
+      } else if (lower.includes("biznes reja")) {
+        response = "Biznes reja — narsa sotish uchun reja:\n\n1. **Nima sotamiz?** — qo'g'irchoq, kiyim, osh\n2. **Kim sotamiz?** — do'stlar, ota-onalar\n3. **Qanday sotamiz?** — maktabda, onlayn\n4. **Nechi pul olamiz?** — 10 000 so'm\n5. **Qanday ishlaymiz?** — qo'lda ish\n\nMisol:\n\"Qo'g'irchoq sotish\" biznesi:\n- Mahsulot: qo'g'irchoq\n- Mijoz: 5 ta do'st\n- Narx: 10 000 so'm\n- Daromad: 50 000 so'm\n\nBiznes — kichikdan boshlanadi!";
+      } else if (lower.includes("energiya manbalari")) {
+        response = "Energiya manbalari — narsalarni ishlatish uchun energiya:\n\n• **Tabiiy energiya** — quyosh, shamol, suv\n• **Kimyoviy energiya** — yoqilg'i, batareya\n• **Elektr energiya** — elektroqurilmalar\n\nMisol:\n- Quyoshli kunda — quyosh energiyasi\n- Qo'g'irchoq — qo'l energiyasi\n- Elektr qaychi — elektr energiyasi\n\n💡 Energiyani tejash — ajoyib qobiliyat!";
+      } else if (lower.includes("axborot texnologiyalari")) {
+        response = "Axborot texnologiyalari — kompyuter va internet orqali ishlash:\n\n• Dasturlash\n• Grafik muharrir\n• Internetda ma'lumot izlash\n• Onlayn loyihalash\n\nMisol:\n- Qog'ozdan qo'g'irchoq yasash uchun YouTube'dan video ko'rish\n- Loyiha uchun rasmlarni Google'dan topish\n\n💡 Axborot texnologiyalari — zamonaviy mehnatning qismi!";
+      } else if (lower.includes("mashina va uskunalar")) {
+        response = "Mashina va uskunalar — mehnatni osonlashtiruvchi qurilmalar:\n\n• Qaychi — kesish\n• Qog'oz kesgich — to'g'ri kesish\n• Yapishqoq — ulash\n• Termometr — harorat\n• O'lchagich — uzunlik\n\nMehnatda qurilmalardan foydalanish — samaradorlik!\n\n💡 Eslatma: Qo'ng'iroq, qaychi — o'z kuchingiz bilan ishlashingiz kerak!";
+      } else if (lower.includes("mehnat qoidalari")) {
+        response = "Mehnat qoidalari — xavfsiz va samarali ishlash:\n\n1. Ish joyini toza tuting\n2. Uskunalarni to'g'ri ishlating\n3. O'z kuchingiz bilan ishlashingiz kerak\n4. O'zini himoya qiling (qo'lqop, ko'zgina)\n5. Ishni tugatgandan keyin tozalang\n\n💡 Mehnat — o'zini himoya qilishdan boshlanadi!";
+      } else if (lower.includes("xavfsizlik")) {
+        response = "Xavfsizlik qoidalari:\n\n• Qaychi — boshqa kishilarga yo'naltirmang\n• Qog'oz — o'z kuchingiz bilan kesing\n• Yapishqoq — ko'zga tushirmang\n• Elektr — ota-onangiz yordamida\n• Qo'g'irchoq — katta qo'l bilan\n\n💡 Xavfsizlik — ishning birinchi qadami!";
+      } else if (lower.includes("yengil sanoat")) {
+        response = "Yengil sanoat — kiyim, oziq-ovqat, qo'g'irchoq, qog'oz ishlab chiqarish:\n\n• Qo'g'irchoq\n• Kiyim\n• Parchalardan o'yinchoq\n• Qog'ozdan qutilar\n\nO'zbekistonda:\n• Toshkent — kiyim ishlab chiqarish\n• Andijon — paxta\n• Samarkand — qo'g'irchoq\n\n💡 Yengil sanoat — odamlar hayotini yaxshilaydi!";
+      } else if (lower.includes("qo'g'irchoq qilish")) {
+        response = "Qo'g'irchoq qilish — qo'lda ishning ajoyib turi!\n\nQanday qilish?\n\n1. Material: qog'oz, paxta, ip\n2. Shakl: hayvon, odam, qutu\n3. Qo'shimchalar: ko'z, qo'l, oyoq\n4. Rang: bo'yash\n\nMisol: \"Qo'g'irchoq quyon\":\n- Qog'ozdan tana\n- Parchalardan quloq\n- Ip — oyoq\n- Qalam — ko'z\n\n💡 Qo'g'irchoq — sizning ijodiy yechimingiz!";
+      } else if (lower.includes("papka va qog'oz")) {
+        response = "Papka va qog'oz — eng keng tarqalgan materiallar:\n\n• Qog'oz — yengil, qayta ishlanadi\n• Papka — qog'ozni saqlash\n\nMisol:\n- Qog'ozdan kutubxona\n- Papkadan o'yinchoq\n- Qog'ozdan qutu\n\n💡 Qog'ozni qayta ishlash — ekologik mehnat!";
+      } else if (lower.includes("tasviriy san'at")) {
+        response = "Tasviriy san'at — rasm, qo'g'irchoq, dekorativ narsalar:\n\n• Rasm chizish\n• Qog'ozdan qo'g'irchoq\n• Papkadan dekor\n• Bo'yash\n\nMisol: \"Maktab uchun dekor\":\n- Qog'ozdan qo'g'irchoq\n- Rangli qog'ozdan yulduz\n- Qo'l bilan chizilgan shakl\n\n💡 San'at — mehnatning qalbini qo'zg'atadi!";
+      } else if (lower.includes("mashq")) {
+        response = "Mashq:\n\nLoyiha tuzing: \"Qog'ozdan o'q\"\n\n1. Nima? — o'q\n2. Material? — qog'oz\n3. Qanday? — qog'ozni uchburchak qilib qo'yish\n4. Qo'shimcha? — qo'l bilan tashlash\n\n✅ Javob: \n- Qog'ozni uchburchak qilib qo'y\n- O'q shaklida tort\n- Qo'l bilan tashla\n\n💡 Loyiha — qo'lda ishning eng yaxshi namunasi!";
+      } else if (lower.includes("test savollari")) {
+        response = "Test savollari:\n\n1. Qaysi material ekologik emas?\n   a) Qog'oz\n   b) Plastmassa ✅\n   c) Puxta\n\n2. Qo'lda ish qanday afzallikka ega?\n   a) Tez\n   b) Qimmat\n   c) Kreativ ✅\n\n3. Kasb tanlashda nima muhim?\n   a) O'z qobiliyatingiz ✅\n   b) Do'stingizning tanlovi\n   c) O'qituvchining fikri\n\n💡 Test — bilimingizni tekshirish!";
+      } else if (lower.includes("qiziqarli fakt")) {
+        response = "🌟 Qiziqarli fakt:\n\nDunyoda birinchi \"qo'g'irchoq\" 4000 yil avval Egiptda yasalgan!\n\nQo'g'irchoq — bu odamlarning birinchi ijodiy mehnati!\n\n💡 Qo'g'irchoq — bu insonning kichik o'zini ifodalash usuli!";
+      } else if (lower.includes("topishmoq")) {
+        response = "Topishmoq:\n\n\"Men qog'oz emasman, lekin qog'ozdan yasalaman.\nMen qo'l emasman, lekin qo'l bilan yasalaman.\nMen o'yin emasman, lekin o'yin bo'lib xizmat qilaman.\nMen nima?\"\n\n💡 Javob: **Qo'g'irchoq** 🧒\n\nYana biri:\n\"Men qo'ng'iroq emasman, lekin kesaman.\nMen plastmassa emasman, lekin qog'ozni kesaman.\nMen nima?\"\n💡 Javob: **Qaychi** ✂️";
+      } else if (lower.includes("o'zbekiston sanoati")) {
+        response = "O'zbekiston sanoati — dunyoda tanilgan:\n\n• **Paxta** — dunyoning eng yaxshi paxtasi\n• **Qo'g'irchoq** — Samarqand, Bukhoro\n• **Kiyim** — Toshkent, Andijon\n• **Oziq-ovqat** — meva, sabzavot, go'sht\n\n💡 O'zbekiston — qo'lda ish va sanoatning urug'i!";
+      } else if (lower.includes("salom") || lower.includes("assalomu alaykum")) {
+        response = "Assalomu alaykum! 😊 Men sizning 6-sinf texnologiya o'qituvchingizman. Qo'lda ish, loyihalash, oziq-ovqat yoki kasb tanlash haqida savolingiz bormi?";
+      } else if (lower.includes("raxmat")) {
+        response = "Arzimaydi! 😊 Texnologiyani o'rganish — ajoyib! Yana savol bering — men har doim tayyorman!";
+      } else if (lower.includes("sen kim")) {
+        response = "Men — ASCO loyihasi uchun yaratilgan sun'iy intellektli texnologiya o'qituvchisiman. Men 6-sinf dasturidagi barcha mavzularni oddiy va qiziqarli tilda tushuntiraman!";
+      } else {
+        response = "Bu savol menga yangi tuyuldi! 😊 Men 6-sinf texnologiyasida yordam berishga tayyorman. Iltimos, \"qo'lda ish\", \"loyiha\", \"kasb tanlash\" kabi so'zlardan foydalaning — men tushuntirib beraman!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      let uzVoice = voices.find(v => v.lang.startsWith('uz'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en'));
+      if (uzVoice) utterance.voice = uzVoice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Qayta yuborish';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
