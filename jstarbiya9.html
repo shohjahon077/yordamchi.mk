@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Ustoz — Jismoniy Tarbiya (9-sinf)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1B5E20; /* To‘q yashil — sog‘lomlik va harakat */
+            --secondary: #388E3C;
+            --accent: #FFB300; /* Sariq — energiya va faollilik */
+            --light: #FFFFFF;
+            --bg: #E8F5E9;
+            --text: #1B5E20;
+            --card: #FFFFFF;
+            --shadow: 0 12px 30px rgba(27, 94, 32, 0.15);
+            --border: #C8E6C9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === INTRO SPLASH === */
+        #intro-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--primary), #1B5E20);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2000;
+            animation: fadeInOut 3s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        #intro-splash h1 {
+            font-size: 2.3rem;
+            margin: 15px 0 10px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        #intro-splash p {
+            font-size: 1.1rem;
+            max-width: 85%;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        #globe-logo {
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        #globe-logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.2));
+        }
+
+        /* === CHATBOT CONTAINER === */
+        #chatbot-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--card);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        /* === HEADER === */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+        }
+
+        #ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        #header h2 {
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+
+        /* === CHAT WINDOW === */
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .ai-message {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 16px 22px;
+            border-radius: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .user-message .message-bubble {
+            background: #E8F5E9;
+            color: #1B5E20;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .ai-message .message-bubble {
+            background: #F8F9FA;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* === SPORT STYLE === */
+        .sport {
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        /* === HEALTH STYLE === */
+        .health {
+            background: #E0F2F1;
+            border-left: 3px solid var(--secondary);
+            padding: 8px 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #00695C;
+        }
+
+        /* === EXAMPLE STYLE === */
+        .example {
+            margin: 12px 0;
+            padding: 10px;
+            background: #E8F5E9;
+            border-left: 3px solid var(--accent);
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1B5E20;
+            font-style: italic;
+        }
+
+        /* === INPUT AREA === */
+        #input-area {
+            padding: 16px;
+            background: var(--light);
+            border-top: 2px solid var(--border);
+        }
+
+        #quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .quick-button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            max-width: 49%;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(27,94,32,0.2);
+        }
+
+        .quick-button:hover {
+            background: #1B5E20;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 14px rgba(27,94,32,0.3);
+        }
+
+        .home-button {
+            background: #616161 !important;
+        }
+
+        .home-button:hover {
+            background: #424242 !important;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #757575;
+            margin-top: 12px;
+            padding: 4px;
+        }
+
+        /* SCROLLBAR */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-window::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        /* ANIMATION */
+        #chatbot-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #chatbot-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 500px) {
+            #chatbot-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .quick-button {
+                min-width: 90px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- INTRO SPLASH -->
+    <div id="intro-splash">
+        <div id="globe-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"/>
+                <path d="M12 3V21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M3 12H21" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <path d="M7 4C8.5 6 10 9 10 12C10 15 8.5 18 7 20" stroke="white" stroke-width="1.5"/>
+                <path d="M17 4C15.5 6 14 9 14 12C14 15 15.5 18 17 20" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <h1>AI Ustoz — Jismoniy Tarbiya</h1>
+        <p>9-sinf uchun: Sport turlari, me’yorlar, sog‘lom turmush, xavfsizlik — harakat — sog‘lomlik kaliti!</p>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="chatbot-container" class="hidden">
+        <div id="header">
+            <div id="ai-avatar">🏃‍♂️</div>
+            <h2>Jismoniy Tarbiya Yordamchisi</h2>
+        </div>
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <div id="quick-buttons"></div>
+            <div class="footer-note">9-sinf darsligiga mos — Sport turlari, me’yorlar, sog‘lom turmush, xavfsizlik</div>
+        </div>
+    </div>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const quickButtonsContainer = document.getElementById('quick-buttons');
+        const introSplash = document.getElementById('intro-splash');
+        const chatbotContainer = document.getElementById('chatbot-container');
+
+        // ✅ Jismoniy tarbiya ma'lumotlar bazasi (9-sinf darsligi asosida)
+        const database = {
+            "main_menu": {
+                text: "Salom! Sog‘lomlik — harakatdan boshlanadi. Qaysi mavzu qiziqarli?",
+                buttons: [
+                    { text: "⚽ Sport turlari", key: "sport" },
+                    { text: "📏 Jismoniy me’yorlar", key: "meyor" },
+                    { text: "💪 Jismoniy rivojlanish", key: "rivojlanish" },
+                    { text: "🏥 Sog‘lom turmush", key: "soglom_turmu" },
+                    { text: "⚠️ Xavfsizlik qoidalari", key: "xavfsizlik" },
+                    { text: "📝 Testlar", key: "test_menu" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "sport": {
+                text: "9-sinf dasturida o‘rganiladigan sport turlari:",
+                buttons: [
+                    { text: "Futbol", key: "futbol" },
+                    { text: "Basketbol", key: "basketbol" },
+                    { text: "Voleybol", key: "voleybol" },
+                    { text: "Yugurish", key: "yugurish" },
+                    { text: "Suvda harakat", key: "suv" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "futbol": {
+                text: "<span class='sport'>Futbol:</span><br>• 11 kishilik jamoa<br>• O‘yin vaqti — 2 ta 45 daqiqa<br>• Asosiy qoida: qo‘l bilan o‘yin qilish taqiqlangan<br>• O‘zbekistonda — “Pakhtakor”, “Navbahor”",
+                buttons: [{ text: "⬅️ Orqaga", key: "sport", isHome: true }]
+            },
+            "basketbol": {
+                text: "<span class='sport'>Basketbol:</span><br>• 5 kishilik jamoa<br>• O‘yin vaqti — 4 ta 10 daqiqa<br>• Maksimal ball — 3 ochko (uchoqdan)<br>• Basket — 3.05 metr balandlikda",
+                buttons: [{ text: "⬅️ Orqaga", key: "sport", isHome: true }]
+            },
+            "voleybol": {
+                text: "<span class='sport'>Voleybol:</span><br>• 6 kishilik jamoa<br>• O‘yin — 3 ta 25 ochkoli set<br>• Qo‘l bilan to‘pni 3 marta urish mumkin<br>• To‘pni qo‘l bilan yuqoriga o‘tkazish — asosiy harakat",
+                buttons: [{ text: "⬅️ Orqaga", key: "sport", isHome: true }]
+            },
+            "yugurish": {
+                text: "<span class='sport'>Yugurish:</span><br>• 100 m — tezlik<br>• 1000 m — chiqimlik<br>• 3000 m — barqarorlik<br>• Qo‘l-harakat — tezlikni oshiradi<br>• Nafas — 2:2 (2 qadam — nafas olish, 2 qadam — nafas chiqarish)",
+                buttons: [{ text: "⬅️ Orqaga", key: "sport", isHome: true }]
+            },
+            "suv": {
+                text: "<span class='sport'>Suvda harakat:</span><br>• Suvda suzish — 50 m<br>• Suvda qo‘l-harakat — bo‘yin, ko‘krak, qo‘l<br>• Suvda xavfsizlik: hech qachon yolg‘iz suzmang!<br>• Suvsiz o‘yinlar: suvda o‘yinlar, suv bilan o‘yinlar",
+                buttons: [{ text: "⬅️ Orqaga", key: "sport", isHome: true }]
+            },
+            "meyor": {
+                text: "Jismoniy me’yorlar — sizning sog‘lomligingizni o‘lchash vositalari.",
+                buttons: [
+                    { text: "100 m yugurish", key: "meyor_100" },
+                    { text: "1000 m yugurish", key: "meyor_1000" },
+                    { text: "Balandlikka sakrash", key: "sakrash" },
+                    { text: "Bosma", key: "bosma" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "meyor_100": {
+                text: "<span class='example'>100 m yugurish me’yorlari (9-sinf):</span><br>• Erkaklar: 13.5 s — “A”, 14.5 s — “B”, 15.5 s — “C”<br>• Ayollar: 15.0 s — “A”, 16.0 s — “B”, 17.0 s — “C”",
+                buttons: [{ text: "⬅️ Orqaga", key: "meyor", isHome: true }]
+            },
+            "meyor_1000": {
+                text: "<span class='example'>1000 m yugurish me’yorlari:</span><br>• Erkaklar: 3 min 40 s — “A”, 4 min 10 s — “B”, 4 min 40 s — “C”<br>• Ayollar: 4 min 10 s — “A”, 4 min 40 s — “B”, 5 min 10 s — “C”",
+                buttons: [{ text: "⬅️ Orqaga", key: "meyor", isHome: true }]
+            },
+            "sakrash": {
+                text: "<span class='example'>Balandlikka sakrash (to‘g‘ri sakrash):</span><br>• Erkaklar: 140 sm — “A”, 130 sm — “B”, 120 sm — “C”<br>• Ayollar: 125 sm — “A”, 115 sm — “B”, 105 sm — “C”",
+                buttons: [{ text: "⬅️ Orqaga", key: "meyor", isHome: true }]
+            },
+            "bosma": {
+                text: "<span class='example'>Bosma (boshlang‘ich):</span><br>• Erkaklar: 40 ta — “A”, 30 ta — “B”, 20 ta — “C”<br>• Ayollar: 35 ta — “A”, 25 ta — “B”, 15 ta — “C”<br>• Qo‘llar — yon tomon, tana — to‘g‘ri",
+                buttons: [{ text: "⬅️ Orqaga", key: "meyor", isHome: true }]
+            },
+            "rivojlanish": {
+                text: "Jismoniy rivojlanish — kuzatiladigan o‘zgarishlar.",
+                buttons: [
+                    { text: "Ko‘krak qutisi", key: "ko'krak" },
+                    { text: "Qon bosimi", key: "qon_bosim" },
+                    { text: "Nafas tezligi", key: "nafas" },
+                    { text: "Muskul kuchi", key: "muskul" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ko'krak": {
+                text: "<span class='health'>Ko‘krak qutisi:</span><br>• 9-sinf o‘quvchilari: 70–90 sm<br>• Ko‘krak qutisi — nafas olish qobiliyatini o‘lchaydi<br>• O‘tirish — ko‘krak qutisini kengaytiradi",
+                buttons: [{ text: "⬅️ Orqaga", key: "rivojlanish", isHome: true }]
+            },
+            "qon_bosim": {
+                text: "<span class='health'>Qon bosimi:</span><br>• Normal: 110/70 — 120/80 mm Hg<br>• Yuqori — 140/90 dan yuqori<br>• Past — 90/60 dan past<br>• Kuzatish: ertalab, dam olishda",
+                buttons: [{ text: "⬅️ Orqaga", key: "rivojlanish", isHome: true }]
+            },
+            "nafas": {
+                text: "<span class='health'>Nafas tezligi:</span><br>• O‘tirgan holatda: 16–20 nafas/daqiqa<br>• Harakatdan keyin: 25–30 nafas/daqiqa<br>• Nafas tezligi — jismoniy me’yorlarning asosiy ko‘rsatkichi",
+                buttons: [{ text: "⬅️ Orqaga", key: "rivojlanish", isHome: true }]
+            },
+            "muskul": {
+                text: "<span class='health'>Muscul kuchi:</span><br>• Bosma, ko‘tarish, suzish — muskul kuchini oshiradi<br>• Muskul kuchi — 12 yoshdan boshlab rivojlanadi<br>• 2–3 kunlik dam olish — muskulni tiklash uchun kerak",
+                buttons: [{ text: "⬅️ Orqaga", key: "rivojlanish", isHome: true }]
+            },
+            "soglom_turmu": {
+                text: "Sog‘lom turmush — harakat, ovqat, suv, dam olish.",
+                buttons: [
+                    { text: "Ovqatlanish", key: "ovqat" },
+                    { text: "Suv iste'mol", key: "suv" },
+                    { text: "Uxlash", key: "uxlash" },
+                    { text: "Dam olish", key: "dam" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "ovqat": {
+                text: "<span class='example'>Ovqatlanish:</span><br>• 3 ta ovqat — ertalab, tushlik, kechki<br>• Ko‘p o‘simlik, go‘sht, suti mahsulotlari<br>• Shakar, kofein — cheklangan<br>• Ovqatdan keyin 1 soat dam oling",
+                buttons: [{ text: "⬅️ Orqaga", key: "soglom_turmu", isHome: true }]
+            },
+            "suv": {
+                text: "<span class='example'>Suv iste'mol:</span><br>• Kuniga 1.5–2 litr suv<br>• Harakatdan oldin — 200 ml<br>• Harakatdan keyin — 300–500 ml<br>• Suv — jismoniy faoliyatning asosi",
+                buttons: [{ text: "⬅️ Orqaga", key: "soglom_turmu", isHome: true }]
+            },
+            "uxlash": {
+                text: "<span class='example'>Uxlash:</span><br>• 9-sinf o‘quvchilari — 8–10 soat<br>• 22:00 dan 6:00 gacha — eng yaxshi vaqt<br>• Telefon — uxlashdan 30 daqiqa oldin o‘chirilsin<br>• Uxlamaslik — konsentratsiyani pasaytiradi",
+                buttons: [{ text: "⬅️ Orqaga", key: "soglom_turmu", isHome: true }]
+            },
+            "dam": {
+                text: "<span class='example'>Dam olish:</span><br>• Har 45 daqiqa darsdan keyin — 5–10 daqiqa dam<br>• Har hafta — 1 kun to‘liq dam<br>• Dam olish — jismoniy va aqliy qobiliyatni tiklaydi",
+                buttons: [{ text: "⬅️ Orqaga", key: "soglom_turmu", isHome: true }]
+            },
+            "xavfsizlik": {
+                text: "Jismoniy tarbiyada xavfsizlik — eng muhim qoida!",
+                buttons: [
+                    { text: "Sport maydoni", key: "maydon" },
+                    { text: "Suvda xavfsizlik", key: "suv_xavf" },
+                    { text: "Tibbiy yordam", key: "tibbiy" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "maydon": {
+                text: "<span class='health'>Sport maydoni:</span><br>• Harakatdan oldin — qizdirish<br>• Qo‘l-qo‘g‘irchoq — to‘g‘ri kiyilgan<br>• Maydon — toza, xavfsiz, nozik emas<br>• Qo‘g‘irchoq — o‘zgarishga qarab o‘zgartiriladi",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "suv_xavf": {
+                text: "<span class='health'>Suvda xavfsizlik:</span><br>• Hech qachon yolg‘iz suzmang!<br>• Suvsiz o‘yinlar — 30 daqiqa ichida<br>• Suv — 1.5 metr balandlikdan sakramang!<br>• O‘qituvchi — doim tashabbuskor",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "tibbiy": {
+                text: "<span class='health'>Tibbiy yordam:</span><br>• Qon ketish — qo‘g‘irchoq bilan to‘xtating<br>• So‘ngi xavf — 15 daqiqa ichida tibbiy yordam<br>• O‘qituvchi — tibbiy yordam berishga tayyor<br>• O‘z xavfsizligingiz — sizning mas’uliyatingiz",
+                buttons: [{ text: "⬅️ Orqaga", key: "xavfsizlik", isHome: true }]
+            },
+            "test_menu": {
+                text: "Bilimingizni sinab ko'ring:",
+                buttons: [
+                    { text: "Me’yorlar testi", key: "test_meyor" },
+                    { text: "Sog‘lom turmush", key: "test_soglom" },
+                    { text: "Xavfsizlik testi", key: "test_xavf" },
+                    { text: "🏠 Bosh menyu", key: "main_menu", isHome: true }
+                ]
+            },
+            "test_meyor": {
+                text: "1. 9-sinf erkaklar uchun 100 m yugurish me’yorlari qanday?\nA) 13.5 s — A, 14.5 s — B\nB) 15.0 s — A, 16.0 s — B\nC) 12.0 s — A, 13.0 s — B",
+                buttons: [
+                    { text: "A)", key: "test_meyor_a" },
+                    { text: "B)", key: "test_meyor_b" },
+                    { text: "C)", key: "test_meyor_c" }
+                ]
+            },
+            "test_meyor_a": {
+                text: "✅ To'g'ri! Erkaklar uchun 13.5 s — “A”, 14.5 s — “B”.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_soglom": {
+                text: "2. Kuniga necha litr suv iste'mol qilish kerak?\nA) 0.5 litr\nB) 1.5–2 litr\nC) 3 litr",
+                buttons: [
+                    { text: "A)", key: "test_soglom_a" },
+                    { text: "B)", key: "test_soglom_b" },
+                    { text: "C)", key: "test_soglom_c" }
+                ]
+            },
+            "test_soglom_b": {
+                text: "✅ Ajoyib! Kuniga 1.5–2 litr suv — jismoniy faoliyat uchun optimal.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            },
+            "test_xavf": {
+                text: "3. Qanday holatda tibbiy yordam kerak?\nA) Harakatdan keyin 1 soat\nB) Qon ketganda, 15 daqiqa ichida\nC) O‘qituvchi kelganda",
+                buttons: [
+                    { text: "A)", key: "test_xavf_a" },
+                    { text: "B)", key: "test_xavf_b" },
+                    { text: "C)", key: "test_xavf_c" }
+                ]
+            },
+            "test_xavf_b": {
+                text: "✅ To'g'ri! Qon ketganda — 15 daqiqa ichida tibbiy yordam berish kerak.",
+                buttons: [{ text: "🏠 Bosh menyu", key: "main_menu", isHome: true }]
+            }
+        };
+
+        // Funksiyalar
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = `<div class="message-bubble">${text}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showButtons(key) {
+            const menu = database[key] || database.main_menu;
+            quickButtonsContainer.innerHTML = '';
+            menu.buttons.forEach(btn => {
+                const btnEl = document.createElement('button');
+                btnEl.className = `quick-button ${btn.isHome ? 'home-button' : ''}`;
+                btnEl.textContent = btn.text;
+                btnEl.onclick = () => {
+                    addMessage(btn.text, 'user');
+                    setTimeout(() => {
+                        const next = database[btn.key];
+                        if (next) {
+                            addMessage(next.text, 'ai');
+                            showButtons(btn.key);
+                        } else {
+                            addMessage("Bu mavzu hozircha mavjud emas.", 'ai');
+                            showButtons('main_menu');
+                        }
+                    }, 400);
+                };
+                quickButtonsContainer.appendChild(btnEl);
+            });
+        }
+
+        // Boshlash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                introSplash.style.display = 'none';
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('show');
+                    addMessage(database.main_menu.text, 'ai');
+                    showButtons('main_menu');
+                }, 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
