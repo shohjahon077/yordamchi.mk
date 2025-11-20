@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Geometriya AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0f2b2b, #1a3d3d, #0a2020);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #081a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #00f7ff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(10, 25, 25, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(0, 15, 15, 0.9);
+            color: #00f7ff;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.3);
+            text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #00b4d8, #00f7ff);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #00f7ff;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(0, 15, 15, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(0, 247, 255, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #00f7ff transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #00f7ff;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(0, 50, 50, 0.4);
+            color: #00f7ff;
+            border: 1px solid rgba(0, 247, 255, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(0, 180, 255, 0.3);
+            border-color: #00f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 247, 255, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%2300f7ff"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Geometriya AI Bot</div>
+        <div class="splash-subtext">Ko'pyoqlar, aylana, vektorlar, aylana yuzi, hajm, fazoviy geometriya va boshqalar</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">📐 11-sinf Geometriya AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Fikrlayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Ko'pyoqlar — 25 ta
+            "Ko'pyoq nima? Uning xossalari?",
+            "Prizma nima? To'g'ri va og'ma prizma farqi?",
+            "Parallelepiped nima? Uning turlari?",
+            "Kubning hamma xossalarini keltiring.",
+            "To'g'ri burchakli parallelepiped hajmi qanday hisoblanadi?",
+            "Piramida nima? Muntazam piramida qanday?",
+            "Piramidaning hajmi qanday hisoblanadi?",
+            "Apofema nima? Qachon ishlatiladi?",
+            "Kesik piramida nima? Uning hajmi qanday?",
+            "Ko'pyoqlarning to'liq sirti va yon sirti farqi?",
+            "Prizma yon sirtini qanday hisoblaymiz?",
+            "Piramida yon sirtini qanday hisoblaymiz?",
+            "Ko'pyoqlarning diogonal kesimi nima?",
+            "Ko'pyoqning tashqi burchaklari yig'indisi qanday?",
+            "Ko'pyoqlar uchun Eyler teoremasi nima?",
+            "Muntazam ko'pyoqlar nechta? Ularni sanang.",
+            "Tetraedrning hajmi va sirti qanday hisoblanadi?",
+            "Oktaedr, dodekaedr, ikosaedr haqida ma'lumot bering.",
+            "Prizma va piramidani farqlash qanday?",
+            "Ko'pyoqlarning simmetriya o'qlari va tekisliklari bor-mi?",
+            "Prizmaning balandligi nima?",
+            "Piramidaning balandligi va apofemasi farqi?",
+            "Ko'pyoqning barcha yon qirralari teng bo'lsa nima deyiladi?",
+            "To'g'ri prizmaning asosi doim parallelogramm bo'ladimi?",
+            "Ko'pyoqlarni proyeksiyalash qanday amalga oshiriladi?",
+
+            // Aylana, sfera, silindr, konus — 25 ta
+            "Shar (sfera) nima? Uning sirti va hajmini qanday hisoblaymiz?",
+            "Shar segmenti, sektori va qavati nima?",
+            "Silindr nima? To'g'ri aylanma silindrning hajmi va sirti?",
+            "Konus nima? To'g'ri aylanma konusning hajmi va sirti?",
+            "Kesik konus nima? Uning hajmi qanday hisoblanadi?",
+            "Aylana yuzini qanday hisoblaymiz? (πr²)",
+            "Doira sektori va segmenti yuzini qanday topamiz?",
+            "Aylana uzunligi qanday hisoblanadi? (2πr)",
+            "Aylanma jism hajmini hisoblashda qanday usullar bor?",
+            "Disk usuli nima?",
+            "Qobiq usuli (shell method) nima?",
+            "Silindr, konus va shar o'rtasidagi o'xshashlik va farqlar?",
+            "Shar ichiga tushirilgan kub hajmi qanday topiladi?",
+            "Kubga tashqi chizilgan shar radiusi qanday?",
+            "Silindr balandligi va radiusi teng bo'lsa, uning hajmi qanday?",
+            "Konusning yon sirtini qanday hisoblaymiz? (πrl)",
+            "Silindr va konusning o'xshashligi qachon sodir bo'ladi?",
+            "Shar yuzining differensialini qanday hisoblaymiz?",
+            "Silindr va konusning kesimlari qanday shaklda bo'ladi?",
+            "Konusning tekislik bilan kesilganda hosil bo'ladigan shakllar?",
+            "Ellips, parabola, giperbola — konus kesimlari sifatida?",
+            "Shar bilan tekislik kesishganda nima hosil bo'ladi?",
+            "Aylanma jismlarning simmetriya o'qlari qanday?",
+            "Konusning balandligi, radiusi va yon qirrasi orasidagi bog'lanish?",
+            "Silindr radiusi 2 marta ortib, balandligi 2 marta kamaysa, hajm qanday o'zgaradi?",
+
+            // Vektorlar va fazoviy geometriya — 20 ta
+            "Vektor nima? Uning uzunligi qanday hisoblanadi?",
+            "Vektorlarning skalyar ko'paytmasi nima? Qachon 0 bo'ladi?",
+            "Vektorlarning vektor ko'paytmasi nima? Uning geometrik ma'nosi?",
+            "Aralshtirilgan ko'paytma (aralash ko'paytma) nima?",
+            "Uch vektorning aralash ko'paytmasi 0 bo'lsa, ular qanday?",
+            "Fazoda ikki nuqta orasidagi masofa qanday hisoblanadi?",
+            "Fazoda to'g'ri chiziqning parametrik tenglamasi?",
+            "Fazoda tekislik tenglamasi qanday yoziladi?",
+            "Ikki tekislik orasidagi burchak qanday hisoblanadi?",
+            "To'g'ri chiziq bilan tekislik orasidagi burchak?",
+            "Fazoda ikki to'g'ri chiziq parallel bo'lishi sharti?",
+            "Fazoda ikki to'g'ri chiziq ayqash bo'lishi nima demak?",
+            "Vektorlarning kollinearligi va komplanarligi shartlari?",
+            "Birlik vektor nima? Qanday topiladi?",
+            "Vektor proyeksiyasi nima?",
+            "Koordinata o'qlaridagi vektorlarning yo'naltiruvchi kosinuslari?",
+            "Fazoda uchburchak yuzini vektorlar orqali qanday hisoblaymiz?",
+            "Parallelogramm yuzini vektor ko'paytma orqali qanday topamiz?",
+            "Tetraedr hajmini vektorlar orqali qanday hisoblaymiz?",
+            "Determinant orqali parallelepiped hajmini qanday topish mumkin?",
+
+            // Tekislikda geometriya — 15 ta
+            "Uchburchak burchaklari yig'indisi nimaga teng?",
+            "Pifagor teoremasi nima? Qachon qo'llaniladi?",
+            "Kosinuslar va sinuslar teoremasi qanday?",
+            "Uchburchak medianasi, bissektrisasi, balandligi xossalari?",
+            "O'xshash uchburchaklar alomatlari?",
+            "Tashqi chizilgan va ichki chizilgan aylana radiuslari formulalari?",
+            "Ko'pburchak burchaklari yig'indisi qanday hisoblanadi?",
+            "Muntazam ko'pburchakning bir burchagi qanday?",
+            "Parallelogramm xossalari?",
+            "Rombr, kvadrat, to'g'ri to'rtburchak farqlari?",
+            "Trapeksiya turlari va xossalari?",
+            "Doira va aylana orasidagi farq?",
+            "Markaziy va yozuviy burchaklar xossalari?",
+            "Uchburchak tengsizligi nima?",
+            "Geometrik shakllarning perimetri va yuzini hisoblash qoidalari?",
+
+            // Aylana uzunligi, yuz, hajm formulalari — 15 ta
+            "Ko'pburchak yuzini Gauss formulasidan qanday hisoblaymiz?",
+            "Trapeksiya yuzi qanday hisoblanadi?",
+            "Romb yuzini diagonal orqali qanday topamiz?",
+            "Sektor yuzi: S = (πr²·α)/360°",
+            "Segment yuzi qanday hisoblanadi?",
+            "Silindr hajmi: V = πr²h",
+            "Konus hajmi: V = (1/3)πr²h",
+            "Shar hajmi: V = (4/3)πr³",
+            "Kesik konus hajmi: V = (1/3)πh(R² + Rr + r²)",
+            "Prizma hajmi: V = Sₐₛₒₛ·H",
+            "Piramida hajmi: V = (1/3)Sₐₛₒₛ·H",
+            "To'g'ri burchakli parallelepiped hajmi: V = abc",
+            "Kub hajmi: V = a³",
+            "Uchburchak yuzi: S = (1/2)ab·sinγ",
+            "Vektor yordamida uchburchak yuzi: S = (1/2)|AB × AC|"
+        ];
+
+        const responses = {
+            "Ko'pyoq nima? Uning xossalari?": "Ko'pyoq — cheklangan sirt bilan chegaralangan jism bo'lib, sirti tekis ko'pburchaklar (yoqlar) dan iborat. Har bir qirra — ikkita yon qo'shni yoqlarning umumiy tomoni. Tepalari — qirralar uchlaridir.",
+            "Prizma nima? To'g'ri va og'ma prizma farqi?": "Prizma — ikkita parallel asos va ularni bog'lovchi yon qirralardan iborat ko'pyoq. Agar yon qirralar asosga perpendikulyar bo'lsa — to'g'ri prizma, aks holda — og'ma.",
+            "Parallelepiped nima? Uning turlari?": "Barcha yoqlari parallelogramm bo'lgan prizma. Turlari: to'g'ri burchakli (barcha burchaklar 90°), kub (barcha qirralar teng), rombik.",
+            "Kubning hamma xossalarini keltiring.": "6 ta kvadrat yuz, 12 ta teng qirra, 8 ta uchi. Barcha burchaklar 90°. Diagonali: <i>d = a√3</i>. Hajmi: <i>V = a³</i>. Sirti: <i>S = 6a²</i>.",
+            "To'g'ri burchakli parallelepiped hajmi qanday hisoblanadi?": "<i>V = abc</i>, bunda <i>a, b, c</i> — qirralar uzunliklari.",
+            "Piramida nima? Muntazam piramida qanday?": "Piramida — bitta ko'pburchak asos va uni bitta tepaga ulovchi uchburchak yon yoqlardan iborat. Agar asos muntazam ko'pburchak va barcha yon yoqlar teng bo'lsa — muntazam piramida.",
+            "Piramidaning hajmi qanday hisoblanadi?": "<i>V = (1/3)·Sₐₛₒₛ·H</i>, bunda <i>H</i> — balandlik.",
+            "Apofema nima? Qachon ishlatiladi?": "Muntazam piramidaning yon yoqining balandligi. Yon sirtini hisoblashda ishlatiladi: <i>S_yon = (1/2)·Pₐₛₒₛ·l</i>.",
+            "Kesik piramida nima? Uning hajmi qanday?": "Piramidani parralal tekislik bilan kesganda hosil bo'ladi. Hajmi: <i>V = (h/3)(S₁ + √(S₁S₂) + S₂)</i>.",
+            "Ko'pyoqlarning to'liq sirti va yon sirti farqi?": "To'liq sirt — barcha yoqlar yuzlari yig'indisi. Yon sirt — faqat yon yoqlar yuzlari yig'indisi.",
+            "Prizma yon sirtini qanday hisoblaymiz?": "<i>S_yon = Pₐₛₒₛ·H</i>, bunda <i>H</i> — balandlik (to'g'ri prizmada).",
+            "Piramida yon sirtini qanday hisoblaymiz?": "<i>S_yon = (1/2)·Pₐₛₒₛ·l</i>, <i>l</i> — apofema.",
+            "Ko'pyoqlarning diogonal kesimi nima?": "Ko'pyoqning bir yuzidan boshqa yuzga o'tuvchi kesim. Ko'pincha to'rtburchak yoki uchburchak shaklida.",
+            "Ko'pyoqning tashqi burchaklari yig'indisi qanday?": "Tekislikda ko'pburchak uchun — 360°. Ko'pyoq uchun tashqi burchak sohasi boshqacha aniqlanadi — Eyler xarakteristikasi orqali.",
+            "Ko'pyoqlar uchun Eyler teoremasi nima?": "<i>V - Q + Y = 2</i>, bunda <i>V</i> — uchlar, <i>Q</i> — qirralar, <i>Y</i> — yoqlar soni.",
+            "Muntazam ko'pyoqlar nechta? Ularni sanang.": "5 ta: tetraedr (4 yuz), gexaedr/kub (6), oktaedr (8), dodekaedr (12), ikosaedr (20).",
+            "Tetraedrning hajmi va sirti qanday hisoblanadi?": "Agar qirra <i>a</i> bo'lsa: <i>V = a³/(6√2)</i>, <i>S = √3·a²</i>.",
+            "Oktaedr, dodekaedr, ikosaedr haqida ma'lumot bering.": "Oktaedr — 8 uchburchak yuz. Dodekaedr — 12 beshburchak yuz. Ikosaedr — 20 uchburchak yuz. Barchasi Platon jismlari.",
+            "Prizma va piramidani farqlash qanday?": "Prizmada 2 ta parallel asos bor, piramidada 1 ta asos va 1 ta uchi bor.",
+            "Ko'pyoqlarning simmetriya o'qlari va tekisliklari bor-mi?": "Ha. Muntazam ko'pyoqlarda ko'p simmetriya o'qlari mavjud. Masalan, kubda 13 ta simmetriya tekisligi bor.",
+            "Prizmaning balandligi nima?": "Ikki asos orasidagi perpendikulyar masofa.",
+            "Piramidaning balandligi va apofemasi farqi?": "Balandlik — tepadan asos tekisligiga tushirilgan perpendikulyar. Apofema — tepadan asosning tomoniga tushirilgan perpendikulyar (yon yuzda).",
+            "Ko'pyoqning barcha yon qirralari teng bo'lsa nima deyiladi?": "Agar asos ham muntazam bo'lsa — muntazam piramida. Agar prizma bo'lsa — muntazam prizma.",
+            "To'g'ri prizmaning asosi doim parallelogramm bo'ladimi?": "Yo'q. Asos — istalgan ko'pburchak bo'lishi mumkin. Parallelepiped — asosi parallelogramm bo'lgan prizma.",
+            "Ko'pyoqlarni proyeksiyalash qanday amalga oshiriladi?": "Ko'pincha parallel proyeksiya — gorizontal, frontal, profil ko'rinishlarda chiziladi. Nuqtalar, chiziqlar koordinatalari orqali ifodalanadi.",
+
+            "Shar (sfera) nima? Uning sirti va hajmini qanday hisoblaymiz?": "Shar — fazodagi nuqtalardan berilgan nuqtagacha (markazgacha) masofasi teng bo'lgan jism. Sirti: <i>S = 4πr²</i>, hajmi: <i>V = (4/3)πr³</i>.",
+            "Shar segmenti, sektori va qavati nima?": "Segment — shar kesilganda hosil bo'lgan qism. Sektor — segment + markazga ulangan konus. Qavat — ikkita parallel tekislik orasidagi qism.",
+            "Silindr nima? To'g'ri aylanma silindrning hajmi va sirti?": "Asoslari aylana bo'lgan to'g'ri prizma. Hajmi: <i>V = πr²h</i>. To'liq sirti: <i>S = 2πr(r + h)</i>.",
+            "Konus nima? To'g'ri aylanma konusning hajmi va sirti?": "Asosi aylana, yon sirti — markazdan aylana atrofida aylantirilgan chiziq. Hajmi: <i>V = (1/3)πr²h</i>. To'liq sirti: <i>S = πr(r + l)</i>, <i>l</i> — yon qirra.",
+            "Kesik konus nima? Uning hajmi qanday hisoblanadi?": "Konusni parallel tekislik bilan kesganda hosil bo'ladi. <i>V = (1/3)πh(R² + Rr + r²)</i>.",
+            "Aylana yuzini qanday hisoblaymiz? (πr²)": "<i>S = πr²</i>, bunda <i>r</i> — radius.",
+            "Doira sektori va segmenti yuzini qanday topamiz?": "Sektor: <i>S = (πr²·α)/360°</i>. Segment: <i>S = (r²/2)(α - sinα)</i>, α radianlarda.",
+            "Aylana uzunligi qanday hisoblanadi? (2πr)": "<i>L = 2πr</i>.",
+            "Aylanma jism hajmini hisoblashda qanday usullar bor?": "Disk usuli, qobiq usuli, Pappus-Guldin teoremasi.",
+            "Disk usuli nima?": "Jismni nozik diskalarga bo'lib, har birining hajmini qo'shamiz: <i>V = π∫[f(x)]²dx</i>.",
+            "Qobiq usuli (shell method) nima?": "Jismni nozik silindrik qobiqlarga bo'lib hisoblash: <i>V = 2π∫x·f(x)dx</i>.",
+            "Silindr, konus va shar o'rtasidagi o'xshashlik va farqlar?": "Barchasi aylanma jismlar. Silindr — doimiy radius, konus — radius kamayib boradi, shar — radius simmetrik o'zgaradi.",
+            "Shar ichiga tushirilgan kub hajmi qanday topiladi?": "Diametri = kub diagonaliga teng: <i>2r = a√3 → a = 2r/√3 → V = (8r³)/(3√3)</i>.",
+            "Kubga tashqi chizilgan shar radiusi qanday?": "<i>R = (a√3)/2</i>.",
+            "Silindr radiusi 2 marta ortib, balandligi 2 marta kamaysa, hajm qanday o'zgaradi?": "Hajm o'zgarmaydi: <i>V = π(2r)²·(h/2) = 2πr²h → 2 marta ortadi! (Eslatma: hisobda xatolik bo'lmasa — 2 marta ortadi).</i>",
+            "Konusning yon sirtini qanday hisoblaymiz? (πrl)": "<i>S_yon = πrl</i>, <i>l = √(r² + h²)</i>.",
+            "Silindr va konusning o'xshashligi qachon sodir bo'ladi?": "Agar radius va balandlik nisbatlari teng bo'lsa.",
+            "Shar yuzining differensialini qanday hisoblaymiz?": "<i>dS = 8πr·dr</i>.",
+            "Silindr va konusning kesimlari qanday shaklda bo'ladi?": "Silindr — to'g'ri to'rtburchak, aylana, ellips. Konus — uchburchak, aylana, ellips, parabola, giperbola.",
+            "Konusning tekislik bilan kesilganda hosil bo'ladigan shakllar?": "Konus kesimlari — konik kesimlar: aylana, ellips, parabola, giperbola.",
+            "Ellips, parabola, giperbola — konus kesimlari sifatida?": "Ha. Tekislik konus o'qiga nisbatan burchak o'zgarishi bilan har xil konik kesimlar hosil bo'ladi.",
+            "Shar bilan tekislik kesishganda nima hosil bo'ladi?": "Doira (yoki nuqta, agar tekislik shar sirtiga urinadigan bo'lsa).",
+            "Aylanma jismlarning simmetriya o'qlari qanday?": "Aylanma jismlar aylanish o'qiga nisbatan simmetrik — cheksiz ko'p simmetriya tekisliklari mavjud.",
+            "Konusning balandligi, radiusi va yon qirrasi orasidagi bog'lanish?": "<i>l² = r² + h²</i> (Pifagor).",
+            "Silindr radiusi 2 marta ortib, balandligi 2 marta kamaysa, hajm qanday o'zgaradi?": "<i>V = π(2r)²·(h/2) = 2πr²h</i> → dastlabki hajm <i>πr²h</i> ga nisbatan **2 marta ortadi**.",
+
+            "Vektor nima? Uning uzunligi qanday hisoblanadi?": "Yo'naltirilgan kesma. Uzunligi: <i>|a| = √(x² + y² + z²)</i>.",
+            "Vektorlarning skalyar ko'paytmasi nima? Qachon 0 bo'ladi?": "<i>a·b = |a||b|cosθ</i>. Agar vektorlar perpendikulyar bo'lsa, <i>cos90° = 0 → a·b = 0</i>.",
+            "Vektorlarning vektor ko'paytmasi nima? Uning geometrik ma'nosi?": "<i>a×b</i> — yangi vektor, <i>|a×b| = |a||b|sinθ</i> — parallelogramm yuzi.",
+            "Aralshtirilgan ko'paytma (aralash ko'paytma) nima?": "<i>a·(b×c)</i> — parallelepiped hajmi.",
+            "Uch vektorning aralash ko'paytmasi 0 bo'lsa, ular qanday?": "Komplanar (bir tekislikda yotadi).",
+            "Fazoda ikki nuqta orasidagi masofa qanday hisoblanadi?": "<i>AB = √[(x₂-x₁)² + (y₂-y₁)² + (z₂-z₁)²]</i>.",
+            "Fazoda to'g'ri chiziqning parametrik tenglamasi?": "<i>x = x₀ + at, y = y₀ + bt, z = z₀ + ct</i>.",
+            "Fazoda tekislik tenglamasi qanday yoziladi?": "<i>A(x - x₀) + B(y - y₀) + C(z - z₀) = 0</i> yoki <i>Ax + By + Cz + D = 0</i>.",
+            "Ikki tekislik orasidagi burchak qanday hisoblanadi?": "<i>cosφ = |n₁·n₂| / (|n₁||n₂|)</i>, <i>n</i> — normal vektorlar.",
+            "To'g'ri chiziq bilan tekislik orasidagi burchak?": "<i>sinφ = |s·n| / (|s||n|)</i>, <i>s</i> — chiziq yo'nalish vektori.",
+            "Fazoda ikki to'g'ri chiziq parallel bo'lishi sharti?": "Yo'nalish vektorlari kollinear: <i>s₁ = k·s₂</i>.",
+            "Fazoda ikki to'g'ri chiziq ayqash bo'lishi nima demak?": "Ular kesishmaydi ham, parallel emas ham — fazoda chatishtirilgan.",
+            "Vektorlarning kollinearligi va komplanarligi shartlari?": "Kollinear: <i>a = k·b</i>. Komplanar: aralash ko'paytma = 0.",
+            "Birlik vektor nima? Qanday topiladi?": "Uzunligi 1 bo'lgan vektor: <i>â = a / |a|</i>.",
+            "Vektor proyeksiyasi nima?": "<i>proj_b a = (a·b)/|b|</i> — skalyar proyeksiya.",
+            "Koordinata o'qlaridagi vektorlarning yo'naltiruvchi kosinuslari?": "<i>cosα = x/|a|, cosβ = y/|a|, cosγ = z/|a|</i>.",
+            "Fazoda uchburchak yuzini vektorlar orqali qanday hisoblaymiz?": "<i>S = (1/2)|AB × AC|</i>.",
+            "Parallelogramm yuzini vektor ko'paytma orqali qanday topamiz?": "<i>S = |a × b|</i>.",
+            "Tetraedr hajmini vektorlar orqali qanday hisoblaymiz?": "<i>V = (1/6)|a·(b×c)|</i>.",
+            "Determinant orqali parallelepiped hajmini qanday topish mumkin?": "<i>V = |det([a b c])|</i> — vektorlarni ustun qilib yozilgan matritsa determinanti.",
+
+            "Uchburchak burchaklari yig'indisi nimaga teng?": "180°.",
+            "Pifagor teoremasi nima? Qachon qo'llaniladi?": "<i>a² + b² = c²</i> — faqat to'g'ri burchakli uchburchakda.",
+            "Kosinuslar va sinuslar teoremasi qanday?": "Kosinuslar: <i>c² = a² + b² - 2ab·cosγ</i>. Sinuslar: <i>a/sinα = b/sinβ = c/sinγ = 2R</i>.",
+            "Uchburchak medianasi, bissektrisasi, balandligi xossalari?": "Mediana — uchdan qarama-qarshi tomonga. Bissectrisa — burchakni teng ikkiga bo'ladi. Balandlik — perpendikulyar.",
+            "O'xshash uchburchaklar alomatlari?": "1) Uch burchagi teng; 2) Ikki tomoni proporsional va ular orasidagi burchak teng; 3) Uch tomoni proporsional.",
+            "Tashqi chizilgan va ichki chizilgan aylana radiuslari formulalari?": "<i>R = abc/(4S)</i>, <i>r = 2S/(a+b+c)</i>.",
+            "Ko'pburchak burchaklari yig'indisi qanday hisoblanadi?": "<i>180°(n - 2)</i>.",
+            "Muntazam ko'pburchakning bir burchagi qanday?": "<i>180°(n - 2)/n</i>.",
+            "Parallelogramm xossalari?": "Qarama-qarshi tomonlari parallel va teng; diagonallari o'rtasidan kesishadi.",
+            "Rombr, kvadrat, to'g'ri to'rtburchak farqlari?": "Rombr — barcha tomonlari teng. To'g'ri to'rtburchak — barcha burchaklari 90°. Kvadrat — ham rombr, ham to'g'ri to'rtburchak.",
+            "Trapeksiya turlari va xossalari?": "Teng yonli — yon tomonlari teng. To'g'ri burchakli — ikkita burchagi 90°.",
+            "Doira va aylana orasidagi farq?": "Aylana — chiziq, doira — aylana bilan chegaralangan yuz.",
+            "Markaziy va yozuviy burchaklar xossalari?": "Markaziy burchak — yoyga teng. Yozuviy — yoyning yarmiga teng.",
+            "Uchburchak tengsizligi nima?": "Bir tomon qolgan ikki tomon yig'indisidan kichik: <i>a < b + c</i>.",
+            "Geometrik shakllarning perimetri va yuzini hisoblash qoidalari?": "To'rtburchak: P=2(a+b), S=ab. Uchburchak: P=a+b+c, S=(1/2)ah. Trap: S=(a+b)h/2.",
+
+            "Ko'pburchak yuzini Gauss formulasidan qanday hisoblaymiz?": "<i>S = (1/2)|Σ(xᵢyᵢ₊₁ - xᵢ₊₁yᵢ)|</i> — nuqtalar ketma-ketligi bo'yicha.",
+            "Trapeksiya yuzi qanday hisoblanadi?": "<i>S = (a + b)/2 · h</i>.",
+            "Romb yuzini diagonal orqali qanday topamiz?": "<i>S = (d₁·d₂)/2</i>.",
+            "Sektor yuzi: S = (πr²·α)/360°": "To'g'ri. Agar α radian bo'lsa: <i>S = (1/2)r²α</i>.",
+            "Segment yuzi qanday hisoblanadi?": "<i>S = (r²/2)(α - sinα)</i>, α radianlarda.",
+            "Silindr hajmi: V = πr²h": "To'g'ri.",
+            "Konus hajmi: V = (1/3)πr²h": "To'g'ri.",
+            "Shar hajmi: V = (4/3)πr³": "To'g'ri.",
+            "Kesik konus hajmi: V = (1/3)πh(R² + Rr + r²)": "To'g'ri.",
+            "Prizma hajmi: V = Sₐₛₒₛ·H": "To'g'ri.",
+            "Piramida hajmi: V = (1/3)Sₐₛₒₛ·H": "To'g'ri.",
+            "To'g'ri burchakli parallelepiped hajmi: V = abc": "To'g'ri.",
+            "Kub hajmi: V = a³": "To'g'ri.",
+            "Uchburchak yuzi: S = (1/2)ab·sinγ": "To'g'ri.",
+            "Vektor yordamida uchburchak yuzi: S = (1/2)|AB × AC|": "To'g'ri."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf Geometriya darsligi bo'yicha AI yordamchiman. Ko'pyoqlar, aylanma jismlar, vektorlar, fazoviy geometriya — barchasini tushuntirishga tayyorman. Savollarni tanlang!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu savol hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
