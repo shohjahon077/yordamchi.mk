@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASCO — AI по узбекскому языку для 6 класса</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f7fa, #b2ebf2, #80deea);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      height: 95vh;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.95);
+      border: 3px solid #4fc3f7;
+    }
+
+    .screen {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 2s ease-out forwards;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(45deg, #4fc3f7, #00b0ff);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 0 70px rgba(79, 195, 247, 0.8);
+      border: 6px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      animation: pulse 3s infinite;
+      position: relative;
+    }
+
+    .ai-avatar::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #4fc3f7, #00b0ff, #4fc3f7);
+      z-index: -1;
+      animation: rotate 5s linear infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 70px rgba(79, 195, 247, 0.8); }
+      50% { box-shadow: 0 0 35px rgba(79, 195, 247, 0.4); }
+    }
+
+    .title {
+      font-size: 3.8rem;
+      color: #00796b;
+      font-family: 'Comic Neue', cursive;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      color: #555;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 300;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      padding: 22px 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 70px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 40px rgba(79, 195, 247, 0.8);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 0 auto;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-8px) scale(1.12);
+      box-shadow: 0 0 60px rgba(79, 195, 247, 0.9);
+      background: linear-gradient(45deg, #0091d4, #3bb8f5);
+    }
+
+    .chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #00796b;
+      font-weight: 600;
+      font-size: 1.6rem;
+      padding: 15px 20px;
+      background: rgba(79, 195, 247, 0.1);
+      border-radius: 25px;
+      border-left: 5px solid #00b0ff;
+    }
+
+    .ai-icon {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(79, 195, 247, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: white;
+    }
+
+    #chatbox {
+      flex: 1;
+      background: rgba(240, 255, 255, 0.6);
+      border-radius: 28px;
+      margin: 18px 25px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message {
+      padding: 18px 28px;
+      border-radius: 28px;
+      word-wrap: break-word;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: fadeInMessage 0.4s ease-out;
+      max-width: 85%;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    @keyframes fadeInMessage {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .message.user {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+      font-weight: 500;
+    }
+
+    .message.bot {
+      background: linear-gradient(45deg, #e0f7fa, #b2ebf2);
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      font-weight: 400;
+      border-left: 4px solid #00b0ff;
+      padding-left: 25px;
+    }
+
+    .message.bot .text {
+      visibility: hidden;
+    }
+
+    .message.bot.loaded .text {
+      visibility: visible;
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px;
+    }
+
+    .typing-indicator span {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00b0ff;
+      margin: 0 3px;
+      animation: typing 1.5s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    .buttons-container {
+      height: 280px;
+      overflow-y: auto;
+      padding: 18px;
+      margin: 0 25px 18px;
+      background: rgba(240, 255, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.07);
+      border: 1px dashed #4fc3f7;
+    }
+
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .btn-3d {
+      background: linear-gradient(45deg, #00b0ff, #4fc3f7);
+      color: white;
+      border: none;
+      padding: 16px 22px;
+      font-size: 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+      position: relative;
+      box-shadow: 0 8px 25px rgba(79, 195, 247, 0.5);
+      font-weight: 600;
+      min-width: 150px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Comic Neue', cursive;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-8px) scale(1.09);
+      box-shadow: 0 14px 35px rgba(79, 195, 247, 0.7);
+      background: linear-gradient(45deg, #0091d4, #3bb8f5);
+    }
+
+    .btn-3d:active {
+      transform: translateY(-4px);
+    }
+
+    .btn-3d::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      transform: scale(0);
+      transform-origin: center;
+      animation: ripple 0.7s linear;
+      pointer-events: none;
+    }
+
+    .btn-3d:active::after {
+      animation: ripple 0.7s linear;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(130);
+        opacity: 0;
+      }
+    }
+
+    .buttons-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .buttons-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .buttons-container::-webkit-scrollbar-thumb {
+      background: rgba(79, 195, 247, 0.6);
+      border-radius: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .message.user .action {
+      position: absolute;
+      bottom: -28px;
+      right: 14px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      color: white;
+    }
+
+    .message.user:hover .action {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 98%;
+        height: 98vh;
+        border-radius: 22px;
+        border: 2px solid #4fc3f7;
+      }
+
+      .title { font-size: 2.8rem; }
+      .ai-avatar { width: 130px; height: 130px; font-size: 3.5rem; }
+      .start-btn { font-size: 1.5rem; padding: 18px 50px; }
+      .subtitle { font-size: 1.2rem; }
+      .ai-header { font-size: 1.4rem; }
+      .ai-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+      .message {
+        font-size: 1rem;
+        padding: 16px 22px;
+        max-width: 90%;
+      }
+      .buttons-container { height: 220px; margin: 0 12px 12px; }
+      #buttons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .btn-3d { font-size: 0.9rem; padding: 14px 18px; min-width: 120px; }
+
+      .message.user .action {
+        bottom: -25px;
+        right: 12px;
+        font-size: 1.3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 2.3rem; }
+      .ai-avatar { width: 110px; height: 110px; font-size: 3rem; }
+      .start-btn { font-size: 1.3rem; padding: 16px 40px; }
+      .ai-header { padding: 12px 16px; }
+      .ai-icon { width: 45px; height: 45px; font-size: 1.4rem; }
+      .message {
+        font-size: 0.9rem;
+        padding: 14px 18px;
+        max-width: 95%;
+      }
+      .buttons-container { height: 200px; }
+      .btn-3d { font-size: 0.8rem; padding: 12px 14px; min-width: 100px; }
+      .typing-indicator span { width: 8px; height: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div id="welcomeScreen" class="screen">
+      <div class="ai-avatar">📚</div>
+      <h1 class="title">ASCO AI по узбекскому языку</h1>
+      <p class="subtitle">Вы испытываете трудности с узбекским языком в 6 классе? Я — ваш личный учитель узбекского языка! Я объясню каждое правило, пример и упражнение в увлекательной форме. Используйте кнопки или задайте свой вопрос!</p>
+      <button class="start-btn" onclick="startChat()">Начать</button>
+    </div>
+
+    <div id="chatScreen" class="screen chat-screen hidden">
+      <div class="ai-header">
+        <div class="ai-icon">🗣️</div>
+        <h2>AI по узбекскому языку</h2>
+      </div>
+
+      <div id="chatbox">
+        <div id="messages"></div>
+      </div>
+
+      <div class="buttons-container">
+        <div id="buttons">
+          <button class="btn-3d" onclick="sendMessage('Типы слов')">Типы слов</button>
+          <button class="btn-3d" onclick="sendMessage('Типы предложений')">Типы предложений</button>
+          <button class="btn-3d" onclick="sendMessage('Подлежащее и сказуемое')">Подлежащее и сказуемое</button>
+          <button class="btn-3d" onclick="sendMessage('Сложные слова')">Сложные слова</button>
+          <button class="btn-3d" onclick="sendMessage('Присоединения')">Присоединения</button>
+          <button class="btn-3d" onclick="sendMessage('Строение слова')">Строение слова</button>
+          <button class="btn-3d" onclick="sendMessage('Прилагательное')">Прилагательное</button>
+          <button class="btn-3d" onclick="sendMessage('Предложение с прилагательными')">Предложение с прилагательными</button>
+          <button class="btn-3d" onclick="sendMessage('Сложное предложение')">Сложное предложение</button>
+          <button class="btn-3d" onclick="sendMessage('Загадка')">Загадка</button>
+          <button class="btn-3d" onclick="sendMessage('Упражнение')">Упражнение</button>
+          <button class="btn-3d" onclick="sendMessage('Смысл предложения')">Смысл предложения</button>
+          <button class="btn-3d" onclick="sendMessage('Любовь к языку')">Любовь к языку</button>
+          <button class="btn-3d" onclick="sendMessage('Поэты')">Поэты</button>
+          <button class="btn-3d" onclick="sendMessage('Обсуждение')">Обсуждение</button>
+          <button class="btn-3d" onclick="sendMessage('Узбекские слова')">Узбекские слова</button>
+          <button class="btn-3d" onclick="sendMessage('Составление предложения')">Составление предложения</button>
+          <button class="btn-3d" onclick="sendMessage('Вопрос-ответ')">Вопрос-ответ</button>
+          <button class="btn-3d" onclick="sendMessage('Слова со значением')">Слова со значением</button>
+          <button class="btn-3d" onclick="sendMessage('Семья слов')">Семья слов</button>
+          <button class="btn-3d" onclick="sendMessage('Дополнительное упражнение')">Дополнительное упражнение</button>
+          <button class="btn-3d" onclick="sendMessage('Дополнительно')">Дополнительно</button>
+          <button class="btn-3d" onclick="sendMessage('Дополнительно')">Дополнительно</button>
+          <button class="btn-3d" onclick="sendMessage('Дополнительно')">Дополнительно</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startChat() {
+      document.getElementById("welcomeScreen").classList.add("hidden");
+      document.getElementById("chatScreen").classList.remove("hidden");
+      addMessage("AI", "Здравствуйте! Я ваш личный учитель узбекского языка для 6 класса. Я объясню вам все темы — типы слов, присоединения, строение слов — с интересными примерами. Какую тему вы хотите изучить? Используйте кнопки или задайте свой вопрос!");
+    }
+
+    function sendMessage(text) {
+      const userMsg = addMessage("Вы", text, true);
+      addRetryButton(userMsg);
+      const typingEl = addTypingIndicator();
+      setTimeout(() => {
+        removeTypingIndicator(typingEl);
+        respondToMessage(text);
+      }, 1200 + Math.random() * 800);
+    }
+
+    function addMessage(sender, message, isUser = false) {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(sender === "Вы" ? "user" : "bot");
+      if (!isUser) {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
+      } else {
+        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      }
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function addTypingIndicator() {
+      const messages = document.getElementById("messages");
+      const msgDiv = document.createElement("div");
+      msgDiv.id = 'typing-indicator';
+      msgDiv.classList.add("message", "bot");
+      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      messages.appendChild(msgDiv);
+      messages.scrollTop = messages.scrollHeight;
+      return msgDiv;
+    }
+
+    function removeTypingIndicator(el) {
+      if (el && el.parentNode) el.remove();
+    }
+
+    function typeWriter(element, text, callback) {
+      let i = 0;
+      const innerSpan = element.querySelector(".text");
+      innerSpan.textContent = "";
+      const timer = setInterval(() => {
+        if (i < text.length) {
+          innerSpan.textContent += text.charAt(i);
+          i++;
+          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          clearInterval(timer);
+          element.classList.add("loaded");
+          if (callback) callback();
+        }
+      }, 20 + Math.random() * 30);
+    }
+
+    function respondToMessage(text) {
+      const lower = text.toLowerCase();
+      let response;
+
+      // ОТВЕТЫ ДЛЯ 6 КЛАССА ПО УЗБЕКСКОМУ ЯЗЫКУ — ASCO КАМПАНИЯ
+
+      if (lower.includes("типы слов") || lower.includes("тип слов")) {
+        response = "В 6 классе слова делятся на 7 типов:\n\n1. Имена — обозначают предмет, явление, качество (книга, чтение, красивый)\n2. Существительные — называют предмет, человека, место (ученик, город)\n3. Прилагательные — показывают качество предмета (большой, красивый, красный)\n4. Числительные — обозначают количество (один, два, шесть)\n5. Изменяемые слова — меняются в предложении (читаю, читаешь)\n6. Присоединения — добавляются к слову и меняют его значение (-лар, -ни, -да)\n7. Сложные слова — состоят из двух или более слов (qo'qonlik, toshkentlik)\n\n💡 Помните: В 6 классе мы также изучаем функцию слова в предложении!";
+      } else if (lower.includes("типы предложений") || lower.includes("тип предложения")) {
+        response = "Типы предложений — по цели высказывания их 4 вида:\n\n1. Повествовательное — сообщает информацию. (Пример: Ученики пришли на урок.)\n2. Вопросительное — задаёт вопрос. (Пример: Когда начинается урок?)\n3. Побудительное — даёт приказ. (Пример: Возьми книгу!)\n4. Восклицательное — выражает эмоции. (Пример: Какой красивый день!)\n\n💡 Заметьте: \"Красиво!\" — это восклицательное предложение, здесь выражается чувства, а не информация!";
+      } else if (lower.includes("подлежащее и сказуемое") || lower.includes("сказуемое")) {
+        response = "Подлежащее и сказуемое — основные части предложения.\n\nОни состоят из:\n\n1. Подлежащее — кто? что? (Пример: Ученик)\n2. Сказуемое — что сделал? каков? (Пример: прочитал урок)\n\nПример: \"Ученик прочитал урок.\"\n— Подлежащее: Ученик\n— Сказуемое: прочитал урок\n\n💡 Чтобы найти подлежащее, задайте вопрос: \"Кто?\" или \"Что?\" \nЧтобы найти сказуемое — задайте: \"Что сделал?\" или \"Каков?\"";
+      } else if (lower.includes("сложные слова") || lower.includes("сложное слово")) {
+        response = "Сложные слова — состоят из двух или более слов.\n\nПримеры:\n• Qo'qonlik — Qo'qon + -lik\n• Toshkentlik — Toshkent + -lik\n• O'qituvchi — o'qit + -uvchi\n• O'qish — o'q + -ish\n\n💡 Примечание: Сложные слова — это особенность узбекского языка! Из них образуются новые слова. Например, слово \"o'qish\" образуется от корня \"o'q\"!";
+      } else if (lower.includes("присоединения") || lower.includes("присоединение")) {
+        response = "Присоединения — части, которые добавляются к слову и меняют его значение.\n\nВиды присоединений:\n\n1. Формальные — меняют форму слова: -lar, -ni, -da\n2. Значимые — дают новое значение: -uvchi, -lik, -chi\n3. Корневые — добавляются к корню: -ish, -uv, -ish\n\nПримеры:\n• \"o'q\" → \"o'qish\" (-ish)\n• \"o'q\" → \"o'qituvchi\" (-it + -uvchi)\n\n💡 Присоединения помогают создавать целые \"семьи слов\"!";
+      } else if (lower.includes("строение слова") || lower.includes("строение")) {
+        response = "Строение слова — как слово образуется.\n\nУ слова 3 основные части:\n\n1. Корень — несёт основное значение (o'q)\n2. Присоединение — меняет значение (-ish, -uvchi)\n3. Конечное присоединение — определяет форму слова (-lar, -dan)\n\nПример: \"o'qituvchilardan\"\n• Корень: o'q\n• Присоединения: -it + -uvchi\n• Конечные: -lar + -dan\n\n💡 Знание строения слова — ключ к пониманию словообразования!";
+      } else if (lower.includes("прилагательное") || lower.includes("прилагательные")) {
+        response = "Прилагательное — слово, которое описывает качество предмета.\n\nВиды прилагательных:\n\n• Цвета: красный, синий, жёлтый\n• Форма: большой, маленький, длинный\n• Эмоции: опасный, счастливый, страшный\n• Качества: красивый, удивительный, интересный\n\nПрилагательные отвечают на вопрос: \"Какой?\"\n\nПример: \"Красивая книга\" — красивая — прилагательное!";
+      } else if (lower.includes("предложение с прилагательными") || lower.includes("прилагательные в предложении")) {
+        response = "Предложение с прилагательными — описывает предмет с помощью качеств.\n\nПример:\n\"В большом, красивом и ярком доме живёт семья.\"\n\nЗдесь:\n• \"большой\" — прилагательное\n• \"красивый\" — прилагательное\n• \"яркий\" — прилагательное\n\nПредложение с прилагательными — как картина! Когда вы читаете, вы можете представить этот дом.\n\n💡 Примечание: Несколько прилагательных разделяются запятыми!";
+      } else if (lower.includes("сложное предложение") || lower.includes("сложное")) {
+        response = "Сложное предложение — состоит из двух или более простых предложений.\n\nПример:\n\"Ученик пришёл на урок, потому что он любит учиться.\"\n\nЗдесь:\n1. Ученик пришёл на урок. — простое предложение\n2. Он любит учиться. — простое предложение\n\nОни соединены словом \"потому что\". Сложные предложения помогают выразить мысль глубже!\n\n💡 Союзы: потому что, но, или, и, если, поэтому";
+      } else if (lower.includes("загадка")) {
+        response = "Загадка:\n\"Я люблю учиться,\nЧитаю много книг.\nОдин предмет — в моей руке,\nКто я?\"\n\n💡 Ответ: Книга 📚\n\nДополнительно: Книга — лучший друг тех, кто любит учиться, окно в мир знаний!";
+      } else if (lower.includes("упражнение")) {
+        response = "Упражнение:\n\nСоставьте предложение из слов:\n\"книга, учиться, люблю, я, новая\"\n\n✅ Правильный ответ: \"Я люблю учиться новой книге.\"\n\nПоняли? В этом предложении:\n- Подлежащее: Я\n- Сказуемое: люблю\n- Дополнение: новой книге учиться\n\nСоставлять предложения — лучший способ учить узбекский язык!";
+      } else if (lower.includes("смысл предложения") || lower.includes("смысл")) {
+        response = "Смысл предложения — основная мысль, которую оно выражает. Чтобы найти смысл, задайте вопрос:\n\n\"Что это предложение говорит?\"\n\nПример:\n\"Ученики прочитали книгу.\"\n— Смысл: Ученики прочитали книгу.\n\nЕсли убрать предложение, основная мысль исчезнет — это и есть смысл!\n\n💡 Помните: Смысл — это главная мысль предложения!";
+      } else if (lower.includes("любовь к языку") || lower.includes("любить язык")) {
+        response = "Узбекский язык — это особенный голос нашей Родины. Это — прекрасные слова, красивые предложения и древние истории.\n\nЕсли вы любите узбекский язык — вы цените свои великие традиции.\n\n💡 Совет: Каждый день используйте хотя бы одно новое слово в повседневной жизни — и вы начнёте любить узбекский язык!";
+      } else if (lower.includes("поэты") || lower.includes("поэт")) {
+        response = "Великие поэты узбекской литературы:\n\n1. Алишер Навои — автор \"Хамсы\", известный во всём мире.\n2. Абдулла Кодири — роман \"Прошедшие дни\" — сокровище узбекской литературы.\n3. Откир Хашимов — \"Шум Бола\" — интересная книга для учеников.\n\nЧтение их произведений — лучший способ полюбить узбекский язык!";
+      } else if (lower.includes("обсуждение") || lower.includes("обсудить")) {
+        response = "Обсуждение — обмен мнениями, разговор.\n\nПример:\n— Какую книгу ты любишь?\n— Мне понравилась \"Шум Бола\", потому что она заставляет любить чтение.\n\nОбсуждение — это общение, изменение мнений, развитие дружбы.\n\n💡 Вы тоже скажите своё мнение — я с радостью пообщаюсь с вами!";
+      } else if (lower.includes("узбекские слова") || lower.includes("узбекский язык")) {
+        response = "Узбекские слова — это особенность нашего языка!\n\nПримеры:\n• \"qo'qonlik\" — из Qo'qon\n• \"toshkentlik\" — из Toshkent\n• \"o'qituvchi\" — тот, кто учит\n\nЭти слова демонстрируют уникальность узбекского языка.\n\n💡 Попробуйте добавить окончание \"-lik\" к названию города — какое слово получится?";
+      } else if (lower.includes("составление предложения") || lower.includes("составить предложение")) {
+        response = "Упражнение на составление предложения:\n\nСлова: \"книга\", \"учиться\", \"люблю\", \"я\"\n\n✅ Правильное предложение: \"Я люблю учиться по книге.\"\n\nПочему? \n— \"Я\" — подлежащее\n— \"учиться по книге\" — дополнение\n— \"люблю\" — сказуемое\n\nСоставление предложений — самая увлекательная игра в изучении узбекского языка!";
+      } else if (lower.includes("вопрос-ответ") || lower.includes("вопрос")) {
+        response = "Вопрос:\n\"Когда начинается урок?\"\n\nОтвет:\n\"Урок начинается в 9 часов.\"\n\nЭто — вопросительное предложение!\n\n💡 Как задавать вопросы?\n— \"Какой?\" — качество\n— \"Когда?\" — время\n— \"Где?\" — место\n— \"Что?\" — предмет\n\nЗадавать вопросы — первый шаг к получению знаний!";
+      } else if (lower.includes("слова со значением") || lower.includes("значение слова")) {
+        response = "Слова со значением — сложные слова, значение которых нужно объяснить.\n\nПримеры:\n• \"Мысль\" — разумное рассуждение, логический вывод\n• \"Литература\" — искусство слова, поэзия и проза\n• \"Лингвистика\" — наука о языке\n\n💡 Слова со значением — необходимы для глубокого изучения узбекского языка!";
+      } else if (lower.includes("семья слов") || lower.includes("семья")) {
+        response = "Семья слов — группа слов с одним корнем.\n\nПример:\nКорень: \"o'q\"\n\nСемья:\n• o'qish — действие чтения\n• o'qituvchi — тот, кто учит\n• o'qitish — процесс обучения\n• o'qigan — тот, кто прочитал\n\n💡 Знание семей слов — учит вас играть со словами!";
+      } else if (lower.includes("дополнительное упражнение") || lower.includes("дополнительное")) {
+        response = "Дополнительное упражнение:\n\nСлово: \"o'q\"\n\nДобавьте присоединения:\n1. -ish → o'qish\n2. -uvchi → o'qituvchi\n3. -lik → o'qilishlik (это слово не существует!) — ❌\n\n✅ Правильно: o'qish, o'qituvchi, o'qitish\n\n💡 Помните: Не все присоединения подходят к каждому корню — они должны давать осмысленное слово!";
+      } else if (lower.includes("привет") || lower.includes("здравствуйте") || lower.includes("ассалому алейкум")) {
+        response = "Здравствуйте! 😊 Я ваш личный учитель узбекского языка для 6 класса. Чем я могу вам помочь? Задайте вопрос о типах слов, присоединениях или загадках!";
+      } else if (lower.includes("спасибо") || lower.includes("благодарю")) {
+        response = "Пожалуйста! 😊 Мне приятно помогать вам. Задайте ещё один вопрос — я всегда готов помочь!";
+      } else if (lower.includes("хорошо") || lower.includes("отлично")) {
+        response = "Отлично! Вы любите учиться — это замечательно! 😊 Какую ещё тему вы хотите изучить?";
+      } else if (lower.includes("ты кто") || lower.includes("кто ты")) {
+        response = "Я — AI-учитель узбекского языка, специально разработанный для кампании ASCO. Я объясняю темы 6 класса — типы слов, присоединения, строение слов и упражнения — в увлекательной форме. Мне очень нравится учиться с вами!";
+      } else {
+        response = "Этот вопрос для меня новый! 😊 Я готов помочь вам с узбекским языком для 6 класса. Пожалуйста, используйте слова типа \"типы слов\", \"присоединения\" или \"загадка\" — я объясню вам с интересными примерами!";
+      }
+
+      const msgDiv = addMessage("AI", response, false);
+      setTimeout(() => {
+        typeWriter(msgDiv, response, () => {
+          if (response.length > 80) {
+            speakText(response);
+          }
+        });
+      }, 300);
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        console.warn("TTS не поддерживается");
+        return;
+      }
+
+      speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+
+      let uzVoice = voices.find(v => v.lang.startsWith('uz') && v.name.includes('Male'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang === 'uz-UZ');
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('ru') && v.name.includes('Male'));
+      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('ru'));
+
+      if (uzVoice) {
+        utterance.voice = uzVoice;
+      }
+
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      utterance.volume = 1;
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function addRetryButton(userMsg) {
+      const action = document.createElement('span');
+      action.classList.add('action');
+      action.textContent = '🔄';
+      action.title = 'Повторить';
+      action.onclick = () => {
+        const text = userMsg.textContent.replace(/^Вы:/, '').trim();
+        userMsg.remove();
+        sendMessage(text);
+      };
+      userMsg.appendChild(action);
+    }
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {};
+    }
+  </script>
+</body>
+</html>
