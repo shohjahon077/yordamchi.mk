@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-sinf Robototexnika va Sun’iy Intellekt AI Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0b021a, #150830, #060110);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #05010c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s forwards 3.5s;
+            color: #ff70a6;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ai-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="22" fill="%23ff70a6"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: pulse 2s infinite, float 3s ease-in-out infinite;
+        }
+
+        .splash-text {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: type 3s steps(40, end) forwards 0.5s;
+        }
+
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s;
+            max-width: 600px;
+        }
+
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            height: 92vh;
+            background: rgba(15, 5, 30, 0.88);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(255, 112, 166, 0.4);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4s;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(5, 1, 15, 0.9);
+            color: #ff70a6;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 112, 166, 0.3);
+            text-shadow: 0 0 10px rgba(255, 112, 166, 0.5);
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            margin: 10px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            padding: 13px 18px;
+            border-radius: 18px;
+            max-width: 82%;
+            word-wrap: break-word;
+            animation: messagePop 0.4s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes messagePop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #c2185b, #d81b60);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #ff70a6, #ff8fb1);
+            color: black;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-indicator {
+            display: none;
+            color: #ff70a6;
+            font-style: italic;
+            padding: 10px 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+
+        .buttons-container {
+            background: rgba(5, 1, 15, 0.8);
+            padding: 12px;
+            border-top: 1px solid rgba(255, 112, 166, 0.3);
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            scrollbar-width: thin;
+            scrollbar-color: #ff70a6 transparent;
+        }
+
+        .buttons-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .buttons-container::-webkit-scrollbar-thumb {
+            background: #ff70a6;
+            border-radius: 10px;
+        }
+
+        .btn {
+            flex: 1 1 calc(50% - 8px);
+            min-width: 140px;
+            padding: 10px 12px;
+            background: rgba(40, 10, 60, 0.4);
+            color: #ff70a6;
+            border: 1px solid rgba(255, 112, 166, 0.4);
+            border-radius: 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+
+        .btn:hover {
+            background: rgba(255, 112, 166, 0.25);
+            border-color: #ff70a6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 112, 166, 0.2);
+        }
+
+        .ai-agent {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: url('image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="18" fill="%23ff70a6"/><circle cx="40" cy="35" r="3" fill="white"/><circle cx="60" cy="35" r="3" fill="white"/><path d="M40 50 Q50 55 60 50" stroke="white" stroke-width="2" fill="none"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: floatSmall 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSmall {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @media (max-width: 768px) {
+            .btn {
+                flex: 1 1 100%;
+                font-size: 0.78rem;
+                padding: 9px;
+            }
+            .splash-text {
+                font-size: 1.6rem;
+            }
+        }
+
+        .code {
+            font-family: 'Courier New', monospace;
+            color: #ffb6c1;
+            background: rgba(30, 5, 20, 0.4);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .term {
+            color: #ffc0cb;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen" id="splash">
+        <div class="ai-icon"></div>
+        <div class="splash-text">11-sinf Robototexnika AI Bot</div>
+        <div class="splash-subtext">Sun’iy intellekt, neyron tarmoqlar, robotlar, IoT, ROS, NLP, etika va kelajak</div>
+    </div>
+
+    <div class="container" id="main">
+        <div class="header">🤖 11-sinf Robototexnika va Sun’iy Intellekt AI Bot</div>
+        <div class="ai-agent"></div>
+
+        <div class="chat-area" id="chat-area"></div>
+
+        <div class="typing-indicator" id="typing">Hisoblayapman...</div>
+
+        <div class="buttons-container" id="buttons-container"></div>
+    </div>
+
+    <script>
+        const questions = [
+            // Sun'iy intellekt asoslari — 15 ta
+            "Sun'iy intellekt (AI) nima? Uning turlari?",
+            "Kuchli va zaif AI farqi?",
+            "Mashina o'qitish (ML) qanday ishlaydi?",
+            "Nazoratli, nazoratsiz va mustahkamlaydigan o'qitish farqi?",
+            "Xususiyat muhandisligi (feature engineering) nima?",
+            "Modelni o'qitish jarayonida overfitting va underfitting nima?",
+            "Sun'iy intellektda ma'lumotlar to'plamining ahamiyati?",
+            "AI etikasi muammolari nima?",
+            "AI inson ish o'rinlariga qanday ta'sir qiladi?",
+            "AI xavfsizligi va nazorat qilish zaruriyati?",
+            "AIning O'zbekistondagi rivojlanish istiqbollari?",
+            "Transformer arxitekturasi nima uchun inqilob qildi?",
+            "Chuqur o'qitish (deep learning) nima?",
+            "TensorFlow va PyTorch farqi?",
+            "AI loyihalarini ishlab chiqish bosqichlari?",
+
+            // Neyron tarmoqlar — 15 ta
+            "Suniy neyron tarmog'i qanday tuzilgan?",
+            "Aktivatsiya funksiyalari (ReLU, sigmoid, tanh) nima uchun kerak?",
+            "To'g'ri tarqatish (forward propagation) va teskari tarqatish (backpropagation)?",
+            "Convolutional Neural Network (CNN) qanday ishlaydi?",
+            "Recurrent Neural Network (RNN) qanday vaqt qatorlarini qayta ishlaydi?",
+            "LSTM va GRU nima uchun RNNni yaxshilaydi?",
+            "Transformer modellarida self-attention mexanizmi qanday ishlaydi?",
+            "Neyron tarmoqlarda og'irliklar (weights) va bias nima?",
+            "Gradient descent algoritmi nima?",
+            "Neyron tarmoqlarni o'qitishda loss funksiyasi qanday rol o'ynaydi?",
+            "Batch, epoch, iteration tushunchalari?",
+            "Dropout va batch normalization nima uchun kerak?",
+            "Transfer learning nima?",
+            "GAN (Generative Adversarial Network) qanday ishlaydi?",
+            "Autoencoder nima? Qayerda qo'llaniladi?",
+
+            // Robototexnika — 20 ta
+            "Robot nima? Uning asosiy qismlari?",
+            "Sensorlar (ultratovush, infrakov, kameralar) qanday ishlaydi?",
+            "Aktuatorlar (servo, stepper, DC motor) farqi?",
+            "Mikrokontroller (Arduino, Raspberry Pi, ESP32) farqi?",
+            "Robotlarda kinematika nima?",
+            "ROS (Robot Operating System) nima?",
+            "SLAM (Simultaneous Localization and Mapping) nima?",
+            "Autonom robotlar qanday atrof-muhitni tushunadi?",
+            "Robotlarda navigatsiya tizimlari qanday ishlaydi?",
+            "Robototexnikada PID boshqaruv qanday amalga oshiriladi?",
+            "Drone texnologiyalari qanday ishlaydi?",
+            "Robotlar uchun xavfsizlik qoidalari?",
+            "Humanoid robotlar qanday ishlaydi?",
+            "Industrial robotlar qanday ishlab chiqarishda qo'llaniladi?",
+            "Collaborative robots (cobots) nima?",
+            "Robotlarda batareya xavfsizligi va energiya boshqaruvi?",
+            "Robototexnikada 3D modellashtirish ahamiyati?",
+            "Robotlar uchun sun'iy intellektni qanday integratsiya qilish mumkin?",
+            "Robototexnika loyihalarida prototiplash jarayoni?",
+            "Robototexnikada standartlar va sertifikatlar?",
+
+            // Kompyuter ko'ri va NLP — 15 ta
+            "Kompyuter ko'ri (Computer Vision) nima?",
+            "OpenCV kutubxonasi qanday ishlatiladi?",
+            "Object detection va image classification farqi?",
+            "YOLO, SSD, Faster R-CNN algoritmlari nima?",
+            "Face recognition qanday ishlaydi?",
+            "Tabiiy tilni qayta ishlash (NLP) nima?",
+            "Tokenization, stemming, lemmatization nima?",
+            "Word embeddings (Word2Vec, GloVe) qanday ishlaydi?",
+            "BERT, GPT kabi transformer modellar qanday ishlaydi?",
+            "Chatbotlarni qanday yaratish mumkin?",
+            "Sentiment tahlili nima?",
+            "Machine translation qanday amalga oshiriladi?",
+            "Speech-to-text va text-to-speech tizimlari?",
+            "NLP da attention mexanizmi nima?",
+            "Multilingual AI tizimlari qanday ishlaydi?",
+
+            // Amaliy loyihalar va kelajak — 15 ta
+            "AI yordamida oddiy chatbot qanday yaratiladi?",
+            "Raspberry Pi yordamida uy aqlli tizimi qanday yasaladi?",
+            "Drone yordamida qishloq xo'jaligini kuzatish?",
+            "AI yordamida o'quvchilarni baholash tizimi?",
+            "Robototexnika bo'yicha olimpiada loyihalari?",
+            "AI va robototexnikada kiberxavfsizlik?",
+            "AI xavfsizligini ta'minlash uchun qanday choralar ko'riladi?",
+            "Inson-robot hamkorligi qanday amalga oshiriladi?",
+            "Sun'iy intellektning kelajakdagi tendentsiyalari?",
+            "Quantum computing AI ga qanday ta'sir qiladi?",
+            "Neuromorphic computing nima?",
+            "AI etikasi bo'yicha xalqaro standartlar?",
+            "AI yordamida iqlim o'zgarishini bashorat qilish?",
+            "AI va sog'liqni saqlash sohasidagi loyihalar?",
+            "O'zbek tilida NLP tizimlarini rivojlantirish muammolari?"
+        ];
+
+        const responses = {
+            "Sun'iy intellekt (AI) nima? Uning turlari?": "<span class='term'>Sun’iy intellekt</span> — inson kabi fikrlay oladigan, o‘rganadigan, qaror qabul qiladigan tizimdir. Turlari: <span class='term'>zaif AI</span> (tor vazifalar — Siri, Alexa), <span class='term'>kuchli AI</span> (umumiy inson aqliga yaqin — hozir mavjud emas).",
+            "Kuchli va zaif AI farqi?": "<span class='term'>Zaif AI</span> — bitta vazifani yaxshi bajaradi (shaxmat o‘ynash, tarjima). <span class='term'>Kuchli AI</span> — istalgan inson kabi murakkab vazifalarni bajarishi mumkin (hali mavjud emas).",
+            "Mashina o'qitish (ML) qanday ishlaydi?": "ML — ma'lumotlar asosida algoritmlarni o'qitish. Model — ma'lumotlardan qonuniyatlar o'rganib, yangi ma'lumotlarni bashorat qiladi.",
+            "Nazoratli, nazoratsiz va mustahkamlaydigan o'qitish farqi?": "<span class='term'>Nazoratli</span> — etiketlangan ma'lumot (tasvir + noma). <span class='term'>Nazoratsiz</span> — etiketlanmagan (klasterlash). <span class='term'>Mustahkamlaydigan</span> — qaror uchun mukofot/jarima (robot o'yin o'ynash).",
+            "Xususiyat muhandisligi (feature engineering) nima?": "Ma'lumotlardan AI uchun foydali xususiyatlarni ajratish. Masalan: yosh, daromad — kredit xavfini bashorat qilishda.",
+            "Modelni o'qitish jarayonida overfitting va underfitting nima?": "<span class='term'>Overfitting</span> — model o'qitish ma'lumotiga haddan tashqari moslashadi (testda yomon). <span class='term'>Underfitting</span> — model o'qitish ma'lumotini ham to'g'ri o'rganmaydi.",
+            "Sun'iy intellektda ma'lumotlar to'plamining ahamiyati?": "Ma'lumotlar — AI uchun yoqilg'i. Sifatli, toza, yetarli hajmdagi dataset — yaxshi natijaning kaliti.",
+            "AI etikasi muammolari nima?": "Shaxsiy ma'lumotlarni yig'ish, xavfsizlik, algoritmik qo'rqinch, ish o'rinlarini yo'qotish, inson nazoratini yo'qotish.",
+            "AI inson ish o'rinlariga qanday ta'sir qiladi?": "Mehnatni avtomatlashtiradi — ba'zi ish o'rinlari yo'qoladi, lekin yangi ixtisosliklar (AI mutaxassisi, etika kuzatuvchisi) paydo bo'ladi.",
+            "AI xavfsizligi va nazorat qilish zaruriyati?": "AI — nazoratsiz ishlash xavfli. Shuning uchun: audit, shaffoflik, inson nazorati, etika qo'mitalari kerak.",
+            "AIning O'zbekistondagi rivojlanish istiqbollari?": "2023-yildan boshlab O'zbekistonda AI strategiyasi qabul qilindi. “ZiyoNET”, “AI-markazlar”, universitetlarda dasturlar joriy etildi.",
+            "Transformer arxitekturasi nima uchun inqilob qildi?": "Transformer — rekursivlikdan voz kechib, parallel ishlashni ta'minlaydi. Bu — GPT, BERT kabi zamonaviy modellarning poydevori.",
+            "Chuqur o'qitish (deep learning) nima?": "Ko'p qatlamli neyron tarmoqlaridan foydalanuvchi ML shakli. Rasm, matn, ovoz kabi murakkab ma'lumotlarni yaxshi qayta ishlaydi.",
+            "TensorFlow va PyTorch farqi?": "<span class='term'>TensorFlow</span> — Google tomonidan, ishlab chiqarishga qulay. <span class='term'>PyTorch</span> — Facebook tomonidan, tadqiqotchilar uchun qulay, dinamik graf.",
+            "AI loyihalarini ishlab chiqish bosqichlari?": "1) Muammo aniqlash → 2) Ma'lumot yig'ish → 3) Model tanlash → 4) O'qitish → 5) Sinov → 6) Ishga tushirish → 7) Monitoring.",
+
+            "Suniy neyron tarmog'i qanday tuzilgan?": "Kirish qatlami → yashirin qatlamlar → chiqish qatlami. Har bir neyron — og'irliklar, bias, aktivatsiya funksiyasi orqali ishlaydi.",
+            "Aktivatsiya funksiyalari (ReLU, sigmoid, tanh) nima uchun kerak?": "Chiqishni nolinchi qiymatga transformatsiya qiladi. <span class='code'>ReLU(x) = max(0, x)</span> — tezkor, ko'pincha ishlatiladi.",
+            "To'g'ri tarqatish (forward propagation) va teskari tarqatish (backpropagation)?": "<span class='term'>To'g'ri</span> — kirishdan chiqishga ma'lumot o'tkazish. <span class='term'>Teskari</span> — xatolikni hisoblab, og'irliklarni yangilash.",
+            "Convolutional Neural Network (CNN) qanday ishlaydi?": "Filtr (kernel) orqali lokal xususiyatlarni aniqlaydi. Rasm taniishda ajoyib ishlaydi.",
+            "Recurrent Neural Network (RNN) qanday vaqt qatorlarini qayta ishlaydi?": "Oldingi qadamdagi chiqish — keyingi qadamga kirish sifatida qayta ishlatiladi. Xotira effekti bor.",
+            "LSTM va GRU nima uchun RNNni yaxshilaydi?": "Uzoq vaqt xotirasini saqlash imkonini beradi. Vanishing gradient muammosini hal qiladi.",
+            "Transformer modellarida self-attention mexanizmi qanday ishlaydi?": "Har bir so'z boshqalariga nisbatan qanday aloqadorligini aniqlaydi. Masalan: “bank” so'zi “daryo” yoki “moliya”ga qarab ma'nosi o'zgaradi.",
+            "Neyron tarmoqlarda og'irliklar (weights) va bias nima?": "<span class='term'>Og'irliklar</span> — kirishlarning ahamiyati. <span class='term'>Bias</span> — neyronning osonroq faollashish imkoniyati.",
+            "Gradient descent algoritmi nima?": "Loss funksiyasini minimal qilish uchun og'irliklarni yangilaydi. <span class='code'>w = w - α * ∂L/∂w</span>, α — o'qitish tezligi.",
+            "Neyron tarmoqlarni o'qitishda loss funksiyasi qanday rol o'ynaydi?": "Modelning xatosini hisoblaydi. MSE (regressiya), Cross-Entropy (klassifikatsiya).",
+            "Batch, epoch, iteration tushunchalari?": "<span class='term'>Batch</span> — bir vaqtda o'qitiladigan namunalar. <span class='term'>Epoch</span> — butun datasetni bir marta o'tish. <span class='term'>Iteration</span> — bir batch uchun o'qitish bosqichi.",
+            "Dropout va batch normalization nima uchun kerak?": "<span class='term'>Dropout</span> — overfittingni kamaytirish. <span class='term'>BatchNorm</span> — tezroq o'qitish, stabil natijalar.",
+            "Transfer learning nima?": "Bir vazifada o'qitilgan modelni boshqa vazifada qayta ishlatish. Masalan: ImageNetdan o'qitilgan CNN — o'simlik kasalligini tashxislashda.",
+            "GAN (Generative Adversarial Network) qanday ishlaydi?": "Generatsiya qiluvchi va ajratuvchi tarmoqlar bir-biri bilan bellashadi. Natijada — realdek tasvirlar yaratiladi.",
+            "Autoencoder nima? Qayerda qo'llaniladi?": "Ma'lumotni siqish va qayta tiklash. Anomaliya aniqlash, shovqinni tozalashda ishlatiladi.",
+
+            "Robot nima? Uning asosiy qismlari?": "Avtomatik harakatlanuvchi qurilma. Qismlari: <span class='term'>sensorlar</span> (his etish), <span class='term'>boshqaruv tizimi</span> (mikrokontroller), <span class='term'>aktuatorlar</span> (harakat).",
+            "Sensorlar (ultratovush, infrakov, kameralar) qanday ishlaydi?": "<span class='term'>Ultratovush</span> — masofani o'lchaydi. <span class='term'>Infrakov</span> — issiqlikni aniqlaydi. <span class='term'>Kamera</span> — rasm qayta ishlash uchun.",
+            "Aktuatorlar (servo, stepper, DC motor) farqi?": "<span class='term'>Servo</span> — burchakni aniq boshqarish. <span class='term'>Stepper</span> — aniq qadamlarda aylanish. <span class='term'>DC</span> — uzluksiz aylanish.",
+            "Mikrokontroller (Arduino, Raspberry Pi, ESP32) farqi?": "<span class='term'>Arduino</span> — oddiy loyihalar. <span class='term'>Raspberry Pi</span> — Linux, kamera, AI. <span class='term'>ESP32</span> — Wi-Fi/BLE bilan arzon variant.",
+            "Robotlarda kinematika nima?": "Robot harakatini tahlil qilish — qo'l qanday harakat qiladi, qayerga boradi.",
+            "ROS (Robot Operating System) nima?": "Robot dasturlash uchun ochiq platforma. Modullar — “nodes” orqali aloqada bo'ladi.",
+            "SLAM (Simultaneous Localization and Mapping) nima?": "Robot — xaritani yaratish va o'z o'rnini bir vaqtda aniqlaydi. Avtonom mashinalar, dronlar uchun muhim.",
+            "Autonom robotlar qanday atrof-muhitni tushunadi?": "Sensorlardan ma'lumot yig'ib, AI orqali xarita tuzadi, to'siqlarni aniqlaydi, yo'nalish tanlaydi.",
+            "Robotlarda navigatsiya tizimlari qanday ishlaydi?": "GPS, IMU, LIDAR, kameralar — ma'lumotlarni birlashtirib, yo'nalish belgilanadi.",
+            "Robototexnikada PID boshqaruv qanday amalga oshiriladi?": "<span class='term'>P</span> (proporsional), <span class='term'>I</span> (integral), <span class='term'>D</span> (hosila) — xatoni kamaytirish uchun. Masalan: robot chiziq bo'ylab yurish.",
+            "Drone texnologiyalari qanday ishlaydi?": "GPS, IMU, barometr — balandlik va joylashuvni nazorat qiladi. Kamera — rasm yoki video yuboradi.",
+            "Robotlar uchun xavfsizlik qoidalari?": "Tosqinlarni hal qilish, chegaralarni belgilash, inson bilan aloqada qisqa masofada sekin harakat.",
+            "Humanoid robotlar qanday ishlaydi?": "Inson tuzilishiga yaqin — qo'l, oyog', bosh harakatlari. Balans, ko'rish, nutqni qayta ishlash kerak.",
+            "Industrial robotlar qanday ishlab chiqarishda qo'llaniladi?": "Avtomobil yig'ish, bo'yoq purkash, mahsulotlarni joylashtirish — tez, aniq, doimiy ishlaydi.",
+            "Collaborative robots (cobots) nima?": "Inson bilan birgalikda ishlaydigan xavfsiz robotlar. Sensorlar orqali inson harakatini his qiladi.",
+            "Robotlarda batareya xavfsizligi va energiya boshqaruvi?": "Batareya quvvati, quvvat sarfi, quvvatni taqsimlash — autonom ishlash uchun muhim.",
+            "Robototexnikada 3D modellashtirish ahamiyati?": "Loyihani simulyatsiya qilish, xatolarni oldindan aniqlash, prototip yasash.",
+            "Robotlar uchun sun'iy intellektni qanday integratsiya qilish mumkin?": "ROS + Python + TensorFlow/PyTorch. Masalan: kamera orqali narsani tanib, robot harakat qiladi.",
+            "Robototexnika loyihalarida prototiplash jarayoni?": "1) G'oya → 2) Dizayn → 3) Simulyatsiya → 4) Fizik prototip → 5) Sinov → 6) Takomillashtirish.",
+            "Robototexnikada standartlar va sertifikatlar?": "ISO 13482 (inson bilan ishlovchi robotlar), CE, FCC — xavfsizlik va sifatni ta'minlaydi.",
+
+            "Kompyuter ko'ri (Computer Vision) nima?": "Rasmlarni tahlil qilib, narsalarni aniqlash, sanash, harakatni kuzatish — kompyuterni ko'rishga o'rgatish.",
+            "OpenCV kutubxonasi qanday ishlatiladi?": "Python da: <span class='code'>import cv2</span>. Rasm yuklash, filtrlash, kontur aniqlash, narsa tanish kabi vazifalarni bajaradi.",
+            "Object detection va image classification farqi?": "<span class='term'>Classification</span> — rasm nima ekanligi (mushuk). <span class='term'>Detection</span> — qayerda ekanligi + nima (mushuk → koordinata + noma).",
+            "YOLO, SSD, Faster R-CNN algoritmlari nima?": "<span class='term'>YOLO</span> — tez, real vaqtda. <span class='term'>Faster R-CNN</span> — aniq, lekin sekin. Barchasi object detection uchun.",
+            "Face recognition qanday ishlaydi?": "Yuzni aniqlash → xususiyatlarni ajratish (ko'z, burun) → ma'lumotlar bazasidagi bilan solishtirish.",
+            "Tabiiy tilni qayta ishlash (NLP) nima?": "Inson tilini tushunish va generatsiya qilish. Tarjima, so'zlashuv, tahlil.",
+            "Tokenization, stemming, lemmatization nima?": "<span class='term'>Tokenization</span> — so'zlarga ajratish. <span class='term'>Stemming</span> — so'z ildizini olish (running → run). <span class='term'>Lemmatization</span> — so'z shaklini asliga keltirish (better → good).",
+            "Word embeddings (Word2Vec, GloVe) qanday ishlaydi?": "So'zlarni raqamli vektorlarga aylantiradi. "King - man + woman ≈ queen" kabi mantiqiy aloqalar saqlanadi.",
+            "BERT, GPT kabi transformer modellar qanday ishlaydi?": "<span class='term'>BERT</span> — kontekstni ikki yo'nalishda (chapdan-o'ngga, o'ngdan-chapga). <span class='term'>GPT</span> — faqat chapdan-o'ngga (generativ).",
+            "Chatbotlarni qanday yaratish mumkin?": "Qoida asosida (if-else) yoki AI asosida (Rasa, Dialogflow, o'z model). NLP + ML + javoblar bazasi.",
+            "Sentiment tahlili nima?": "Matndagi ijobiy/yomon his-tuyg'uni aniqlash. Ijtimoiy tarmoqlar, sharhlar tahlilida qo'llaniladi.",
+            "Machine translation qanday amalga oshiriladi?": "Seq2Seq arxitekturasi, attention mexanizmi, transformer — Google Translate kabi tizimlar asosi.",
+            "Speech-to-text va text-to-speech tizimlari?": "<span class='term'>STT</span> — ovozni matnga. <span class='term'>TTS</span> — matnni ovozga. Whisper, Tacotron, Google TTS kabi modellar.",
+            "NLP da attention mexanizmi nima?": "Qaysi so'zga ko'proq e'tibor berish kerakligini aniqlaydi. Masalan: “U kitobni o'qidi” — “o'qidi” so'zi “kitob”ga e'tibor qaratadi.",
+            "Multilingual AI tizimlari qanday ishlaydi?": "Bir nechta tilni bir model o'qitiladi. Masalan: mBART, NLLB — 200+ tilni qo'llab-quvvatlaydi.",
+
+            "AI yordamida oddiy chatbot qanday yaratiladi?": "Python + Flask + NLP kutubxonasi (NLTK, spaCy) yoki Dialogflow. Savollarga javoblar bazasidan qidiriladi.",
+            "Raspberry Pi yordamida uy aqlli tizimi qanday yasaladi?": "Sensorlar (harorat, yorug'lik) + relay (lampochka) + Wi-Fi + Python. Telegram bot orqali boshqarish mumkin.",
+            "Drone yordamida qishloq xo'jaligini kuzatish?": "Multispektral kamera + AI — ekinlarning sog'lomligini, namligini tahlil qilish.",
+            "AI yordamida o'quvchilarni baholash tizimi?": "Test javoblari + adaptiv savollar + tahlil — har bir o'quvchiga alohida yo'nalish berish.",
+            "Robototexnika bo'yicha olimpiada loyihalari?": "Chiziq bo'ylab yuruvchi robot, to'siqdan o'tuvchi, sumo robot, AI orqali obyektni aniqlash.",
+            "AI va robototexnikada kiberxavfsizlik?": "Robotlarni masofadan boshqarishda parol, shifrlash, tarmoq filtrlari kerak. Aks holda — robotga hujum qilish mumkin.",
+            "AI xavfsizligini ta'minlash uchun qanday choralar ko'riladi?": "Shaffoflik, audit, inson nazorati, etika qo'mitalari, testlar, xavfli vaziyatlarda to'xtash mexanizmi.",
+            "Inson-robot hamkorligi qanday amalga oshiriladi?": "Robot — inson harakatini kuzatib, hamkorlik qiladi. Masalan: tayyorlashda yordam berish.",
+            "Sun'iy intellektning kelajakdagi tendentsiyalari?": "Kichik AI (edge AI), etik AI, multimodal modellar (matn + rasm + ovoz), qantum AI.",
+            "Quantum computing AI ga qanday ta'sir qiladi?": "Murakkab hisoblashlarni million marta tezlashtiradi — yangi AI arxitekturalari paydo bo'ladi.",
+            "Neuromorphic computing nima?": "Inson miyasiga o'xshash mikrosxemalar — kam energiya, yuqori samaradorlik.",
+            "AI etikasi bo'yicha xalqaro standartlar?": "Yevropa — AI Act, BMT — etik qo'llanmalar. Maqsad — inson huquqlarini himoya qilish.",
+            "AI yordamida iqlim o'zgarishini bashorat qilish?": "Satellit ma'lumotlari + AI — harorat, namlik, o'rmon yong'inlarini oldindan bashorat qilish.",
+            "AI va sog'liqni saqlash sohasidagi loyihalar?": "Tomografiya tahlili, kasallikni dastlabki bosqichda aniqlash, dori ishlab chiqarishda AI.",
+            "O'zbek tilida NLP tizimlarini rivojlantirish muammolari?": "Ma'lumotlar yetishmovchiligi, so'zlar jamlanmasi (korpus) kichik, morfologik murakkablik (so'z yasash). Loyihalar: “UzNLP”."
+        };
+
+        const chatArea = document.getElementById('chat-area');
+        const buttonsContainer = document.getElementById('buttons-container');
+        const typingIndicator = document.getElementById('typing');
+
+        setTimeout(() => {
+            addMessage("Salom! Men 11-sinf «Robototexnika va Sun’iy intellekt asoslari» darsliklariga asoslangan AI yordamchiman. Sun’iy intellekt, neyron tarmoqlar, robotlar, IoT, ROS, NLP — barcha zamonaviy mavzular bo'yicha tushuntirishga tayyorman!", 'bot-message');
+        }, 4200);
+
+        questions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = q.length > 40 ? q.substring(0, 38) + '...' : q;
+            btn.setAttribute('data-full', q);
+            btn.addEventListener('click', () => handleQuestion(q));
+            buttonsContainer.appendChild(btn);
+        });
+
+        function addMessage(text, className) {
+            const div = document.createElement('div');
+            div.classList.add('message', className);
+            div.innerHTML = text;
+            chatArea.appendChild(div);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function handleQuestion(question) {
+            addMessage(question, 'user-message');
+            typingIndicator.style.display = 'block';
+
+            setTimeout(() => {
+                typingIndicator.style.display = 'none';
+                const response = responses[question] || "Kechirasiz, bu mavzu hozircha qo'llab-quvvatlanmaydi.";
+                setTimeout(() => {
+                    addMessage(response, 'bot-message');
+                }, 700);
+            }, 1400);
+        }
+    </script>
+</body>
+</html>
