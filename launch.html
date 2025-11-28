@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YMT Hub - Launcher</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #8B5CF6; /* Violet-500 */
+            --color-bg-dark: #121212;
+            --color-surface-dark: #1E1E1E;
+            --color-text-light: #F3F4F6; /* Brightened text for better visibility */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            transition: background-color 0.3s, color 0.3s;
+            overflow: hidden;
+        }
+
+        /* --- OS Startup Animation Styles --- */
+        #startup-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            z-index: 100;
+            transition: opacity 1s ease-out;
+            opacity: 1;
+        }
+
+        #startup-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .boot-text {
+            color: #ffffff;
+            font-size: 3rem;
+            font-weight: 900;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: bootIn 0.8s ease-in-out forwards;
+            letter-spacing: 0.1em;
+        }
+        
+        .boot-subtext {
+            color: #8B5CF6;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            opacity: 0;
+            animation: bootIn 0.8s ease-in-out 0.4s forwards;
+        }
+        
+        .loading-dots {
+            margin-top: 24px;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            animation: bootIn 0.8s ease-in-out 0.8s forwards;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: dotFade 1s infinite alternate;
+        }
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes bootIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes dotFade {
+            from { opacity: 0.3; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- App Container Styling --- */
+        #app-container {
+            max-width: 450px;
+            height: 100vh;
+            margin: 0 auto;
+            background-color: var(--color-bg-dark);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-card {
+            background-color: var(--color-surface-dark);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-card:hover {
+            transform: scale(1.05);
+            background-color: #333333;
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            margin: 0 auto 8px;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* --- App Specific Styles --- */
+        .chat-container, .notes-container, .settings-container, .recorder-container, .calculator-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* --- Theme Styles (Mavzular) --- */
+        .theme-light {
+            --color-bg-dark: #F3F4F6;
+            --color-surface-dark: #FFFFFF;
+            --color-text-light: #1F2937;
+            color: var(--color-text-light);
+        }
+
+        .theme-violet {
+            --color-primary: #A78BFA;
+            --color-bg-dark: #1F2937;
+            --color-surface-dark: #374151;
+            --color-text-light: #E5E7EB;
+        }
+        
+        /* Ensure text and background inversions work correctly across themes */
+        .theme-light .text-white { color: var(--color-text-light) !important; }
+        .theme-light .text-gray-200 { color: #1F2937 !important; }
+        .theme-light .bg-gray-700 { background-color: #E5E7EB !important; }
+        .theme-light .bg-gray-800 { background-color: #D1D5DB !important; }
+        .theme-light .border-gray-700 { border-color: #D1D5DB !important; }
+        
+        .btn-app {
+            transition: background-color 0.2s ease-in-out, transform 0.1s;
+        }
+        .btn-app:active {
+            transform: scale(0.98);
+        }
+        
+    </style>
+</head>
+<body class="theme-dark">
+
+    <!-- Qurilma Yuklanish Animatsiyasi (Startup Screen) -->
+    <div id="startup-screen">
+        <div class="boot-text">YMT Hub</div>
+        <div class="boot-subtext">Tizim Yuklanmoqda...</div>
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <div id="app-container" class="relative">
+        <!-- Yuqori panel (Status Bar) -->
+        <div id="status-bar" class="p-3 bg-opacity-70 backdrop-blur-sm border-b border-gray-700/50 sticky top-0 z-10 flex justify-between items-center bg-violet-600/20">
+            <span id="current-time" class="text-sm font-semibold"></span>
+            <div id="app-title" class="text-lg font-bold text-white">Bosh Sahifa</div>
+            <div class="flex space-x-2 text-sm">
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-wifi"></i>
+                <i class="fa-solid fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- Asosiy Kontent (App Views) -->
+        <div id="main-content" class="flex-grow overflow-y-auto">
+            <!-- Content will be rendered here based on currentApp state -->
+        </div>
+
+        <!-- Pastki Navigatsiya (Home Button) -->
+        <div id="nav-bar" class="p-3 bg-opacity-70 backdrop-blur-sm border-t border-gray-700/50 sticky bottom-0 z-10 flex justify-center items-center bg-violet-600/20" style="display: none;">
+            <button onclick="setCurrentApp('home')" class="p-3 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition duration-200 shadow-lg">
+                <i class="fa-solid fa-house-chimney text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase and State variables
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ymt-hub-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // App State
+        let state = {
+            currentApp: 'home',
+            theme: localStorage.getItem('hub_theme') || 'dark', // Default to dark theme
+            notes: [],
+            recordings: []
+        };
+
+        // --- Core Functions ---
+
+        /**
+         * Initializes Firebase and authenticates the user.
+         */
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                console.error("Firebase konfiguratsiyasi topilmadi.");
+                document.getElementById('main-content').innerHTML = '<div class="p-4 text-red-500">Xatolik: Firebase konfiguratsiyasi yo\'q. Ma\'lumotlarni saqlash ishlamaydi.</div>';
+                isAuthReady = true;
+                return;
+            }
+            
+            setLogLevel('Debug');
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Authentication
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("Foydalanuvchi muvaffaqiyatli avtorizatsiyadan o'tdi:", userId);
+                    isAuthReady = true;
+                    // Start listening to data once authenticated
+                    setupFirestoreListeners();
+                } else {
+                    console.log("Anonim kirishga harakat qilinmoqda...");
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Avtorizatsiya xatosi:", error);
+                        isAuthReady = true; // Still ready even if sign-in fails
+                    }
+                }
+                // Only update UI after auth state is determined
+                if (document.getElementById('startup-screen').classList.contains('hidden')) {
+                    updateUI(); 
+                }
+            });
+        }
+
+        /**
+         * Sets up real-time listeners for Notes and Recordings.
+         */
+        function setupFirestoreListeners() {
+            if (!isAuthReady || !userId || !db) return;
+
+            const getCollectionPath = (collectionName) => {
+                return `artifacts/${appId}/users/${userId}/${collectionName}`;
+            };
+
+            // 1. Notes Listener
+            const notesRef = collection(db, getCollectionPath('notes'));
+            onSnapshot(notesRef, (snapshot) => {
+                state.notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                state.notes.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)); // Sort by newest first
+                console.log("Eslatmalar yangilandi:", state.notes.length);
+                if (state.currentApp === 'notes') renderNotes();
+            }, (error) => {
+                console.error("Eslatmalar qabul qilish xatosi:", error);
+            });
+
+            // 2. Recordings Metadata Listener (Actual audio data is in localStorage)
+            const recordingsRef = collection(db, getCollectionPath('recordings'));
+            onSnapshot(recordingsRef, (snapshot) => {
+                state.recordings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                state.recordings.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)); // Sort by newest first
+                console.log("Diktafon yozuvlari yangilandi:", state.recordings.length);
+                if (state.currentApp === 'recorder') renderRecorder();
+            }, (error) => {
+                console.error("Diktafon yozuvlari qabul qilish xatosi:", error);
+            });
+        }
+
+        /**
+         * Converts Base64 string to a Blob URL.
+         */
+        function base64ToBlobUrl(base64, mimeType) {
+            const byteCharacters = atob(base64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+            return URL.createObjectURL(blob);
+        }
+
+        /**
+         * Updates the theme class on the body element.
+         */
+        function updateTheme(newTheme = state.theme) {
+            document.body.className = '';
+            document.body.classList.add(`theme-${newTheme}`);
+            localStorage.setItem('hub_theme', newTheme);
+            state.theme = newTheme;
+        }
+        
+        /**
+         * Renders the current view based on state.currentApp.
+         */
+        function updateUI() {
+            updateTime();
+            updateTheme();
+            const navBar = document.getElementById('nav-bar');
+            navBar.style.display = (state.currentApp === 'home') ? 'none' : 'flex';
+            
+            switch (state.currentApp) {
+                case 'home':
+                    renderHome();
+                    break;
+                case 'chat':
+                    renderChat();
+                    break;
+                case 'notes':
+                    renderNotes();
+                    break;
+                case 'calculator':
+                    renderCalculator();
+                    break;
+                case 'recorder':
+                    renderRecorder();
+                    break;
+                case 'settings':
+                    renderSettings();
+                    break;
+                default:
+                    renderHome();
+            }
+        }
+        
+        /**
+         * Sets the current app and triggers a UI update.
+         */
+        window.setCurrentApp = (appName) => {
+            state.currentApp = appName;
+            updateUI();
+        };
+
+        // --- Utility Functions ---
+
+        /**
+         * Updates the current time in the status bar.
+         */
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        setInterval(updateTime, 60000); // Update every minute
+
+
+        // --- Render Functions (App Views) ---
+
+        /**
+         * Renders the Launcher Home Screen.
+         */
+        function renderHome() {
+            document.getElementById('app-title').textContent = 'Bosh Sahifa';
+            const content = document.getElementById('main-content');
+            // Ensure classes are applied correctly for the grid layout
+            content.className = 'p-4 grid grid-cols-4 gap-4 pt-10'; 
+            
+            content.innerHTML = `
+                <div class="col-span-4 text-center text-gray-400 mb-6 mt-0">
+                    <p class="text-xs">Foydalanuvchi ID: <span class="font-mono text-xs">${userId || 'Yuklanmoqda...'}</span></p>
+                </div>
+                <!-- AI Chat (Tarjimon o'rniga yaxshiroq narsa) -->
+                <div class="app-card" onclick="setCurrentApp('chat')">
+                    <div class="app-icon bg-blue-500"><i class="fa-solid fa-brain"></i></div>
+                    <p class="text-xs mt-1 text-white">AI Chat</p>
+                </div>
+
+                <!-- Eslatmalar (Eng kerakli narsalar) -->
+                <div class="app-card" onclick="setCurrentApp('notes')">
+                    <div class="app-icon bg-yellow-500"><i class="fa-solid fa-note-sticky"></i></div>
+                    <p class="text-xs mt-1 text-white">Eslatmalar</p>
+                </div>
+                
+                <!-- Kalkulyator (Eng kerakli narsalar) -->
+                <div class="app-card" onclick="setCurrentApp('calculator')">
+                    <div class="app-icon bg-green-500"><i class="fa-solid fa-calculator"></i></div>
+                    <p class="text-xs mt-1 text-white">Kalkulyator</p>
+                </div>
+
+                <!-- Diktafon (Saqlansin) -->
+                <div class="app-card" onclick="setCurrentApp('recorder')">
+                    <div class="app-icon bg-red-500"><i class="fa-solid fa-microphone"></i></div>
+                    <p class="text-xs mt-1 text-white">Diktafon</p>
+                </div>
+                
+                <!-- Sozlamalar (Kengaytirilgan) -->
+                <div class="app-card" onclick="setCurrentApp('settings')">
+                    <div class="app-icon bg-gray-500"><i class="fa-solid fa-gear"></i></div>
+                    <p class="text-xs mt-1 text-white">Sozlamalar</p>
+                </div>
+            `;
+        }
+
+        // --- 1. AI Chat App (Tarjimon o'rniga) ---
+        
+        async function fetchGeminiResponse(prompt) {
+            const systemPrompt = "Siz O'zbekistonda joylashgan yordamchisiz. Barcha javoblarni o'zbek tilida, do'stona va professional ohangda bering. O'zbek tiliga xos bo'lmagan so'zlardan o'rinli foydalaning, ammo me'yorini saqlang.";
+            const userQuery = prompt;
+            const apiKey = "" 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }], // Grounding for up-to-date info
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP xatosi! Status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text;
+                    }
+                    return "AI javob qaytara olmadi.";
+
+                } catch (error) {
+                    console.error(`AI chaqiruvi xatosi (urinish ${i + 1}):`, error);
+                    if (i < 2) {
+                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                    } else {
+                        return "Uzr, AI bilan bog'lanishda xatolik yuz berdi.";
+                    }
+                }
+            }
+        }
+        
+        window.sendChat = async () => {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chat-messages');
+            
+            // User message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'flex justify-end mb-4';
+            userMessageDiv.innerHTML = `<div class="bg-violet-600 text-white p-3 rounded-xl max-w-[80%] shadow-md">${message}</div>`;
+            messagesContainer.appendChild(userMessageDiv);
+
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.className = 'flex justify-start mb-4';
+            loadingDiv.innerHTML = `<div class="bg-gray-700 text-gray-300 p-3 rounded-xl max-w-[80%] shadow-md animate-pulse">Javob tayyorlanmoqda...</div>`;
+            messagesContainer.appendChild(loadingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const responseText = await fetchGeminiResponse(message);
+            
+            // Remove loading and show AI response
+            loadingDiv.remove();
+
+            const aiMessageDiv = document.createElement('div');
+            aiMessageDiv.className = 'flex justify-start mb-4';
+            aiMessageDiv.innerHTML = `<div class="bg-gray-700 text-gray-200 p-3 rounded-xl max-w-[80%] shadow-md">${responseText.replace(/\n/g, '<br>')}</div>`;
+            messagesContainer.appendChild(aiMessageDiv);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        };
+        
+        function renderChat() {
+            document.getElementById('app-title').textContent = 'AI Yordamchi';
+            const content = document.getElementById('main-content');
+            content.className = 'chat-container flex flex-col h-full p-0 pt-3';
+            
+            content.innerHTML = `
+                <div id="chat-messages" class="flex-grow overflow-y-auto p-4 space-y-4">
+                    <div class="flex justify-start mb-4">
+                        <div class="bg-gray-700 text-gray-200 p-3 rounded-xl max-w-[80%] shadow-md">Salom! Men sizning AI yordamchingizman. Nimada yordam bera olaman?</div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-700 bg-surface-dark">
+                    <div class="flex space-x-2">
+                        <input type="text" id="chat-input" placeholder="Xabar yozing..." 
+                               class="flex-grow p-3 rounded-full bg-gray-800 border border-gray-700 text-white focus:ring-violet-500 focus:border-violet-500 transition duration-150"
+                               onkeydown="if(event.key === 'Enter') sendChat()">
+                        <button onclick="sendChat()" class="btn-app w-12 h-12 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-lg hover:bg-violet-700">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            // Scroll to bottom on load
+            const messagesContainer = document.getElementById('chat-messages');
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        }
+
+        // --- 2. Eslatmalar App (Notes) ---
+
+        window.addNote = async () => {
+            if (!isAuthReady || !userId) {
+                alertModal("Xatolik", "Avtorizatsiya tugallanmagan. Iltimos kuting yoki tizimga kiring.");
+                return;
+            }
+            const titleInput = document.getElementById('note-title');
+            const contentInput = document.getElementById('note-content');
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!title || !content) {
+                alertModal("Ogohlantirish", "Eslatmaning sarlavhasi va mazmuni bo'sh bo'lishi mumkin emas.");
+                return;
+            }
+
+            try {
+                const notesRef = collection(db, `artifacts/${appId}/users/${userId}/notes`);
+                await addDoc(notesRef, {
+                    title: title,
+                    content: content,
+                    timestamp: serverTimestamp()
+                });
+                titleInput.value = '';
+                contentInput.value = '';
+                alertModal("Muvaffaqiyat", "Eslatma muvaffaqiyatli saqlandi.");
+            } catch (e) {
+                console.error("Eslatmani qo'shish xatosi: ", e);
+                alertModal("Xatolik", "Eslatmani saqlashda xatolik yuz berdi.");
+            }
+        };
+
+        window.deleteNote = async (id) => {
+            if (!await confirmModal("O'chirishni Tasdiqlash", "Haqiqatan ham bu eslatmani o'chirmoqchimisiz?")) return;
+            try {
+                const noteDocRef = doc(db, `artifacts/${appId}/users/${userId}/notes`, id);
+                await deleteDoc(noteDocRef);
+                alertModal("Muvaffaqiyat", "Eslatma o'chirildi.");
+            } catch (e) {
+                console.error("Eslatmani o'chirish xatosi: ", e);
+                alertModal("Xatolik", "Eslatmani o'chirishda xatolik yuz berdi.");
+            }
+        };
+
+        function renderNotes() {
+            document.getElementById('app-title').textContent = 'Eslatmalar';
+            const content = document.getElementById('main-content');
+            content.className = 'notes-container flex flex-col h-full p-4 space-y-6';
+
+            content.innerHTML = `
+                <!-- Yangi Eslatma Qo'shish Formasi -->
+                <div class="p-4 bg-gray-800/50 rounded-xl shadow-xl border border-gray-700/50">
+                    <h3 class="text-lg font-semibold mb-3 text-white">Yangi Eslatma Yozish</h3>
+                    <input type="text" id="note-title" placeholder="Sarlavha" 
+                           class="w-full p-3 mb-3 rounded-lg bg-gray-700/70 border border-gray-600 text-white focus:ring-violet-500 focus:border-violet-500 transition duration-150">
+                    <textarea id="note-content" placeholder="Eslatma matni..." rows="3"
+                              class="w-full p-3 mb-4 rounded-lg bg-gray-700/70 border border-gray-600 text-white focus:ring-violet-500 focus:border-violet-500 transition duration-150"></textarea>
+                    <button onclick="addNote()" class="btn-app w-full py-2 rounded-lg bg-violet-600 text-white font-semibold hover:bg-violet-700">
+                        <i class="fa-solid fa-plus mr-2"></i> Saqlash
+                    </button>
+                </div>
+
+                <!-- Saqlangan Eslatmalar Ro'yxati -->
+                <div class="flex-grow overflow-y-auto space-y-3">
+                    <h3 class="text-xl font-bold mb-4 text-white">Mening Eslatmalarim (${state.notes.length})</h3>
+                    <div id="notes-list" class="space-y-3">
+                        ${state.notes.map(note => `
+                            <div class="p-4 bg-gray-800 rounded-lg shadow-md border-l-4 border-violet-500">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-semibold text-lg text-violet-300">${note.title}</h4>
+                                    <button onclick="deleteNote('${note.id}')" class="text-red-400 hover:text-red-500 transition duration-150 p-1">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-1 whitespace-pre-wrap">${note.content}</p>
+                                <p class="text-xs text-gray-500 mt-2">
+                                    ${note.timestamp ? new Date(note.timestamp.seconds * 1000).toLocaleString('uz-UZ') : 'Yuklanmoqda...'}
+                                </p>
+                            </div>
+                        `).join('')}
+                        ${state.notes.length === 0 ? `<p class="text-center text-gray-500 mt-5">Hali eslatmalar yo'q. Birinchi eslatmangizni yarating!</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- 3. Kalkulyator App ---
+
+        let calculatorDisplay = '0';
+        let waitingForSecondOperand = false;
+        let firstOperand = null;
+        let operator = null;
+
+        window.inputDigit = (digit) => {
+            const displayValue = calculatorDisplay;
+
+            if (waitingForSecondOperand === true) {
+                calculatorDisplay = digit;
+                waitingForSecondOperand = false;
+            } else {
+                calculatorDisplay = displayValue === '0' ? digit : displayValue + digit;
+            }
+            updateCalculatorDisplay();
+        };
+
+        window.inputDecimal = () => {
+            if (!calculatorDisplay.includes('.')) {
+                calculatorDisplay += '.';
+            }
+            updateCalculatorDisplay();
+        };
+
+        window.clearDisplay = () => {
+            calculatorDisplay = '0';
+            firstOperand = null;
+            operator = null;
+            waitingForSecondOperand = false;
+            updateCalculatorDisplay();
+        };
+
+        window.handleOperator = (nextOperator) => {
+            const inputValue = parseFloat(calculatorDisplay);
+
+            if (operator && waitingForSecondOperand)  {
+                operator = nextOperator;
+                return;
+            }
+
+            if (firstOperand === null) {
+                firstOperand = inputValue;
+            } else if (operator) {
+                const result = calculate(firstOperand, inputValue, operator);
+                calculatorDisplay = String(result);
+                firstOperand = result;
+            }
+
+            waitingForSecondOperand = true;
+            operator = nextOperator;
+            updateCalculatorDisplay();
+        };
+
+        function calculate(first, second, op) {
+            if (op === '+') return first + second;
+            if (op === '-') return first - second;
+            if (op === '*') return first * second;
+            if (op === '/') return first / second;
+            return second;
+        }
+
+        function updateCalculatorDisplay() {
+            const display = document.getElementById('calc-display');
+            if (display) {
+                display.textContent = calculatorDisplay.substring(0, 12); // Keep display short
+            }
+        }
+
+        function renderCalculator() {
+            document.getElementById('app-title').textContent = 'Kalkulyator';
+            const content = document.getElementById('main-content');
+            content.className = 'calculator-container flex items-center justify-center p-4';
+            
+            content.innerHTML = `
+                <div class="w-full max-w-xs bg-gray-900 rounded-2xl shadow-2xl p-4">
+                    <div id="calc-display" class="bg-gray-800 text-white text-4xl text-right p-4 rounded-lg mb-4 font-mono overflow-x-auto">${calculatorDisplay}</div>
+                    
+                    <div class="grid grid-cols-4 gap-3">
+                        <!-- Operators Row 1 -->
+                        <button onclick="clearDisplay()" class="btn-app col-span-2 py-3 rounded-xl bg-gray-600 text-white text-xl hover:bg-gray-500">AC</button>
+                        <button onclick="inputDigit(calculatorDisplay.startsWith('-') ? calculatorDisplay.slice(1) : '-' + calculatorDisplay)" class="btn-app py-3 rounded-xl bg-gray-600 text-white text-xl hover:bg-gray-500">±</button>
+                        <button onclick="handleOperator('/')" class="btn-app py-3 rounded-xl bg-violet-600 text-white text-xl hover:bg-violet-700">/</button>
+                        
+                        <!-- Numbers 7-9 -->
+                        <button onclick="inputDigit('7')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">7</button>
+                        <button onclick="inputDigit('8')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">8</button>
+                        <button onclick="inputDigit('9')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">9</button>
+                        <button onclick="handleOperator('*')" class="btn-app py-3 rounded-xl bg-violet-600 text-white text-xl hover:bg-violet-700">*</button>
+
+                        <!-- Numbers 4-6 -->
+                        <button onclick="inputDigit('4')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">4</button>
+                        <button onclick="inputDigit('5')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">5</button>
+                        <button onclick="inputDigit('6')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">6</button>
+                        <button onclick="handleOperator('-')" class="btn-app py-3 rounded-xl bg-violet-600 text-white text-xl hover:bg-violet-700">-</button>
+
+                        <!-- Numbers 1-3 -->
+                        <button onclick="inputDigit('1')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">1</button>
+                        <button onclick="inputDigit('2')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">2</button>
+                        <button onclick="inputDigit('3')" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">3</button>
+                        <button onclick="handleOperator('+')" class="btn-app py-3 rounded-xl bg-violet-600 text-white text-xl hover:bg-violet-700">+</button>
+                        
+                        <!-- Bottom Row -->
+                        <button onclick="inputDigit('0')" class="btn-app col-span-2 py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">0</button>
+                        <button onclick="inputDecimal()" class="btn-app py-3 rounded-xl bg-gray-700 text-white text-xl hover:bg-gray-600">.</button>
+                        <button onclick="handleOperator('=')" class="btn-app py-3 rounded-xl bg-orange-600 text-white text-xl hover:bg-orange-700">=</button>
+                    </div>
+                </div>
+            `;
+            updateCalculatorDisplay(); // Initial update
+        }
+
+        // --- 4. Diktafon App (Voice Recorder) ---
+        
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        window.startRecording = async () => {
+            if (!isAuthReady || !userId) {
+                alertModal("Xatolik", "Avtorizatsiya tugallanmagan. Iltimos kuting.");
+                return;
+            }
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                isRecording = true;
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = async () => {
+                        const base64data = reader.result.split(',')[1];
+                        
+                        // 1. Saqlash: Firestorega metadata
+                        const recordingsRef = collection(db, `artifacts/${appId}/users/${userId}/recordings`);
+                        const docRef = await addDoc(recordingsRef, {
+                            name: `Yozuv ${new Date().toLocaleTimeString('uz-UZ')}`,
+                            mimeType: 'audio/webm',
+                            timestamp: serverTimestamp(),
+                            duration: Math.round(audioBlob.size / 100000) // Estimate duration for display
+                        });
+                        
+                        // 2. Saqlash: LocalStoragega audio (Base64)
+                        localStorage.setItem(`recording_${docRef.id}`, base64data);
+                        
+                        alertModal("Muvaffaqiyat", "Ovozli yozuv saqlandi.");
+                        isRecording = false;
+                        stream.getTracks().forEach(track => track.stop()); // Stop microphone access
+                        renderRecorder();
+                    };
+                };
+
+                mediaRecorder.start();
+                renderRecorder(); // Update UI to show 'Stop' button
+            } catch (err) {
+                console.error('Diktafonga kirish xatosi:', err);
+                alertModal("Xatolik", "Mikrofonga kirishga ruxsat bering. Xato: " + err.name);
+                isRecording = false;
+                renderRecorder();
+            }
+        };
+
+        window.stopRecording = () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        };
+        
+        window.playRecording = (recordingId, mimeType) => {
+            const base64data = localStorage.getItem(`recording_${recordingId}`);
+            if (!base64data) {
+                alertModal("Xatolik", "Ovoz fayli topilmadi (localStorage'da).");
+                return;
+            }
+            const audioUrl = base64ToBlobUrl(base64data, mimeType);
+            const audio = new Audio(audioUrl);
+            audio.play().catch(e => console.error("Audio ijrosi xatosi:", e));
+        };
+
+        window.deleteRecording = async (recordingId) => {
+            if (!await confirmModal("O'chirishni Tasdiqlash", "Haqiqatan ham bu yozuvni o'chirmoqchimisiz?")) return;
+            try {
+                // 1. LocalStorage'dan o'chirish
+                localStorage.removeItem(`recording_${recordingId}`);
+                
+                // 2. Firestore'dan metadatani o'chirish
+                const recordingDocRef = doc(db, `artifacts/${appId}/users/${userId}/recordings`, recordingId);
+                await deleteDoc(recordingDocRef);
+
+                alertModal("Muvaffaqiyat", "Yozuv muvaffaqiyatli o'chirildi.");
+            } catch (e) {
+                console.error("Yozuvni o'chirish xatosi: ", e);
+                alertModal("Xatolik", "Yozuvni o'chirishda xatolik yuz berdi.");
+            }
+        };
+
+        function renderRecorder() {
+            document.getElementById('app-title').textContent = 'Diktafon';
+            const content = document.getElementById('main-content');
+            content.className = 'recorder-container flex flex-col h-full p-4 space-y-6';
+
+            const buttonHtml = isRecording 
+                ? `<button onclick="stopRecording()" class="btn-app w-24 h-24 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl animate-pulse ring-8 ring-red-300/30">
+                     <i class="fa-solid fa-stop text-3xl"></i>
+                   </button>
+                   <p class="text-red-400 mt-3 font-semibold">Yozilmoqda...</p>`
+                : `<button onclick="startRecording()" class="btn-app w-24 h-24 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-2xl hover:bg-violet-700 ring-4 ring-violet-300/30">
+                     <i class="fa-solid fa-microphone text-3xl"></i>
+                   </button>
+                   <p class="text-gray-400 mt-3 font-semibold">Yozishni Boshlash</p>`;
+
+            content.innerHTML = `
+                <!-- Yozish boshqaruvlari -->
+                <div class="flex flex-col items-center justify-center py-10 bg-gray-800/50 rounded-xl shadow-xl border border-gray-700/50">
+                    ${buttonHtml}
+                </div>
+
+                <!-- Saqlangan Yozuvlar Ro'yxati -->
+                <div class="flex-grow overflow-y-auto space-y-3">
+                    <h3 class="text-xl font-bold mb-4 text-white">Saqlangan Yozuvlar (${state.recordings.length})</h3>
+                    <div id="recordings-list" class="space-y-3">
+                        ${state.recordings.map(rec => {
+                            const date = rec.timestamp ? new Date(rec.timestamp.seconds * 1000) : new Date();
+                            const dateStr = date.toLocaleString('uz-UZ', { dateStyle: 'short', timeStyle: 'short' });
+                            const durationStr = `${(rec.duration / 10).toFixed(1)} s`;
+                            return `
+                                <div class="p-4 bg-gray-800 rounded-lg shadow-md flex justify-between items-center border-l-4 border-red-500">
+                                    <div class="flex-grow">
+                                        <h4 class="font-semibold text-lg text-red-300">${rec.name}</h4>
+                                        <p class="text-xs text-gray-500 mt-1">${dateStr} | Taxminiy vaqt: ${durationStr}</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="playRecording('${rec.id}', '${rec.mimeType}')" class="text-green-400 hover:text-green-500 transition duration-150 p-2 bg-gray-700 rounded-full">
+                                            <i class="fa-solid fa-play"></i>
+                                        </button>
+                                        <button onclick="deleteRecording('${rec.id}')" class="text-red-400 hover:text-red-500 transition duration-150 p-2 bg-gray-700 rounded-full">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                        ${state.recordings.length === 0 ? `<p class="text-center text-gray-500 mt-5">Hali ovozli yozuvlar yo'q.</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- 5. Sozlamalar App (Settings + Mavzular) ---
+        
+        window.changeTheme = (newTheme) => {
+            updateTheme(newTheme);
+            alertModal("Muvaffaqiyat", "Mavzu muvaffaqiyatli o'zgartirildi!");
+            // Re-render settings to show active theme
+            renderSettings();
+        };
+
+        window.clearAppData = async () => {
+            if (!await confirmModal("Ma'lumotlarni Tozalash", "Haqiqatan ham barcha eslatmalar va yozuvlarni o'chirmoqchimisiz? Bu qaytarilmaydi!")) return;
+            
+            // 1. LocalStorage'dan yozuvlarni tozalash
+            state.recordings.forEach(rec => {
+                localStorage.removeItem(`recording_${rec.id}`);
+            });
+
+            // 2. Firestore'dan barcha ma'lumotlarni o'chirish (Notes va Recordings metadata)
+            const collectionsToClear = ['notes', 'recordings'];
+            let deletionCount = 0;
+
+            try {
+                for (const collectionName of collectionsToClear) {
+                    const colRef = collection(db, `artifacts/${appId}/users/${userId}/${collectionName}`);
+                    const snapshot = await getDocs(colRef);
+                    
+                    for (const docSnapshot of snapshot.docs) {
+                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/${collectionName}`, docSnapshot.id));
+                        deletionCount++;
+                    }
+                }
+                alertModal("Muvaffaqiyat", `Barcha ma'lumotlar (${deletionCount} ta element) muvaffaqiyatli tozalandi.`);
+                // Return to home after clearing
+                setCurrentApp('home'); 
+            } catch (e) {
+                console.error("Ma'lumotlarni tozalash xatosi:", e);
+                alertModal("Xatolik", "Ma'lumotlarni tozalashda xatolik yuz berdi. Konsolni tekshiring.");
+            }
+        };
+
+        function renderSettings() {
+            document.getElementById('app-title').textContent = 'Sozlamalar';
+            const content = document.getElementById('main-content');
+            content.className = 'settings-container flex flex-col h-full p-4 space-y-6';
+
+            content.innerHTML = `
+                <!-- Mavzular (Themes) -->
+                <div class="p-4 bg-gray-800/50 rounded-xl shadow-xl border border-gray-700/50">
+                    <h3 class="text-lg font-semibold mb-4 text-violet-300"><i class="fa-solid fa-palette mr-2"></i> Mavzular</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        ${renderThemeButton('dark', 'Qora (Default)', '#121212')}
+                        ${renderThemeButton('light', 'Yorug\'lik', '#F3F4F6', '#1F2937')}
+                        ${renderThemeButton('violet', 'Binafsha', '#1F2937', '#A78BFA')}
+                    </div>
+                </div>
+
+                <!-- Foydalanuvchi ma'lumotlari -->
+                <div class="p-4 bg-gray-800/50 rounded-xl shadow-xl border border-gray-700/50">
+                    <h3 class="text-lg font-semibold mb-3 text-violet-300"><i class="fa-solid fa-user-gear mr-2"></i> Tizim Ma'lumotlari</h3>
+                    <p class="text-sm text-gray-400">
+                        <span class="font-semibold">Foydalanuvchi ID:</span> <span class="font-mono break-all">${userId || 'Yuklanmoqda...'}</span>
+                    </p>
+                    <p class="text-sm text-gray-400 mt-2">
+                        <span class="font-semibold">Ilova ID:</span> <span class="font-mono break-all">${appId}</span>
+                    </p>
+                </div>
+
+                <!-- Ma'lumotlarni boshqarish -->
+                <div class="p-4 bg-gray-800/50 rounded-xl shadow-xl border border-gray-700/50">
+                    <h3 class="text-lg font-semibold mb-3 text-violet-300"><i class="fa-solid fa-database mr-2"></i> Ma'lumotlarni Boshqarish</h3>
+                    <button onclick="clearAppData()" class="btn-app w-full py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition duration-150">
+                        <i class="fa-solid fa-skull-crossbones mr-2"></i> Barcha Eslatma/Yozuvlarni Tozalash
+                    </button>
+                </div>
+            `;
+        }
+        
+        function renderThemeButton(themeName, displayName, bgColor, textColor = '#E0E0E0') {
+            const isActive = state.theme === themeName;
+            const style = `background-color: ${bgColor}; color: ${isActive ? 'white' : textColor};`;
+            const activeClasses = isActive ? 'border-violet-500 ring-2 ring-violet-500/50' : 'border-gray-600 hover:border-violet-500';
+            
+            return `
+                <button onclick="changeTheme('${themeName}')" 
+                        class="p-3 rounded-lg text-xs font-semibold text-center transition duration-150 border-2 ${activeClasses}"
+                        style="${style}">
+                    ${isActive ? '<i class="fa-solid fa-check mr-1"></i>' : ''} ${displayName}
+                </button>
+            `;
+        }
+
+        // --- Custom Modal/Alert Functions (Replacing window.alert/confirm) ---
+
+        /**
+         * Shows a simple informational modal.
+         */
+        function alertModal(title, message) {
+            const modalHtml = `
+                <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm transition-opacity duration-300">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-2xl max-w-sm w-full transform scale-95 transition-transform duration-300 border border-violet-500">
+                        <h4 class="text-xl font-bold mb-3 text-white">${title}</h4>
+                        <p class="text-gray-300 mb-5">${message}</p>
+                        <button onclick="document.getElementById('custom-modal').remove()" 
+                                class="btn-app w-full py-2 rounded-lg bg-violet-600 text-white font-semibold hover:bg-violet-700">
+                            Yopish
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        /**
+         * Shows a confirmation modal (simulates window.confirm).
+         */
+        function confirmModal(title, message) {
+            return new Promise(resolve => {
+                const modalHtml = `
+                    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+                        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl max-w-sm w-full transform scale-95 border border-red-500">
+                            <h4 class="text-xl font-bold mb-3 text-white">${title}</h4>
+                            <p class="text-gray-300 mb-5">${message}</p>
+                            <div class="flex justify-end space-x-3">
+                                <button id="cancel-btn" class="btn-app py-2 px-4 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-700">
+                                    Bekor Qilish
+                                </button>
+                                <button id="confirm-btn" class="btn-app py-2 px-4 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700">
+                                    Tasdiqlash
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                const modal = document.getElementById('confirm-modal');
+                
+                document.getElementById('confirm-btn').onclick = () => {
+                    modal.remove();
+                    resolve(true);
+                };
+                
+                document.getElementById('cancel-btn').onclick = () => {
+                    modal.remove();
+                    resolve(false);
+                };
+            });
+        }
+
+
+        // --- Startup Logic ---
+
+        window.onload = function() {
+            // 1. Start Firebase Initialization (Async)
+            initializeFirebase();
+
+            // 2. Run Startup Animation
+            const startupScreen = document.getElementById('startup-screen');
+            // Hide startup screen after 3.0 seconds
+            setTimeout(() => {
+                startupScreen.classList.add('hidden');
+            }, 3000);
+
+            // 3. Initial UI Render after animation is complete
+            setTimeout(() => {
+                startupScreen.remove();
+                setCurrentApp('home');
+            }, 4000);
+        };
+        
+    </script>
+</body>
+</html>
