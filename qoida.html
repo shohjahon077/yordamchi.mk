@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="O'zbekiston Respublikasi Yo'l harakati qoidalari va PQ-117 qarori matni. Qonunchilik hujjatlarining to'liq to'plami." />
+    <title>Qoidalar To'plami | YMT hub</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --primary-dark: #1E40AF;
+            --secondary: #059669;
+            --accent: #F59E0B;
+            --light: #F9FAFB;
+            --gray: #64748B;
+            --text: #1F2937;
+            --card-bg: white;
+            --shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            --transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: min(95%, 1200px); /* Kengroq matn uchun */
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header (oldingi sahifadan olingan) */
+        header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Hero */
+        #hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 0 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .hero-content h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        /* Content Section Styling */
+        .content-section {
+            background: var(--card-bg);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            border-top: 5px solid var(--accent);
+        }
+        
+        .content-section h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E0E7FF;
+            padding-bottom: 10px;
+        }
+
+        .document-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .document-text p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .document-text h3 {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        
+        /* Table of Contents (TOC) */
+        .toc-box {
+            background: var(--light);
+            border: 1px solid #E2E8F0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .toc-box h3 {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .toc-box a {
+            display: block;
+            padding: 8px 0;
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 1px dashed #E2E8F0;
+            transition: color 0.3s;
+        }
+
+        .toc-box a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        /* Footer (oldingi sahifadan olingan) */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.8);
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.95rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="yolhar.html" class="logo" aria-label="Ortga, bosh sahifaga">
+                <i class="fas fa-arrow-left"></i> YMT hub
+            </a>
+            <span>Qonunchilik To'plami</span>
+        </div>
+    </header>
+
+    <section id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 id="hero-title">O'zbekiston Yo'l Harakati Qoidalari</h1>
+                <p>PQ-117-sonli Qaror va Qoidalarning to'liq matni</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        
+        <div class="toc-box">
+            <h3>Mundarija (Tezkor o'tish)</h3>
+            <a href="#pq117">I. PQ-117-sonli Prezident Qarori (Asosiy qism)</a>
+            <a href="#yhqqisqacha">II. Yo'l Harakati Qoidalarining asosiy bo'limlari</a>
+            <a href="#umumiy">1-bo'lim: Umumiy qoidalar</a>
+            <a href="#belgilar">2-bo'lim: Yo'l belgilari (Qisqacha)</a>
+            <a href="#majburiyatlar">3-bo'lim: Haydovchilarning majburiyatlari</a>
+        </div>
+
+        <section class="content-section">
+            <h2 id="pq117">I. O'zbekiston Respublikasi Prezidentining PQ-117-sonli Qarori</h2>
+            <div class="document-text">
+                <p class="document-title">PQ-117-sonli Qarordan ko'chirma (Asosiy mazmuni)</p>
+                <p><strong>"Yo'l harakati xavfsizligini ta'minlash va sohadagi raqamlashtirishni kengaytirish bo'yicha qo'shimcha chora-tadbirlar to'g'risida"</strong></p>
+                
+                <p>Mazkur qaror yo'l harakati xavfsizligini ta'minlash tizimini tubdan takomillashtirish, sohani raqamlashtirishni kuchaytirish, qoidabuzarliklarni avtomatlashtirilgan tizimlar orqali qayd etishni kengaytirish va jamoat transporti ustuvorligini belgilashga qaratilgan asosiy hujjatdir.</p>
+                
+                <h3>Asosiy o'zgarishlar va vazifalar:</h3>
+                <ul>
+                    <li>Qoidalarga kiritilgan so'nggi o'zgarishlarning huquqiy asosi.</li>
+                    <li>Yo'l harakati xavfsizligini ta'minlashda jamoat va xususiy sektor hamkorligini kuchaytirish.</li>
+                    <li>Yo'l-transport hodisalarining oldini olish uchun raqamli texnologiyalarni (kameralar, radarlar) joriy etishni tezlashtirish.</li>
+                    <li>Haydovchilar va piyodalarning mas'uliyatini oshirishga qaratilgan choralar.</li>
+                </ul>
+                <p class="document-text">**Eslatma:** PQ-117-sonli Qaror o'zida bevosita Yo'l harakati qoidalarini (YHQ) emas, balki YHQni tartibga soluvchi normativ-huquqiy asosni tashkil etadi.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 id="yhqqisqacha">II. Yo'l Harakati Qoidalarining Tuzilishi va Asosiy Bo'limlari</h2>
+            
+            <p class="document-title" id="umumiy">1-bo'lim: Umumiy qoidalar</p>
+            <div class="document-text">
+                <p>Yo'l harakati qoidalari O'zbekiston Respublikasining butun hududida yagona tartib o'rnatadi. Qoidalar harakat ishtirokchilari (haydovchilar, piyodalar va yo'lovchilar) ning huquq va majburiyatlarini belgilaydi.</p>
+                <ul>
+                    <li>Yo'l harakati ishtirokchilarining asosiy tushunchalari ("Avtomagistral", "Chorraha", "To'xtash", "Turish" va h.k.).</li>
+                    <li>Harakatlanishning umumiy shartlari va tartibga soluvchi vositalar (svetofor, nazoratchi).</li>
+                </ul>
+            </div>
+
+            <p class="document-title" id="belgilar">2-bo'lim: Yo'l belgilari va chiziqlari (Qisqacha)</p>
+            <div class="document-text">
+                <p>Yo'l belgilari va chiziqlari harakatni tartibga solishning asosiy vizual vositalaridir. Ular haydovchilarni xavflar, cheklovlar, majburiyatlar va yo'nalishlar haqida ogohlantiradi.</p>
+                <ul>
+                    <li>**1-guruh:** Ogohlantiruvchi belgilar.</li>
+                    <li>**2-guruh:** Ustuvorlik belgilari.</li>
+                    <li>**3-guruh:** Taqiqlovchi belgilar (masalan: 3.24 - Tezlikni cheklash).</li>
+                    <li>**4-guruh:** Buyruq beruvchi belgilar (masalan: 4.1.1 - To'g'riga harakat).</li>
+                    <li>**5-guruh:** Axborot-ko'rsatgich belgilar (masalan: 5.15 - To'xtash joyi).</li>
+                </ul>
+            </div>
+
+            <p class="document-title" id="majburiyatlar">3-bo'lim: Haydovchilarning umumiy majburiyatlari</p>
+            <div class="document-text">
+                <p>Har bir transport vositasi haydovchisi o'zi bilan quyidagi hujjatlarni olib yurishi shart:</p>
+                <ol>
+                    <li>Haydovchilik guvohnomasi va talon.</li>
+                    <li>Transport vositasi ro'yxatdan o'tkazilganligi to'g'risidagi hujjat (texpasport).</li>
+                    <li>Transport vositasi egalarining fuqarolik javobgarligini majburiy sug'urta qilish polisi (OSAGO).</li>
+                </ol>
+                <p>Haydovchi qoidabuzarlikni sezsa, darhol to'xtab, transport vositasi xavfsizligini ta'minlashi shart.</p>
+            </div>
+            
+            <div class="document-text">
+                <h3>Qoidalarning boshqa asosiy bo'limlari:</h3>
+                <p><strong>Chorrahalardan o'tish, Tezlikni cheklash, Piyodalar o'tish joylari va harakatlanishning boshqa shartlari</strong> kabi bo'limlar ham mavjud bo'lib, ular haydovchilik guvohnomasini olish jarayonidagi asosiy bilimlarni tashkil etadi. Bu qoidalarga amal qilish yo'l-transport hodisalarining oldini olishning garovidir.</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div style="text-align: center; padding: 20px;">
+                <p style="font-size: 1.1rem; color: var(--primary);">**Eslatma: Rasmiy hujjatlarning to'liq va eng so'nggi matnini O'zbekiston Respublikasi Qonunchilik ma'lumotlari milliy bazasidan (Lex.uz) olish tavsiya etiladi.**</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>
+                Ma'lumotlar O'zbekiston Respublikasi Yo'l harakati qoidalari asosida keltirilgan.<br>
+                © 2025 YMT hub — Ta'lim maqsadlarida.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
