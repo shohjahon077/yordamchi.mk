@@ -1,648 +1,1122 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="pageTitle">O'ZBEKISTON: STRATEGIK GLOBAL DIZAYN</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="O'zbekiston Respublikasining strategik global pozitsiyasi, iqtisodiyot, madaniyat va kelajak viziyoni haqida interfaol prezentatsiya." />
+  <title>O'ZBEKISTON: STRATEGIK GLOBAL DIZAYN</title>
+  
+  <!-- Google Fonts (Roboto + Inter) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- GSAP & Plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <!-- SplitType for text animation -->
+  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.3/dist/split-type.min.js"></script>
+  
+  <style>
+    :root {
+      /* Ranglar — Strategik palitra */
+      --primary-blue: #0077b6;
+      --secondary-green: #06d6a0;
+      --accent-gold: #ffc300;
+      --bg-dark: #020712;
+      --bg-light: #f8f9fa;
+      --text-dark: #1a1f2e;
+      --text-light: #e6f0ff;
+      --card-bg-dark: rgba(1, 10, 20, 0.92);
+      --card-bg-light: #ffffff;
+      --shadow-glow: 0 0 12px rgba(0, 119, 182, 0.6), 0 0 24px rgba(0, 119, 182, 0.2);
+      --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --border-card: 1px solid rgba(0, 119, 182, 0.4);
+      
+      /* Light mode */
+      --bg-current: var(--bg-dark);
+      --text-current: var(--text-light);
+      --card-bg-current: var(--card-bg-dark);
+      
+      /* Tipografiya */
+      --font-heading: 'Roboto', system-ui, sans-serif;
+      --font-body: 'Inter', 'Roboto', sans-serif;
+      
+      /* Animatsiya */
+      --transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
 
-    <style>
-        /* ==================== HUKUMAT DARAJASIDAGI DARK MODE TIZIMI ==================== */
-        :root {
-            /* Ranglar Palitrasi: Strategiya, Barqarorlik, Meros */
-            --primary-blue: #0077b6;      /* Strategik Moviy (Ishonch) */
-            --secondary-green: #06d6a0;   /* Barqaror Yashil (Taraqqiyot) */
-            --accent-gold: #ffc300;       /* Oltin Sariq (Meros) */
-            --bg-dark: #020712;           /* Asosiy Qorong'u Fon (Chuqur) */
-            --text-light: #f0f8ff;        /* Ochiq Matn Rangi */
-            --card-bg: rgba(1, 10, 20, 0.9); /* Quyuq, shaffof Card Fon */
-            
-            /* Tipografiya (Professional font) */
-            --font-heading: 'Roboto', 'Arial', sans-serif;
-            
-            /* Effektlar */
-            --shadow-glow: 0 0 10px rgba(0, 119, 182, 0.7), 0 0 20px rgba(0, 119, 182, 0.3);
-            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.9);
-            --border-card: 1px solid rgba(0, 119, 182, 0.5);
-        }
+    /* Light mode klassi */
+    .light-mode {
+      --bg-current: var(--bg-light);
+      --text-current: var(--text-dark);
+      --card-bg-current: var(--card-bg-light);
+      --border-card: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-        /* ==================== Asosiy Stillar ==================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: var(--font-heading);
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            line-height: 1.7;
-            color: var(--text-light);
-            background-color: var(--bg-dark);
-            scroll-behavior: smooth;
-        }
+    body {
+      background-color: var(--bg-current);
+      color: var(--text-current);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.5s ease;
+    }
 
-        .container {
-            max-width: 1350px;
-            margin: 0 auto;
-            padding: 0 35px;
-        }
-        
-        /* ==================== Header/Navigatsiya ==================== */
-        header {
-            background: rgba(2, 7, 18, 0.98); /* Juda oz shaffoflik */
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
-            border-bottom: 4px solid var(--secondary-green);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+    body.light-mode a,
+    body.light-mode .logo,
+    body.light-mode .card h3,
+    body.light-mode h2 {
+      color: var(--primary-blue);
+    }
 
-        .logo {
-            font-size: 2.5em;
-            color: var(--accent-gold);
-            text-shadow: 0 0 8px var(--accent-gold);
-            font-weight: 900;
-        }
-        
-        nav a {
-            color: rgba(240, 248, 255, 0.85);
-            padding: 8px 18px;
-            text-transform: uppercase;
-            font-weight: 500;
-            transition: all 0.3s;
-            border-radius: 4px;
-        }
+    .container {
+      width: min(95%, 1350px);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-        nav a:hover {
-            color: var(--primary-blue);
-            background: rgba(0, 119, 182, 0.1);
-            border-bottom: 2px solid var(--primary-blue);
-        }
+    /* ==================== LOADER ==================== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-current);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
 
-        /* ==================== Hero Section (Immersiv) ==================== */
-        #hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: radial-gradient(circle at center, rgba(0, 119, 182, 0.1), var(--bg-dark) 80%);
-            border-bottom: 5px solid var(--accent-gold);
-        }
+    .loader-spinner {
+      width: 70px;
+      height: 70px;
+      border: 6px solid rgba(0, 119, 182, 0.2);
+      border-top-color: var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 24px;
+    }
 
-        #hero h1 {
-            font-size: 5.8em; 
-            text-shadow: 0 0 20px var(--primary-blue), 0 0 35px rgba(0, 119, 182, 0.5);
-            font-weight: 900;
-            letter-spacing: 4px;
-        }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-        #hero p {
-            font-size: 1.8em;
-            font-weight: 300;
-            color: var(--secondary-green);
-        }
+    /* ==================== HEADER ==================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(2, 7, 18, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 0;
+      border-bottom: 2px solid var(--secondary-green);
+      transition: var(--transition);
+    }
 
-        .cta-button {
-            background: var(--secondary-green);
-            color: var(--bg-dark);
-            border: none;
-            box-shadow: 0 0 15px var(--secondary-green);
-            padding: 18px 45px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        
-        .cta-button:hover {
-            background: var(--primary-blue);
-            color: var(--text-light);
-            box-shadow: 0 0 20px var(--primary-blue);
-        }
+    .light-mode header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom-color: var(--primary-blue);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    }
 
-        /* ==================== Section/Kontent Stillari ==================== */
-        section {
-            padding: 160px 0;
-            position: relative;
-        }
-        
-        h2 {
-            font-size: 4.2em;
-            text-align: center;
-            margin-bottom: 80px;
-            color: var(--primary-blue);
-            text-shadow: var(--shadow-glow);
-            font-weight: 700;
-        }
-        
-        h2::after {
-            content: '';
-            display: block;
-            width: 200px;
-            height: 5px;
-            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-            margin: 15px auto 0;
-            border-radius: 5px;
-        }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        /* ==================== Card Dizayni (Maksimal ishonch) ==================== */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 40px;
-        }
+    .logo {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      text-decoration: none;
+      text-shadow: 0 0 8px rgba(255, 195, 0, 0.5);
+      font-family: var(--font-heading);
+    }
 
-        .card {
-            background: var(--card-bg); 
-            backdrop-filter: blur(8px);          
-            border: var(--border-card);
-            border-radius: 10px;
-            box-shadow: var(--shadow-card);
-            padding: 35px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .card:hover {
-            transform: translateY(-10px); 
-            border-left: 7px solid var(--accent-gold);
-            background: rgba(1, 10, 20, 0.95);
-        }
+    .light-mode .logo {
+      color: var(--primary-blue);
+      text-shadow: none;
+    }
 
-        .card h3 {
-            font-size: 1.6em;
-            color: var(--accent-gold);
-            border-bottom: 2px solid rgba(255, 195, 0, 0.4);
-            padding-bottom: 12px;
-            margin-bottom: 18px;
-            font-weight: 600;
-        }
-        
-        .card p {
-            color: rgba(240, 248, 255, 0.95);
-            font-weight: 300;
-        }
+    nav {
+      display: flex;
+      gap: 12px;
+    }
 
-        /* ==================== Three.js Section (Vizual markaz) ==================== */
-        #threejs-area {
-            position: relative;
-            margin-top: 60px;
-        }
-        
-        #threejs-canvas {
-            height: 700px; /* Balandlik yanada oshirildi */
-            border-radius: 10px;
-            box-shadow: 0 0 50px rgba(0, 119, 182, 0.7);
-        }
-        
-        /* ==================== Footer ==================== */
-        footer {
-            background: var(--bg-dark);
-            color: rgba(240, 248, 255, 0.5);
-            padding: 50px 0;
-            border-top: 5px solid var(--primary-blue);
-            text-align: center;
-            font-weight: 300;
-        }
-    </style>
+    .nav-link {
+      color: var(--text-current);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+      background: rgba(0, 119, 182, 0.15);
+      color: var(--primary-blue);
+    }
+
+    .light-mode .nav-link:hover,
+    .light-mode .nav-link:focus {
+      background: rgba(0, 119, 182, 0.08);
+      color: var(--primary-blue);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: var(--secondary-green);
+      transition: width 0.3s, left 0.3s;
+      border-radius: 1px;
+    }
+
+    .nav-link:hover::after,
+    .nav-link:focus::after {
+      width: 70%;
+      left: 15%;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    #lang-switcher,
+    #theme-toggle {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-light);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .light-mode #lang-switcher,
+    .light-mode #theme-toggle {
+      background: #f1f3f5;
+      color: var(--text-dark);
+    }
+
+    #theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+    }
+
+    #menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-current);
+      font-size: 1.8rem;
+      cursor: pointer;
+    }
+
+    /* ==================== MOBIL ==================== */
+    @media (max-width: 768px) {
+      #menu-toggle { display: block; }
+      nav { 
+        position: fixed;
+        top: 80px;
+        left: -100%;
+        flex-direction: column;
+        background: var(--bg-current);
+        width: 100%;
+        padding: 20px 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: left 0.4s ease;
+        z-index: 99;
+      }
+      nav.active { left: 0; }
+      .nav-link { 
+        padding: 14px 24px; 
+        text-align: center;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .light-mode .nav-link {
+        border-bottom-color: rgba(0,0,0,0.08);
+      }
+      .header-controls { gap: 8px; }
+    }
+
+    /* ==================== HERO ==================== */
+    #hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: radial-gradient(circle at 50% 30%, rgba(0, 119, 182, 0.08), transparent 60%), var(--bg-current);
+      border-bottom: 3px solid var(--accent-gold);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      padding: 0 20px;
+    }
+
+    .hero-content h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(2.8rem, 8vw, 5.2rem);
+      font-weight: 900;
+      margin-bottom: 24px;
+      line-height: 1.1;
+      text-shadow: 
+        0 2px 4px rgba(0,0,0,0.3),
+        0 0 20px rgba(0, 119, 182, 0.7);
+    }
+
+    .hero-content p {
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-weight: 300;
+      margin-bottom: 32px;
+      color: var(--secondary-green);
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--secondary-green);
+      color: var(--bg-dark);
+      font-weight: 700;
+      font-size: 1.2rem;
+      padding: 16px 42px;
+      border-radius: 50px;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 5px 20px rgba(6, 214, 160, 0.4);
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+    }
+
+    .cta-button:hover,
+    .cta-button:focus {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 25px rgba(6, 214, 160, 0.6);
+      background: var(--primary-blue);
+      color: white;
+    }
+
+    /* ==================== SECTIONS ==================== */
+    section {
+      padding: 120px 0;
+      position: relative;
+    }
+
+    h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      text-align: center;
+      margin-bottom: 60px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+      border-radius: 2px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+
+    .card {
+      background: var(--card-bg-current);
+      border: var(--border-card);
+      border-radius: 12px;
+      padding: 32px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--primary-blue);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.5s ease;
+    }
+
+    .card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 
+        0 15px 40px rgba(0, 119, 182, 0.3),
+        0 0 25px rgba(6, 214, 160, 0.2);
+    }
+
+    .card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      margin-bottom: 16px;
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .light-mode .card h3 {
+      color: var(--primary-blue);
+    }
+
+    .card p {
+      color: var(--text-current);
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .card strong {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .light-mode .card strong {
+      color: var(--primary-blue);
+    }
+
+    /* ==================== THREEJS ==================== */
+    #threejs-area {
+      margin: 80px 0;
+      position: relative;
+    }
+
+    #threejs-canvas {
+      height: 600px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .threejs-label {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+
+    .light-mode .threejs-label {
+      color: var(--primary-blue);
+    }
+
+    /* ==================== FOOTER ==================== */
+    footer {
+      background: var(--bg-current);
+      padding: 50px 0 30px;
+      border-top: 3px solid var(--primary-blue);
+      text-align: center;
+      font-size: 1rem;
+      color: var(--text-current);
+      opacity: 0.8;
+    }
+
+    .footer-content p {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Scroll Progress Indicator */
+    #progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      z-index: 1000;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.1s;
+    }
+
+    .light-mode #progress-container {
+      background: rgba(0,0,0,0.1);
+    }
+
+    /* Scroll-to-top button */
+    #scroll-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: var(--primary-blue);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 119, 182, 0.4);
+    }
+
+    #scroll-to-top.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #scroll-to-top:hover {
+      transform: translateY(-3px) scale(1.05);
+      background: var(--accent-gold);
+      color: var(--bg-dark);
+    }
+
+    /* Focus styles for accessibility */
+    *:focus-visible {
+      outline: 2px solid var(--accent-gold);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-    
-    <script>
-        const translations = {
-            // ==================== ASOSIY KONTEKST ====================
-            pageTitle: {
-                uz: "O'ZBEKISTON RESPUBLIKASI: STRATEGIK GLOBAL DIZAYN",
-                en: "REPUBLIC OF UZBEKISTAN: STRATEGIC GLOBAL DESIGN",
-                ru: "РЕСПУБЛИКА УЗБЕКИСТАН: СТРАТЕГИЧЕСКИЙ ГЛОБАЛЬНЫЙ ДИЗАЙН",
-                zh: "乌兹别克斯坦共和国：战略全球设计",
-                ko: "우즈베키스탄 공화국: 전략적 글로벌 디자인"
-            },
-            nav_qadimgi: { uz: "Qadimgi Meros", en: "Ancient Legacy", ru: "Древнее Наследие", zh: "古代遗产", ko: "고대 유산" },
-            nav_sovet: { uz: "Geopolitik Davr", en: "Geopolitical Era", ru: "Геополитическая Эра", zh: "地缘政治时代", ko: "지정학 시대" },
-            nav_hozirgi: { uz: "Bugungi Iqtisodiyot", en: "Current Economy", ru: "Текущая Экономика", zh: "当前经济", ko: "현재 경제" },
-            nav_kelajak: { uz: "Strategik Viziyon", en: "Strategic Vision", ru: "Стратегическое Видение", zh: "战略愿景", ko: "전략적 비전" },
-            nav_madaniyat: { uz: "Madaniyat & Sport", en: "Culture & Sport", ru: "Культура и Спорт", zh: "文化与体育", ko: "문화 및 스포츠" },
-            
-            // ==================== HERO BO'LIMI ====================
-            hero_h1: { 
-                uz: "O'ZBEKISTON: STRATEGIYA, INNOVATSIYA VA MEROS", 
-                en: "UZBEKISTAN: STRATEGY, INNOVATION, AND LEGACY", 
-                ru: "УЗБЕКИСТАН: СТРАТЕГИЯ, ИННОВАЦИИ И НАСЛЕДИЕ",
-                zh: "乌兹别克斯坦：战略、创新与遗产",
-                ko: "우즈베키스탄: 전략, 혁신, 유산"
-            },
-            hero_p: { 
-                uz: "Markaziy Osiyoning Koinotga Oynasi. Barqaror Rivojlanishning Global Chorrahasi.", 
-                en: "Central Asia's Window to the Cosmos. The Global Crossroads of Sustainable Development.", 
-                ru: "Окно Центральной Азии в Космос. Глобальный Перекресток Устойчивого Развития.",
-                zh: "中亚通往宇宙的窗口。可持续发展的全球十字路口。",
-                ko: "중앙아시아의 우주로 향하는 창. 지속 가능한 발전의 글로벌 교차로."
-            },
-            cta_button: { uz: "STRATEGIK O'TISHNI O'RGANISH", en: "EXPLORE THE STRATEGIC TRANSITION", ru: "ИЗУЧИТЬ СТРАТЕГИЧЕСКИЙ ПЕРЕХОД", zh: "探索战略转型", ko: "전략적 전환 탐색" },
+  <!-- Scroll Progress -->
+  <div id="progress-container"></div>
 
-            // ==================== QADIMGI ZAMON (Yakuniy to'g'rilangan matnlar) ====================
-            qadimgi_h2: { uz: "📜 Qadimgi Meros: Sivilizatsiyalar Arxi", en: "📜 Ancient Legacy: The Ark of Civilizations", ru: "📜 Древнее Наследие: Ковчег Цивилизаций", zh: "📜 古代遗产：文明方舟", ko: "📜 고대 유산: 문명의 방주" },
-            qadimgi_card1_h3: { uz: "Qadimgi Davlatchilik Va Diniy Pluralizm", en: "Ancient Statehood and Religious Pluralism", ru: "Древняя Государственность и Плюрализм", zh: "古代国家形态与多元宗教", ko: "고대 국가와 종교적 다원주의" },
-            qadimgi_card1_p: { 
-                uz: "Miloddan avvalgi davrlardan boshlab Sug'd, Xorazm, Baqtriya kabi davlatlar mavjud bo'lgan. Zardushtiylik, Buddizm, Nestorianlik va Islomning ilk shakllari bu zaminning boy tarixini tashkil etadi.",
-                en: "Since ancient times, states like Sogdiana, Khorezm, and Bactria existed. Early forms of Zoroastrianism, Buddhism, Nestorianism, and Islam constitute the rich history of this land.",
-                ru: "С древних времен существовали такие государства, как Согд, Хорезм и Бактрия. Ранние формы зороастризма, буддизма, несторианства и ислама составляют богатую историю этой земли.",
-                zh: "自古以来，粟特、花剌子模、巴克特里亚等国家就存在。琐罗亚斯德教、佛教、景教和伊斯兰教的早期形式构成了这片土地的丰富历史。",
-                ko: "고대부터 소그디아나, 호레즘, 박트리아 같은 국가들이 존재했습니다. 조로아스터교, 불교, 네스토리우스교, 이슬람교의 초기 형태가 이 땅의 풍부한 역사를 이룹니다."
-            },
-            // ... (Qolgan matnlar yuqoridagi kabi tarjima lug'atida tuzatilishi kerak, bu yerda kod hajmi cheklangani uchun to'liq kiritilmadi, ammo asosiy HTML qismi to'liq tuzatildi.)
-            
-            // ==================== FOOTER ====================
-            footer_text: {
-                uz: "© 2025 O'zbekiston Global Strategik Markazi. Barcha huquqlar himoyalangan. Matnlar Hukumat standarti asosida tahrirlangan.",
-                en: "© 2025 Uzbekistan Global Strategy Center. All Rights Reserved. Texts conform to Government standards.",
-                ru: "© 2025 Глобальный Стратегический Центр Узбекистана. Все права защищены. Тексты соответствуют государственным стандартам.",
-                zh: "© 2025 乌兹别克斯坦全球战略中心。保留所有权利。文本符合政府标准。",
-                ko: "© 2025 우즈베키스탄 글로벌 전략 센터. 모든 권리 보유. 텍스트는 정부 표준에 맞춰 수정되었습니다."
-            }
-        };
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-spinner"></div>
+    <p id="loader-text">Strategik ma'lumotlar portalini yuklayapmiz...</p>
+  </div>
 
-        let currentLang = 'uz'; 
-        // Til funksiyalari (Oldingi versiyadan)
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                if (translations[key] && translations[key][lang]) {
-                    if (element.tagName === 'A' || element.tagName === 'BUTTON') {
-                        element.textContent = translations[key][lang];
-                    } else if (element.tagName === 'INPUT' && element.type === 'button') {
-                        element.value = translations[key][lang];
-                    } else {
-                        element.textContent = translations[key][lang];
-                    }
-                }
-            });
-            document.title = translations.pageTitle[lang] || translations.pageTitle['uz'];
-            const langSwitcher = document.getElementById('lang-switcher');
-            if (langSwitcher) {
-                langSwitcher.value = lang;
-            }
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            const langSwitcher = document.getElementById('lang-switcher');
-            if (langSwitcher) {
-                langSwitcher.addEventListener('change', (event) => {
-                    setLanguage(event.target.value);
-                });
-                setLanguage(currentLang);
-            }
-        });
-    </script>
-    
-    <div id="loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: var(--text-light); font-size: 2em;">
-        <div class="loader-spinner" style="width: 80px; height: 80px; border: 7px solid rgba(0, 119, 182, 0.3); border-radius: 50%; border-top-color: var(--accent-gold); animation: spin 1s ease-in-out infinite; margin-bottom: 30px;"></div>
-        <p id="loader-text" style="color: var(--primary-blue);" data-key="loaderText">Strategik ma'lumotlar portalini yuklayapmiz...</p>
-         <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-    </div>
+  <!-- Scroll-to-top -->
+  <a href="#hero" id="scroll-to-top" aria-label="Yuqoriga">
+    <i class="fas fa-arrow-up"></i>
+  </a>
 
-    <header>
-        <div class="container">
-            <a href="#" class="logo">UZB.STRATEGY</a>
-            <nav>
-                <a href="#qadimgi" data-key="nav_qadimgi">Qadimgi Meros</a>
-                <a href="#sovet-davri" data-key="nav_sovet">Geopolitik Davr</a>
-                <a href="#hozirgi" data-key="nav_hozirgi">Bugungi Iqtisodiyot</a>
-                <a href="#kelajak" data-key="nav_kelajak">Strategik Viziyon</a>
-                <a href="#madaniyat" data-key="nav_madaniyat">Madaniyat & Sport</a>
-            </nav>
-            <select id="lang-switcher">
-                <option value="uz">O'zbekcha</option>
-                <option value="en">English</option>
-                <option value="ru">Русский</option>
-                <option value="zh">中文 (Chinese)</option>
-                <option value="ko">한국어 (Korean)</option>
-            </select>
-        </div>
-    </header>
-
-    <section id="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1 data-key="hero_h1">O'ZBEKISTON: STRATEGIYA, INNOVATSIYA VA MEROS</h1>
-                <p data-key="hero_p">Markaziy Osiyoning Koinotga Oynasi. Barqaror Rivojlanishning Global Chorrahasi.</p>
-                <a href="#hozirgi" class="cta-button" data-key="cta_button" style="margin-top: 50px;">STRATEGIK O'TISHNI O'RGANISH</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="qadimgi">
-        <div class="container">
-            <h2 data-key="qadimgi_h2">📜 Qadimgi Meros: Sivilizatsiyalar Arxi</h2>
-            <div class="card-grid">
-                <div class="card" data-key="qadimgi_card1">
-                    <h3 data-key="qadimgi_card1_h3">Qadimgi Davlatchilik Va Diniy Pluralizm</h3>
-                    <p data-key="qadimgi_card1_p">Miloddan avvalgi davrlardan boshlab **Sug'd, Xorazm, Baqtriya** kabi davlatlar mavjud bo'lgan. Zardushtiylik, Buddizm, Nestorianlik va Islomning ilk shakllari bu zaminning boy tarixini tashkil etadi.</p>
-                </div>
-                <div class="card">
-                    <h3>Islom Oltin Asri va Buyuk Allomalar</h3>
-                    <p>IX-XIII asrlar - matematika, tibbiyot, astronomiya va ilohiyot rivojlangan davr. **Al-Xorazmiy, Ibn Sino, Al-Beruniy, Imom Buxoriy** kabi daholar G'arb va Sharq Uyg'onishiga bevosita ta'sir ko'rsatgan ilmiy bazadir.</p>
-                </div>
-                <div class="card">
-                    <h3>Temuriylar Faxri va Harbiy Strategiyalar</h3>
-                    <p>Amir Temur tuzgan buyuk imperiya faqat me'morchilik emas, balki **qo'shinni boshqarish strategiyalari** va qonun-qoidalar (Temur Tuzuklari) bilan ham mashhur. Bu davr harbiy va siyosiy strategiya maktabining namunasidir.</p>
-                </div>
-                <div class="card">
-                    <h3>Buyuk Ipak Yo'li Logistikasi</h3>
-                    <p>O'zbekiston hududi Ipak Yo'lining asosiy tugun nuqtasi bo'lgan. **Karvonsaroylar, savdo yo'llari va valyuta almashinuv tizimlari** bo'yicha batafsil ma'lumotlar qadimgi Markaziy Osiyo logistika fanini o'rgatadi.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section id="sovet-davri">
-        <div class="container">
-            <h2 data-key="sovet_h2">☭ Geopolitik Davr: Transformatsiya Sinovlari</h2>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>Industrial Gigantizm Va Paxta Rejasi</h3>
-                    <p>Sovet davrida O'zbekiston yirik paxta yetkazib beruvchiga aylantirildi. **Qishloq xo'jaligi infratuzilmasi** markaziy rejalashtirish asosida butunlay o'zgartirildi, bu esa oqibatida **Orol fojiasiga** olib keldi.</p>
-                </div>
-                <div class="card">
-                    <h3>Ilm-Fan Akademiyalari Va Texnokratlar</h3>
-                    <p>Tashkil etilgan **O'zSSR Fanlar Akademiyasi** va Politexnika Institutlari yangi texnokratlar avlodini shakllantirdi. Bu zamonaviy O'zbekistonning **muhandislik bazasini** yaratishga xizmat qilgan muhim qadamdir.</p>
-                </div>
-                <div class="card">
-                    <h3>Qatag'onlar MeroSi Va Adabiyot</h3>
-                    <p>1930-yillarda jazo choralari orqali milliy ziyolilar yo'q qilingan bo'lsa-da, **Abdulla Qodiriy va Cho'lpon** kabi ijodkorlar asarlari zamonaviy o'zbek adabiyoti va milliy ruhiyatining asosiga aylandi.</p>
-                </div>
-                <div class="card">
-                    <h3>Mustaqillikka Dastlabki Qadamlar</h3>
-                    <p>1980-yillarning oxirida siyosiy erkinlik uchun harakatlar boshlandi. **"O'zbek tili"ga davlat tili maqomi** berilishi va 1991-yil 31-avgustdagi mustaqillik deklaratsiyasi shu davrning eng muhim yutuqlaridir.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="hozirgi">
-        <div class="container">
-            <h2 data-key="hozirgi_h2">✅ Bugungi Iqtisodiyot: Global Moliya Chorrahasi</h2>
-            
-            <div id="threejs-area" style="position: relative;">
-                <div id="threejs-canvas"></div>
-                <p style="text-align: center; color: var(--accent-gold); margin-top: 15px; font-size: 1.5em; font-weight: bold;">
-                    Interaktiv 3D Vizualizatsiya: O'zbekistonning Energetik (Torus Knot) va Ma'rifiy Potensiali.
-                </p>
-            </div>
-            
-            <div class="card-grid" style="margin-top: 100px;">
-                <div class="card">
-                    <h3>Valyuta Bozori Liberalizatsiyasi</h3>
-                    <p>2017-yilda so'mning erkin konvertatsiyasi yo'lga qo'yildi. Bu xorijiy investitsiyalarni jalb qilishda asosiy katalizator bo'ldi va **makroiqtisodiy barqarorlikni** ta'minlashga xizmat qilmoqda.</p>
-                </div>
-                <div class="card">
-                    <h3>Tabiiy Resurslar va Geologiya</h3>
-                    <p>O'zbekiston oltin, uran, mis va tabiiy gaz bo'yicha dunyodagi eng yirik zaxiralarga ega. **Navoiy kon-metallurgiya kombinati** oltin qazib olishda jahon yetakchilaridan biri hisoblanadi.</p>
-                </div>
-                <div class="card">
-                    <h3>Transport Logistikasi (TIR koridorlari)</h3>
-                    <p>Xitoy-Yevropa, Janubiy Osiyo yo'nalishlarida **zamonaviy temir yo'l va avtomobil yo'llari tarmog'i**ni rivojlantirish. Bu xalqaro tranzit salohiyatini oshirishga qaratilgan muhim strategik yo'nalishdir.</p>
-                </div>
-                <div class="card">
-                    <h3>IT Parklar va Raqamlashtirish</h3>
-                    <p>**Toshkent IT Parki** 1000 dan ortiq rezidentni birlashtiradi. Bu markaz dasturlash, BPO, FinTech sohalarida yuqori qo'shilgan qiymatli xizmatlar ko'rsatuvchi yosh mutaxassislarni tayyorlamoqda.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="kelajak">
-        <div class="container">
-            <h2 data-key="kelajak_h2">🔮 Strategik Viziyon: 2030-2050 Maqsadlari</h2>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>"Yashil Iqtisodiyot"ga O'tish</h3>
-                    <p>2030 yilga borib, **qayta tiklanuvchi energiya manbalari** ulushini 25% dan oshirish. Yirik Xalqaro Energetika Korporatsiyalari bilan quyosh va shamol elektr stansiyalarini qurish bo'yicha strategik loyihalar amalga oshirilmoqda.</p>
-                </div>
-                <div class="card">
-                    <h3>Global Oziq-ovqat Xavfsizligi Dasturi</h3>
-                    <p>Suv tejovchi texnologiyalar (tomchilatib sug'orish) orqali ekin maydonlari samaradorligini oshirish va O'zbekistonni **organik meva-sabzavot eksporti** bo'yicha Markaziy Osiyo yetakchisiga aylantirishni maqsad qilingan.</p>
-                </div>
-                <div class="card">
-                    <h3>Aholi Salohiyatini Rivojlantirish</h3>
-                    <p>Xalqaro universitetlar bilan hamkorlikda <strong>ilmiy-tadqiqot markazlari</strong> (R&D)ni tashkil etish, yoshlarning global bozorga kirishi uchun amaliy ta'lim tizimini yaratish bo'yicha keng ko'lamli ishlar qilinmoqda.</p>
-                </div>
-                <div class="card">
-                    <h3>Sog'liqni Saqlash Klasterlari</h3>
-                    <p>Turizm va sog'liqni saqlash integratsiyasi (Medical Tourism). **Xususiy shifoxonalar tarmog'ini** jahon standartlariga olib chiqish va chet el fuqarolari uchun yuqori sifatli xizmatlarni taklif qilish yo'lga qo'yilgan.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="madaniyat">
-        <div class="container">
-            <h2 data-key="madaniyat_h2">🎨 Madaniyat & Sport: Diplomatiya Va Qadriyatlar</h2>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>Bokschilik Maktabi Va Sport Diplomatikasi</h3>
-                    <p>O'zbekistonning **boks, dzyudo, og'ir atletika** kabi sport turlarida xalqaro maydondagi yutuqlari. Sport orqali mamlakatning ijobiy imijini mustahkamlash asosiy ustuvor yo'nalish hisoblanadi.</p>
-                </div>
-                <div class="card">
-                    <h3>Nomoddiy Madaniy Meros</h3>
-                    <p>**Shashmaqom, Baxshichilik san'ati, Palov an'anasi** - bular YUNESKO himoyasida. Milliy qadriyatlarni himoya qilish va ularni xalqaro darajada targ'ib etish bo'yicha doimiy dasturlar mavjud.</p>
-                </div>
-                <div class="card">
-                    <h3>Ipak Yo'li Madaniy Festivali</h3>
-                    <p>Samarqandda muntazam o'tkaziladigan xalqaro festivallar. Bu tadbirlar orqali O'zbekistonning Markaziy Osiyo madaniyatining **asosiy sahnasi** sifatidagi mavqeini mustahkamlash ko'zda tutilgan.</p>
-                </div>
-                <div class="card">
-                    <h3>Xattotlik Va Dizayn San'ati</h3>
-                    <p>**Naqqoshlik, ganchkorlik, gilam to'qish** kabi amaliy san'at turlarini zamonaviy dizayn va arxitekturaga integratsiya qilish. Bu orqali milliy o'ziga xoslikni saqlab qolish ustida ish olib borilmoqda.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p data-key="footer_text">© 2025 O'zbekiston Global Strategik Markazi. Barcha huquqlar himoyalangan. Matnlar Hukumat standarti asosida tahrirlangan.</p>
-        </div>
-    </footer>
-
-    <script>
-        gsap.registerPlugin(ScrollTrigger);
-
-        // ==================== 1. Kirish Animatsiyasi va GSAP Animatsiyasi ====================
-        const loader = document.getElementById('loader');
-        const body = document.body;
-
-        window.addEventListener('load', () => {
-            gsap.to('#loader-text', { opacity: 0, duration: 0.5 });
-            gsap.to(loader, { opacity: 0, duration: 1.5, delay: 1.5, onComplete: () => {
-                loader.style.display = 'none';
-                body.style.opacity = 1;
-                
-                // Hero qismi animatsiyasi
-                gsap.from('#hero h1', { y: 50, opacity: 0, duration: 1.5, delay: 0.2, ease: "power3.out" });
-                gsap.from('#hero p', { y: 50, opacity: 0, duration: 1.5, delay: 0.4, ease: "power3.out" });
-                gsap.from('.cta-button', { scale: 0.8, opacity: 0, duration: 1, delay: 0.8, ease: "elastic.out(1, 0.5)" });
-                
-                initScrollAnimations();
-            }});
-        });
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <a href="#hero" class="logo" aria-label="UZB.STRATEGY asosiy sahifaga"> YMT  <span style="color:#06d6a0;"> hub </span></a>
         
-        function initScrollAnimations() {
-            // Card animatsiyalari
-            document.querySelectorAll('section:not(#hero) .card').forEach(card => {
-                gsap.from(card, {
-                    y: 100,
-                    opacity: 0,
-                    duration: 1.2,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 90%",
-                        toggleActions: "play none none none"
-                    }
-                });
-            });
-            
-            // Sarlavhalar uchun animatsiya
-            document.querySelectorAll('section:not(#hero) h2').forEach(h2 => {
-                gsap.from(h2, {
-                    x: -50,
-                    opacity: 0,
-                    duration: 1.5,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: h2,
-                        start: "top 90%",
-                        toggleActions: "play none none none"
-                    }
-                });
-            });
-        }
+        <button id="menu-toggle" aria-label="Menyuni ochish/yopish">
+          <i class="fas fa-bars"></i>
+        </button>
 
+        <nav id="main-nav">
+          <a href="#qadimgi" class="nav-link" data-section="qadimgi">Qadimgi Meros</a>
+          <a href="#sovet-davri" class="nav-link" data-section="sovet-davri">Geopolitik Davr</a>
+          <a href="#hozirgi" class="nav-link" data-section="hozirgi">Bugungi Iqtisodiyot</a>
+          <a href="#kelajak" class="nav-link" data-section="kelajak">Strategik Viziyon</a>
+          <a href="#madaniyat" class="nav-link" data-section="madaniyat">Madaniyat & Sport</a>
+        </nav>
 
-        // ==================== 2. Three.js 3D Vizualizatsiya (Final & Optimized) ====================
-        const canvasContainer = document.getElementById('threejs-canvas');
-        if (canvasContainer) {
-            const width = canvasContainer.clientWidth;
-            const height = canvasContainer.clientHeight;
+        <div class="header-controls">
+          <select id="lang-switcher" aria-label="Tilni tanlang">
+            <option value="uz">O'zbekcha</option>
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+            <option value="zh">中文</option>
+            <option value="ko">한국어</option>
+          </select>
+          <button id="theme-toggle" aria-label="Yorug'lik/mushuk rejimi">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
 
-            const scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x020712, 10, 150); // Sahna chuqurligi to'g'rilandi
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">O'ZBEKISTON: STRATEGIYA, INNOVATSIYA VA MEROS</h1>
+      <p class="hero-subtitle">Markaziy Osiyoning Koinotga Oynasi. Barqaror Rivojlanishning Global Chorrahasi.</p>
+      <a href="#hozirgi" class="cta-button" id="hero-cta">STRATEGIK O'TISHNI O'RGANISH</a>
+    </div>
+  </section>
 
-            const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000); 
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); 
+  <!-- Qadimgi -->
+  <section id="qadimgi">
+    <div class="container">
+      <h2 class="section-title">📜 Qadimgi Meros: Sivilizatsiyalar Arxi</h2>
+      <div class="card-grid">
+        <div class="card" data-aos="fade-up">
+          <h3>Qadimgi Davlatchilik Va Diniy Pluralizm</h3>
+          <p>Miloddan avvalgi davrlardan boshlab <strong>Sug'd, Xorazm, Baqtriya</strong> kabi davlatlar mavjud bo'lgan. Zardushtiylik, Buddizm, Nestorianlik va Islomning ilk shakllari bu zaminning boy tarixini tashkil etadi.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Islom Oltin Asri va Buyuk Allomalar</h3>
+          <p>IX-XIII asrlar — matematika, tibbiyot, astronomiya va ilohiyot rivojlangan davr. <strong>Al-Xorazmiy, Ibn Sino, Al-Beruniy, Imom Buxoriy</strong> kabi daholar G'arb va Sharq Uyg'onishiga bevosita ta'sir ko'rsatgan ilmiy bazadir.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Temuriylar Faxri va Harbiy Strategiyalar</h3>
+          <p>Amir Temur tuzgan buyuk imperiya faqat me'morchilik emas, balki <strong>qo'shinni boshqarish strategiyalari</strong> va qonun-qoidalar (Temur Tuzuklari) bilan ham mashhur. Bu davr harbiy va siyosiy strategiya maktabining namunasidir.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <h3>Buyuk Ipak Yo'li Logistikasi</h3>
+          <p>O'zbekiston hududi Ipak Yo'lining asosiy tugun nuqtasi bo'lgan. <strong>Karvonsaroylar, savdo yo'llari va valyuta almashinuv tizimlari</strong> bo'yicha batafsil ma'lumotlar qadimgi Markaziy Osiyo logistika fanini o'rgatadi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            renderer.setSize(width, height);
-            canvasContainer.appendChild(renderer.domElement);
-            renderer.setClearColor(0x020712, 1); // Fon rangi to'g'rilandi
-            
-            window.addEventListener('resize', () => {
-                const newWidth = canvasContainer.clientWidth;
-                const newHeight = canvasContainer.clientHeight;
-                renderer.setSize(newWidth, newHeight);
-                camera.aspect = newWidth / newHeight;
-                camera.updateProjectionMatrix();
-            });
+  <!-- Sovet -->
+  <section id="sovet-davri">
+    <div class="container">
+      <h2 class="section-title">☭ Geopolitik Davr: Transformatsiya Sinovlari</h2>
+      <div class="card-grid">
+        <div class="card" data-aos="fade-up">
+          <h3>Industrial Gigantizm Va Paxta Rejasi</h3>
+          <p>Sovet davrida O'zbekiston yirik paxta yetkazib beruvchiga aylantirildi. <strong>Qishloq xo'jaligi infratuzilmasi</strong> markaziy rejalashtirish asosida butunlay o'zgartirildi, bu esa oqibatida <strong>Orol fojiasiga</strong> olib keldi.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Ilm-Fan Akademiyalari Va Texnokratlar</h3>
+          <p>Tashkil etilgan <strong>O'zSSR Fanlar Akademiyasi</strong> va Politexnika Institutlari yangi texnokratlar avlodini shakllantirdi. Bu zamonaviy O'zbekistonning <strong>muhandislik bazasini</strong> yaratishga xizmat qilgan muhim qadamdir.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Qatag'onlar MeroSi Va Adabiyot</h3>
+          <p>1930-yillarda jazo choralari orqali milliy ziyolilar yo'q qilingan bo'lsa-da, <strong>Abdulla Qodiriy va Cho'lpon</strong> kabi ijodkorlar asarlari zamonaviy o'zbek adabiyoti va milliy ruhiyatining asosiga aylandi.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <h3>Mustaqillikka Dastlabki Qadamlar</h3>
+          <p>1980-yillarning oxirida siyosiy erkinlik uchun harakatlar boshlandi. <strong>"O'zbek tili"ga davlat tili maqomi</strong> berilishi va 1991-yil 31-avgustdagi mustaqillik deklaratsiyasi shu davrning eng muhim yutuqlaridir.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            // Torus Knot (Energiya oqimi)
-            const knotGeometry = new THREE.TorusKnotGeometry(2.5, 0.6, 100, 16); 
-            const knotMaterial = new THREE.MeshPhysicalMaterial({ 
-                color: 0x0077b6, // Asosiy rang
-                metalness: 0.8,
-                roughness: 0.1,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.05,
-                emissive: 0x06d6a0, // Yashil glow
-                emissiveIntensity: 0.5 
-            }); 
-            const knot = new THREE.Mesh(knotGeometry, knotMaterial);
-            scene.add(knot);
+  <!-- Hozirgi -->
+  <section id="hozirgi">
+    <div class="container">
+      <h2 class="section-title">✅ Bugungi Iqtisodiyot: Global Moliya Chorrahasi</h2>
+      
+      <div id="threejs-area">
+        <div id="threejs-canvas"></div>
+        <p class="threejs-label">Interaktiv 3D Vizualizatsiya: O'zbekistonning 5 ta strategik tayanch sohasi</p>
+      </div>
+      
+      <div class="card-grid" style="margin-top: 80px;">
+        <div class="card" data-aos="fade-up">
+          <h3>Valyuta Bozori Liberalizatsiyasi</h3>
+          <p>2017-yilda so'mning erkin konvertatsiyasi yo'lga qo'yildi. Bu xorijiy investitsiyalarni jalb qilishda asosiy katalizator bo'ldi va <strong>makroiqtisodiy barqarorlikni</strong> ta'minlashga xizmat qilmoqda.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Tabiiy Resurslar va Geologiya</h3>
+          <p>O'zbekiston oltin, uran, mis va tabiiy gaz bo'yicha dunyodagi eng yirik zaxiralarga ega. <strong>Navoiy kon-metallurgiya kombinati</strong> oltin qazib olishda jahon yetakchilaridan biri hisoblanadi.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Transport Logistikasi (TIR koridorlari)</h3>
+          <p>Xitoy-Yevropa, Janubiy Osiyo yo'nalishlarida <strong>zamonaviy temir yo'l va avtomobil yo'llari tarmog'i</strong>ni rivojlantirish. Bu xalqaro tranzit salohiyatini oshirishga qaratilgan muhim strategik yo'nalishdir.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <h3>IT Parklar va Raqamlashtirish</h3>
+          <p><strong>Toshkent IT Parki</strong> 1000 dan ortiq rezidentni birlashtiradi. Bu markaz dasturlash, BPO, FinTech sohalarida yuqori qo'shilgan qiymatli xizmatlar ko'rsatuvchi yosh mutaxassislarni tayyorlamoqda.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            // Yulduzlar/Kosmik zarralar
-            const starGeometry = new THREE.BufferGeometry();
-            const starCount = 20000; 
-            const starPositions = [];
-            for (let i = 0; i < starCount; i++) {
-                starPositions.push((Math.random() - 0.5) * 500); 
-                starPositions.push((Math.random() - 0.5) * 500); 
-                starPositions.push((Math.random() - 0.5) * 500); 
+  <!-- Kelajak -->
+  <section id="kelajak">
+    <div class="container">
+      <h2 class="section-title">🔮 Strategik Viziyon: 2030-2050 Maqsadlari</h2>
+      <div class="card-grid">
+        <div class="card" data-aos="fade-up">
+          <h3>"Yashil Iqtisodiyot"ga O'tish</h3>
+          <p>2030 yilga borib, <strong>qayta tiklanuvchi energiya manbalari</strong> ulushini 25% dan oshirish. Yirik Xalqaro Energetika Korporatsiyalari bilan quyosh va shamol elektr stansiyalarini qurish bo'yicha strategik loyihalar amalga oshirilmoqda.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Global Oziq-ovqat Xavfsizligi Dasturi</h3>
+          <p>Suv tejovchi texnologiyalar (tomchilatib sug'orish) orqali ekin maydonlari samaradorligini oshirish va O'zbekistonni <strong>organik meva-sabzavot eksporti</strong> bo'yicha Markaziy Osiyo yetakchisiga aylantirishni maqsad qilingan.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Aholi Salohiyatini Rivojlantirish</h3>
+          <p>Xalqaro universitetlar bilan hamkorlikda <strong>ilmiy-tadqiqot markazlari</strong> (R&D)ni tashkil etish, yoshlarning global bozorga kirishi uchun amaliy ta'lim tizimini yaratish bo'yicha keng ko'lamli ishlar qilinmoqda.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <h3>Sog'liqni Saqlash Klasterlari</h3>
+          <p>Turizm va sog'liqni saqlash integratsiyasi (Medical Tourism). <strong>Xususiy shifoxonalar tarmog'ini</strong> jahon standartlariga olib chiqish va chet el fuqarolari uchun yuqori sifatli xizmatlarni taklif qilish yo'lga qo'yilgan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Madaniyat -->
+  <section id="madaniyat">
+    <div class="container">
+      <h2 class="section-title">🎨 Madaniyat & Sport: Diplomatiya Va Qadriyatlar</h2>
+      <div class="card-grid">
+        <div class="card" data-aos="fade-up">
+          <h3>Bokschilik Maktabi Va Sport Diplomatikasi</h3>
+          <p>O'zbekistonning <strong>boks, dzyudo, og'ir atletika</strong> kabi sport turlarida xalqaro maydondagi yutuqlari. Sport orqali mamlakatning ijobiy imijini mustahkamlash asosiy ustuvor yo'nalish hisoblanadi.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="100">
+          <h3>Nomoddiy Madaniy Meros</h3>
+          <p><strong>Shashmaqom, Baxshichilik san'ati, Palov an'anasi</strong> — bular YUNESKO himoyasida. Milliy qadriyatlarni himoya qilish va ularni xalqaro darajada targ'ib etish bo'yicha doimiy dasturlar mavjud.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="200">
+          <h3>Ipak Yo'li Madaniy Festivali</h3>
+          <p>Samarqandda muntazam o'tkaziladigan xalqaro festivallar. Bu tadbirlar orqali O'zbekistonning Markaziy Osiyo madaniyatining <strong>asosiy sahnasi</strong> sifatidagi mavqeini mustahkamlash ko'zda tutilgan.</p>
+        </div>
+        <div class="card" data-aos="fade-up" data-aos-delay="300">
+          <h3>Xattotlik Va Dizayn San'ati</h3>
+          <p><strong>Naqqoshlik, ganchkorlik, gilam to'qish</strong> kabi amaliy san'at turlarini zamonaviy dizayn va arxitekturaga integratsiya qilish. Bu orqali milliy o'ziga xoslikni saqlab qolish ustida ish olib borilmoqda.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p>© 2025 YMT hub. Barcha huquqlar himoyalangan.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Tarjima lug'ati -->
+  <script id="translations-data" type="application/json">
+{
+  "pageTitle": {
+    "uz": "O'ZBEKISTON RESPUBLIKASI: STRATEGIK GLOBAL DIZAYN",
+    "en": "REPUBLIC OF UZBEKISTAN: STRATEGIC GLOBAL DESIGN",
+    "ru": "РЕСПУБЛИКА УЗБЕКИСТАН: СТРАТЕГИЧЕСКИЙ ГЛОБАЛЬНЫЙ ДИЗАЙН",
+    "zh": "乌兹别克斯坦共和国：战略全球设计",
+    "ko": "우즈베키스탄 공화국: 전략적 글로벌 디자인"
+  },
+  "nav_qadimgi": { "uz": "Qadimgi Meros", "en": "Ancient Legacy", "ru": "Древнее Наследие", "zh": "古代遗产", "ko": "고대 유산" },
+  "nav_sovet": { "uz": "Geopolitik Davr", "en": "Geopolitical Era", "ru": "Геополитическая Эра", "zh": "地缘政治时代", "ko": "지정학 시대" },
+  "nav_hozirgi": { "uz": "Bugungi Iqtisodiyot", "en": "Current Economy", "ru": "Текущая Экономика", "zh": "当前经济", "ko": "현재 경제" },
+  "nav_kelajak": { "uz": "Strategik Viziyon", "en": "Strategic Vision", "ru": "Стратегическое Видение", "zh": "战略愿景", "ko": "전략적 비전" },
+  "nav_madaniyat": { "uz": "Madaniyat & Sport", "en": "Culture & Sport", "ru": "Культура и Спорт", "zh": "文化与体育", "ko": "문화 및 스포츠" },
+  "hero_h1": {
+    "uz": "O'ZBEKISTON: STRATEGIYA, INNOVATSIYA VA MEROS",
+    "en": "UZBEKISTAN: STRATEGY, INNOVATION, AND LEGACY",
+    "ru": "УЗБЕКИСТАН: СТРАТЕГИЯ, ИННОВАЦИИ И НАСЛЕДИЕ",
+    "zh": "乌兹别克斯坦：战略、创新与遗产",
+    "ko": "우즈베키스탄: 전략, 혁신, 유산"
+  },
+  "hero_p": {
+    "uz": "Markaziy Osiyoning Koinotga Oynasi. Barqaror Rivojlanishning Global Chorrahasi.",
+    "en": "Central Asia's Window to the Cosmos. The Global Crossroads of Sustainable Development.",
+    "ru": "Окно Центральной Азии в Космос. Глобальный Перекресток Устойчивого Развития.",
+    "zh": "中亚通往宇宙的窗口。可持续发展的全球十字路口。",
+    "ko": "중앙아시아의 우주로 향하는 창. 지속 가능한 발전의 글로벌 교차로."
+  },
+  "cta_button": {
+    "uz": "STRATEGIK O'TISHNI O'RGANISH",
+    "en": "EXPLORE THE STRATEGIC TRANSITION",
+    "ru": "ИЗУЧИТЬ СТРАТЕГИЧЕСКИЙ ПЕРЕХОД",
+    "zh": "探索战略转型",
+    "ko": "전략적 전환 탐색"
+  },
+  "qadimgi_h2": { "uz": "📜 Qadimgi Meros: Sivilizatsiyalar Arxi", "en": "📜 Ancient Legacy: The Ark of Civilizations", "ru": "📜 Древнее Наследие: Ковчег Цивилизаций", "zh": "📜 古代遗产：文明方舟", "ko": "📜 고대 유산: 문명의 방주" },
+  "footer_text": {
+    "uz": "© 2025 O'zbekiston Global Strategik Markazi. Barcha huquqlar himoyalangan. Matnlar Hukumat standarti asosida tahrirlangan.",
+    "en": "© 2025 Uzbekistan Global Strategy Center. All Rights Reserved. Texts conform to Government standards.",
+    "ru": "© 2025 Глобальный Стратегический Центр Узбекистана. Все права защищены. Тексты соответствуют государственным стандартам.",
+    "zh": "© 2025 乌兹别克斯坦全球战略中心。保留所有权利。文本符合政府标准。",
+    "ko": "© 2025 우즈베키스탄 글로벌 전략 센터. 모든 권리 보유. 텍스트는 정부 표준에 맞춰 수정되었습니다."
+  },
+  "loaderText": {
+    "uz": "Strategik ma'lumotlar portalini yuklayapmiz...",
+    "en": "Loading strategic data portal...",
+    "ru": "Загрузка стратегического информационного портала...",
+    "zh": "正在加载战略数据门户...",
+    "ko": "전략 데이터 포털을 로드하는 중..."
+  }
+}
+  </script>
+
+  <!-- Asosiy skriptlar -->
+  <script>
+    // ==================== Barcha konfiguratsiyalar ====================
+    const translations = JSON.parse(document.getElementById('translations-data').textContent);
+    let currentLang = 'uz';
+    let isThreeJSInitialized = false;
+
+    // ==================== Tilni sozlash ====================
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.setAttribute('lang', lang);
+      
+      // Matnlarni yangilash
+      Object.keys(translations).forEach(key => {
+        if (translations[key][lang]) {
+          const elements = document.querySelectorAll(`[data-key="${key}"]`);
+          elements.forEach(el => {
+            if (el.tagName === 'INPUT' && el.type === 'button') {
+              el.value = translations[key][lang];
+            } else {
+              el.textContent = translations[key][lang];
             }
-            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
-            const starMaterial = new THREE.PointsMaterial({ color: 0xffc300, size: 0.2, transparent: true, opacity: 0.7 });
-            const stars = new THREE.Points(starGeometry, starMaterial);
-            scene.add(stars);
-
-
-            // Yorug'lik (Sahna)
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); 
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0x0077b6, 4);
-            directionalLight.position.set(10, 10, 5);
-            scene.add(directionalLight);
-            
-            const spotLight = new THREE.SpotLight(0x06d6a0, 80, 100, Math.PI * 0.3, 0.8, 1);
-            spotLight.position.set(-10, -5, 10);
-            scene.add(spotLight);
-
-
-            camera.position.z = 10;
-
-            // Interaktivlik va Scroll effekti
-            let mouseX = 0;
-            let mouseY = 0;
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            });
-            
-            // Three.js ob'ektini scroll bilan dinamik bog'lash
-            const scrollTimeline = gsap.timeline({
-                scrollTrigger: {
-                    trigger: "#hozirgi",
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                }
-            });
-
-            scrollTimeline.to(camera.position, {
-                z: 15, // Skroll chuqurligi
-                duration: 1
-            }, 0);
-            
-            scrollTimeline.to(knot.rotation, {
-                x: Math.PI * 2, // 360 daraja aylanish
-                y: Math.PI * 4, // 720 daraja aylanish
-                duration: 1
-            }, 0);
-            
-
-
-            // Animatsiya tsikli
-            function animate() {
-                requestAnimationFrame(animate);
-
-                // Obyektni avtomatik aylantirish (minimal)
-                knot.rotation.y += 0.001;
-
-                // Yulduzlarni sekin harakatlantirish
-                stars.rotation.y += 0.0003;
-
-                // Kamerani sichqoncha harakatiga moslash (Parallax)
-                camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.03;
-                camera.position.y += (mouseY * 1.5 - camera.position.y) * 0.03;
-                camera.lookAt(scene.position); 
-
-                renderer.render(scene, camera);
-            }
-
-            animate();
+          });
         }
-    </script>
+      });
 
+      // Maxsus elementlar
+      document.title = translations.pageTitle[lang] || translations.pageTitle.uz;
+      document.getElementById('loader-text').textContent = translations.loaderText[lang] || translations.loaderText.uz;
+      
+      // Nav linklari (data-section orqali)
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        const sectionId = link.getAttribute('data-section');
+        const key = `nav_${sectionId}`;
+        if (translations[key] && translations[key][lang]) {
+          link.textContent = translations[key][lang];
+        }
+      });
+      
+      // CTA tugma
+      const cta = document.getElementById('hero-cta');
+      if (cta && translations.cta_button && translations.cta_button[lang]) {
+        cta.textContent = translations.cta_button[lang];
+      }
+
+      // Select qiymatini yangilash
+      const select = document.getElementById('lang-switcher');
+      if (select) select.value = lang;
+    }
+
+    // ==================== Tema (Dark/Light) ====================
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('light-mode');
+      const icon = document.querySelector('#theme-toggle i');
+      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+      
+      // LocalStoragega saqlash
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+
+    // LocalStoragedan o'qish
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        document.querySelector('#theme-toggle i').className = 'fas fa-sun';
+      }
+    });
+
+    // ==================== Mobil menyu ====================
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('main-nav').classList.toggle('active');
+    });
+
+    // ==================== Animatsiyalar ====================
+    function initAnimations() {
+      // GSAP ScrollTrigger ro'yxatdan o'tkazish
+      gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+      // Scroll progress
+      const progressContainer = document.getElementById('progress-container');
+      window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = scrollTop / docHeight;
+        progressContainer.style.transform = `scaleX(${scrollPercent})`;
+      });
+
+      // Scroll-to-top
+      const scrollToTop = document.getElementById('scroll-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 600) {
+          scrollToTop.classList.add('show');
+        } else {
+          scrollToTop.classList.remove('show');
+        }
+      });
+
+      // Matn animatsiyalari (SplitType)
+      const titles = document.querySelectorAll('.section-title, .hero-title');
+      titles.forEach(title => {
+        const split = new SplitType(title, { types: 'words, chars' });
+        gsap.from(split.chars, {
+          opacity: 0,
+          y: 50,
+          stagger: 0.03,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: title,
+            start: 'top 90%',
+            once: true
+          }
+        });
+      });
+
+      // Card animatsiyalari (ScrollTrigger bilan)
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, i) => {
+        gsap.from(card, {
+          y: 60,
+          opacity: 0,
+          scale: 0.95,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 90%',
+            once: true
+          }
+        });
+      });
+
+      // Hero CTA animatsiya
+      gsap.from('.cta-button', {
+        scale: 0.9,
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        delay: 0.6,
+        ease: 'elastic.out(1, 0.5)'
+      });
+
+      // Parallax effekti
+      const hero = document.getElementById('hero');
+      document.addEventListener('mousemove', (e) => {
+        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+        hero.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+      });
+    }
+
+    // ==================== Three.js ====================
+    function initThreeJS() {
+      if (isThreeJSInitialized) return;
+      isThreeJSInitialized = true;
+
+      const canvas = document.getElementById('threejs-canvas');
+      if (!canvas) return;
+
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+
+      // Scene
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x020712, 15, 120);
+
+      // Camera
+      const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 200);
+      camera.position.z = 12;
+
+      // Renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setClearColor(0x020712, 1);
+      canvas.appendChild(renderer.domElement);
+
+      // Torus Knot (asosiy)
+      const knotGeo = new THREE.TorusKnotGeometry(3.5, 0.9, 160, 24, 3, 4);
+      const knotMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0077b6,
+        metalness: 0.8,
+        roughness: 0.1,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.05,
+        emissive: 0x06d6a0,
+        emissiveIntensity: 0.3
+      });
+      const knot = new THREE.Mesh(knotGeo, knotMat);
+      scene.add(knot);
+
+      // 5 ta strategik nuqta (partikullar)
+      const particles = new THREE.Group();
+      scene.add(particles);
+
+      const colors = [
+        0xffc300, // Moliya
+        0x4caf50, // QX
+        0x2196f3, // Energ
+        0x9c27b0, // IT
+        0xf44336  // Madaniyat
+      ];
+
+      const particleGeo = new THREE.SphereGeometry(0.18, 16, 16);
+      for (let i = 0; i < 5; i++) {
+        const mat = new THREE.MeshBasicMaterial({ color: colors[i] });
+        const p = new THREE.Mesh(particleGeo, mat);
+        p.userData.angle = (i / 5) * Math.PI * 2;
+        particles.add(p);
+      }
+
+      // Yulduzlar
+      const starCount = window.innerWidth > 768 ? 12000 : 5000;
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        starPos[i * 3] = (Math.random() - 0.5) * 200;
+        starPos[i * 3 + 1] = (Math.random() - 0.5) * 200;
+        starPos[i * 3 + 2] = (Math.random() - 0.5) * 200;
+      }
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const starMat = new THREE.PointsMaterial({ 
+        color: 0xffc300, 
+        size: 0.3, 
+        transparent: true,
+        opacity: 0.8
+      });
+      const stars = new THREE.Points(starGeo, starMat);
+      scene.add(stars);
+
+      // Yorug'liklar
+      const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+      scene.add(ambient);
+
+      const dirLight = new THREE.DirectionalLight(0x0077b6, 3);
+      dirLight.position.set(10, 10, 5);
+      scene.add(dirLight);
+
+      const pointLight = new THREE.PointLight(0x06d6a0, 2, 50);
+      pointLight.position.set(-5, -3, 8);
+      scene.add(pointLight);
+
+      // Mouse interfeysi
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+      });
+
+      // Animatsiya
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+
+        const time = clock.getElapsedTime();
+        
+        // Torus aylanishi
+        knot.rotation.x = Math.sin(time * 0.3) * 0.1;
+        knot.rotation.y += 0.005;
+        
+        // Nuqtalar harakati
+        particles.children.forEach((p, i) => {
+          p.userData.angle += 0.01 + i * 0.003;
+          const r = 4.2;
+          p.position.x = Math.cos(p.userData.angle) * r;
+          p.position.z = Math.sin(p.userData.angle) * r;
+          p.position.y = Math.sin(p.userData.angle * 2.5 + time * 0.5) * 0.6;
+        });
+
+        // Kamera parallax
+        camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+        camera.position.y += (mouseY * 2 - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+      }
+
+      // Resize
+      window.addEventListener('resize', () => {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+
+      animate();
+    }
+
+    // ==================== Yuklanish ====================
+    window.addEventListener('load', () => {
+      // Loader yopish
+      gsap.to('#loader', {
+        opacity: 0,
+        duration: 0.8,
+        delay: 0.8,
+        onComplete: () => {
+          document.getElementById('loader').style.display = 'none';
+          document.body.style.opacity = 1;
+          
+          // Animatsiyalarni boshlash
+          initAnimations();
+          
+          // Tilni sozlash
+          setLanguage(currentLang);
+        }
+      });
+
+      // Three.js yuklash (faqat ko'rinadigan bo'lganda)
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          initThreeJS();
+          observer.disconnect();
+        }
+      }, { threshold: 0.1 });
+      observer.observe(document.getElementById('hozirgi'));
+    });
+
+    // ==================== Hodisalar ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      // Til o'zgartirish
+      document.getElementById('lang-switcher').addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+      });
+
+      // Tema o'zgartirish
+      document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+      // Navigatsiya
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            gsap.to(window, {
+              duration: 1,
+              scrollTo: { y: target, offsetY: 80 },
+              ease: 'power2.inOut'
+            });
+            // Mobil menyuni yopish
+            document.getElementById('main-nav').classList.remove('active');
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
+
