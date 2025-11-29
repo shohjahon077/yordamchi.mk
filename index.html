@@ -13,7 +13,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-XFE4VVB84B');
 </script>
     <style>
@@ -619,7 +618,6 @@
         <div class="progress-bar"><div class="progress-fill"></div></div>
         <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
     </div>
-
     <!-- MAIN CONTENT -->
     <div id="main-content">
         <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
@@ -632,8 +630,6 @@
             <a href="galati.html" class="mobile-link" data-key="teachers">👩‍🏫 G‘alati</a>
             <a href="biz.html" class="mobile-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
             <a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
-            
-            
             <a href="sinov3.html" class="nav-link" data-key="contactt">ICHU bo'lim</a>
             <a href="uzb.html" class="mobile-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
             <a href="ymakon.html" class="mobile-link" data-key="yashil_makon">🌿 Yashil Makon</a>
@@ -654,8 +650,6 @@
             <a href="uzb.html" class="nav-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
             <a href="ymakon.html" class="nav-link" data-key="yashil_makon">🌿 Yashil Makon</a>
             <a href="kitob.html" class="nav-link" data-key="kutubxona">📚 Kutubxona</a>
-           
-            
             <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
         </nav>
         <main class="main-buttons">
@@ -799,7 +793,6 @@
         // 🌍 TARJIMALAR
         // ======================
         const content = {
-            
             uz: {
                 zbekistan: "🇺🇿 O‘zbekiston",
                 yashil_makon: "🌿 Yashil Makon",
@@ -859,7 +852,7 @@
                 aboutUs: "ℹ️ О Нас",
                 aboutUs_sub: "Цель проекта",
                 contact: "📞 Контакты",
-                uzb: "Uzbekistan"
+                uzb: "Uzbekistan",
                 ichu: "ichu bo'limi",
                 contact_sub: "Для обращений",
                 footer_protected: "🔒 Сайт защищён",
@@ -1174,42 +1167,60 @@
         // ======================
         document.addEventListener('DOMContentLoaded', initApp);
         // ======================
-        // 🌌 3D PARTICLES BACKGROUND
+        // 🌌 3D PARTICLES BACKGROUND — TO'G'RILANGAN QISMI
         // ======================
-        const canvas = document.getElementById('particles-bg');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 2000;
-        const posArray = new Float32Array(particlesCount * 3);
-        for (let i = 0; i < particlesCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 20;
-        }
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMaterial = new THREE.PointsMaterial({
-            color: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#98c1d9',
-            size: 0.05,
-            transparent: true,
-            opacity: 0.6
-        });
-        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particlesMesh);
-        camera.position.z = 5;
-        function animate() {
-            requestAnimationFrame(animate);
-            particlesMesh.rotation.x += 0.0005;
-            particlesMesh.rotation.y += 0.0005;
-            renderer.render(scene, camera);
-        }
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('particles-bg');
+            if (!canvas) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            const particlesCount = 2000;
+            const posArray = new Float32Array(particlesCount * 3);
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 20;
+            }
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            // Rangni xavfsiz olish — agar CSS hali tayyor bo'lmasa, standart qiymat
+            const getAccentColor = () => {
+                const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color')?.trim();
+                return accent || '#98c1d9';
+            };
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                color: getAccentColor(),
+                size: 0.05,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particlesMesh.rotation.x += 0.0005;
+                particlesMesh.rotation.y += 0.0005;
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animate();
         });
-        animate();
+
         // Parallax scroll
         window.addEventListener('scroll', () => {
             const offset = window.scrollY * 0.3;
@@ -1218,3 +1229,4 @@
     </script>
 </body>
 </html>
+
