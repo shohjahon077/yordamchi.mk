@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML/JS GIBRID KATALOG | 40+ REKLAMA KITOB</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==================== KUTUBXONA DIZAYNI (Modern Minimalist) ==================== */
+        :root {
+            --primary-dark: #FFFFFF;      
+            --secondary-dark: #F5F5F5;    
+            --focus-blue: #0A6BEF;        
+            --text-dark: #1F2937;         
+            --text-light: #4B5563;        
+            --success: #10B981;           
+            --warning: #F59E0B;           
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --font-main: 'Inter', sans-serif;
+        }
+
+        /* ==================== Global Reset & Styling ==================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+        body { line-height: 1.5; color: var(--text-dark); background-color: var(--primary-dark); scroll-behavior: smooth; }
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+        
+        /* Navigatsiya, Sarlavha va Qidiruv Stillari (O'zgarmadi) */
+        header { background: var(--secondary-dark); box-shadow: var(--card-shadow); padding: 16px 0; position: sticky; top: 0; z-index: 1000; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--focus-blue); font-weight: 700; text-decoration: none; }
+        nav a { color: var(--text-dark); padding: 8px 16px; text-decoration: none; font-weight: 500; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+        nav a:hover { background: var(--focus-blue); color: white; }
+        #hero-search { padding: 64px 0 32px 0; background-color: var(--primary-dark); }
+        #hero-search h1 { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); text-align: center; margin-bottom: 8px; }
+        #hero-search p { text-align: center; color: var(--text-light); font-size: 1.1rem; margin-bottom: 40px; }
+        .search-box { display: flex; gap: 12px; max-width: 900px; margin: 0 auto; }
+        .search-box input, .search-box select { padding: 14px 20px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 1rem; background: white; color: var(--text-dark); outline: none; transition: border-color 0.3s; }
+        .search-box input { flex-grow: 1; }
+        .search-box button { background: var(--focus-blue); color: white; border: none; padding: 14px 25px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.3s, transform 0.1s; }
+
+        /* ==================== Katalog Gridi ==================== */
+        #books-list { padding: 40px 0 80px 0; }
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        /* MUHIM: A tegini to'liq blok qilib, hover effekti beramiz */
+        .book-link {
+            text-decoration: none; 
+            color: inherit;
+            display: block; /* Qidiruv funksiyasi uchun muhim */
+            margin-bottom: 0; /* Bo'shliqni yo'qotish */
+        }
+
+        .book-link:hover .book-card {
+            transform: translateY(-5px);
+            border-color: var(--focus-blue);
+            box-shadow: 0 10px 15px -3px rgba(10, 107, 239, 0.15), 0 4px 6px -4px rgba(10, 107, 239, 0.1);
+        }
+        
+        .book-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            transition: border-color 0.3s;
+            height: 100%;
+        }
+        
+        /* Card Ichki Stillari */
+        .book-card h3 { font-size: 1.4rem; font-weight: 700; color: var(--focus-blue); margin-bottom: 4px; }
+        .book-card .author { color: var(--text-light); font-style: normal; font-weight: 500; display: block; margin-bottom: 12px; font-size: 0.95rem; }
+        .book-card .abstract { color: var(--text-dark); font-size: 0.9rem; margin-bottom: 16px; }
+        .book-card .status { font-weight: 600; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+        .status.available { color: var(--success); }
+        .status.unavailable { color: var(--warning); }
+        .status.link {
+            color: var(--focus-blue);
+            border-top: 1px solid #E5E7EB;
+            padding-top: 10px;
+            margin-top: 15px;
+        }
+
+        /* Natijalar topilmaganda matn stili */
+        #no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-top: 30px;
+            display: none; /* Dastlab yashirilgan */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo"><i class="fa-solid fa-book-atlas"></i> YMT hub</a>
+            <nav>
+                
+                <a href="index.html">Ortga</a>
+            </nav>
+        </div>
+    </header>
+
+    <section id="hero-search">
+        <div class="container">
+            <h1>Kitoblar Katalogi</h1>
+            <p>O'zbek va Jahon adabiyotining eng sara asarlari sizning ixtiyoringizda.</p>
+            <div class="search-box">
+               
+            </div>
+        </div>
+    </section>
+
+    <section id="books-list">
+        <div class="container">
+            <div class="book-grid" id="book-results">
+                
+                <a href="http://rasul.template.uz/sites/default/files/abdulla_qodiriy._otkan_kunlar_roman.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>O'tgan Kunlar</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Abdulla Qodiriy</span><p class="abstract">O'zbek romanchiligining asoschisi. Otabek va Kumushning fojiali sevgisi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 12 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="http://rasul.template.uz/sites/default/files/cholpon-kecha-va-kunduz.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Kecha Va Kunduz</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Cho'lpon</span><p class="abstract">Jadid adabiyotining yorqin asari. Eski va yangi dunyo to'qnashuvi.</p><div class="status unavailable"><i class="fa-solid fa-clock"></i> Band qilingan / Yangi kelmoqda</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://ipkmvd.uz/media/pdf/kitoblar/Shum_bola_Gafur_Gulom.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Shum Bola</h3><span class="author"><i class="fa-solid fa-user-edit"></i> G'afur G'ulom</span><p class="abstract">Badiiy va yumoristik hikoyalar. O'zbek hayotining go'zal lavhalari.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 25 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://zakm.uz/media/books/O._Hoshimov_Dunyoning_ishlari.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Dunyoning Ishlari</h3><span class="author"><i class="fa-solid fa-user-edit"></i> O'tkir Hoshimov</span><p class="abstract">Eng samimiy va hayotiy hikoyalar to'plami. Ona haqidagi eng yaxshi asar.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 18 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://kitobsevar.uz/kxpv/xrpt_paj5maj015b21jf3bb7fkogpednht7j07t4iudik8jcyuhpvil3t30a8cnevknvg9npts16oa8d.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Qora Tanlilar Kitobi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> O'lmas Umarbekov</span><p class="abstract">Haqiqiy sevgi va insoniy munosabatlar haqida.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 10 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+
+                <a href="https://news.northwestfront.info/wp-content/uploads/1984-George-Orwell.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>1984</h3><span class="author"><i class="fa-solid fa-user-edit"></i> George Orwell</span><p class="abstract">Dunyodagi eng mashhur distopik asar. Totalitarizm tanqidi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 8 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://icrrd.com/public/media/15-05-2021-084550The-Alchemist-Paulo-Coelho.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Alkimyogar (Alchemist)</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Paulo Coelho</span><p class="abstract">Orzular va taqdir yo'lida sayohat haqidagi falsafiy roman.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 40 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://zakm.uz/media/books/A.S.Ekzyuperi._Kichkina_Shahzoda.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Kichkina Shahzoda</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Antoine de Saint-Exupéry</span><p class="abstract">Bolalik beg'uborligi va insoniy qadriyatlar haqida ertak.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 33 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://lib.niuuz.online/read/2236/pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Jinoyat va Jazo</h3><span class="author"><i class="fa-solid fa-user-edit"></i> F. M. Dostoyevskiy</span><p class="abstract">Axloqiy va ruhiy tahlilning eng yuqori namunasi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 3 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://lib.niuuz.online/read/5686/pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Uch Og'ayni</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Erich Maria Remarque</span><p class="abstract">Urushdan keyingi davr, do'stlik va sevgi fojiasi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 10 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://n.ziyouz.com/books/jahon_nasri/Ernest%20Xeminguey.%20Chol%20va%20dengiz%20(qissa).pdf?ysclid=mik81s6xp4939007333" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Dengizchi Chol</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Ernest Hemingway</span><p class="abstract">Insonning tabiat bilan kurashi va irodasining ramzi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 22 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://falseflag.info/wp-content/uploads/2013/08/Fahrenheit-451-Ray-Bradbury.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Fahrenheit 451</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Ray Bradbury</span><p class="abstract">Kitoblarni yoqish haqidagi distopik jamiyat.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 7 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+
+                <a href="https://qamalladinuniversity.online/wp-content/uploads/2023/08/82.-D%C2%9AN%C2%80D%C2%B0N%C2%82DoD%C2%B0N%C2%8FD%C2%B8N%C2%81N%C2%82D%C2%BEN%C2%80D%C2%B8N%C2%8FN%C2%87D%C2%B5DD%C2%BED%C2%B2D%C2%B5N%C2%87D%C2%B5N%C2%81N%C2%82D%C2%B2D%C2%B0saniyaN%C2%81D%C2%B0D%C2%BCD%C2%BEN%C2%80D%C2%B7D%C2%B0D%C2%B2D%C2%B8N%C2%82D%C2%B8D%C2%B5.pdf" target="_blank" class="book-link" data-category="science">
+                    <div class="book-card"><h3>Sapiens: Insoniyatning Qisqa Tarixi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Yuval Noah Harari</span><p class="abstract">Homo Sapiensning global tarixiy rivojlanishi tahlili.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 30 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://img0.liveinternet.ru/images/attach/c/0/3744/3744616_Stiv_Hoking_Kratkaya_istoriya_vremeni.pdf" target="_blank" class="book-link" data-category="science">
+                    <div class="book-card"><h3>Vaqtning Qisqa Tarixi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Stephen Hawking</span><p class="abstract">Koinot, qora tuynuklar va vaqt tushunchalari.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 15 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://n.ziyouz.com/books/tasavvuf/Najmiddin%20Komilov.%20Tasavvuf.pdf?ysclid=mik876jmax301853738" target="_blank" class="book-link" data-category="science">
+                    <div class="book-card"><h3>Tasavvuf</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Najmiddin Komilov</span><p class="abstract">Islomiy falsafa va ma'naviyatning fundamental asosi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 13 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                
+                <a href="https://www.kitabguru.com/wp-content/uploads/2024/05/Share-Atomic-habits-by-James-clear-1.pdf" target="_blank" class="book-link" data-category="self_help">
+                    <div class="book-card"><h3>Atom Odatlar (Atomic Habits)</h3><span class="author"><i class="fa-solid fa-user-edit"></i> James Clear</span><p class="abstract">Kichik qadamlar bilan katta o'zgarishlarga erishish san'ati.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 50 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://yoshlarkelajagimiz.uz/yk_foundation_media/Kitoblar/Boy%20ota%20kambagal%20ota.pdf" target="_blank" class="book-link" data-category="self_help">
+                    <div class="book-card"><h3>Boy Ota Kambag'al Ota</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Robert Kiyosaki</span><p class="abstract">Moliyaviy savodxonlikni o'rgatuvchi eng mashhur kitob.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 20 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://content.fimsschools.com/fimstr/the-psychology-of-money-by-morgan-housel.pdf" target="_blank" class="book-link" data-category="self_help">
+                    <div class="book-card"><h3>Boylik Psixologiyasi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Morgan Housel</span><p class="abstract">Pul haqidagi fikrlash tarzingizni o'zgartiring.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 35 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                
+                <a href="https://ziyouz.com/books/tarixiy/Sharafiddin%20Ali%20Yazdiy.%20Zafarnoma.pdf?ysclid=mik8by2ims126437718" target="_blank" class="book-link" data-category="history">
+                    <div class="book-card"><h3>Temurnoma</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Sharafiddin Ali Yazdiy</span><p class="abstract">Amir Temur hayoti va janglari haqidagi eng asosiy manba.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 9 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://imwerden.de/pdf/churchill_vtoraya_mirovaya_vojna_v_6tomakh_tom1_1954__ocr.pdf?ysclid=mik8e393ez419537968" target="_blank" class="book-link" data-category="history">
+                    <div class="book-card"><h3>Ikkinchi Jahon Urushi Tarixi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Winston Churchill</span><p class="abstract">Bosh vazir nuqtai nazaridan urushning to'liq tahlili.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 2 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                
+                <a href="https://blog.freec.asia/wp-content/uploads/2020/12/The-Clean-Coder.pdf" target="_blank" class="book-link" data-category="tech">
+                    <div class="book-card"><h3>Toza Kod (Clean Code)</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Robert C. Martin</span><p class="abstract">Professional dasturchilar uchun kod yozishning eng muhim qoidalari.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 28 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://kolegite.com/EE_library/books_and_lectures/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%B8%D1%80%D0%B0%D0%BD%D0%B5/The_Art_of_Computer_Programming/The%20art%20of%20computer%20programming.%20Vol.2.%20Seminumerical%20algorithms%20%28Knuth%2C%20Donald%20E%29%20%28z-lib.org%29.pdf" target="_blank" class="book-link" data-category="tech">
+                    <div class="book-card"><h3>Dasturlash San'ati</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Donald E. Knuth</span><p class="abstract">Algoritmlar va ma'lumotlar tuzilmasi bo'yicha fundamental manba.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 4 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+               
+
+                <a href="https://www.kkoworld.com/kitablar/qabriel_qarsia_markez_yuz_illik_tenhaliq-turk.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Yuz Yillik Tanxolik</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Gabriel García Márquez</span><p class="abstract">Sehrli realizmning eng buyuk asari. Buendia oilasi tarixi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 13 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                 <a href="https://ziyouz.com/books/jahon_nasri/Chingiz%20Aytmatov.%20Qiyomat%20(roman).pdf?ysclid=mik8mvqc5j892874977" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Qiyomat</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Chingiz Aytmatov</span><p class="abstract">Ekologiya va insoniyatning axloqiy muammolari haqidagi mashhur roman.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 7 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                 <a href="https://zakm.uz/media/books/Abdulla_Qodiriy._Mehrobdan_chayon.pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Mehrobdan Chayon</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Abdulla Qodiriy</span><p class="abstract">Zulmga qarshi qaratilgan adolat va sevgi ramzi. Xonlik davri hayoti.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 16 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                <a href="https://www.pnbhs.school.nz/wp-content/uploads/2015/11/7-Habits-of-Highly-Effective-People-Summary-Covey.pdf" target="_blank" class="book-link" data-category="self_help">
+                    <div class="book-card"><h3>7 Samarali Inson Odati</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Stephen Covey</span><p class="abstract">Shaxsiy va kasbiy samaradorlikni oshirish uchun universal tamoyillar.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 45 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                 <a href="https://static.oliygoh.uz/uploads/4/jahon_tarixi_10_uzb.pdf" target="_blank" class="book-link" data-category="history">
+                    <div class="book-card"><h3>Jahon Tarixi Atlasi</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Xalqaro nashr</span><p class="abstract">Eng qadimgi davrlardan to hozirgi kungacha bo'lgan barcha davrlarning xaritalari va tahlili.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 5 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                
+                 <a href="https://lib.niuuz.online/read/1362/pdf" target="_blank" class="book-link" data-category="literature">
+                    <div class="book-card"><h3>Urush Va Tinchlik</h3><span class="author"><i class="fa-solid fa-user-edit"></i> Lev Tolstoy</span><p class="abstract">Napoleon urushlari davridagi Rossiya jamiyati va oilalarining ulkan epopeyasi.</p><div class="status available"><i class="fa-solid fa-circle-check"></i> Mavjud: 9 nusxa</div><div class="status link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Batafsil Ma'lumot</div></div>
+                </a>
+                 
+
+                <p id="no-results">Kechirasiz, qidiruv natijasida hech narsa topilmadi. Qidiruv so'zingizni yoki janrni tekshiring.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>E-Kutubxona.uz &copy; 2025. Ma'lumotlar faqat ta'lim maqsadlarida taqdim etilgan.</p>
+        </div>
+    </footer>
+
+    <script>
+        function searchBooks() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const categoryValue = document.getElementById('search-category').value;
+            const allBookLinks = document.querySelectorAll('.book-link');
+            const noResultsMessage = document.getElementById('no-results');
+            let foundCount = 0;
+
+            allBookLinks.forEach(link => {
+                const card = link.querySelector('.book-card');
+                
+                // Matnni olishda <small> kabi elementlar matni ham olinmasligi uchun faqat muhim qismlarni olamiz
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const author = card.querySelector('.author').textContent.toLowerCase();
+                const abstract = card.querySelector('.abstract').textContent.toLowerCase();
+                
+                // data-category atributidan janrni olish
+                const category = link.getAttribute('data-category');
+
+                const matchesQuery = title.includes(query) || author.includes(query) || abstract.includes(query);
+                const matchesCategory = categoryValue === 'all' || category === categoryValue;
+
+                if (matchesQuery && matchesCategory) {
+                    link.style.display = 'block'; // Topilganlarni ko'rsatish
+                    foundCount++;
+                } else {
+                    link.style.display = 'none'; // Topilmaganlarni yashirish
+                }
+            });
+
+            // Natija yo'qligi haqidagi xabarni ko'rsatish/yashirish
+            if (foundCount === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
