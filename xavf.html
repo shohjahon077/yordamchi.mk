@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Yo'l harakati xavfli vaziyatlari: chalg'ituvchi omillar, yo'l qurilish ishlari, yomon ob-havo — xavfni qanday oldini olish kerak? O'zbekiston PDDga asoslangan amaliy maslahatlar." />
+  <title>Xavfli Vaziyatlar | YMT hub</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.3/dist/split-type.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-800: #1E40AF;
+      --primary-700: #3B82F6;
+      --secondary: #059669;
+      --accent: #F59E0B;
+      --light: #F9FAFB;
+      --gray: #64748B;
+      --text: #1F2937;
+      --card-bg: white;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      --transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* Scroll Progress */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 9999;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    .container {
+      width: min(95%, 1300px);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Hero */
+    #hero {
+      padding: 120px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.05), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05), transparent 50%);
+      z-index: -1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-content h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.1;
+      background: linear-gradient(to right, var(--primary), var(--primary-800));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-content p {
+      font-size: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      color: var(--gray);
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.4rem;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--primary);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--gray);
+      max-width: 750px;
+      margin: 0 auto 60px;
+      font-size: 1.15rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 36px;
+    }
+
+    .risk-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 36px 28px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .risk-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--secondary), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+
+    .risk-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .risk-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 35px -10px rgba(5, 150, 105, 0.2);
+    }
+
+    .risk-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(245, 158, 11, 0.1));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2.2rem;
+      color: var(--secondary);
+    }
+
+    .risk-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+      text-align: center;
+    }
+
+    .risk-card p {
+      color: var(--gray);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    /* Prevention Tips */
+    .tips-section {
+      background: white;
+      border-radius: 24px;
+      padding: 50px;
+      box-shadow: var(--shadow);
+      margin-top: 40px;
+    }
+
+    .tip-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      align-items: flex-start;
+    }
+
+    .tip-number {
+      min-width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .tip-content h4 {
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.85);
+      padding: 50px 0 30px;
+      text-align: center;
+    }
+
+    .footer-content p {
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Back button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-700);
+      font-weight: 600;
+      text-decoration: none;
+      margin: 0 auto 40px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.1);
+      width: fit-content;
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .hero-content h1 { font-size: 2.3rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .tips-section { padding: 30px 20px; }
+      .tip-item { flex-direction: column; gap: 10px; }
+    }
+
+    /* Focus outline for accessibility */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="progress-bar"></div>
+
+  <header>
+    <div class="container header-content">
+      <a href="yolhar.html" class="logo" aria-label="YMT hub asosiy sahifasi">
+        <i class="fas fa-car-side"></i> YMT hub
+      </a>
+      <span style="font-weight: 600; color: var(--primary-800);">Xavfli Vaziyatlar</span>
+    </div>
+  </header>
+
+  <section id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 id="hero-title">Xavfli Vaziyatlar</h1>
+        <p>
+          Chalg'ituvchi omillar, yo'l qurilish ishlari, yomon ob-havo — xavfli vaziyatlarda xavfni qanday oldini olish kerak? O'zbekiston PDDga asoslangan amaliy yo'riqnoma.
+        </p>
+        <a href="yolhar.html" class="back-button" aria-label="Asosiy sahifaga qaytish">
+          <i class="fas fa-arrow-left"></i> Bosh sahifaga qaytish
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="risks">
+    <div class="container">
+      <h2 class="section-title" id="section-title">Asosiy Xavf Manbalari</h2>
+      <p class="section-subtitle">
+        O'zbekiston Respublikasi Yo'l harakati qoidalariga (PQ-117, PDD) ko'ra, quyidagi omillar yo'l harakati xavfini keskin oshiradi.
+      </p>
+
+      <div class="cards-grid">
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3>Chalg'ituvchi Omillar</h3>
+          <p>
+            Smartfon, yo'l yoqim, o'tirish tartibi — e'tiborni chalg'ituvchi har qanday omil haydovchining reaksiya vaqtini 0.5-2 soniyaga sekinlatadi (PDD 2.7).
+          </p>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-hard-hat"></i></div>
+          <h3>Yo'l Qurilish Ishlari</h3>
+          <p>
+            "Yo'l qurilmoqda" belgisi (1.25) va vaqtinchalik belgilar mavjud bo'lganda, haydovchi tezlikni kamaytirishi va ehtimoliy to'siqlarga tayyorgarlik ko'rish shart (PDD 2.5, 8.3).
+          </p>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-cloud-rain"></i></div>
+          <h3>Yomon Ob-havo</h3>
+          <p>
+            Yomg'ir, qor, tuman — ko'rish masofasini 30-70% kamaytiradi. Bunday sharoitda tezlik 20-40% kamaytirilishi, fonalarni yoqish majburiy (PDD 19.1, 19.2).
+          </p>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-users"></i></div>
+          <h3>Piyodalar & Velosipedchilar</h3>
+          <p>
+            Maktab atrofi, piyoda yo'laklari, velosiped yo'lkalarida ehtimoliy piyoda chiqishi mumkin. Haydovchi 15-25 km/soat tezlikda harakat qilishi kerak (PDD 14.1, 24.4).
+          </p>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-car-crash"></i></div>
+          <h3>Ko'rish Maydoni Cheklangan</h3>
+          <p>
+            Burilish, tepalik, daraxtlar — ko'rish maydoni cheklangan joylarda tezlik 30 km/soatgacha kamaytiriladi. Qo'shimcha signal berish tavsiya etiladi (PDD 11.4).
+          </p>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-icon"><i class="fas fa-tachometer-alt"></i></div>
+          <h3>Tasodifiy Tezlik Oshirish</h3>
+          <p>
+            Yo'l bo'sh bo'lgani uchun tezlikni befoyda oshirish — avariyaning 68% holatida sababchi. Har doim tezlik chegarasiga rioya qiling (PDD 10.1–10.4).
+          </p>
+        </div>
+      </div>
+
+      <div class="tips-section">
+        <h3 style="text-align:center; margin-bottom:30px; color:var(--primary);">Xavfli Vaziyatlarda Xavfni Kamaytirish Uchun 5 Asosiy Qoida</h3>
+        
+        <div class="tip-item">
+          <div class="tip-number">1</div>
+          <div class="tip-content">
+            <h4>Reaksiya Zaxira Vaqti — 2 Soniya</h4>
+            <p>Oldingi transport vositasiga 2 soniya masofa saqlang. Bu — to'xtash uchun yetarli vaqt (PDD 9.4).</p>
+          </div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-number">2</div>
+          <div class="tip-content">
+            <h4>Qo'l & Ko'z — Faqat Yo'lda</h4>
+            <p>Haydovchilik paytida smartfondan foydalanish taqiqlangan. Agar kerak bo'lsa — to'xtang (PDD 2.7).</p>
+          </div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-number">3</div>
+          <div class="tip-content">
+            <h4>Tezlikni Ob-havo Sharoidan Boshqaring</h4>
+            <p>Masalan: quruq asfalt 60 km/soat, nam — 40 km/soat, muzli — 20 km/soat (PDD 10.1).</p>
+          </div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-number">4</div>
+          <div class="tip-content">
+            <h4>Barcha Yo'l Belgilariga E'tibor Bering</h4>
+            <p>Ayniqsa "Yo'l qurilmoqda" va "Xavfli burilish" kabi ogohlantiruvchi belgilar (1.1–1.33).</p>
+          </div>
+        </div>
+
+        <div class="tip-item">
+          <div class="tip-number">5</div>
+          <div class="tip-content">
+            <h4>Ehtimoliy Xavfni Oldindan Bashorat Qiling</h4>
+            <p>Maktab soatlari, kechki soatlar, bayram kunlari — piyoda va haydovchi xatti-harakatlarini oldindan taxmin qiling.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p>
+          <strong>YMT hub</strong> — O'zbekiston Respublikasi Ichki Ishlar Vazirligi ma'lumotlariga asoslangan ta'lim platformasi.<br>
+          © 2025. Ma'lumotlar faqat ta'lim maqsadlarida ishlatiladi. PDD, PQ-117 hujjatlarga asoslangan.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Scroll progress
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      const d = document.body.scrollHeight - window.innerHeight;
+      const p = s / d;
+      document.getElementById('progress-bar').style.transform = `scaleX(${p})`;
+    });
+
+    // Animatsiyalar
+    window.addEventListener('load', () => {
+      const heroTitle = new SplitType('#hero-title', { types: 'words' });
+      gsap.from(heroTitle.words, {
+        y: 50,
+        opacity: 0,
+        stagger: 0.06,
+        duration: 1,
+        ease: 'power3.out'
+      });
+
+      const sectionTitle = new SplitType('#section-title', { types: 'chars' });
+      gsap.from(sectionTitle.chars, {
+        y: 40,
+        opacity: 0,
+        stagger: 0.03,
+        duration: 0.8,
+        delay: 0.3,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#section-title',
+          start: 'top 90%',
+          once: true
+        }
+      });
+
+      gsap.utils.toArray('.risk-card').forEach((card, i) => {
+        gsap.from(card, {
+          y: 80,
+          opacity: 0,
+          scale: 0.95,
+          duration: 0.8,
+          delay: i * 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 95%',
+            once: true
+          }
+        });
+      });
+
+      gsap.utils.toArray('.tip-item').forEach((tip, i) => {
+        gsap.from(tip, {
+          x: -50,
+          opacity: 0,
+          duration: 0.7,
+          delay: i * 0.15,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: tip,
+            start: 'top 90%',
+            once: true
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
