@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yashil Makon | Shaxsiy Harakat Loyihasi - Premium Dizayn</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Merriweather:ital,wght@1,700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* ==================== CSS GLOBAL O'ZGARMASLARI (VARIABLES) ==================== */
+        :root {
+            /* Ranglar Palitrasi */
+            --color-primary: #047857;       /* To'q Yashil (Asosiy) */
+            --color-secondary: #34D399;     /* Ochiq Yashil (Akkent/Yorug'lik) */
+            --color-earth: #92400E;         /* Yer Rangi (Ikonka/Akkent) */
+            --color-cta: #F59E0B;           /* Oltin/Sariq (CTA uchun) */
+            --color-background-light: #F9FAFB; /* Oq-Kulrang fon */
+            --color-text-dark: #1F2937;
+            --color-text-light: #E5E7EB;
+
+            /* Tipografiya (Shriftlar) */
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Poppins', sans-serif;
+            --font-quote: 'Merriweather', serif;
+            
+            /* Vizual Effeklar */
+            --shadow-elevation: 0 15px 30px rgba(4, 120, 87, 0.1); /* Yashil tusli yuqori shadow */
+            --shadow-subtle: 0 4px 8px rgba(0, 0, 0, 0.05);
+            --transition-speed: 0.4s; /* Sekinroq va silliqroq o'tish */
+        }
+
+        /* ==================== GLOBAL RESET VA LAYOUT ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        body {
+            color: var(--color-text-dark);
+            background-color: var(--color-background-light);
+            line-height: 1.7; 
+            scroll-behavior: smooth;
+        }
+        
+        /* YANGILANISH: Barcha interaktiv elementlar uchun global transition */
+        a, button, .btn, .card, .step-item {
+            transition: all var(--transition-speed) cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .container {
+            max-width: 1280px; /* Kengroq kontent maydoni */
+            margin: 0 auto;
+            padding: 0 25px; /* Bo'shliqni sal oshirish */
+        }
+
+        section {
+            padding: 100px 0; /* Bo'limlar orasidagi katta bo'shliq */
+            position: relative;
+        }
+
+        /* ==================== UTILITY CLASSLAR ==================== */
+        .text-center { text-align: center; }
+        .text-primary { color: var(--color-primary); }
+        .bg-light { background-color: var(--color-background-light); }
+        .bg-dark { background-color: var(--color-text-dark); }
+        .uppercase { text-transform: uppercase; }
+
+        /* ==================== TYPOGRAPHY ==================== */
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 3rem; 
+            font-weight: 900;
+            margin-bottom: 25px;
+            color: var(--color-primary);
+            line-height: 1.2;
+        }
+
+        .section-subtitle {
+            color: var(--color-text-dark);
+            font-size: 1.2rem; 
+            margin-bottom: 70px; /* Katta bo'shliq */
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Tugmalar */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 35px; /* Kattaroq tugma */
+            border-radius: 50px;
+            font-size: 1.05rem;
+        }
+
+        .btn-cta:hover {
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.6); /* Kuchliroq shadow */
+            transform: translateY(-5px); /* Kuchliroq ko'tarilish */
+        }
+
+        /* ==================== 1. NAVIGATSIYA ==================== */
+        header {
+            background-color: var(--color-primary);
+            box-shadow: var(--shadow-subtle);
+            padding: 18px 0; /* Kattaroq padding */
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Eng yuqoriga joylash */
+        }
+        
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            letter-spacing: 0.5px;
+        }
+
+        nav a {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        nav a:hover {
+            color: var(--color-cta) !important;
+            transform: translateY(-2px);
+        }
+
+        /* ==================== 2. HERO BO'LIMI (PARALLAX + ANIMATSIYA) ==================== */
+        #hero {
+            height: 90vh; /* Juda baland joylash */
+            background-image: url('https://picsum.photos/1920/1080?random=1&blur=2');
+            background-attachment: fixed; /* YANGILANISH: PARALLAX EFFEKTI */
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+        
+        #hero::before {
+            background: rgba(0, 0, 0, 0.6); 
+        }
+
+        .hero-content {
+            animation: fadeInDown 1.2s ease-out; /* YANGILANISH: Kirish animatsiyasi */
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-content h1 {
+            font-size: 5rem; /* Juda katta sarlavha */
+            line-height: 1.1;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero-content p {
+            font-size: 1.8rem;
+            max-width: 900px;
+        }
+
+        /* ==================== 3. NIMA UCHUN (IMPACT CARDS) ==================== */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+        }
+
+        .impact-card {
+            padding: 40px;
+            border-radius: 16px; /* Ko'proq yumaloqlik */
+            background-color: var(--white); 
+            box-shadow: var(--shadow-subtle);
+            text-align: left; /* Matn chapga surildi */
+            border-bottom: 5px solid var(--secondary-green);
+        }
+
+        .impact-card i {
+            font-size: 3.8rem;
+            color: var(--color-primary);
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .impact-card:hover {
+            border-bottom-color: var(--color-cta); /* Hoverda rang o'zgarishi */
+            transform: scale(1.03) rotate(1deg); /* Kichik burilish effekti */
+            box-shadow: var(--shadow-elevation);
+        }
+
+        /* ==================== 4. KO'NGILLILAR HIKOYALARI (YANGI BO'LIM) ==================== */
+        #testimonials {
+            background-color: var(--color-background-light);
+            padding: 100px 0;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .quote-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-subtle);
+            border-left: 5px solid var(--color-cta);
+        }
+        
+        .quote-card p {
+            font-family: var(--font-quote);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            font-style: italic;
+            color: var(--color-text-dark);
+            margin-bottom: 20px;
+        }
+
+        .quote-author {
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        .quote-author small {
+            display: block;
+            font-weight: 500;
+            color: var(--color-earth);
+            margin-top: 5px;
+        }
+
+        /* ==================== 5. HARAKAT REJASI (3 QADAM) ==================== */
+        #action-steps {
+            background-color: var(--color-primary);
+            background-image: linear-gradient(135deg, var(--color-primary) 0%, #064E3B 100%); /* Gradient fon */
+            color: var(--white);
+            padding: 120px 0;
+        }
+
+        #action-steps .section-subtitle {
+            color: var(--color-text-light);
+        }
+
+        .step-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        
+        .step-item {
+            text-align: center;
+            max-width: 350px;
+            padding: 30px;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px); /* YANGILANISH: Orqa fon xiraligi */
+        }
+        
+        .step-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            font-family: var(--font-heading);
+            font-size: 4.5rem;
+            color: var(--color-cta);
+        }
+
+        /* ==================== 6. BATAFSIL QO'LLANMA (YANGI BO'LIM) ==================== */
+        #guide {
+            padding: 100px 0;
+            background-color: var(--white);
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; /* YANGILANISH: Asosiy bo'limni kattaroq qilish */
+            gap: 60px;
+        }
+
+        .guide-sidebar {
+            background-color: var(--color-background-light);
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-primary);
+            align-self: flex-start; /* Yuqoriga yopishish */
+            position: sticky;
+            top: 100px;
+        }
+
+        .guide-detail h3 {
+            font-family: var(--font-heading);
+            color: var(--color-earth);
+            font-size: 1.8rem;
+            margin-top: 30px;
+            padding-bottom: 5px;
+            border-bottom: 2px dashed #eee;
+        }
+        
+        .guide-detail ul {
+            list-style: none;
+            padding-left: 20px;
+            margin-top: 15px;
+        }
+        
+        .guide-detail ul li {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .guide-detail ul li::before {
+            content: "\f058"; /* Checkmark ikonkasi */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--color-primary);
+            position: absolute;
+            left: -20px;
+        }
+
+        /* ==================== 7. YAKUNIY CHAQIRIQ VA O'RNATISH ==================== */
+        #final-cta {
+            background-color: var(--color-text-dark);
+            padding: 100px 0;
+            color: var(--color-text-light);
+            background-image: url('https://picsum.photos/1920/300?random=2'); /* Engil fon rasmi */
+            background-size: cover;
+            background-position: bottom;
+            background-blend-mode: multiply; /* Rasm ustiga rang qatlamini qo'shish */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        #final-cta h2 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+        }
+
+        /* ==================== 8. FOOTER (TO'LIQ) ==================== */
+        footer {
+            background-color: #121212;
+            color: #A0AEC0;
+            padding: 50px 0 20px;
+            font-size: 0.9rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--color-secondary);
+            margin-bottom: 15px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.1rem;
+            color: var(--white);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--color-cta);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .footer-col a {
+            color: #A0AEC0;
+            display: block;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+        
+        .footer-col a:hover {
+            color: var(--color-secondary);
+            padding-left: 5px;
+        }
+        
+        .socials a {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: var(--color-secondary);
+        }
+        
+        .copyright {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+
+        /* ==================== MOBIL QURILMALAR UCHUN MOSLASHUV (MEDIA QUERIES) ==================== */
+        @media (max-width: 1024px) {
+            .hero-content h1 {
+                font-size: 3.5rem;
+            }
+            .hero-content p {
+                font-size: 1.4rem;
+            }
+            
+            .guide-grid {
+                grid-template-columns: 1fr; /* Yirikroq mobil qurilmalar uchun ustma-ust */
+            }
+            
+            .guide-sidebar {
+                position: static; /* Joyida qotishni bekor qilish */
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+
+            .step-list {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-col {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo uppercase text-light"><i class="fa-solid fa-tree"></i> Yashil Makoning</a>
+            <nav>
+                <a href="#why-it-matters" class="text-light">Sabab</a>
+                <a href="#testimonials" class="text-light">Hikoyalar</a>
+                <a href="#guide" class="text-light">Qo'llanma</a>
+                <a href="#final-cta" style="color: var(--color-cta);" class="uppercase">Harakat!</a>
+            </nav>
+        </div>
+    </header>
+
+    <section id="hero" class="text-center">
+        <div class="hero-content">
+            <h1 class="uppercase">Kelajak Sizdan Boshlanadi!</h1>
+            <p>
+                O'zbekistonning yashil kelajagi sizning hovlingizdan, sizning qo'lingizdan boshlanadi. Bugun eking, ertaga yashang.
+            </p>
+            <a href="#action-steps" class="btn btn-cta uppercase"><i class="fa-solid fa-seedling"></i> O'zgarishni boshlash</a>
+        </div>
+    </section>
+
+    <section id="why-it-matters" class="bg-light">
+        <div class="container text-center">
+            <h2 class="section-title">Nima Uchun Aynan Sizning Hissangiz Kerak?</h2>
+            <p class="section-subtitle">
+                Bu faqat obodonlashtirish emas, bu o'z yashash joyingizni yanada qadrli, sog'lom va iqtisodiy jihatdan barqaror qilishga qaratilgan investitsiyadir.
+            </p>
+            
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                    <h3>Mulk Qadriyati</h3>
+                    <p>Yashil hovli va ko'cha mulkingizning qiymatini sezilarli darajada oshiradi. Go'zallik pulga tengdir.</p>
+                </div>
+                <div class="impact-card">
+                    <i class="fa-solid fa-droplet"></i>
+                    <h3>Suvni Tejash</h3>
+                    <p>Daraxtlar yer osti suvlarini himoya qiladi va mikroiqlimni tartibga solib, suvg'orishga bo'lgan ehtiyojni kamaytiradi.</p>
+                </div>
+                <div class="impact-card">
+                    <i class="fa-solid fa-people-group"></i>
+                    <h3>Jamoaviy Ruh</h3>
+                    <p>Birgalikda ko'chat ekish qo'shnichilik aloqalarini mustahkamlaydi va mahallangizda faxr tuyg'usini uyg'otadi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials">
+        <div class="container text-center">
+            <h2 class="section-title text-center">Ko'ngillilarimizdan Ilhomlantiruvchi Hikoyalar</h2>
+            <p class="section-subtitle">Ular o'zgarishni boshladilar. Siz navbatdasiz.</p>
+            
+            <div class="testimonial-grid">
+                <div class="quote-card">
+                    <p>"Hovlimga chinor ekkanimdan so'ng, atrof butunlay o'zgardi. Endi farzandlarim yozda soya ostida o'ynashadi. Bu beqiyos tuyg'u!"</p>
+                    <div class="quote-author">Murodjon Ibrohimov</div>
+                    <small>Yunusobod, Toshkent. (2 tup Chinor)</small>
+                </div>
+                <div class="quote-card">
+                    <p>"Mahallamizda qurib qolgan maydoncha bor edi. Birgalikda 15 tup archa ekdik. Hozir barchamiz shu yerda kechki choyni ichamiz."</p>
+                    <div class="quote-author">Shahnoza Karimova</div>
+                    <small>Samarqand sh., Ko'ngilli Rahbar</small>
+                </div>
+                <div class="quote-card">
+                    <p>"Yashil makon loyihasi menga dehqonchilikni o'rgatdi. Ekologiya haqida endi chuqurroq tushunchaga egaman va kelajakka umid bilan qarayman."</p>
+                    <div class="quote-author">Xumoyun Abduxoliqov</div>
+                    <small>Farg'ona V., Talaba</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="action-steps">
+        <div class="container text-center">
+            <h2 class="section-title">Harakatni Hozir Boshlash Uchun 3 Asosiy Qadam</h2>
+            <p class="section-subtitle">Oddiy qadamlar bilan katta o'zgarishlarga erishing.</p>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <h4>Reja Tuzing</h4>
+                    <p>Qaysi turdagi ko'chatlar (manzarali, mevali) sizning joyingizga mos kelishini aniqlang. Bitta ko'chat bilan boshlashdan qo'rqmang.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <h4>Kerakli Narsalarni Oling</h4>
+                    <p>Isbotlangan ko'chat yetishtiruvchilardan sog'lom ko'chatlarni xarid qiling. Qaychi, belkurak va mineral o'g'itlarni tayyorlang.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <h4>Parvarish Qiling</h4>
+                    <p>Ko'chatni ekish marosimi tugagandan so'ng, uni unutmang. Birinchi yil uni muntazam sug'orish va himoya qilish juda muhim.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="guide">
+        <div class="container">
+            <h2 class="section-title text-center">Batafsil Qo'llanma: Ekish Texnologiyasi</h2>
+            <p class="section-subtitle">Ko'chatning uzoq umr ko'rishi uchun muhim bo'lgan chuqur bilimlar.</p>
+
+            <div class="guide-grid">
+                <div class="guide-sidebar">
+                    <h4>Asosiy Bo'limlar:</h4>
+                    <ul>
+                        <li><a href="#tanlash-qoidalari" style="color: var(--color-primary);">Ko'chat tanlash qoidalari</a></li>
+                        <li><a href="#ekish-jarayoni" style="color: var(--color-primary);">To'g'ri ekish jarayoni</a></li>
+                        <li><a href="#parvarish" style="color: var(--color-primary);">Qishki parvarish sirlari</a></li>
+                        <li><a href="#kasalliklar" style="color: var(--color-primary);">Zararkunandalardan himoya</a></li>
+                    </ul>
+                    <a href="#" class="btn btn-primary" style="background-color: var(--color-primary); color: white; margin-top: 20px;">PDFni yuklab olish</a>
+                </div>
+                
+                <div class="guide-detail">
+                    <h3 id="tanlash-qoidalari"><i class="fa-solid fa-magnifying-glass"></i> To'g'ri Ko'chat Tanlash</h3>
+                    <p>Ko'chatni tanlashda uning ildiz tizimi sog'lomligiga, shuningdek, u sizning yashash joyingizdagi iqlimga chidamli ekanligiga ishonch hosil qiling.</p>
+                    <ul>
+                        <li>Ildizlari quruq yoki chirigan bo'lmasligi kerak.</li>
+                        <li>Shoxlari mustahkam, sinmagan bo'lishi lozim.</li>
+                        <li>Mahalliy xilma-xilliklarni tanlash tavsiya etiladi.</li>
+                    </ul>
+                    
+                    <h3 id="ekish-jarayoni"><i class="fa-solid fa-hammer"></i> Ekish Jarayoni</h3>
+                    <p>Ekish chuqurini ildiz shari hajmida qazib, ildiz bo'ynini yer sathidan bir oz yuqorida qoldirish kerak. Bu ildiz chirishining oldini oladi.</p>
+                    <p>Tuproqni boyitish uchun kompost yoki organik o'g'itlardan foydalaning, ammo ularni to'g'ridan-to'g'ri ildizga tegizmaslikka harakat qiling.</p>
+
+                    <h3 id="parvarish"><i class="fa-solid fa-snowflake"></i> Qishki Parvarish</h3>
+                    <p>Yangi ekilgan ko'chatlar sovuqdan himoyaga muhtoj. Poyasini mato yoki maxsus materiallar bilan o'rash qishda katta foyda beradi.</p>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="final-cta" class="text-center">
+        <div class="container">
+            <h2>Harakatga Keling: Sizning Bugungi Ekishiz Ertangi Toza Kelajakdir!</h2>
+            
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo uppercase"><i class="fa-solid fa-tree"></i> Yashil Makoning</div>
+                    <p>Bizning maqsadimiz – har bir fuqaroni o'z yashash joyini obodonlashtirishga ilhomlantirish va ko'maklashishdir.</p>
+                    <div class="socials" style="margin-top: 20px;">
+                        <a href="ascoymt"><i class="fa-brands fa-telegram"></i></a>
+                        <a href="ymthub"><i class="fa-brands fa-instagram"></i></a>
+                        
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Tezkor Havolalar</h4>
+                    <a href="#why-it-matters">Loyiha Maqsadi</a>
+                    <a href="#testimonials">Hikoyalar</a>
+                    <a href="#guide">Ekish Qo'llanmasi</a>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Bog'lanish</h4>
+                    
+                    
+                    <p>Telefon: +998 (91) 703-13-34</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Yangiliklarga Obuna Bo'ling</h4>
+                    <p>Eng so'nggi yangiliklar va maslahatlarni olish uchun obuna bo'ling.</p>
+                    
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2025 YMT hub. Barcha huquqlar himoyalangan. 
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
