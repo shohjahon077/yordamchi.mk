@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="uz" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="O'zbekiston Respublikasining rasmiy yo'l harakati qoidalari. Belgilar, imtihon savollari, haydovchilik kurslari — barchasi bitta platformada." />
+  <title>Yo'l Harakati Qoidalari | YMT hub</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <!-- SplitType -->
+  <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.3/dist/split-type.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1E3A8A;
+      --primary-800: #1E40AF;
+      --primary-700: #3B82F6;
+      --secondary: #059669;
+      --accent: #F59E0B;
+      --light: #F9FAFB;
+      --gray: #64748B;
+      --text: #1F2937;
+      --card-bg: white;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      --transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* Scroll Progress */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 9999;
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    .container {
+      width: min(95%, 1300px);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Hero */
+    #hero {
+      padding: 120px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.05), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.05), transparent 50%);
+      z-index: -1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-content h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.1;
+      background: linear-gradient(to right, var(--primary), var(--primary-800));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-content p {
+      font-size: 1.25rem;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      color: var(--gray);
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 40px auto;
+      max-width: 800px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 16px 24px;
+    }
+
+    .stat-value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    /* Sections */
+    #categories {
+      padding: 60px 0 100px;
+    }
+
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.4rem;
+      text-align: center;
+      margin-bottom: 16px;
+      color: var(--primary);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--gray);
+      max-width: 750px;
+      margin: 0 auto 60px;
+      font-size: 1.15rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 36px;
+    }
+
+    .category-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      text-decoration: none;
+      display: block;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+
+    .category-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .category-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 25px 40px -15px rgba(30, 58, 138, 0.25);
+    }
+
+    .category-icon {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.08), rgba(245, 158, 11, 0.08));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 2.4rem;
+      color: var(--primary);
+      transition: var(--transition);
+    }
+
+    .category-card:hover .category-icon {
+      transform: scale(1.15) rotate(10deg);
+      color: var(--accent);
+    }
+
+    .category-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--primary);
+    }
+
+    .category-card p {
+      color: var(--gray);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.85);
+      padding: 50px 0 30px;
+      text-align: center;
+    }
+
+    .footer-content p {
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .hero-content h1 { font-size: 2.3rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .stat-card { padding: 12px 16px; }
+    }
+
+    /* Focus outline for accessibility */
+    *:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="progress-bar"></div>
+
+  <header>
+    <div class="container header-content">
+      <a href="#" class="logo" aria-label="YMT hub asosiy sahifasi">
+        <i class="fas fa-car-side"></i> YMT hub
+      </a>
+      <span style="font-weight: 600; color: var(--primary-800);">Yo'l Harakati Qoidalari</span>
+    </div>
+  </header>
+
+  <section id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 id="hero-title">Yo'l Harakati Qoidalari</h1>
+        <p>
+          O'zbekiston Respublikasining rasmiy yo'l harakati qoidalari, belgilar, imtihon savollari va amaliy maslahatlar — barchasi bepul va sifatli.
+        </p>
+
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-value" id="stat1">1000+</div>
+            <div class="stat-label">Yo'l belgisi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat2">600+</div>
+            <div class="stat-label">Imtihon savoli</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat3">100%</div>
+            <div class="stat-label">Rasmiy manba</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="categories">
+    <div class="container">
+      <h2 class="section-title" id="section-title">Bo'limlar</h2>
+      <p class="section-subtitle">
+        Siz qiziqtirgan mavzuni tanlang — barcha ma'lumotlar O'zbekiston Respublikasi Ichki Ishlar Vazirligi standartlariga mos.
+      </p>
+
+      <div class="cards-grid">
+        <a href="belgi.html" class="category-card" aria-label="Yo'l belgilari bo'limiga o'tish">
+          <div class="category-icon"><i class="fas fa-map-signs"></i></div>
+          <h3>Yo'l Belgilari</h3>
+          <p>1000+ yo'l belgisi: ogohlantiruvchi, buyruq beruvchi, axborot belgilari va ularning izohi.</p>
+        </a>
+
+        <a href="qoida.html" class="category-card" aria-label="'Yo'l harakati qoidalari' bo'limiga o'tish">
+          <div class="category-icon"><i class="fas fa-book"></i></div>
+          <h3>Qoidalar To'plami</h3>
+          <p>Qonunchilik hujjatlarning to'liq matni: PQ-117, Yo'l harakati qoidalarini bajarish tartibi.</p>
+        </a>
+
+        <a href="testim.html" class="category-card" aria-label="Haydovchilik guvohnomasi imtihoni uchun savollar">
+          <div class="category-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3>Imtihon Savollari</h3>
+          <p>2025-yil yangilangan 600+ savol. O'qish + test rejimi. Natija darhol ko'rsatiladi.</p>
+        </a>
+
+        <a href="xavf.html" class="category-card" aria-label="Xavfli vaziyatlar va ularni bartaraf etish">
+          <div class="category-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <h3>Xavfli Vaziyatlar</h3>
+          <p>Chalg'ituvchi omillar, yo'l qurilish ishlari, yomon ob-havo — xavfni qanday oldini olish kerak?</p>
+        </a>
+
+        <a href="amal.html" class="category-card" aria-label="Haydovchilik amaliyot bo'yicha maslahatlar">
+          <div class="category-icon"><i class="fas fa-hands-helping"></i></div>
+          <h3>Amaliy Maslahatlar</h3>
+          <p>Ota-onalar uchun: bolalar bilan yo'l kesish, yosh haydovchilar uchun psixologik tayyorgarlik.</p>
+        </a>
+
+        <a href="tex.html" class="category-card" aria-label="Avtomobil texnik holati va tekshiruv">
+          <div class="category-icon"><i class="fas fa-tools"></i></div>
+          <h3>Texnik Tekshiruv</h3>
+          <p>Texnik holat talablari, MTEX, davlat raqamlari, ehtiyot qismlar — qanday tekshiriladi?</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p>
+          <strong>YMT hub</strong> — O'zbekiston Respublikasi Ichki Ishlar Vazirligi ma'lumotlariga asoslangan ta'lim platformasi.<br>
+          © 2025. Ma'lumotlar faqat ta'lim maqsadlarida ishlatiladi.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // GSAP ro'yxatdan o'tkazish
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Scroll progress
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      const d = document.body.scrollHeight - window.innerHeight;
+      const p = s / d;
+      document.getElementById('progress-bar').style.transform = `scaleX(${p})`;
+    });
+
+    // Animatsiyalar
+    window.addEventListener('load', () => {
+      // Hero sarlavha — so'zma-so'z kirib keladi
+      const heroTitle = new SplitType('#hero-title', { types: 'words' });
+      gsap.from(heroTitle.words, {
+        y: 50,
+        opacity: 0,
+        stagger: 0.06,
+        duration: 1,
+        ease: 'power3.out'
+      });
+
+      // Statistik raqamlar — sonlarni o'sish animatsiyasi
+      gsap.to('#stat1', { innerText: 1248, duration: 2, delay: 0.5, ease: 'power2.out', onUpdate: function() {
+        this.targets()[0].textContent = Math.round(this.targets()[0].innerText);
+      }});
+      gsap.to('#stat2', { innerText: 672, duration: 2, delay: 0.7, ease: 'power2.out', onUpdate: function() {
+        this.targets()[0].textContent = Math.round(this.targets()[0].innerText);
+      }});
+      gsap.from('#stat3', { opacity: 0, y: 30, duration: 1, delay: 0.9, ease: 'power3.out' });
+
+      // Sarlavha
+      const sectionTitle = new SplitType('#section-title', { types: 'chars' });
+      gsap.from(sectionTitle.chars, {
+        y: 40,
+        opacity: 0,
+        stagger: 0.03,
+        duration: 0.8,
+        delay: 0.3,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#section-title',
+          start: 'top 90%',
+          once: true
+        }
+      });
+
+      // Kartochkalar — har biri alohida kiradi
+      gsap.utils.toArray('.category-card').forEach((card, i) => {
+        gsap.from(card, {
+          y: 80,
+          opacity: 0,
+          scale: 0.92,
+          duration: 0.9,
+          delay: i * 0.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 95%',
+            once: true
+          }
+        });
+      });
+    });
+
+    // Enter bilan skroll (masalan: "↓" tugmasi)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        gsap.to(window, { duration: 1, scrollTo: '#categories', ease: 'power2.inOut' });
+      }
+    });
+  </script>
+
+</body>
+</html>
