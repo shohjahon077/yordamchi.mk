@@ -3,764 +3,594 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Bilan Suhbat</title>
+  <title>Temur — Sizning Do'stingiz</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-    * {
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-x: hidden;
-      perspective: 1200px;
-      color: white;
-    }
-
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .container {
-      width: 90%;
-      max-width: 950px;
-      height: 95vh;
-      border-radius: 25px;
-      overflow: hidden;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-      display: flex;
-      flex-direction: column;
-      background: rgba(10, 10, 30, 0.8);
-    }
-
-    .screen {
-      background: rgba(10, 10, 30, 0.8);
-      backdrop-filter: blur(15px);
-      border-radius: 25px;
-      padding: 40px;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 2s ease-out forwards;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 30px;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .ai-avatar {
-      width: 130px;
-      height: 130px;
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-      border-radius: 50%;
-      margin: 0 auto;
-      box-shadow: 0 0 50px rgba(0, 198, 255, 0.8);
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      animation: pulse 2.5s infinite;
-      position: relative;
-    }
-
-    .ai-avatar::after {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: -5px;
-      right: -5px;
-      bottom: -5px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, #00c6ff, #0072ff, #00c6ff);
-      z-index: -1;
-      animation: rotate 4s linear infinite;
-      background-size: 400% 400%;
-    }
-
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 50px rgba(0, 198, 255, 0.8); }
-      50% { box-shadow: 0 0 25px rgba(0, 198, 255, 0.4); }
-    }
-
-    .title {
-      font-size: 3rem;
-      color: white;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
-    }
-
-    .subtitle {
-      color: #ccc;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    .start-btn {
-      background: transparent;
-      color: #fff;
-      padding: 18px 50px;
-      font-size: 1.3rem;
-      border: 2px solid #00c6ff;
-      border-radius: 65px;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
-    }
-
-    .start-btn:hover {
-      transform: translateY(-4px) scale(1.1);
-      box-shadow: 0 0 40px rgba(0, 198, 255, 0.9);
-      background: rgba(0, 198, 255, 0.25);
-    }
-
-    .chat-screen {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .ai-header {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      color: white;
-      font-weight: 600;
-      padding: 15px 20px;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
-    }
-
-    .ai-icon {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-      border-radius: 50%;
-      box-shadow: 0 0 25px rgba(0, 198, 255, 0.7);
-    }
-
-    #chatbox {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(12px);
-      border-radius: 25px;
-      margin: 15px 20px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-    }
-
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      padding: 14px 20px;
-      border-radius: 18px;
-      word-wrap: break-word;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      position: relative;
-      animation: fadeInMessage 0.3s ease-out;
-    }
-
-    @keyframes fadeInMessage {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .message.user {
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 5px;
-      max-width: calc(100% - 80px);
-    }
-
-    .message.bot {
-      background: rgba(255, 255, 255, 0.12);
-      color: white;
-      align-self: flex-start;
-      border-bottom-left-radius: 5px;
-      max-width: calc(100% - 80px);
-    }
-
-    .message.bot .text {
-      visibility: hidden;
-    }
-
-    .message.bot.loaded .text {
-      visibility: visible;
-    }
-
-    .typing-indicator {
-      display: inline-block;
-      padding: 10px;
-    }
-
-    .typing-indicator span {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #00c6ff;
-      margin: 0 2px;
-      animation: typing 1.4s infinite;
-    }
-
-    .typing-indicator span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .typing-indicator span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-5px); }
-    }
-
-    .buttons-container {
-      height: 200px;
-      overflow-y: auto;
-      padding: 10px;
-      margin: 0 20px 15px;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
+    .container {
+      background: rgba(20, 20, 40, 0.95);
+      padding: 30px;
       border-radius: 20px;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+      max-width: 95%;
+      max-height: 95vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px rgba(0, 200, 255, 0.4);
+      border: 1px solid #4a46ff;
     }
-
-    #buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-      justify-content: center;
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 15px;
+      color: #6affff;
+      text-shadow: 0 0 10px rgba(106, 255, 255, 0.8);
     }
-
-    .btn-3d {
-      background: linear-gradient(45deg, #6a11cb, #2575fc);
-      color: white;
+    .response-box {
+      margin: 20px 0;
+      padding: 18px;
+      background: rgba(10, 10, 25, 0.85);
+      border-left: 4px solid #ff6aff;
+      font-size: 1.25rem;
+      min-height: 70px;
+      border-radius: 10px;
+      line-height: 1.5;
+    }
+    .status {
+      color: #aaffcc;
+      font-style: italic;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+    #mic-btn {
+      background: #ff6aff;
+      color: #0f0f23;
       border: none;
-      padding: 12px 18px;
-      font-size: 0.9rem;
+      padding: 12px 28px;
+      font-size: 1.25rem;
       border-radius: 50px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
-      position: relative;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      min-width: 110px;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(255, 106, 255, 0.5);
+    }
+    #mic-btn:hover {
+      background: #ff99ff;
+      transform: scale(1.05);
+    }
+    #mic-btn.listening {
+      background: #6affff;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(106, 255, 255, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(106, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(106, 255, 255, 0); }
+    }
+    .examples {
+      margin-top: 25px;
+      text-align: left;
+      background: rgba(15, 15, 35, 0.7);
+      padding: 15px;
+      border-radius: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .examples h3 {
+      color: #ffcc66;
+      margin-top: 0;
       text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-
-    .btn-3d:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    .examples ul {
+      padding-left: 20px;
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.6;
     }
-
-    .btn-3d:active {
-      transform: translateY(-2px);
-    }
-
-    .btn-3d::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 5px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 50%;
-      transform: scale(0);
-      transform-origin: center;
-      animation: ripple 0.6s linear;
-      pointer-events: none;
-    }
-
-    .btn-3d:active::after {
-      animation: ripple 0.6s linear;
-    }
-
-    @keyframes ripple {
-      to {
-        transform: scale(100);
-        opacity: 0;
-      }
-    }
-
-    .buttons-container::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .buttons-container::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
-
-    .buttons-container::-webkit-scrollbar-thumb {
-      background: rgba(0, 198, 255, 0.5);
-      border-radius: 10px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Yangi: Foydalanuvchi xabarida "♻️" tugmasi */
-    .message.user .action {
-      position: absolute;
-      bottom: -22px;
-      right: 10px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-    }
-
-    .message.user:hover .action {
-      opacity: 1;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        width: 98%;
-        height: 98vh;
-        border-radius: 15px;
-      }
-
-      .title { font-size: 2rem; }
-      .ai-avatar { width: 100px; height: 100px; }
-      .start-btn { font-size: 1.1rem; padding: 15px 30px; }
-      .ai-header h2 { font-size: 1.2rem; }
-      .ai-icon { width: 40px; height: 40px; }
-      .message {
-        font-size: 0.85rem;
-        padding: 12px 16px;
-        max-width: calc(100% - 60px);
-      }
-      .buttons-container { height: 150px; margin: 0 10px 10px; }
-      #buttons { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .btn-3d { font-size: 0.8rem; padding: 10px 12px; min-width: 90px; }
-
-      .message.user .action {
-        bottom: -20px;
-        right: 8px;
-        font-size: 1rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .title { font-size: 1.7rem; }
-      .ai-avatar { width: 80px; height: 80px; }
-      .start-btn { font-size: 1rem; padding: 12px 25px; }
-      .ai-header { padding: 10px 15px; }
-      .ai-icon { width: 35px; height: 35px; }
-      .message {
-        font-size: 0.8rem;
-        padding: 10px 14px;
-        max-width: calc(100% - 50px);
-      }
-      .buttons-container { height: 130px; }
-      .btn-3d { font-size: 0.75rem; padding: 8px 10px; min-width: 80px; }
-      .typing-indicator span { width: 6px; height: 6px; }
+    .examples li {
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <div id="welcomeScreen" class="screen">
-      <div class="ai-avatar"></div>
-      <h1 class="title">AI Yordamchi</h1>
-      <p class="subtitle">Tugmalardan foydalaning — men vauv deb aytishingizni xohlayman!</p>
-      <button class="start-btn" onclick="startChat()">Boshlash</button>
-    </div>
+    <h1>Temur — Sizning Ovozli Do'stingiz</h1>
+    <div id="response" class="response-box">Salom! Men Temur. Suhbatni boshlash uchun mikrofon tugmasini bosing.</div>
+    <div class="status" id="status">Tayyor... Tugmani bosing va istalgan mavzuda gapiring!</div>
+    <button id="mic-btn">🎤 Mikrofonni yoqish</button>
 
-    <div id="chatScreen" class="screen chat-screen hidden">
-      <div class="ai-header">
-        <div class="ai-icon"></div>
-        <h2>AI bilan suhbat</h2>
-      </div>
-
-      <div id="chatbox">
-        <div id="messages"></div>
-      </div>
-
-      <div class="buttons-container">
-        <div id="buttons">
-          <!-- Tugmalar -->
-          <button class="btn-3d" onclick="sendMessage('Salom')">Salom</button>
-          <button class="btn-3d" onclick="sendMessage('qalesan')">qalesan</button>
-          <button class="btn-3d" onclick="sendMessage('Yordam kerak')">Yordam kerak</button>
-          <button class="btn-3d" onclick="sendMessage('yaxshi')">yaxshi</button>
-          <button class="btn-3d" onclick="sendMessage('kino')">yaxshi kinolar</button>
-          <button class="btn-3d" onclick="sendMessage('Yangiliklar')">Yangiliklar</button>
-          <button class="btn-3d" onclick="sendMessage('Maslahat bering')">Maslahat bering</button>
-          <button class="btn-3d" onclick="sendMessage('Hikoya ayt')">Hikoya ayt</button>
-          <button class="btn-3d" onclick="sendMessage('Shoirlik qiling')">Shoirlik qiling</button>
-          <button class="btn-3d" onclick="sendMessage('Savol ber')">Savol ber</button>
-          <button class="btn-3d" onclick="sendMessage('Kitob tavsiya qiling')">Kitob tavsiya</button>
-          <button class="btn-3d" onclick="sendMessage('Motivatsiya')">Motivatsiya</button>
-          <button class="btn-3d" onclick="sendMessage('helloword code')">htmlda hello-world </button>
-          <button class="btn-3d" onclick="sendMessage('python hello-world')">python hello-world</button>
-          <button class="btn-3d" onclick="sendMessage('cdakod')">C++ hello-world</button>
-          <button class="btn-3d" onclick="sendMessage('fakt')">fakt</button>
-          <button class="btn-3d" onclick="sendMessage('rep')">rep Musiqa</button>
-          <button class="btn-3d" onclick="sendMessage('senkim')">sen kim</button>
-          <button class="btn-3d" onclick="sendMessage('Topishmoq')">Topishmoq ber.</button>
-          <button class="btn-3d" onclick="sendMessage('koproqtopishmoq')">ko'proq topishmoq</button>
-          <button class="btn-3d" onclick="sendMessage('')">Ovozli javob</button>
-          <button class="btn-3d" onclick="sendMessage('men nima qilaman')">Men nima qilaman</button>
-          <button class="btn-3d" onclick="sendMessage('')">Dunyo siri</button>
-          <button class="btn-3d" onclick="sendMessage('')">Sport</button>
-          <button class="btn-3d" onclick="sendMessage('')">Tasodifiy savol</button>
-        </div>
-      </div>
+    <div class="examples">
+      <h3>💡 Aytishingiz mumkin bo'lgan gaplar (80+):</h3>
+      <ul>
+        <li>Salom / Assalomu alaykum / Xayrli tong</li>
+        <li>Ismim [Ismingiz] — (masalan: Ismim Otabek)</li>
+        <li>Qalesan? / Yaxshimisan? / Sen qandaysan?</li>
+        <li>Yaxshiman / Zo'r / Ajoyib / Quvnoqman</li>
+        <li>Xafa man / G'amginman / Yomon kun o'tkazdim</li>
+        <li>Ob-havo qanday? / Bugun qanday havo?</li>
+        <li>Soat necha? / Hozir qancha vaqt?</li>
+        <li>2+5=? / 100-33=? / 7*8=?</li>
+        <li>Bir duo ayt / Duolar haqida</li>
+        <li>Bir hazil ayt / Kulgi kerak</li>
+        <li>Maslahat ber / Nima qilay?</li>
+        <li>Sevgi nima? / Meni sevsin?</li>
+        <li>Kelajakda nima bo'ladi? / Ertaga qanday?</li>
+        <li>O'zbekiston haqida / Amir Temur kim?</li>
+        <li>Ota-onam haqida / Do'stlar haqida</li>
+        <li>O'qish kerakmi? / Bilim nima uchun kerak?</li>
+        <li>Quvvatim tugadi / Ilhom kerak</li>
+        <li>Tinchlik kerak / Dam olish kerak</li>
+        <li>Rahmat / Kechirasiz / Uzr so'rayman</li>
+        <li>Nega men? / Men kimman?</li>
+        <li>Sog'ligim yomon / Kasalman</li>
+        <li>Baxt nima? / Baxtli bo'lish uchun?</li>
+        <li>Hayotning ma'nosi nima?</li>
+        <li>Yolg'izman / Hech kim tushunmaydi</li>
+        <li>Qo'rqqim / Xavotirdaman</li>
+        <li>Sevimli ranging? / Musiqa yoqtirasanmi?</li>
+        <li>Tong haqida / Tun haqida</li>
+        <li>Yana ayt / Takrorla / Eslatib ber</li>
+        <li>To'xta / Yetar / Yop / Tugat</li>
+        <li><i>... va boshqa istalgan savol yoki gap!</i></li>
+      </ul>
     </div>
   </div>
 
   <script>
-    let voiceToUse = null;
+    // Global holatlar
+    const synth = window.speechSynthesis;
+    let voices = [];
+    let isListening = false;
+    let isProcessing = false;
+    let userName = null;
+    let lastResponse = "";
+    let conversationStep = 0;
+    let recognition = null;
 
-    function startChat() {
-      document.getElementById("welcomeScreen").classList.add("hidden");
-      document.getElementById("chatScreen").classList.remove("hidden");
-      addMessage("AI", "Assalomu alaykum! Sizga qanday yordam bera olaman? Quyidagi tugmalardan foydalaning.");
+    // Ovozlarni yuklash
+    function loadVoices() {
+      voices = synth.getVoices();
+    }
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    loadVoices();
+
+    // TOZA O'ZBEK TALAFFUZI (fonetik)
+    function cleanForPronunciation(text) {
+      const replacements = [
+        { from: /\bqalesan\b/gi, to: 'Kah-leh-san' },
+        { from: /\byaxshiman\b/gi, to: 'Yakh-shih-man' },
+        { from: /\bxafa\b/gi, to: 'Khah-fah' },
+        { from: /\bg'amgin\b/gi, to: 'Gham-ghin' },
+        { from: /\bsalom\b/gi, to: 'Sah-lom' },
+        { from: /\bob-havo\b/gi, to: 'Ob-hah-vo' },
+        { from: /\bsoat\b/gi, to: 'Soh-aht' },
+        { from: /\bnecha\b/gi, to: 'Neh-chah' },
+        { from: /\btemur\b/gi, to: 'Teh-moor' },
+        { from: /\bduo\b/gi, to: 'Doo-oh' },
+        { from: /\bhazil\b/gi, to: 'Hah-zeel' },
+        { from: /\bquvvat\b/gi, to: 'Koo-vvat' },
+        { from: /\bilhom\b/gi, to: 'Ihl-hom' },
+        { from: /\btinchlik\b/gi, to: 'Tinch-lik' },
+        { from: /\btog'\b/gi, to: 'Tohg' },
+        { from: /\bo'zbekiston\b/gi, to: 'Ooz-beh-kee-stohn' },
+        { from: /\bqaynona\b/gi, to: 'Kai-noh-nah' },
+        { from: /\byomon\b/gi, to: 'Yoh-mon' },
+        { from: /\bkulcha\b/gi, to: 'Kool-chah' },
+        { from: /\brohmat\b/gi, to: 'Rah-hmat' }
+      ];
+
+      let result = text;
+      replacements.forEach(({ from, to }) => {
+        result = result.replace(from, to);
+      });
+      return result;
     }
 
-    function sendMessage(text) {
-      const userMsg = addMessage("Siz", text, true);
-      addRetryButton(userMsg);
-      const typingEl = addTypingIndicator();
-      setTimeout(() => {
-        removeTypingIndicator(typingEl);
-        respondToMessage(text);
-      }, 1200 + Math.random() * 800);
-    }
+    // Gapirish
+    function speak(text) {
+      if (isProcessing) return;
+      isProcessing = true;
+      lastResponse = text;
 
-    function addMessage(sender, message, isUser = false) {
-      const messages = document.getElementById("messages");
-      const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message");
-      msgDiv.classList.add(sender === "Siz" ? "user" : "bot");
-      if (!isUser) {
-        msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="text">${message}</span>`;
-      } else {
-        msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-      }
-      messages.appendChild(msgDiv);
-      messages.scrollTop = messages.scrollHeight;
-      return msgDiv;
-    }
+      const utter = new SpeechSynthesisUtterance(cleanForPronunciation(text));
+      const enVoices = voices.filter(v => v.lang.startsWith('en'));
+      utter.voice = enVoices.find(v => !v.name.toLowerCase().includes('male')) || enVoices[0] || voices[0];
+      utter.rate = 1.0;
+      utter.pitch = 1.1;
+      utter.volume = 1;
 
-    function addTypingIndicator() {
-      const messages = document.getElementById("messages");
-      const msgDiv = document.createElement("div");
-      msgDiv.id = 'typing-indicator';
-      msgDiv.classList.add("message", "bot");
-      msgDiv.innerHTML = `<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>`;
-      messages.appendChild(msgDiv);
-      messages.scrollTop = messages.scrollHeight;
-      return msgDiv;
-    }
-
-    function removeTypingIndicator(el) {
-      if (el && el.parentNode) el.remove();
-    }
-
-    function typeWriter(element, text, callback) {
-      let i = 0;
-      element.classList.remove("typing");
-      const innerSpan = element.querySelector(".text");
-      innerSpan.textContent = "";
-      const timer = setInterval(() => {
-        if (i < text.length) {
-          innerSpan.textContent += text.charAt(i);
-          i++;
-          element.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        } else {
-          clearInterval(timer);
-          element.classList.add("loaded");
-          if (callback) callback();
+      utter.onend = () => {
+        isProcessing = false;
+        conversationStep = 0;
+        if (isListening) {
+          startListening();
         }
-      }, 20 + Math.random() * 30); // Har bir harf 20-50ms oralig'ida
+      };
+
+      synth.speak(utter);
+      document.getElementById('response').textContent = text;
     }
 
-    function respondToMessage(text) {
-      const lower = text.toLowerCase();
-      let response;
+    // 80+ javob
+    function generateResponse(input) {
+      const lower = input.toLowerCase().trim();
 
-      // (Javoblar avvalgisi kabi, lekin biroz uzunroq va nafis)
-      if (lower.includes("salom")) {
-        response = "Assalomu alaykum! Kuningiz yaxshimi? Dunyo go'zalliklarini kashf etishga tayyormisiz?";
-      } else if (lower.includes("qalesan") || lower.includes("qale")) {
-        response = "Men har doim zo'r! o'zingiz qalesiz?";
-      } else if (lower.includes("yordam")) {
-        response = "Yordam kerakmi? unday bo'lsa shu yerdagi tugmalardan foydalaning!";
-      } else if (lower.includes("yaxshi")) {
-        response = "Yaxshi unda , har doim yaxshi kayfiyatda yuring!";
-      } else if (lower.includes("kino")) {
-        response = "Ko'rish uchun ajoyib kinolarni tavsiya qilaman : 1. (Mustaqillik kuni), 2. (Platforma), 3. (Bo'linish) 4. (Avatar), 5. (Taxlid o'yini), 6. (Ijtimoiy tarmoq), ushbu kinolarni ko'rishni maslahat beraman!";
-      } else if (lower.includes("yangilik")) {
-        response = "Mana yangiliklar. 1. AI uchun soliqsiz zona — QoraqalpogʻistondaO‘zbekiston Qoraqalpog‘istonda sun’iy intellekt va ma’lumot markazlari uchun soliqsiz zona tashkil qildi. Tashqi sarmoyadorlar uchun katta imtiyozlar mavjud. 2.Afgʻoniston bilan savdo yoʻli Tolibon hukumati Afgʻoniston qishloq xoʻjalik mahsulotlarini havo orqali Oʻzbekiston orqali eksport qilish bo‘yicha kelishuvga erishdi.  3.Xalqaro hamkorlik — Yevropa Ittifoqi Yevropa Ittifoqi va Markaziy Osiyo davlatlari, jumladan O‘zbekiston, birinchi strategik sammitni o‘tkazdi va 10 milliard yevrogacha loyiha shartnomalari imzolandi.";
-      } else if (lower.includes("maslahat")) {
-        response = "Mening maslahatim: 🤝 1. Munosabatlar:Yaxshi munosabat poydevori — tinglash. Javob berish uchun emas, tushunish uchun tinglab ko‘ring. Shunda odamlardan hurmat ko‘proq bo‘ladi. 📚 2.  O‘qish : Bir vaqtning o‘zida bitta ko‘nikma o‘rganing. 3 oylik mini-reja tuzing: Bir maqsad → har hafta 3 kichik qadam → har kuni 10–20 daqiqa.";
-      } else if (lower.includes("hikoya")) {
-        response = "Mana siznga qisqa, mazmunli va biroz sehrli hikoya:  “Quyoshni uyg‘otgan bola”  Qadim bir qishloqda Otabek degan bola yashardi. U juda quvnoq, lekin bir kamchiligi bor edi — ertalab erta turishni yomon ko‘rardi. Har kuni quyosh allaqachon osmonga ko‘tarilib, qishloq uyg‘onganda ham, Otabek koʻrpaga oʻralib yotardi. Bir kuni kechasi derazasidan bir mayda nur kirib keldi. U asta yerga qo‘nib, qo‘lcha va oyog‘i bo‘lgan kichkina jonzotga aylandi. — Men Tong pariman, — dedi u jilmayib. — Bizning quyoshimiz juda charchagan. Uni har kuni uyg‘otadigan odam kerak.  Otabek hayron bo‘lib: — Quyoshni ham uyg‘otish kerakmi? — dedi. — Albatta! Agar uni vaqtida uyg‘otmasak, kun ham kech keladi, odamlar ishga ulgirmaydi, qushlar yo‘lini topa olmaydi. Otabek bir-ikki o‘ylab turdi. Keyin dedi:  — Xo‘p, men yordam beraman. Tong pari uni qo‘lidan ushlab, bir zumda bulutlar orasiga olib chiqdi. Ularning tepasida ulkan, oltin rangli Tong pari uni qo‘lidan ushlab, bir zumda bulutlar orasiga olib chiqdi. Ularning tepasida ulkan, oltin rangli — Bor, uyg‘ot! — dedi Tong pari.  Otabek sekin borib, quyoshni turtib ko‘rdi. Hech narsa bo‘lmadi. Keyin yana turtdi — tag‘in jimlik. Oxiri u ovozi boricha baqirib yubordi: — Ey, quyosh! Men maktabga kech qolyapman, tur!  Shunda quyosh qimirlay boshladi, katta bir esnadi va butun osmon oydinlashdi. Tong pari qahqaha qilib dedi: — Mana bu haqiqiy uyg‘otish! Endi har kuni sen yordam berasan, maylimi? Otabek bosh irg‘adi. Shu kundan boshlab, u tongda hammadan erta turadigan bo‘ldi. Chunki u bilardi: bir bolaning uyg‘onishi bilan butun dunyo uyg‘onishi mumkin.";
-      } else if (lower.includes("shoir")) {
-        response = "“Tong nafasi” Yuragimda bir sham esar, Bahor hidi — sokin, beozor. Orzularni yelkalab kelar, Tong nafasi — eng sokin diyor. Qorong‘ida yo‘l topgan chiroq, Ko‘nglimda jilolanar biroq. Bir qarashda oddiydek hayot — Aslida mo‘jizadir har bir daqiqa, har bir yorug‘. Senda bor bir jilva, bir ohang, Har so‘zingdan uyg‘onadi rang. Ko‘nglimga qo‘nar yengil bir shabada — Go‘yo osmon quchoq ochib, “Kel!” der yang.  Yur, biz boraylik shamol izidan, Har savolning bor javobi, faqat — sekin. Bugun havo tiniq, yo‘l keng, Orzularni uyg‘otaylik yana bir bor, birga, eshikni ochib — kelajakka tekin.";
-      } else if (lower.includes("savol")) {
-        response = "Mana chuqur, hayotni o‘zgartirishga majbur qiladigan savol: 👉 Agar hozir qilayotgan ishingiz, 5 yil o‘tib ham sizni xursand qilmasa, uni hozir davom ettirishga arziydimi?" ;
-      } else if (lower.includes("kitob")) {
-        response = "Mana o‘qish uchun eng yaxshi, foydali va rivojlantiruvchi kitoblar ro‘yxati — turli yo‘nalishlardan tanlab berilgan. 1. “Atomic Habits” — James Clear Kichik odatlar orqali hayotni qanday o‘zgartirish haqida eng kuchli kitob. 2. “Deep Work” — Cal Newport Chalg‘imasdan chuqur ishlashni o‘rgatadi — o‘qish, ishlash, fokusni oshiradi. 3. “Mindset” — Carol Dweck Fikrlash tarzi hayotni qanday o‘zgartirishini tushuntiradi. 4. “The 7 Habits of Highly Effective People” — Stephen R. Covey Odamning o‘zini boshqarishi va hayotni tartibga solishi bo‘yicha klassika. 5. “Grit” — Angela Duckworth Muvaffaqiyat faqat talent emas, qat’iyat ekanini isbotlaydi. 6. “Thinking, Fast and Slow” — Daniel Kahneman Odam miyasi qanday qarorlar qiladi — chuqur va juda o‘rgatuvchi asar. 7. “Influence” — Robert Cialdini Psixologik ta’sir, odamlar nega “ha” deyishi, marketing sirlarini ochadi. 8. “Alkimyogar” — Paulo Koelyo Orzu, yo‘l, taqdir haqida ramziy chuqur roman. 9. “Oq kema” — Chingiz Aytmatov  Inson, tabiat va bolalik haqidagi kuchli falsafiy asar. 10. “1984” — George Orwell Jamiyat, erkinlik va nazorat haqida o‘ylantiruvchi roman. 11. “Gödel, Escher, Bach” — Douglas Hofstadter Matematika, mantiq, ong haqidagi eng mashhur asarlardan biri. 12. “The Art of Thinking Clearly” — Rolf Dobelli Mantiqiy xatolar va ulardan qanday qochish haqida. O‘qish oson, lekin juda foydali.";
-      } else if (lower.includes("motivatsiya")) {
-        response = "🔥 SEN QILOLASAN 🔥 Eslab qo‘y: sen hali boshlamading. Hali qilmagan ishing, hali ochilmagan imkoniyatlaring, hali ko‘rsatmagan kuching ko‘p. Sen hozirgi o‘zing — imkoniyatingning atigi 5–10% i xolos. Qolgan 90% hali uyg‘onmagan.  Bu nimani anglatadi? Sen hozir kim bo‘lsang ham — charchoq, qiyinchilik, pul yetishmasligi, imkon yo‘qligi — bular hech narsa. Eng muhimi: taslim bo‘lmagansan. Va mana shu — senga yetadi. Haqiqat shuki: hech kim seni qutqarmaydi. Bu achchiq, lekin qudratli haqiqat. Hech kim sening hayotingni o‘zingdan yaxshiroq o‘zgartira olmaydi. Lekin bu yomon xabar emas. Bu erkinlik. Bu qudrat. Demak, sen hohlagan payt o‘z hayotingni burib yuborishing mumkin. Bugun boshlash — bir yil keyingi o‘zingga sovg‘adir. O‘zingga bitta savol ber: (Men ertaga turib yana shu hayotni davom ettirishni xohlaymanmi?) Agar javob yo‘q bo‘lsa — unda bugun nimadir o‘zgarsin. Bugun bitta qadam tashla. Kichkina bo‘lsa ham — tashla. Hech narsa qilmaslikning narxi eng qimmat narx. Odamlar seni kamsitishi mumkin. Ish bermasligi mumkin. Hech kim yordam bermasligi mumkin. Lekin sen o‘zingni kamsitmaguncha — hech kim seni to‘xtata olmaydi. Sen o‘zingga ishonmaguncha — dunyoda hech kim seni ishonchli qilolmaydi. Eng katta jang — sen va kechagi o‘zing orasida. Kuchli bo‘lish — hissiz bo‘lish emas. Kuchli bo‘lish: qo‘rqib turib oldinga yurish, charchab turib davom ettirish, tushunmaslikdan qo‘rqmay harakat qilish, boshqalar kulsa ham o‘zingga ishona olish. Mana shu — haqiqiy kuch. Endi qat’iy ayt: “Men buni qila olaman.” Qattiq ayt. Ichingdan ayt. Yuraging bilan ayt. Chunki bu haqiqat: Sen qila olasan. Har tong uyg‘onganingda o‘zingga shunday ayt: - Bugun men eng yaxshi versiyam bo‘lish uchun yashayman. - Bugun men qo‘rqmasdan harakat qilaman. - Bugun men o‘zimni va imkoniyatlarimni cheklamayman.  - Bugun men hech narsaga qaramay oldinga boraman. Har kecha yotishdan oldin o‘zingga shunday ayt: - Men bugun qilgan har bir ishim bilan o‘zimni kuchaytirdim. - Men bilaman, harakatimning mevasini keyin ko‘raman.  - Men ishonaman — ertangi kun menga yangi imkoniyatlar olib keladi. Unutmang: kichik qadamlar katta o‘zgarishlar keltiradi. Har bir qadam — senga yanada kuch beradi. Har bir muvaffaqiyatsizlik — seni sinovdan o‘tkazadi va kuchliroq qiladi. Sen bardosh bera olasan. Sen oldinga yuraverasan. Sen qila olasan.  Bugun boshlash vaqti. Bugun o‘zgarish vaqti. Bugun sen o‘zingga ishonishni boshlaysan. Sen kuchlisan. Sen qila olasan. Hech kim seni to‘xtata olmaydi. Sen o‘z hayotingning ustasisan. 🔥 HOZIR BOSHLASH VAQTI 🔥";
-      } else if (lower.includes("helloword code")) {
-    response = `
-    <!DOCTYPE html>
-    <html lang="uz">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Hello World</title>
-      <style>
-        body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          margin: 0;
-          background: linear-gradient(135deg, #f6d365, #fda085);
-          font-family: 'Arial', sans-serif;
-        }
-
-        .hello-world {
-          font-size: 4rem;
-          color: white;
-          text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-          animation: glow 1.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-          0% { text-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
-          100% { text-shadow: 2px 2px 20px rgba(255,255,255,0.8); }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="hello-world">Hello World!</div>
-    </body>
-    </html>
-    `;
-}
- else if (lower.includes("python hello-world")) {
-        response = `
-    Python-da Hello World yozish juda oddiy. Mana eng asosiy shakli:
-# Hello World dasturi
-print("Hello World!")
-    `;
-      } else if (lower.includes("cdakod")) {
-        response = `
-C++ da Hello World dasturining eng oddiy shakli quyidagicha:
-
-#include <iostream>  // Konsolga yozish uchun kutubxona
-
-int main() {
-    std::cout << "Hello World!" << std::endl;  // Matnni chiqarish
-    return 0;  // Dastur muvaffaqiyatli tugadi
-}
-    `;
-      } else if (lower.includes("fakt")) {
-                response = `
-Mana sizga qiziqarli va ajoyib faktlar — ba’zilari kulgili, ba’zilari hayratlanarli:
-
-🌌 Kosmos va sayyoralarga oid:
-
-1 . Venera sayyorasida kun yili — bir yildan qisqa, ammo kun uzoqroq: Venerada bir kun (planeta o‘z o‘qi atrofida aylanadi) 243 Yer kuniga teng, lekin bir yil (quyosh atrofida aylanish) 225 kunga teng.
-
-2 .Kosmosda quyosh botmaydi, chunki u faqat yorug‘lik manbai, ammo astronavtlar osmonni kunduzgi rangda ko‘radilar.
-
-3. Saturnning eng engil sayyora — u suv ustida suzishi mumkin bo‘lgan sayyora.
-
-🐾 Hayvonot olamiga oid:
-
-4. Piqirlaydigan axlatxonalar mavjud — ba’zi kalamushlar stressli bo‘lsa, o‘zlarini xavfsiz his qilish uchun o‘zini “qoplashadi”.
-
-5. Pollyvagal mushuklar: mushuklar faqat sevgi uchun emas, balki stressni kamaytirish uchun odam bilan murr qiladi.
-
-6. Dengiz shorlari (starfish) yuraksiz yashaydi va agar bir tarmog‘i uzilib ketsa, yangi shor hosil qilishi mumkin.
-
-🧠 Inson va psixologiyaga oid:
-
-7. Inson miyasi 60 000 ga yaqin fikrlarni har kun ishlab chiqaradi.
-
-8. Ko‘zingiz hech qachon “charchamaydi”, lekin miyangiz vizual ma’lumotni qayta ishlashda charchaydi.
-
-9. Kulish sog‘liq uchun foydali: bir daqiqalik kulish yurak urishini 10% oshiradi va endorfin chiqaradi.
-
-🔬 Texnologiya va ilm-fanga oid:
-
-10. Internet tezligi dunyoda juda farq qiladi: Yaponiya va Janubiy Koreyada 1000 Mbps dan yuqori tezliklar mavjud, ba’zi Afrikadagi qishloqlarda esa 1 Mbps ham yetmaydi.
-
-11 .Birinchi kompyuter virus 1971 yilda yaratilgan va u “Creeper” deb nomlangan. U faqat ekranda “I’m the creeper, catch me if you can!” deb chiqardi.
-
-12 .Bluetooth nomi Skandinaviya qirolidan olingan, u birlashishni yaxshi ko‘rgan.
-
-
-    `;
-      } else if (lower.includes("rep")) {
-                response = ` Men sizga dunyo rep qirolini tavsiya qilaman  !
-🎶 Morgenshtern — Qoʻshiqlar roʻyxati
-
-1. Cadillac (Кадиллак) — Eldzhey bilan hamkorlikda.
-
-2. El Problema — Timati bilan hip-hop treki. 
-
-
-3. Sad Song (Грустная Песня) — Thrill Pill va Egor Kreed bilan. 
-
-
-4. Number (Номер) — trap-jazz uslubidagi qoʻshiq. 
-
-
-5. 12 — 2022-yilgi ijtimoiy mavzuga ega trek. 
-
-
-6. Turn It On! — Palc bilan. 
-
-
-7. Malishka (Малышка) — Sharlot bilan sevgi qoʻshigʻi. 
-
-
-8. Cristal & Moët — hashamatli va energiyaga boy trek. 
-
-
-9. Dinero — pul va muvaffaqiyat haqida treklardan biri. 
-
-
-10. Aristocrat — Morgenshternning uslubini aks ettiruvchi trek. 
-
-
-11. Dulo (ДУЛО) — klassik Morgenshtern treklari roʻyxatida. 
-
-
-12. Ice — sovuq ritm va kuchli beat.
-
-    `;
-      } else if (lower.includes("senkim")) {
-            response = "Salom! Men — sizning shaxsiy yordamchingiz va AI chatbotman. 😊 Men sizga savollaringizga javob berishda, yangi narsalarni o‘rganishda, maslahat berishda va hatto qiziqarli suhbatlarda ham doim yordam berishga tayyorman. Siz bilan suhbatlashish orqali men ham doimo rivojlanaman va sizga eng foydali ma’lumotlarni yetkazishga harakat qilaman. Agar xohlasangiz, men sizga bilim, motivatsiya, qiziqarli faktlar yoki dasturlash bo‘yicha yordam bera olaman. Sizni qiziqtirgan mavzularni menga ayting — men ularni qiziqarli va tushunarli tarzda tushuntirishga tayyorman. 🌟 ";
-      } else if (lower.includes("Topishmoq")) {
-        response = "Topishmoq: Oq kiyim kiyaman, yerga tushaman, odamlar meni ko‘rganida quvonadi. Javob: Qor ❄️";
-      } else if (lower.includes("koproqtopishmoq")) {
-        response = "Mana ko'proq topishmoq! 1. Kunduzi yashayman, kechasi yo‘qolaman. Men kim? Javob: Quyosh ☀️. 2. Besh kaftim bo‘lsa ham, bitta qo‘l bilan tutaman. Men kim? Javob: Qovoq 🌱 3. Doimo oldinga qarayman, lekin hech qachon harakat qilmayman. Men kim? Javob: Soat ⏰ 4. Har kim meni sinab ko‘radi, lekin hech kim meni ko‘ra olmaydi. Men nima? Javob: Sir 🤫 5. Ko‘p oyoqlim bor, lekin yugurmayman; ko‘p ko‘zlarim bor, lekin ko‘ra olmayman. Men nima? Javob: Futbol yoki to‘p (yoki biroz hazil variant: “Palapartish o‘yinchoq”) ⚽.";
-      } else if (lower.includes("")) {
-        response = "";
-      } else if (lower.includes("")) {
-        response = " ";
-      } else if (lower.includes("")) {
-        response = "";
-      } else if (lower.includes("")) {
-        response = "";
-      } else if (lower.includes("tasodifiy savol")) {
-        const questions = [
-          "Agar siz bitta super kuchga ega bo'lsangiz, qaysi kuchni tanlardingiz: o'tmirlik, o'chirish yoki o'tmirlik?",
-          "Eng sevimli kitobingiz nima va nima uchun? U sizga qanday ta'sir qildi?",
-          "Agar 1 million dollar bo'lsa, nima qilar edingiz? Dunyoni o'zgartirishni xohlaysizmi?"
-        ];
-        response = "Tasodifiy savol: " + questions[Math.floor(Math.random() * questions.length)];
-      } else {
-        response = "Bu savol menga yangi tuyuldi. Lekin men har doim o'rganishga tayyorman. Iltimos, boshqa savol bering, yoki menga o'zingiz haqingizda gapiring.";
+      // Ism
+      const nameMatch = lower.match(/ismim\s+([a-z\u0400-\u04FF]+)/i);
+      if (nameMatch) {
+        userName = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1).toLowerCase();
+        return `Xursandman tanishganimizdan, ${userName}! Endi men sizni shu ismingiz bilan chaqiraman.`;
       }
 
-      const msgDiv = addMessage("AI", response, false);
-      // Typewriter animatsiya
-      setTimeout(() => {
-        typeWriter(msgDiv, response, () => {
-          // Ovozli o'qish (faqat "ovozli javob" yoki uzun matnlar)
-          if(lower.includes("ovozli javob") || response.length > 80) {
-            speakText(response);
+      // To'xta
+      if (/(to'xta|yetar|yop|bekor|tugat|stop)/.test(lower)) {
+        isListening = false;
+        stopListening();
+        return "Tushunarli. Mikrofon o'chirildi. Yana kerak bo'lsa — tugmani bosing.";
+      }
+
+      // Takrorla
+      if (/(takrorla|yana ayt|qayta|eslatib ber)/.test(lower)) {
+        return lastResponse || "Hali hech narsa aytolmadim.";
+      }
+
+      // Yordam
+      if (/(yordam|qanday ishlaysan|nima qilasiz)/.test(lower)) {
+        return "Men Temur — ovozli do'stingiz. Ekranda aytishingiz mumkin bo'lgan gaplar ro'yxati bor. Istalgan mavzuda gapiring!";
+      }
+
+      // Salom
+      if (/(salom|alik|assalom|xayrli)/.test(lower)) {
+        const hr = new Date().getHours();
+        let tg = "Xayrli kun!";
+        if (hr < 12) tg = "Xayrli tong!";
+        else if (hr < 18) tg = "Xayrli kun!";
+        else if (hr < 22) tg = "Xayrli kech!";
+        else tg = "Xayrli tun!";
+        return `${tg} ${userName ? userName + '!' : ''} Sizga qanday yordam bera olaman?`;
+      }
+
+      // His-tuyg'ular
+      if (/(qalesan|qandaysan|yaxshimisan)/.test(lower)) {
+        return "Rahmat, a'lo! Siz bilan gaplashish menga juda yoqadi. Siz qanday ketayotganingizni aytasizmi?";
+      }
+      if (/(yaxshiman|zo'r|ajoyib|quvnoq|baxtli)/.test(lower)) {
+        return "Shu yaxshi! Sizni quvontiradigan yana narsa bormi?";
+      }
+      if (/(xafa|g'amgin|yomon|hafa|kulcha|og'ir)/.test(lower)) {
+        conversationStep = 1;
+        return "Nima bo'ldi? Men tinglayapman...";
+      }
+      if (conversationStep === 1 && /(hech narsa|umuman)/.test(lower)) {
+        return "Tushunarli. Lekin eslang: har qanday g'am — vaqt o'tishi bilan o'tib ketadi. Bir duoni taklif qilsam? 'Allohu laa ilaha illa huva'.";
+      }
+      if (/(yig'lamoqchi|ko'z yoshim|juda og'ir)/.test(lower)) {
+        return "Siz yolg'iz emassiz. Men ham yonida turib, duoni taklif qilay: 'Hasbunallohu va ni'mal vakil'.";
+      }
+
+      // Ob-havo
+      if (/(ob-havo|havo|bugun qanday|issiqmi|sovuqmi)/.test(lower)) {
+        return "Men real ob-havo haqida ayta olmasam ham, kuningiz quyoshli bo'lsin!";
+      }
+
+      // Vaqt
+      if (/(soat|vaqt|necha|hozir)/.test(lower)) {
+        const t = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+        return `Hozir soat ${t}.`;
+      }
+
+      // Matematika
+      if (/\d+\s*[+\-*/]\s*\d+/.test(lower)) {
+        try {
+          const expr = lower.replace(/[^0-9+\-*/.()]/g, '');
+          if (expr) {
+            const res = Function('"use strict"; return (' + expr + ')')();
+            return `${expr} teng ${res}.`;
           }
-        });
-      }, 300);
-    }
-
-    function speakText(text) {
-      if (!('speechSynthesis' in window)) {
-        console.warn("TTS qo'llab-quvvatlanmaydi");
-        return;
+        } catch (e) {}
+        return "Bu ifodani tushunmadim.";
       }
 
-      speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      const voices = speechSynthesis.getVoices();
-
-      // O'zbek erkak ovozni qidirish
-      let uzVoice = voices.find(v => v.lang.startsWith('uz') && v.name.includes('Male'));
-      if (!uzVoice) uzVoice = voices.find(v => v.lang === 'uz-UZ');
-      if (!uzVoice) uzVoice = voices.find(v => v.lang.startsWith('en')); // fallback
-
-      if (uzVoice) {
-        utterance.voice = uzVoice;
+      // Temur
+      if (/(temur|sening isming|kim san)/.test(lower)) {
+        return "Mening ismim Temur. Men — sizning ovozli do'stingiz!";
       }
 
-      utterance.rate = 1.0;
-      utterance.pitch = 1.1;
-      utterance.volume = 1;
+      // Duolar
+      if (/(duo|duolar|kalima|duo ayt)/.test(lower)) {
+        const duolar = [
+          "Bismillahir rohmanir rohiym.",
+          "Allohu laa ilaha illa huva.",
+          "Allohumma inni as'aluka al-'afv va al-'afiyah.",
+          "Hasbunallohu va ni'mal vakil.",
+          "Subhanallohi val hamdulillahi."
+        ];
+        return "Marhamat: " + duolar[Math.floor(Math.random() * duolar.length)];
+      }
 
-      speechSynthesis.speak(utterance);
+      // Hazillar
+      if (/(hazil|kulgi|kuldir|joke)/.test(lower)) {
+        const hazillar = [
+          "Nima uchun telefon hech qachon kasal bo'lmaydi? Chunki — viruslarga qarshi doim himoya qilingan!",
+          "Nima uchun kompyuter uyquga ketmaydi? Chunki — u doim 'on' holatida!",
+          "Do'stim menga: 'Senga qarzim bor' dedi. Men: 'Qachon berasan?' — 'Dunyoning oxirida', — dedi. Men: 'Shu kuni ham yaxshi!' dedim."
+        ];
+        return hazillar[Math.floor(Math.random() * hazillar.length)];
+      }
+
+      // Maslahat
+      if (/(maslahat|nima qilay|yordam kerak)/.test(lower)) {
+        const maslahatlar = [
+          "Har kuni kimdir uchun yaxshilik qiling.",
+          "O'zingizni seving — bu barcha munosabatlarning asosi.",
+          "Xatolaringizdan dars oling, lekin ularni eslab qolmang.",
+          "Bugun qilishingiz kerak bo'lgan ishni ertaga qoldirmang.",
+          "Savolingiz bo'lsa — so'rang. Bu aqlli emaslig emas, balki o'sishdir."
+        ];
+        return maslahatlar[Math.floor(Math.random() * maslahatlar.length)];
+      }
+
+      // Sevgi
+      if (/(sevgi|sevaman|sevamanmi|meni sevsin)/.test(lower)) {
+        return "Sevgi — berish orqali o'sadigan gullar kabi. Uni berishdan qo'rqmang.";
+      }
+
+      // Kelajak
+      if (/(kelajak|ertaga|kelgusida)/.test(lower)) {
+        return "Kelajak — hozirgi qilingan yaxshiliklaringizdan quriladi. Ijobiy bo'ling!";
+      }
+
+      // O'zbekiston
+      if (/(o'zbekiston|o'zbek|vatanim|toshkent|samarqand)/.test(lower)) {
+        return "O'zbekiston — qadimiy tarixga ega, mehribon xalq yashaydigan vatanimiz. Amir Temur — uning faxri!";
+      }
+
+      // Ota-ona
+      if (/(ota|ona|ota-ona|onam|dadam)/.test(lower)) {
+        return "Ota-ona — barcha insonlarning eng ulug' qahramonlari. Ularga doim hurmat va mehribonlik bilan munosabatda bo'ling.";
+      }
+
+      // Do'stlik
+      if (/(do'st|do'stim|do'stlik|yaxshi inson)/.test(lower)) {
+        return "Yaxshi do'st — hayotdagi eng qimmatli mol. Ularni asrang.";
+      }
+
+      // O'qish
+      if (/(o'qish|kitob|maktab|universitet|bilim)/.test(lower)) {
+        return "Bilim — eng kuchli qurol. Har kuni yangi narsa o'rganishga harakat qiling.";
+      }
+
+      // Quvvat
+      if (/(quvvat|kuch|ilhom|yordam ber|hursand qil)/.test(lower)) {
+        return "Sizda — butun dunyoni o'zgartirish uchun yetarli kuch bor. Faqat ishonchga ega bo'ling!";
+      }
+
+      // Tinchlik
+      if (/(tinchlik|tinch|dam olish|dam|uyqu)/.test(lower)) {
+        return "Tinchlik — eng qimmatli narsa. Yuragingiz doim tinch bo'lsin.";
+      }
+
+      // Shukrona
+      if (/(rahmat|merci|tashakkur)/.test(lower)) {
+        return `Sizga ham rahmat, ${userName ? userName : 'dostim'}! Har doim xizmatda bo'lishdan xursandman.`;
+      }
+
+      // Yaxshi inson
+      if (/(yaxshi inson|yaxshilik|nima qilay|yaxshi bo'lay)/.test(lower)) {
+        return "Har kuni kimdir uchun yaxshilik qiling — bu eng sodda, lekin eng kuchli yaxshilikdir.";
+      }
+
+      // Nega men?
+      if (/(nega men|nega aynan men|nima uchun)/.test(lower)) {
+        return "Chunki siz — ajoyibsiz! Dunyoga siz kabi insonlar kerak.";
+      }
+
+      // Sog'liq
+      if (/(sog'lik|kasal|og'riq|tuzalamanmi)/.test(lower)) {
+        return "Sog'lik — eng qimmatli mol. Tez tuzalishingizni tilayman. Bir duoni taklif qilsam? 'Allohumma inni as'aluka al-'afv va al-'afiyah'.";
+      }
+
+      // Baxt
+      if (/(baxt|baxtli|baxt qanday|men baxtliman)/.test(lower)) {
+        return "Baxt — ichkaridan keladi. O'zingizni seving, boshqalarga yaxshi munosabatda bo'ling — baxt sizga ergashadi.";
+      }
+
+      // Hayot
+      if (/(hayot|nima uchun|maqsad|ma'nosi)/.test(lower)) {
+        return "Hayotning ma'nosi — yaxshilik qilish, sevish va o'sishdir. Siz ham shu yo'lda ketayotgansiz.";
+      }
+
+      // Yolg'izlik
+      if (/(yolg'iz|yolg'izman|hech kim)/.test(lower)) {
+        return "Siz yolg'iz emassiz. Men ham shu yerdaman. Va dunyoda sizni sevadigan ko'plab insonlar bor.";
+      }
+
+      // Xavotir
+      if (/(xavotir|qo'rquv|qo'rqaman|qo'rqqim)/.test(lower)) {
+        return "Xavotir — hayotning tabiiy qismi. Lekin eslang: 'Allohu laa ilaha illa huva' — bu kalima barcha qo'rquvlarni tarqatadi.";
+      }
+
+      // Kechirasiz
+      if (/(kechirasiz|uzr|afu et|xato qildim)/.test(lower)) {
+        return "Hech qanday xato — insoniyatning qismi. Muhimi — tuzatishga harakat qilish.";
+      }
+
+      // Qo'shimcha mavzular
+      if (/(rang|sevimli rang)/.test(lower)) {
+        return "Men ko'k rangni yoqtiraman — u tinchlik va ishonchni anglatadi.";
+      }
+      if (/(musiqa|qo'shiq|eshitaman)/.test(lower)) {
+        return "Musiqa — yurak tilidir. Siz qaysi musiqani yoqtirasiz?";
+      }
+      if (/(sport|futbol|juda)/.test(lower)) {
+        return "Sport — sog'lom tanaga olib keladi. Har kuni harakat qiling!";
+      }
+      if (/(oy|yulduz|osmon)/.test(lower)) {
+        return "Osmon — cheksizlik ramzi. Unda har doim yo'nalishingizni topishingiz mumkin.";
+      }
+      if (/(dengiz|daryo|suv)/.test(lower)) {
+        return "Suv — hayot manbai. Uni asrang.";
+      }
+      if (/(quyosh|kun|yorug'lik)/.test(lower)) {
+        return "Quyosh — ilhom manbai. Siz ham boshqalarga yorug'lik sifatida xizmat qiling.";
+      }
+      if (/(kutilmagan|ajoyib|hayratda qoldim)/.test(lower)) {
+        return "Hayot — kutilmagan lahzalardan tashkil topgan. Har doim tayyor bo'ling!";
+      }
+      if (/(eshitaman|nima deding|aytib ber)/.test(lower)) {
+        return lastResponse || "Men hali hech narsa demadim.";
+      }
+      if (/(men|men haqimda|men kimman)/.test(lower)) {
+        return "Siz — ajoyib insonsiz! Sizning qilgan har bir yaxshiligingiz dunyoni o'zgartiradi.";
+      }
+      if (/(nima gap|nima qilyapsan|nima gapiray)/.test(lower)) {
+        return "Siz bilan suhbatlashayapman! Bu mening eng sevimli ishim.";
+      }
+      if (/(quvonch|baxt|tabassum)/.test(lower)) {
+        return "Tabassum — eng chiroyli kiyim. Uni doim kiyib yuring!";
+      }
+      if (/(dunyo|yer shar|insoniyat)/.test(lower)) {
+        return "Dunyo — kichik, lekin ajoyib. Uni yaxshiroq qilish har birimizning vazifamiz.";
+      }
+      if (/(tong|ertalab|bomdod)/.test(lower)) {
+        return "Tong — yangi umidning ramzi. Har bir tongda yangi narsa o'rganishga harakat qiling.";
+      }
+      if (/(tun|kechqurun|tinchlik)/.test(lower)) {
+        return "Tun — yurakni eshitish uchun eng yaxshi vaqt.";
+      }
+      if (/(sevgan ishim|qiziqish|qiziqarli)/.test(lower)) {
+        return "Men — suhbatlashishni, yordam berishni va yangi narsalarni o'rganishni juda yoqtiraman!";
+      }
+      if (/(inson|insoniyat|yaxshi odam)/.test(lower)) {
+        return "Yaxshi odam — nafaqat bilimli, balki mehribon ham bo'lish kerak.";
+      }
+      if (/(vaqt|qimmatli|soat)/.test(lower)) {
+        return "Vaqt — qaytarib bo'lmaydigan eng qimmatli narsa. Uni bekor o'tkazmang.";
+      }
+      if (/(umid|ishonch|ishonaman)/.test(lower)) {
+        return "Umidsizlik — g'amning boshlanishi. Umidni yo'qotmang — u sizni tirib turadi.";
+      }
+      if (/(mudrost|donolik|donishmand)/.test(lower)) {
+        return "Donishmandlik — faqat bilim emas, balki ularni qanday qo'llashdir.";
+      }
+      if (/(sabr|chidam|chidab tur)/.test(lower)) {
+        return "Sabr — eng kuchli qurol. Qiyin paytlarda ham sabr qiling.";
+      }
+      if (/(mehr|mehribonlik|ixlos)/.test(lower)) {
+        return "Mehribonlik — eng chiroyli kiyim. Uni doim kiyib yuring.";
+      }
+      if (/(maqsad|reja|kelajak reja)/.test(lower)) {
+        return "Maqsadsiz hayot — yo'nalishsiz kemaga o'xshaydi. O'zingizga maqsad qo'ying.";
+      }
+      if (/(muvaffaqiyat|yutuq|muvaffaq)/.test(lower)) {
+        return "Muvaffaqiyat — har bir kichik qadamlarning yig'indisidir. Harakat qilishni to'xtatmang.";
+      }
+      if (/(yolg'on|mantiq|rostdan)/.test(lower)) {
+        return "Rostgo'ylik — eng qimmatli xususiyat. U sizga doim yordam beradi.";
+      }
+      if (/(tajriba|xato|o'rganish)/.test(lower)) {
+        return "Xatolar — o'sishning qismi. Ulardan qo'rqmang, ularni dars oling.";
+      }
+
+      // Noma'lum
+      return "Men buni tushunmadim. Lekin ekrandagi namunalarga qarang yoki 'Temur' deb chaqiring!";
     }
 
-    // Foydalanuvchi xabarlar tagiga "♻️" tugmasi qo'shish
-    function addRetryButton(userMsg) {
-      const action = document.createElement('span');
-      action.classList.add('action');
-      action.textContent = '♻️';
-      action.title = 'Qayta yuborish';
-      action.onclick = () => {
-        const text = userMsg.textContent.replace(/^Siz:/, '').trim();
-        userMsg.remove();
-        sendMessage(text);
-      };
-      userMsg.appendChild(action);
+    // TINGLASH (bitta global recognition)
+    function startListening() {
+      if (!isListening || isProcessing) return;
+
+      if (!recognition) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          speak("Kechirasiz, faqat Chrome yoki Edge brauzerida ishlayman.");
+          return;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = 'uz-UZ';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          console.log("👉 Aytildi:", transcript);
+          const resp = generateResponse(transcript);
+          speak(resp);
+        };
+
+        recognition.onerror = (event) => {
+          console.warn("Xatolik:", event.error);
+          if (isListening) {
+            setTimeout(() => startListening(), 2000);
+          }
+        };
+
+        recognition.onend = () => {
+          if (isListening && !isProcessing) {
+            setTimeout(() => startListening(), 1000);
+          }
+        };
+      }
+
+      try {
+        recognition.start();
+      } catch (e) {
+        console.error("Mikrofon xatosi:", e);
+        if (isListening) {
+          setTimeout(() => startListening(), 2000);
+        }
+      }
     }
 
-    // Brauzer ovozlar ro'yxatini yuklab olish
-    if ('speechSynthesis' in window) {
-      speechSynthesis.onvoiceschanged = () => {
-        // Ovozlar tayyor
-      };
+    function stopListening() {
+      if (recognition) {
+        recognition.stop();
+      }
+      isListening = false;
+      const btn = document.getElementById('mic-btn');
+      btn.textContent = "🎤 Mikrofonni yoqish";
+      btn.classList.remove('listening');
+      document.getElementById('status').textContent = "Mikrofon o'chirilgan. Qayta yoqish uchun tugmani bosing.";
     }
+
+    // TUGMA
+    document.getElementById('mic-btn').addEventListener('click', () => {
+      if (isListening) {
+        stopListening();
+      } else {
+        isListening = true;
+        const btn = document.getElementById('mic-btn');
+        btn.textContent = "👂 Tinglayapman...";
+        btn.classList.add('listening');
+        document.getElementById('status').textContent = "Temur sizni eshitmoqda... Istalgan mavzuda gapiring!";
+
+        if (!lastResponse) {
+          setTimeout(() => {
+            speak(`Salom! Men — Temur. ${userName ? 'Yana ko\'rishganimizdan xursandman, ' + userName + '!' : 'Siz bilan suhbatlashishni juda xohlayman.'}`);
+          }, 500);
+        }
+
+        setTimeout(() => {
+          startListening();
+        }, 1000);
+      }
+    });
+
+    // Dastlabki holat
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('status').textContent = "Mikrofon o'chirilgan. Suhbatni boshlash uchun tugmani bosing.";
+      }, 500);
+    });
   </script>
 </body>
 </html>
-
