@@ -7,9 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors (Modern Dark Blue/Cyan) */
-            --primary-color: #007bff; /* To'q ko'k */
-            --secondary-color: #00bcd4; /* Och ko'k/Cyan */
+            --primary-color: #007bff;
+            --secondary-color: #00bcd4;
             --background-dark: #f0f2f5;
             --text-dark: #212529;
             --text-light: #fff;
@@ -17,7 +16,6 @@
             --shadow-subtle: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
 
-        /* --- Global Styles --- */
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-dark);
@@ -28,10 +26,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Animatsiya uchun o'tkazib yuborishni yashirish */
+            overflow: hidden;
         }
         
-        /* --- 1. Kirish Animatsiyasi (Loading Screen) --- */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -66,7 +63,6 @@
             margin-top: 20px;
         }
 
-        /* --- 2. Main Container (Asosiy kontent) --- */
         .container {
             background-color: #ffffff;
             padding: 50px 40px;
@@ -74,12 +70,11 @@
             box-shadow: var(--shadow-subtle);
             max-width: 1100px;
             width: 90%;
-            opacity: 0; /* Boshida yashirish */
+            opacity: 0;
             transform: scale(0.9);
             transition: opacity 0.6s ease-in, transform 0.6s ease-in;
             z-index: 10;
         }
-        
         .container.loaded {
             opacity: 1;
             transform: scale(1);
@@ -88,7 +83,7 @@
         h1 {
             color: var(--text-dark);
             margin-bottom: 5px;
-            font-weight: 800; /* Extra bold */
+            font-weight: 800;
             font-size: 2.5em;
             text-align: left;
         }
@@ -99,7 +94,6 @@
             text-align: left;
         }
 
-        /* --- 3. Fanlar Grid va Kartochkalar (Modern Cards) --- */
         .subject-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -111,7 +105,7 @@
             border-radius: var(--border-radius);
             padding: 25px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-decoration: none;
             color: var(--text-dark);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -141,14 +135,52 @@
             font-weight: 700;
         }
         
-        /* Specific Icon Colors for visual distinction */
-        .card-history .icon { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; } /* Gray */
-        .card-biology .icon { background-color: rgba(46, 204, 113, 0.1); color: #2ecc71; } /* Green */
-        .card-chemistry .icon { background-color: rgba(243, 156, 18, 0.1); color: #f39c12; } /* Orange */
-        .card-physics .icon { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; } /* Red */
-        .card-math .icon { background-color: rgba(155, 89, 182, 0.1); color: #9b59b6; } /* Purple */
-        /* ... Add more specific color classes here ... */
+        .card-history .icon { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
+        .card-biology .icon { background-color: rgba(46, 204, 113, 0.1); color: #2ecc71; }
+        .card-chemistry .icon { background-color: rgba(243, 156, 18, 0.1); color: #f39c12; }
+        .card-physics .icon { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+        .card-math .icon { background-color: rgba(155, 89, 182, 0.1); color: #9b59b6; }
+        .card-geography .icon { background-color: rgba(52, 152, 219, 0.1); color: #3498db; }
+        .card-uzbek .icon { background-color: rgba(142, 68, 173, 0.1); color: #8e44ad; }
+        .card-literature .icon { background-color: rgba(230, 126, 34, 0.1); color: #e67e22; }
+        .card-english .icon { background-color: rgba(41, 128, 185, 0.1); color: #2980b9; }
+        .card-russian .icon { background-color: rgba(26, 188, 156, 0.1); color: #1abc9c; }
 
+        /* AI BUTTON */
+        .ai-btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1001;
+        }
+        .ai-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .ai-btn:hover {
+            transform: scale(1.15);
+            background: var(--primary-color);
+        }
+        .ai-btn.listening {
+            background: #e74c3c;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
     </style>
 </head>
 <body>
@@ -162,17 +194,19 @@
     <h1>🏛️ Test Fanlarini Tanlash</h1>
     <h3>Boshlash uchun sinfingizga mos keladigan fanni tanlang va testni boshlang.</h3>
 
-    <div class="subject-grid" id="subject-grid">
-        </div>
+    <div class="subject-grid" id="subject-grid"></div>
     
     <p style="margin-top: 40px; color: #7f8c8d; font-size: 0.85em; text-align: right;">
         Ushbu fanlarni tanlang va o'z bilimingizni sinab ko'ring!
     </p>
 </div>
 
+<!-- AI Microphone Button -->
+<div class="ai-btn-container">
+    <button class="ai-btn" id="aiBtn" aria-label="Ovozli yordamchini yoqish">🎙️</button>
+</div>
+
 <script>
-    // FANLAR RO'YXATI
-    // "link" - bu fanga oid test joylashgan fayl nomi
     const subjects = [
         { name: "Tarix", icon: "🏛️", link: "testlar.html", className: "card-history" },
         { name: "Biologiya", icon: "🧬", link: "testlar10.html", className: "card-biology" },
@@ -182,58 +216,168 @@
         { name: "Geografiya", icon: "🌍", link: "testlar3.html", className: "card-geography" },
         { name: "Ona tili", icon: "📝", link: "testlar7.html", className: "card-uzbek" },
         { name: "Adabiyot", icon: "📚", link: "testlar5.html", className: "card-literature" },
-        
         { name: "Ingliz tili", icon: "🇬🇧", link: "testlar8.html", className: "card-english" },
         { name: "Rus tili", icon: "🇷🇺", link: "testlar9.html", className: "card-russian" },
     ];
 
-    const grid = document.getElementById('subject-grid');
-    const splashScreen = document.getElementById('splash-screen');
-    const mainContent = document.getElementById('main-content');
+    // GLOBAL STATE
+    let userName = localStorage.getItem('userName') || null;
+    let isListening = false;
+    let recognition;
 
-    // Fan kartochkalarini yaratish funksiyasi
+    // RENDER SUBJECTS
     function renderSubjects() {
+        const grid = document.getElementById('subject-grid');
         subjects.forEach(subject => {
             const card = document.createElement('a');
-            card.href = subject.link; // Fan testiga yo'naltirish
+            card.href = subject.link;
             card.className = `subject-card ${subject.className}`;
-            
-            card.innerHTML = `
-                <span class="icon">${subject.icon}</span>
-                <span class="name">${subject.name}</span>
-            `;
-            
+            card.innerHTML = `<span class="icon">${subject.icon}</span><span class="name">${subject.name}</span>`;
             grid.appendChild(card);
         });
     }
-    
-    // Sayt yuklanganidan keyin animatsiyani o'chirish
-    function hideSplash() {
-        // Kontentni ko'rsatish
-        mainContent.classList.add('loaded');
-        
-        // Animatsiyani asta-sekin yashirish (0.5 sekunddan keyin)
-        setTimeout(() => {
-            splashScreen.style.opacity = '0';
-        }, 500);
 
-        // Animatsiya tugagandan keyin uni DOMdan olib tashlash (1 sekunddan keyin)
+    // VOICE: TEXT TO SPEECH
+    function speak(text) {
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'uz-UZ';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+
+        const voices = speechSynthesis.getVoices();
+        const uzVoice = voices.find(v => v.lang === 'uz-UZ') || voices[0];
+        if (uzVoice) utterance.voice = uzVoice;
+
+        speechSynthesis.speak(utterance);
+    }
+
+    // VOICE: SPEECH TO TEXT
+    function stopListening() {
+        if (recognition) recognition.stop();
+        isListening = false;
+        document.getElementById('aiBtn').classList.remove('listening');
+    }
+
+    function startListening(callback, timeout = 10000) {
+        if (isListening) return;
+        isListening = true;
+        document.getElementById('aiBtn').classList.add('listening');
+
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'uz-UZ';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.trim().toLowerCase();
+            callback(transcript);
+            stopListening();
+        };
+
+        recognition.onerror = () => stopListening();
+        recognition.onend = () => {
+            if (isListening) {
+                speak("Hech narsa eshitilmadi. Qayta aytishingiz mumkinmi?");
+                setTimeout(() => startListening(callback, timeout), 3000);
+            }
+        };
+
         setTimeout(() => {
-            splashScreen.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Scrollni qaytarish
+            if (isListening) recognition.stop();
+        }, timeout);
+    }
+
+    // MAPPING: FAN NOMI → URL
+    const subjectMap = {};
+    subjects.forEach(s => {
+        const key = s.name.toLowerCase().replace(/\s+/g, '');
+        subjectMap[key] = s.link;
+    });
+
+    // HANDLE VOICE COMMANDS
+    function handleVoiceCommand(command) {
+        const txt = command.toLowerCase();
+
+        // Ism so'rash
+        if (!userName && (txt.includes('ism') || txt.includes('meni ism'))) {
+            speak("Ismingiz nima?");
+            setTimeout(() => startListening(name => {
+                userName = name.trim();
+                localStorage.setItem('userName', name);
+                speak(`Ajoyib! Men Temur — yordamchi AI. Siz bilan tanishganimdan xursandman, ${name}!`);
+            }), 1200);
+            return;
+        }
+
+        // Salom
+        if (txt.includes('salom') || txt.includes('qalesan')) {
+            if (!userName) {
+                speak("Salom! Men Temur. Iltimos, ismingizni ayting.");
+                setTimeout(() => startListening(name => {
+                    userName = name.trim();
+                    localStorage.setItem('userName', name);
+                    speak(`Xush kelibsiz, ${name}! Kimyoga yoki Tarixga kirishni xohlaysizmi?`);
+                }), 1500);
+            } else {
+                speak(`Salom, ${userName}! Sizga qanday yordam bera olaman?`);
+            }
+            return;
+        }
+
+        // Fanlarga o'tish
+        for (const [key, url] of Object.entries(subjectMap)) {
+            if (txt.includes(key) || txt.includes(`${key}ga`) || txt.includes(`${key}ga kir`)) {
+                speak(`Ajoyib! Siz "${key}" faniga yo'naltirilyapsiz.`);
+                setTimeout(() => window.location.href = url, 1800);
+                return;
+            }
+        }
+
+        speak("Kechirasiz, bu buyruqni tushunmadim. Iltimos, 'Kimyoga kir' yoki 'Tarixga bor' deb aytishingiz mumkin.");
+    }
+
+    // BUTTON CLICK
+    document.getElementById('aiBtn').addEventListener('click', function () {
+        if (isListening) {
+            stopListening();
+            return;
+        }
+
+        if (!userName) {
+            speak("Assalomu alaykum! Men — Temur, test portali yordamchisi. Iltimos, ismingizni ayting.");
+            setTimeout(() => startListening(name => {
+                userName = name.trim();
+                localStorage.setItem('userName', name);
+                speak(`Xush kelibsiz, ${name}! Endi menga "Kimyoga kir", "Tarixga bor" yoki boshqa fan nomini ayta olasiz.`);
+                setTimeout(() => startListening(handleVoiceCommand), 2000);
+            }), 2000);
+        } else {
+            speak(`Salom qaytadan, ${userName}! Qaysi fan testiga kirmoqchisiz?`);
+            setTimeout(() => startListening(handleVoiceCommand), 1500);
+        }
+    });
+
+    // INIT
+    function hideSplash() {
+        const mainContent = document.getElementById('main-content');
+        mainContent.classList.add('loaded');
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.opacity = '0';
+        }, 500);
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }, 1000);
     }
 
-    // Kod ishga tushganda:
     renderSubjects();
-    
-    // Page yuklanganda animatsiyani yopish. 
-    // Sun'iy ravishda 2 soniya kutish qo'shdik, shunda animatsiya ko'rinadi.
-    window.onload = function() {
-        setTimeout(hideSplash, 2000); // 2 soniya kutib, animatsiyani yopadi
-        alert("Eslatma: Bu portal ishlashi uchun Biologiya test kodini 'biology_test.html' nomi bilan saqlang. Keyingi qadamda Tarix testini yaratamiz.");
-    };
-
+    window.addEventListener('load', () => {
+        setTimeout(hideSplash, 2000);
+        // Ovozlar ro'yxatini dastlabki yuklash
+        setTimeout(() => speechSynthesis.getVoices(), 500);
+    });
 </script>
 
 </body>
