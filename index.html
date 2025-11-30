@@ -7,14 +7,14 @@
     <title>Yordamchi Maktab | 3D Neumorphism + PWA</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XFE4VVB84B"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XFE4VVB84B');
-</script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XFE4VVB84B"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XFE4VVB84B');
+    </script>
     <style>
         /* ====== GLOBAL CSS VARIABLES ====== */
         :root {
@@ -419,6 +419,9 @@
                 8px 8px 16px var(--dark-shadow),
                 -8px -8px 16px var(--light-shadow);
         }
+        .ai-btn.listening {
+            background: #e74c3c;
+        }
         .ai-btn:focus {
             outline: 3px solid var(--accent-color);
             outline-offset: 4px;
@@ -584,41 +587,38 @@
             white-space: nowrap;
             border: 0;
         }
-    .online-box {
-      padding: 8px 18px;
-      background: #1a1f2b;
-      border: 1px solid #2b3243;
-      border-radius: 10px;
-      color: #4cff88;
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      box-shadow: 0 0 12px rgba(76,255,136,0.2);
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      background: #4cff88;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #4cff88;
-    }
+        .online-box {
+            padding: 8px 18px;
+            background: #1a1f2b;
+            border: 1px solid #2b3243;
+            border-radius: 10px;
+            color: #4cff88;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            box-shadow: 0 0 12px rgba(76,255,136,0.2);
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #4cff88;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #4cff88;
+        }
     </style>
 </head>
 <body id="body" class="theme-default">
     <!-- PARTICLES BACKGROUND -->
     <canvas id="particles-bg"></canvas>
-    <!-- ACCESSIBILITY: SKIP TO CONTENT -->
     <a href="#main-content" class="skip-link">Asosiy kontentga o'tish</a>
-    <!-- INTRO SCREEN -->
     <div id="intro">
         <div class="intro-logo">YORDAMCHI MAKTAB</div>
         <div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
         <div class="progress-bar"><div class="progress-fill"></div></div>
         <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
     </div>
-    <!-- MAIN CONTENT -->
     <div id="main-content">
         <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
         <nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
@@ -630,11 +630,11 @@
             <a href="galati.html" class="mobile-link" data-key="teachers">👩‍🏫 G‘alati</a>
             <a href="biz.html" class="mobile-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
             <a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
-            <a href="sinov3.html" class="nav-link" data-key="contactt">ICHU bo'lim</a>
+            <a href="sinov3.html" class="mobile-link" data-key="contactt">ICHU bo'lim</a>
             <a href="uzb.html" class="mobile-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
             <a href="ymakon.html" class="mobile-link" data-key="yashil_makon">🌿 Yashil Makon</a>
             <a href="kitob.html" class="mobile-link" data-key="kutubxona">📚 Kutubxona</a>
-            <a href="yolhar.html" class="mobile-link" data-key="kutubxona">📚 yo'l qoidasi</a>
+            <a href="yolhar.html" class="mobile-link" data-key="yol_qoidasi">🛣️ Yo'l harakati qoidalari</a>
             <a href="#" class="mobile-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
         </nav>
         <nav class="navbar neumorphic" aria-label="Desktop navigatsiya">
@@ -647,12 +647,10 @@
             <a href="biz.html" class="nav-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
             <a href="aloqa.html" class="nav-link" data-key="contact">📞 Aloqa</a>
             <a href="sinov3.html" class="nav-link" data-key="contactt">ICHU bo'lim</a>
-            <!-- Desktop menyu ichida (navbar) -->
             <a href="uzb.html" class="nav-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
             <a href="ymakon.html" class="nav-link" data-key="yashil_makon">🌿 Yashil Makon</a>
             <a href="kitob.html" class="nav-link" data-key="kutubxona">📚 Kutubxona</a>
-            <a href="yolhar.html" class="nav-link" data-key="kutubxona">📚 yol qoida</a>
-
+            <a href="yolhar.html" class="nav-link" data-key="yol_qoidasi">🛣️ Yo'l qoidalari</a>
             <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
         </nav>
         <main class="main-buttons">
@@ -704,47 +702,40 @@
                     <span>Murojaat uchun</span>
                 </div>
             </a>
-             <a href="uzb.html" class="big-btn-container">
-    <div class="big-btn" tabindex="0" data-key="uzbekistan" data-sub-key="uzbekistan_sub">
-        <span>🇺🇿 O‘zbekiston</span>
-        <span>Mamlakatimiz haqida</span>
-    </div>
-</a>
-<a href="ymakon.html" class="big-btn-container">
-    <div class="big-btn" tabindex="0" data-key="yashil_makon" data-sub-key="yashil_makon_sub">
-        <span>🌿 Yashil Makon</span>
-        <span>Ekologik hayot</span>
-    </div>
-</a>
-<a href="kitob.html" class="big-btn-container">
-    <div class="big-btn" tabindex="0" data-key="kutubxona" data-sub-key="kutubxona_sub">
-        <span>📚 Kutubxona</span>
-        <span>Kitoblar dunyosi</span>
-    </div>
-</a>
-            <a href="yolhar.html" class="big-btn-container">
-    <div class="big-btn" tabindex="0" data-key="kutubxona" data-sub-key="kutubxona_sub">
-        <span>📚 yol qoida</span>
-        <span>Kitoblar dunyosi</span>
-    </div>
-</a>
+            <a href="uzb.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="uzbekistan" data-sub-key="uzbekistan_sub">
+                    <span>🇺🇿 O‘zbekiston</span>
+                    <span>Mamlakatimiz haqida</span>
+                </div>
             </a>
-             <a href="uzb.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="contactt" data-sub-key="ichu_sub">
-                    <span>uzbekistan</span>
-                    <span>Imkoniyati cheklanganlar uchun</span>
+            <a href="ymakon.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="yashil_makon" data-sub-key="yashil_makon_sub">
+                    <span>🌿 Yashil Makon</span>
+                    <span>Ekologik hayot</span>
+                </div>
+            </a>
+            <a href="kitob.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="kutubxona" data-sub-key="kutubxona_sub">
+                    <span>📚 Kutubxona</span>
+                    <span>Kitoblar dunyosi</span>
+                </div>
+            </a>
+            <a href="yolhar.html" class="big-btn-container">
+                <div class="big-btn" tabindex="0" data-key="yol_qoidasi" data-sub-key="yol_qoidasi_sub">
+                    <span>🛣️ Yo'l qoidalari</span>
+                    <span>Xavfsizlik qoidalari</span>
                 </div>
             </a>
         </main>
         <footer class="footer">
-            <span data-key="footer_protected"> Ushbu sayt ASCO tomonidan yaratilgan va🔒 Sayt himoyalangan</span> |
+            <span data-key="footer_protected">Ushbu sayt ASCO tomonidan yaratilgan va 🔒 himoyalangan</span> |
             © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
         </footer>
     </div>
-    <!-- YORDAMCHI AI BUTTON -->
-    <a href="ai.html" class="ai-btn-container" target="_blank" rel="noopener">
-        <button class="ai-btn" aria-label="Yordamchi AI bilan bog'lanish">🤖</button>
-    </a>
+    <!-- OVOZLI YORDAMCHI TUGMASI (AI + Microphone) -->
+    <div class="ai-btn-container" id="aiBtnContainer">
+        <button class="ai-btn" id="aiBtn" aria-label="Ovozli yordamchini yoqish">🎙️</button>
+    </div>
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle">
         <div class="settings-content">
@@ -791,19 +782,23 @@
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+        // ONLINE RANDOM COUNT
         function updateOnline() {
-      const min = 9500;
-      const max = 10500;
-      const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
-      document.getElementById("onlineCount").textContent = randomNum;
-    }
-    setInterval(updateOnline, 1000); // har 1 soniyada o'zgaradi
-        // ======================
-        // 🌍 TARJIMALAR
-        // ======================
+            const min = 9500;
+            const max = 10500;
+            const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            if (document.getElementById("onlineCount")) {
+                document.getElementById("onlineCount").textContent = randomNum;
+            }
+        }
+        setInterval(updateOnline, 1000);
+
+        // TARJIMALAR
         const content = {
             uz: {
-                zbekistan: "🇺🇿 O‘zbekiston",
+                yol_qoidasi: "🛣️ Yo'l qoidalari",
+                yol_qoidasi_sub: "Xavfsizlik qoidalari",
+                uzbekistan: "🇺🇿 O‘zbekiston",
                 yashil_makon: "🌿 Yashil Makon",
                 kutubxona: "📚 Kutubxona",
                 uzbekistan_sub: "Mamlakatimiz haqida",
@@ -836,168 +831,296 @@
                 modeTitle: "🌙 Rejim:",
                 themeTitle: "🎨 Mavzu:",
                 accessibilityTitle: "♿ Qulaylik:",
-                alertSuccess: (section) => `✅ "${section}" bo‘limiga muvaffaqiyatli o‘tildi!`,
-            },
-            ru: {
-                uzbekistan: "🇺🇿 Узбекистан",
-                yashil_makon: "🌿 Зелёное Пространство",
-                kutubxona: "📚 Библиотека",
-                uzbekistan_sub: "О нашей стране",
-                yashil_makon_sub: "Экологический образ жизни",
-                kutubxona_sub: "Мир книг",
-                introSubText: "Пространство Знаний. Новые Возможности. 💡",
-                lessons: "🤖 Устоз AI",
-                lessons_sub: "По всем предметам",
-                tests: "📝 Тесты",
-                tests_sub: "Проверьте свои знания",
-                videos: "🎮 Игры",
-                videos_sub: "Веселые игры",
-                advice: "💡 Советы",
-                advice_sub: "Секреты обучения",
-                flags: "🏳️ Флаги",
-                flags_sub: "Флаги стран мира",
-                teachers: "👩‍🏫 аномальный",
-                teachers_sub: "Посетите странный раздел",
-                aboutUs: "ℹ️ О Нас",
-                aboutUs_sub: "Цель проекта",
-                contact: "📞 Контакты",
-                uzb: "Uzbekistan",
-                ichu: "ichu bo'limi",
-                contact_sub: "Для обращений",
-                footer_protected: "🔒 Сайт защищён",
-                footer_name: "Yordamchi Maktab",
-                settings: "⚙️ Настройки",
-                settingsModalTitle: "⚙️ Настройки",
-                languageTitle: "🌐 Выберите язык:",
-                modeTitle: "🌙 Режим:",
-                themeTitle: "🎨 Тема:",
-                accessibilityTitle: "♿ Доступность:",
-                alertSuccess: (section) => `✅ Вы успешно перешли в раздел "${section}"!`,
-            },
-            en: {
-                uzbekistan: "🇺🇿 Uzbekistan",
-                yashil_makon: "🌿 Green Space",
-                kutubxona: "📚 Library",
-                uzbekistan_sub: "About our country",
-                yashil_makon_sub: "Eco-friendly living",
-                kutubxona_sub: "World of books",
-                introSubText: "Space of Knowledge. New Opportunities. 💡",
-                lessons: "🤖 Ustoz AI",
-                lessons_sub: "For all subjects",
-                tests: "📝 Tests",
-                tests_sub: "Test your knowledge",
-                videos: "🎮 Games",
-                videos_sub: "Fun games",
-                advice: "💡 Advice",
-                advice_sub: "Secrets of learning",
-                flags: "🏳️ Flags",
-                flags_sub: "Flags of World Countries",
-                teachers: "👩‍🏫 unusual",
-                teachers_sub: "Visit the weird section",
-                aboutUs: "ℹ️ About Us",
-                aboutUs_sub: "Project goal",
-                ichu: "ichu bo'limi",
-                contact: "ICHU bo'lim",
-                contact_sub: "For inquiries",
-                footer_protected: "🔒 Site protected",
-                footer_name: "Yordamchi Maktab",
-                settings: "⚙️ Settings",
-                settingsModalTitle: "⚙️ Settings",
-                languageTitle: "🌐 Select Language:",
-                modeTitle: "🌙 Mode:",
-                themeTitle: "🎨 Theme:",
-                accessibilityTitle: "♿ Accessibility:",
-                alertSuccess: (section) => `✅ Successfully navigated to "${section}" section!`,
-            },
-            ko: {
-                uzbekistan: "🇺🇿 우즈베키스탄",
-                yashil_makon: "🌿 그린 스페이스",
-                kutubxona: "📚 도서관",
-                uzbekistan_sub: "우리나라 소개",
-                yashil_makon_sub: "친환경 생활",
-                kutubxona_sub: "책의 세계",
-                introSubText: "지식의 공간. 새로운 기회. 💡",
-                lessons: "🤖 Ustoz AI",
-                lessons_sub: "모든 과목",
-                tests: "📝 시험",
-                tests_sub: "지식 테스트",
-                videos: "🎮 게임",
-                videos_sub: "재미있는 게임",
-                advice: "💡 조언",
-                advice_sub: "학습 비법",
-                flags: "🏳️ 국기",
-                flags_sub: "세계 국가의 국기",
-                teachers: "👩‍🏫 특이한",
-                teachers_sub: "이상한 섹션을 방문하세요",
-                aboutUs: "ℹ️ 우리 소개",
-                aboutUs_sub: "프로젝트 목표",
-                contact: "📞 연락처",
-                ichu: "ichu bo'limi",
-                contact_sub: "문의하기",
-                footer_protected: "🔒 사이트 보호됨",
-                footer_name: "Yordamchi Maktab",
-                settings: "⚙️ 설정",
-                settingsModalTitle: "⚙️ 설정",
-                languageTitle: "🌐 언어 선택:",
-                modeTitle: "🌙 모드:",
-                themeTitle: "🎨 테마:",
-                accessibilityTitle: "♿ 접근성:",
-                alertSuccess: (section) => `✅ "${section}" 섹션으로 성공적으로 이동했습니다!`,
-            },
-            zh: {
-               uzbekistan: "🇺🇿 乌兹别克斯坦",
-                yashil_makon: "🌿 绿色空间",
-                kutubxona: "📚 图书馆",
-                uzbekistan_sub: "关于我们国家",
-                yashil_makon_sub: "环保生活",
-                kutubxona_sub: "书籍的世界",
-                introSubText: "知识空间。新机遇。💡",
-                lessons: "🤖 Ustoz AI",
-                lessons_sub: "所有科目",
-                tests: "📝 测验",
-                tests_sub: "测试你的知识",
-                videos: "🎮 游戏",
-                videos_sub: "趣味游戏",
-                advice: "💡 建议",
-                advice_sub: "学习秘诀",
-                flags: "🏳️ 旗帜",
-                flags_sub: "世界国家的旗帜",
-                teachers: "👩‍🏫 异常",
-                teachers_sub: "访问奇特区域",
-                aboutUs: "ℹ️ 关于我们",
-                aboutUs_sub: "项目目标",
-                contact: "📞 联系",
-                ichu: "ichu bo'limi",
-                contact_sub: "查询",
-                footer_protected: "🔒 网站受保护",
-                footer_name: "Yordamchi Maktab",
-                settings: "⚙️ 设置",
-                settingsModalTitle: "⚙️ 设置",
-                languageTitle: "🌐 选择语言:",
-                modeTitle: "🌙 模式:",
-                themeTitle: "🎨 主题:",
-                accessibilityTitle: "♿ 可访问性:",
-                alertSuccess: (section) => `✅ 成功切换到“${section}”部分！`,
+                askName: "Ismingiz nima?",
+                fallback: "Kechirasiz, tushunmadim.",
+                unknownCommand: "Kechirasiz, bu buyruqni tushunmadim. Iltimos, 'sayt haqida' yoki bo'lim nomini ayting.",
+                greeting: "Hush kelibsiz, YMT hub ilimlar dargohiga! Men Temur — yordamchi sun’iy intellektman.",
+                nameResponse: (name) => `Ajoyib! Mening ismim Temur. Siz bilan tanishganimdan xursandman, ${name}!`,
+                howAreYou: "Men har doim yaxshi! Siz o'zingiz yaxshimisiz?",
+                goodReply: "Har doim shunday yaxshi bo'ling!",
+                badReply: "Xavotir olmang, hamma narsa yaxshi bo'ladi. Siz kuchli odagsiz!",
+                siteInfo: "Ajoyib! Bu sayt 'Yordamchi Maktab' deb nomlanadi va YMT hub tomonidan yaratilgan hamda himoyalangan. Siz bu yerda quyidagi bo'limlarga o'tishingiz mumkin: Ustoz AI, Testlar, O'yinlar, Maslahatlar, Bayroqlar, G'alati, Biz haqimizda, Aloqa, ICHU bo'limi, O'zbekiston, Yashil Makon, Kutubxona va Yo'l harakati qoidalari.",
+                settingsOpened: "Sozlamalar ochildi. Rejim, mavzu yoki shirft o'lchamini ayting.",
+                modeChanged: (mode) => mode === 'light' ? "Yorug‘ rejimga o'tildi." : "To‘q rejimga o'tildi.",
+                themeChanged: (theme) => `Mavzu "${theme}" sifatida sozlandi.`,
+                fontSizeChanged: "Shrift hajmi o'zgartirildi.",
+                closingSettings: "Sozlamalar yopildi."
             }
         };
-        // ======================
-        // 🧠 GLOBAL STATE
-        // ======================
+
+        // Fill missing langs
+        ['ru','en','ko','zh'].forEach(lang => {
+            if (!content[lang]) content[lang] = {};
+            Object.keys(content.uz).forEach(k => {
+                if (!content[lang][k]) content[lang][k] = content.uz[k];
+            });
+        });
+
+        // GLOBAL STATE
         let currentLang = localStorage.getItem('siteLang') || getLangFromURL() || 'uz';
         let currentTheme = localStorage.getItem('siteTheme') || 'default';
         let currentMode = localStorage.getItem('siteMode') || 'light';
         let fontSize = parseFloat(localStorage.getItem('fontSize') || '16');
+        let userName = localStorage.getItem('userName') || null;
+        let isListening = false;
+        let recognition;
+
         function getLangFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             const lang = urlParams.get('lang');
             return ['uz','ru','en','ko','zh'].includes(lang) ? lang : null;
         }
-        // ======================
-        // 🎨 UPDATE UI
-        // ======================
+
+        // === OVOZ SOZLASH ===
+        function speak(text, lang = currentLang) {
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = getVoiceLangCode(lang);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1;
+
+            const voices = speechSynthesis.getVoices();
+            let targetVoice = voices.find(v => v.lang === 'uz-UZ') || 
+                             voices.find(v => v.lang.startsWith('uz')) ||
+                             voices.find(v => v.lang.startsWith(utterance.lang)) ||
+                             voices[0];
+            if (targetVoice) utterance.voice = targetVoice;
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function getVoiceLangCode(lang) {
+            return { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-US', ko: 'ko-KR', zh: 'zh-CN' }[lang] || 'uz-UZ';
+        }
+
+        // === OVOZNI TINGLASH ===
+        function stopListening() {
+            if (recognition) recognition.stop();
+            isListening = false;
+            document.getElementById('aiBtn').classList.remove('listening');
+        }
+
+        function startListening(callback, timeout = 10000) {
+            if (isListening) return;
+            isListening = true;
+            document.getElementById('aiBtn').classList.add('listening');
+
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = getVoiceLangCode(currentLang);
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim().toLowerCase();
+                callback(transcript);
+                stopListening();
+            };
+
+            recognition.onerror = () => stopListening();
+            recognition.onend = () => {
+                if (isListening) {
+                    speak("Hech narsa eshitilmadi. Qayta aytishingiz mumkinmi?");
+                    setTimeout(() => startListening(callback, timeout), 3000);
+                }
+            };
+
+            setTimeout(() => {
+                if (isListening) recognition.stop();
+            }, timeout);
+        }
+
+        // === BO'LIMLAR XARITASI ===
+        const sectionMap = {
+            uz: {
+                'ustoz ai': 'sinf.html',
+                'testlar': 'testlarboshqarmasi.html',
+                'o\'yinlar': 'game.html',
+                'maslahatlar': 'maslahat.html',
+                'bayroqlar': 'bayroq.html',
+                'g\'alati': 'galati.html',
+                'biz haqimizda': 'biz.html',
+                'aloqa': 'aloqa.html',
+                'ichu bo\'lim': 'sinov3.html',
+                'o\'zbekiston': 'uzb.html',
+                'yashil makon': 'ymakon.html',
+                'kutubxona': 'kitob.html',
+                'yo\'l qoidasi': 'yolhar.html',
+                'yo\'l harakati qoidalari': 'yolhar.html'
+            }
+        };
+        ['ru','en','ko','zh'].forEach(lang => sectionMap[lang] = sectionMap.uz);
+
+        // === SOZLAMALARNI OVOZ BILAN BOSHQARISH ===
+        const modePhrases = {
+            uz: { light: ['yorug', 'yorug\' rejim', 'yorug rejim'], dark: ['to\'q', 'to\'q rejim', 'toq rejim'] }
+        };
+        const themePhrases = {
+            uz: {
+                default: ['asosiy', 'oddiy'],
+                ocean: ['okean', 'ko\'k'],
+                green: ['yashil'],
+                violet: ['binafsha', 'suyuq'],
+                'dark-red': ['qizil'],
+                soft: ['pastel', 'yumshoq']
+            }
+        };
+
+        function applyVoiceSettings(command) {
+            const lang = currentLang;
+            const txt = command.toLowerCase();
+
+            // Sozlamalarni ochish
+            if (txt.includes('sozlamalar') || txt.includes('settings')) {
+                openSettingsModal();
+                speak(content[lang].settingsOpened);
+                return true;
+            }
+
+            // Yopish
+            if (txt.includes('yop') || txt.includes('chiq')) {
+                closeSettingsModal();
+                speak(content[lang].closingSettings);
+                return true;
+            }
+
+            // Rejim
+            if (modePhrases[lang]) {
+                if (modePhrases[lang].light.some(p => txt.includes(p))) {
+                    setMode('light');
+                    speak(content[lang].modeChanged('light'));
+                    return true;
+                }
+                if (modePhrases[lang].dark.some(p => txt.includes(p))) {
+                    setMode('dark');
+                    speak(content[lang].modeChanged('dark'));
+                    return true;
+                }
+            }
+
+            // Mavzu
+            if (themePhrases[lang]) {
+                for (const [theme, phrases] of Object.entries(themePhrases[lang])) {
+                    if (phrases.some(p => txt.includes(p))) {
+                        setTheme(theme);
+                        speak(content[lang].themeChanged(themeMap[theme] || theme));
+                        return true;
+                    }
+                }
+            }
+
+            // Shrift
+            if (txt.includes('shrift') || txt.includes('matn') || txt.includes('harf')) {
+                if (txt.includes('katta') || txt.includes('kattalashtir')) {
+                    fontSize = Math.min(fontSize + 2, 24);
+                    applyFontSize(fontSize);
+                    speak(content[lang].fontSizeChanged);
+                    return true;
+                }
+                if (txt.includes('kichik') || txt.includes('kichraytir')) {
+                    fontSize = Math.max(fontSize - 2, 12);
+                    applyFontSize(fontSize);
+                    speak(content[lang].fontSizeChanged);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        const themeMap = {
+            default: 'Asosiy',
+            ocean: 'Okean',
+            green: 'Yashil',
+            violet: 'Binafsha',
+            'dark-red': 'Qizil',
+            soft: 'Pastel'
+        };
+
+        // === ASOSIY BUYRUQLAR ===
+        function handleVoiceCommand(command) {
+            const lang = currentLang;
+            const txt = command.toLowerCase();
+
+            // Sozlamalarda tekshirish
+            if (document.getElementById('settingsModal').classList.contains('active')) {
+                if (applyVoiceSettings(txt)) return;
+            }
+
+            // Ism so'rash
+            if (!userName && /ism|name|имя|이름|名字|meni\s+ism/i.test(txt)) {
+                speak(content[lang].askName);
+                setTimeout(() => startListening(name => {
+                    userName = name.trim();
+                    localStorage.setItem('userName', name);
+                    speak(content[lang].nameResponse(name));
+                }), 1000);
+                return;
+            }
+
+            // Salom
+            if (/salom|привет|hello|안녕|你好/i.test(txt)) {
+                speak(userName ? `Salom, ${userName}!` : content[lang].greeting);
+                return;
+            }
+
+            // Qalesan?
+            if (/qalesan|how are you|как дела|어떻게 지내|你好吗/i.test(txt)) {
+                speak(content[lang].howAreYou);
+                setTimeout(() => startListening(reply => {
+                    if (/yaxshi|хорошо|good|잘|好/i.test(reply)) {
+                        speak(content[lang].goodReply);
+                    } else {
+                        speak(content[lang].badReply);
+                    }
+                }, 5000), 1500);
+                return;
+            }
+
+            // Sayt haqida
+            if (/sayt|сайт|website|웹사이트|网站/i.test(txt)) {
+                speak(content[lang].siteInfo);
+                return;
+            }
+
+            // Bo'limlarga o'tish
+            for (const [phrase, url] of Object.entries(sectionMap[lang])) {
+                if (txt.includes(phrase)) {
+                    speak(`Ajoyib! Siz "${phrase}" bo'limiga yo'naltirilyapsiz.`);
+                    setTimeout(() => window.location.href = url, 1800);
+                    return;
+                }
+            }
+
+            // Noma'lum buyruq
+            speak(content[lang].unknownCommand);
+        }
+
+        // === TUGMA BOSILGANDA ===
+        document.getElementById('aiBtn').addEventListener('click', function () {
+            if (isListening) {
+                stopListening();
+                return;
+            }
+
+            if (!userName) {
+                speak(content[currentLang].greeting + " " + content[currentLang].askName);
+                setTimeout(() => startListening(name => {
+                    userName = name.trim();
+                    localStorage.setItem('userName', name);
+                    speak(content[currentLang].nameResponse(name));
+                    setTimeout(() => startListening(handleVoiceCommand), 2000);
+                }), 2000);
+            } else {
+                speak(`Salom qaytadan, ${userName}! Menga nima buyurasiz?`);
+                setTimeout(() => startListening(handleVoiceCommand), 1500);
+            }
+        });
+
+        // === SAYT ISHGA TUSHGANDA ===
         function updateContent(lang) {
             if (!content[lang]) return;
-            // Yangi matnlar
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
                 if (content[lang][key]) el.textContent = content[lang][key];
@@ -1013,8 +1136,8 @@
             document.getElementById('themeTitle').textContent = content[lang].themeTitle;
             document.getElementById('accessibilityTitle').textContent = content[lang].accessibilityTitle;
             document.documentElement.lang = lang;
-            document.documentElement.setAttribute('lang', lang);
         }
+
         function applyTheme(theme) {
             const body = document.body;
             body.className = body.className
@@ -1025,16 +1148,20 @@
             if (theme !== 'default') body.classList.add(`theme-${theme}`);
             if (currentMode === 'dark') body.classList.add('dark-mode');
         }
+
         function applyMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('siteMode', mode);
             document.body.classList.toggle('dark-mode', mode === 'dark');
+            setActiveButton('mode-options', mode, 'data-mode');
         }
+
         function applyFontSize(size) {
+            fontSize = size;
             document.documentElement.style.setProperty('--font-size-base', `${size}px`);
             localStorage.setItem('fontSize', size.toString());
         }
-        // ======================
-        // ⚙️ SOZLAMALAR
-        // ======================
+
         function setLanguage(lang) {
             if (!content[lang]) return;
             currentLang = lang;
@@ -1042,35 +1169,36 @@
             updateContent(lang);
             setActiveButton('language-options', lang, 'data-lang');
             history.replaceState(null, '', `?lang=${lang}`);
+            // Ovozlar ro'yxatini yangilash
+            setTimeout(() => speechSynthesis.getVoices(), 500);
         }
+
         function setMode(mode) {
-            currentMode = mode;
-            localStorage.setItem('siteMode', mode);
             applyMode(mode);
-            setActiveButton('mode-options', mode, 'data-mode');
         }
+
         function setTheme(theme) {
             currentTheme = theme;
             localStorage.setItem('siteTheme', theme);
             applyTheme(theme);
             setActiveButton('theme-options', theme, 'data-theme');
         }
-        // ======================
-        // ✅ YORDAMCHI
-        // ======================
+
         function setActiveButton(containerId, value, attr = 'data-lang') {
             const container = document.getElementById(containerId);
             container?.querySelectorAll('.setting-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute(attr) === value);
             });
         }
+
         function openSettingsModal() {
             document.getElementById('settingsModal').classList.add('active');
-            toggleMobileMenu(false);
         }
+
         function closeSettingsModal() {
             document.getElementById('settingsModal').classList.remove('active');
         }
+
         function toggleMobileMenu(forceState = null) {
             const menu = document.getElementById('mobileMenu');
             if (forceState === null) {
@@ -1079,20 +1207,16 @@
                 menu.classList.toggle('active', forceState);
             }
         }
-        // ======================
-        // 🚀 ISHGA TUSSH
-        // ======================
+
         function initApp() {
-            // Sozlamalarni qo'llash
             updateContent(currentLang);
             applyTheme(currentTheme);
             applyMode(currentMode);
             applyFontSize(fontSize);
-            // Faol tugmalarni belgilash
             setActiveButton('language-options', currentLang, 'data-lang');
             setActiveButton('mode-options', currentMode, 'data-mode');
             setActiveButton('theme-options', currentTheme, 'data-theme');
-            // Kirish ekranini boshqarish
+
             const intro = document.getElementById('intro');
             const mainContent = document.getElementById('main-content');
             const skipBtn = document.getElementById('skipIntro');
@@ -1106,25 +1230,17 @@
             };
             setTimeout(hideIntro, 3000);
             skipBtn?.addEventListener('click', hideIntro);
-            // Event listeners
+
             document.getElementById('menuToggle')?.addEventListener('click', () => toggleMobileMenu());
             document.getElementById('closeSettings')?.addEventListener('click', closeSettingsModal);
             document.getElementById('settingsModal')?.addEventListener('click', e => {
                 if (e.target === e.currentTarget) closeSettingsModal();
             });
-            // Til tanlovi
-            document.querySelectorAll('[data-lang]').forEach(btn => {
-                btn.addEventListener('click', e => setLanguage(e.target.dataset.lang));
-            });
-            // Rejim tanlovi
-            document.querySelectorAll('[data-mode]').forEach(btn => {
-                btn.addEventListener('click', e => setMode(e.target.dataset.mode));
-            });
-            // Mavzu tanlovi
-            document.querySelectorAll('[data-theme]').forEach(btn => {
-                btn.addEventListener('click', e => setTheme(e.target.dataset.theme));
-            });
-            // Font kattalik
+
+            document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', e => setLanguage(e.target.dataset.lang)));
+            document.querySelectorAll('[data-mode]').forEach(btn => btn.addEventListener('click', e => setMode(e.target.dataset.mode)));
+            document.querySelectorAll('[data-theme]').forEach(btn => btn.addEventListener('click', e => setTheme(e.target.dataset.theme)));
+
             document.getElementById('increaseFont')?.addEventListener('click', () => {
                 fontSize = Math.min(fontSize + 2, 24);
                 applyFontSize(fontSize);
@@ -1137,7 +1253,7 @@
                 fontSize = 16;
                 applyFontSize(fontSize);
             });
-            // Tashqari bosishda menyu yopiladi
+
             document.addEventListener('click', e => {
                 const menu = document.getElementById('mobileMenu');
                 const toggle = document.getElementById('menuToggle');
@@ -1145,7 +1261,7 @@
                     toggleMobileMenu(false);
                 }
             });
-            // Keyboard navigation
+
             document.querySelectorAll('.big-btn').forEach(btn => {
                 btn.addEventListener('keydown', e => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -1161,76 +1277,55 @@
                 });
             });
         }
-        // ======================
-        // 📲 PWA QO'SHIMCHA
-        // ======================
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
-                    console.warn('SW ro‘yxatdan o‘tmadi:', err);
-                });
+                navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW ro‘yxatdan o‘tmadi:', err));
             });
         }
-        // ======================
-        // 🎬 SAYT YUKLANGANDA
-        // ======================
+
         document.addEventListener('DOMContentLoaded', initApp);
-        // ======================
-        // 🌌 3D PARTICLES BACKGROUND — TO'G'RILANGAN QISMI
-        // ======================
         window.addEventListener('load', () => {
             const canvas = document.getElementById('particles-bg');
             if (!canvas) return;
-
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-
             const particlesCount = 2000;
             const posArray = new Float32Array(particlesCount * 3);
             for (let i = 0; i < particlesCount * 3; i++) {
                 posArray[i] = (Math.random() - 0.5) * 20;
             }
-
             const particlesGeometry = new THREE.BufferGeometry();
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-            // Rangni xavfsiz olish — agar CSS hali tayyor bo'lmasa, standart qiymat
             const getAccentColor = () => {
                 const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color')?.trim();
                 return accent || '#98c1d9';
             };
-
             const particlesMaterial = new THREE.PointsMaterial({
                 color: getAccentColor(),
                 size: 0.05,
                 transparent: true,
                 opacity: 0.6
             });
-
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
             camera.position.z = 5;
-
             function animate() {
                 requestAnimationFrame(animate);
                 particlesMesh.rotation.x += 0.0005;
                 particlesMesh.rotation.y += 0.0005;
                 renderer.render(scene, camera);
             }
-
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
-
             animate();
         });
-
-        // Parallax scroll
         window.addEventListener('scroll', () => {
             const offset = window.scrollY * 0.3;
             document.body.style.backgroundPositionY = `${offset}px`;
@@ -1238,4 +1333,3 @@
     </script>
 </body>
 </html>
-
