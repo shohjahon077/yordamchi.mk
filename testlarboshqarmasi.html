@@ -1,383 +1,580 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏛️ O'quv Fanlari Test Portali</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #00bcd4;
-            --background-dark: #f0f2f5;
-            --text-dark: #212529;
-            --text-light: #fff;
-            --border-radius: 12px;
-            --shadow-subtle: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏛️ O'quv Fanlari Test Portali — Davlat Standarti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --primary: #0d47a1;
+      --primary-light: #1976d2;
+      --secondary: #00838f;
+      --accent: #ff6f00;
+      --background: #f5f7fa;
+      --surface: #ffffff;
+      --text-primary: #1a237e;
+      --text-secondary: #424242;
+      --border-radius: 16px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-dark);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--primary-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 8px solid rgba(255, 255, 255, 0.3);
-            border-top-color: var(--text-light);
-            border-radius: 50%;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .splash-text {
-            color: var(--text-light);
-            font-size: 1.5em;
-            font-weight: 600;
-            margin-top: 20px;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(13, 71, 161, 0.03) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 111, 0, 0.03) 0%, transparent 20%);
+    }
 
-        .container {
-            background-color: #ffffff;
-            padding: 50px 40px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-subtle);
-            max-width: 1100px;
-            width: 90%;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 0.6s ease-in, transform 0.6s ease-in;
-            z-index: 10;
-        }
-        .container.loaded {
-            opacity: 1;
-            transform: scale(1);
-        }
+    /* Animated Background Dots */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle, rgba(13,71,161,0.05) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,111,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+      opacity: 0.3;
+      animation: drift 25s linear infinite;
+    }
 
-        h1 {
-            color: var(--text-dark);
-            margin-bottom: 5px;
-            font-weight: 800;
-            font-size: 2.5em;
-            text-align: left;
-        }
-        h3 {
-            color: #6c757d;
-            margin-bottom: 40px;
-            font-weight: 400;
-            text-align: left;
-        }
+    @keyframes drift {
+      0% { background-position: 0 0, 20px 20px; }
+      100% { background-position: 100px 100px, 120px 120px; }
+    }
 
-        .subject-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 25px;
-        }
-        
-        .subject-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-decoration: none;
-            color: var(--text-dark);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            border: 1px solid #e9ecef;
-        }
-        
-        .subject-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 123, 255, 0.15);
-            border-color: var(--primary-color);
-        }
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      transition: opacity 0.8s ease-out;
+    }
 
-        .subject-card .icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            padding: 8px;
-            border-radius: 8px;
-            background-color: rgba(0, 123, 255, 0.1);
-            color: var(--primary-color);
-        }
+    .loader {
+      width: 80px;
+      height: 80px;
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-        .subject-card .name {
-            font-size: 1.3em;
-            font-weight: 700;
-        }
-        
-        .card-history .icon { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
-        .card-biology .icon { background-color: rgba(46, 204, 113, 0.1); color: #2ecc71; }
-        .card-chemistry .icon { background-color: rgba(243, 156, 18, 0.1); color: #f39c12; }
-        .card-physics .icon { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; }
-        .card-math .icon { background-color: rgba(155, 89, 182, 0.1); color: #9b59b6; }
-        .card-geography .icon { background-color: rgba(52, 152, 219, 0.1); color: #3498db; }
-        .card-uzbek .icon { background-color: rgba(142, 68, 173, 0.1); color: #8e44ad; }
-        .card-literature .icon { background-color: rgba(230, 126, 34, 0.1); color: #e67e22; }
-        .card-english .icon { background-color: rgba(41, 128, 185, 0.1); color: #2980b9; }
-        .card-russian .icon { background-color: rgba(26, 188, 156, 0.1); color: #1abc9c; }
+    .splash-text {
+      color: white;
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-top: 24px;
+      font-family: 'Roboto Slab', serif;
+    }
 
-        /* AI BUTTON */
-        .ai-btn-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1001;
-        }
-        .ai-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--secondary-color);
-            color: white;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .ai-btn:hover {
-            transform: scale(1.15);
-            background: var(--primary-color);
-        }
-        .ai-btn.listening {
-            background: #e74c3c;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-            70% { box-shadow: 0 0 0 12px rgba(231, 76, 60, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
-    </style>
+    .container {
+      max-width: 1300px;
+      width: 94%;
+      padding: 60px 30px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-family: 'Roboto Slab', serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 12px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .lang-toggle {
+      background: var(--surface);
+      border: 2px solid var(--primary-light);
+      border-radius: 50px;
+      padding: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .lang-btn {
+      padding: 8px 20px;
+      border-radius: 50px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .subject-card {
+      background: var(--surface);
+      border-radius: var(--border-radius);
+      padding: 32px 24px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-primary);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .subject-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(13, 71, 161, 0.15);
+    }
+
+    .subject-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .subject-card .icon {
+      font-size: 3rem;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .subject-card .name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-family: 'Roboto Slab', serif;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    /* AI BUTTON */
+    .ai-btn-container {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1001;
+    }
+
+    .ai-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: white;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .ai-btn:hover {
+      transform: scale(1.15) rotate(10deg);
+      background: var(--accent);
+    }
+
+    .ai-btn.listening {
+      background: #d32f2f;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+      70% { box-shadow: 0 0 0 14px rgba(211, 47, 47, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 40px 20px; }
+      h1 { font-size: 2.2rem; }
+      .subject-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    }
+  </style>
 </head>
 <body>
 
 <div id="splash-screen">
-    <div class="loader"></div>
-    <div class="splash-text">Portal yuklanmoqda...</div>
+  <div class="loader"></div>
+  <div class="splash-text">YMT hub Test Portali Yuklanmoqda...</div>
 </div>
 
 <div class="container" id="main-content">
-    <h1>🏛️ Test Fanlarini Tanlash</h1>
-    <h3>Boshlash uchun sinfingizga mos keladigan fanni tanlang va testni boshlang.</h3>
-
-    <div class="subject-grid" id="subject-grid"></div>
+  <header>
+    <h1>🏛️ O'quv Fanlari Test Portali</h1>
+    <h3>Milliy ta’lim standartlariga asoslangan interaktiv testlar orqali bilimingizni sinab ko'ring.</h3>
     
-    <p style="margin-top: 40px; color: #7f8c8d; font-size: 0.85em; text-align: right;">
-        Ushbu fanlarni tanlang va o'z bilimingizni sinab ko'ring!
-    </p>
+    <div class="controls">
+      <div class="lang-toggle" id="langToggle">
+        <button class="lang-btn active" data-lang="uz">🇺🇿 O‘zbek</button>
+        <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="subject-grid" id="subject-grid"></div>
+
+  <footer>
+    © 2025 O'zbekiston Respublikasi YMT hub. Barcha huquqlar himoyalangan.
+  </footer>
 </div>
 
-<!-- AI Microphone Button -->
+<!-- AI Microphone -->
 <div class="ai-btn-container">
-    <button class="ai-btn" id="aiBtn" aria-label="Ovozli yordamchini yoqish">🎙️</button>
+  <button class="ai-btn" id="aiBtn" aria-label="AI Yordamchini Chaqirish">🎙️</button>
 </div>
 
 <script>
-    const subjects = [
-        { name: "Tarix", icon: "🏛️", link: "testlar.html", className: "card-history" },
-        { name: "Biologiya", icon: "🧬", link: "testlar10.html", className: "card-biology" },
-        { name: "Kimyo", icon: "🧪", link: "testlar2.html", className: "card-chemistry" },
-        { name: "Fizika", icon: "⚛️", link: "testlar4.html", className: "card-physics" },
-        { name: "Matematika", icon: "➕", link: "testlar6.html", className: "card-math" },
-        { name: "Geografiya", icon: "🌍", link: "testlar3.html", className: "card-geography" },
-        { name: "Ona tili", icon: "📝", link: "testlar7.html", className: "card-uzbek" },
-        { name: "Adabiyot", icon: "📚", link: "testlar5.html", className: "card-literature" },
-        { name: "Ingliz tili", icon: "🇬🇧", link: "testlar8.html", className: "card-english" },
-        { name: "Rus tili", icon: "🇷🇺", link: "testlar9.html", className: "card-russian" },
-    ];
-
-    // GLOBAL STATE
-    let userName = localStorage.getItem('userName') || null;
-    let isListening = false;
-    let recognition;
-
-    // RENDER SUBJECTS
-    function renderSubjects() {
-        const grid = document.getElementById('subject-grid');
-        subjects.forEach(subject => {
-            const card = document.createElement('a');
-            card.href = subject.link;
-            card.className = `subject-card ${subject.className}`;
-            card.innerHTML = `<span class="icon">${subject.icon}</span><span class="name">${subject.name}</span>`;
-            grid.appendChild(card);
-        });
+  // === MULTILINGUAL CONTENT ===
+  const translations = {
+    uz: {
+      title: "O'quv Fanlari Test Portali",
+      subtitle: "Milliy ta’lim standartlariga asoslangan interaktiv testlar orqali bilimingizni sinab ko'ring.",
+      footer: "© 2025 O'zbekiston Respublikasi YMT hub. Barcha huquqlar himoyalangan.",
+      loading: "YMT hub Test Portali Yuklanmoqda...",
+      greeting_new: "Assalomu alaykum! Men Temur — test portali yordamchisi. Iltimos, ismingizni ayting.",
+      greeting_known: name => `Salom qaytadan, ${name}! Qaysi fan testiga kirmoqchisiz?`,
+      ask_name: "Ismingiz nima?",
+      welcome: name => `Ajoyib! Men Temur — yordamchi AI. Siz bilan tanishganimdan xursandman, ${name}!`,
+      help_prompt: "Endi menga 'Kimyoga kir', 'Tarixga bor' yoki boshqa fan nomini ayta olasiz.",
+      not_understood: "Kechirasiz, bu buyruqni tushunmadim. Iltimos, 'Kimyoga kir' yoki 'Tarixga bor' deb aytishingiz mumkin.",
+      redirecting: subject => `Ajoyib! Siz "${subject}" faniga yo'naltirilyapsiz.`,
+      no_audio: "Hech narsa eshitilmadi. Qayta aytishingiz mumkinmi?",
+      subjects: [
+        "Tarix", "Biologiya", "Kimyo", "Fizika", "Matematika",
+        "Geografiya", "Ona tili", "Adabiyot", "Ingliz tili", "Rus tili"
+      ]
+    },
+    en: {
+      title: "Academic Subjects Test Portal",
+      subtitle: "Test your knowledge with interactive exams based on national education standards.",
+      footer: "© 2025 Ministry of Education of the Republic of Uzbekistan. All rights reserved.",
+      loading: "YMT hub Test Portal Loading...",
+      greeting_new: "Hello! I'm Temur, your AI assistant. Please tell me your name.",
+      greeting_known: name => `Welcome back, ${name}! Which subject test would you like to start?`,
+      ask_name: "What is your name?",
+      welcome: name => `Great! I'm Temur — your AI assistant. Pleased to meet you, ${name}!`,
+      help_prompt: "Now you can say 'Go to Chemistry', 'Open History', or any subject name.",
+      not_understood: "Sorry, I didn't understand that. Please say 'Go to Chemistry' or 'Open History'.",
+      redirecting: subject => `Excellent! Redirecting you to "${subject}".`,
+      no_audio: "Nothing heard. Could you repeat that?",
+      subjects: [
+        "History", "Biology", "Chemistry", "Physics", "Mathematics",
+        "Geography", "Uzbek Language", "Literature", "English", "Russian"
+      ]
     }
+  };
 
-    // VOICE: TEXT TO SPEECH
-    function speak(text) {
-        if (speechSynthesis.speaking) speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'uz-UZ';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
+  // === SUBJECTS ===
+  const subjects = [
+    { name: "Tarix", icon: "🏛️", link: "testlar.html", key: "tarix" },
+    { name: "Biologiya", icon: "🧬", link: "testlar10.html", key: "biologiya" },
+    { name: "Kimyo", icon: "🧪", link: "testlar2.html", key: "kimyo" },
+    { name: "Fizika", icon: "⚛️", link: "testlar4.html", key: "fizika" },
+    { name: "Matematika", icon: "➕", link: "testlar6.html", key: "matematika" },
+    { name: "Geografiya", icon: "🌍", link: "testlar3.html", key: "geografiya" },
+    { name: "Ona tili", icon: "📝", link: "testlar7.html", key: "onatili" },
+    { name: "Adabiyot", icon: "📚", link: "testlar5.html", key: "adabiyot" },
+    { name: "Ingliz tili", icon: "🇬🇧", link: "testlar8.html", key: "ingliztili" },
+    { name: "Rus tili", icon: "🇷🇺", link: "testlar9.html", key: "rustili" },
+  ];
 
-        const voices = speechSynthesis.getVoices();
-        const uzVoice = voices.find(v => v.lang === 'uz-UZ') || voices[0];
-        if (uzVoice) utterance.voice = uzVoice;
+  // === STATE ===
+  let currentLang = localStorage.getItem('userLang') || 'uz';
+  let userName = localStorage.getItem('userName') || null;
+  let isListening = false;
+  let recognition;
+  const subjectMap = {};
+  subjects.forEach(s => subjectMap[s.key] = s);
 
-        speechSynthesis.speak(utterance);
-    }
-
-    // VOICE: SPEECH TO TEXT
-    function stopListening() {
-        if (recognition) recognition.stop();
-        isListening = false;
-        document.getElementById('aiBtn').classList.remove('listening');
-    }
-
-    function startListening(callback, timeout = 10000) {
-        if (isListening) return;
-        isListening = true;
-        document.getElementById('aiBtn').classList.add('listening');
-
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'uz-UZ';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-        recognition.start();
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript.trim().toLowerCase();
-            callback(transcript);
-            stopListening();
-        };
-
-        recognition.onerror = () => stopListening();
-        recognition.onend = () => {
-            if (isListening) {
-                speak("Hech narsa eshitilmadi. Qayta aytishingiz mumkinmi?");
-                setTimeout(() => startListening(callback, timeout), 3000);
-            }
-        };
-
-        setTimeout(() => {
-            if (isListening) recognition.stop();
-        }, timeout);
-    }
-
-    // MAPPING: FAN NOMI → URL
-    const subjectMap = {};
-    subjects.forEach(s => {
-        const key = s.name.toLowerCase().replace(/\s+/g, '');
-        subjectMap[key] = s.link;
-    });
-
-    // HANDLE VOICE COMMANDS
-    function handleVoiceCommand(command) {
-        const txt = command.toLowerCase();
-
-        // Ism so'rash
-        if (!userName && (txt.includes('ism') || txt.includes('meni ism'))) {
-            speak("Ismingiz nima?");
-            setTimeout(() => startListening(name => {
-                userName = name.trim();
-                localStorage.setItem('userName', name);
-                speak(`Ajoyib! Men Temur — yordamchi AI. Siz bilan tanishganimdan xursandman, ${name}!`);
-            }), 1200);
-            return;
-        }
-
-        // Salom
-        if (txt.includes('salom') || txt.includes('qalesan')) {
-            if (!userName) {
-                speak("Salom! Men Temur. Iltimos, ismingizni ayting.");
-                setTimeout(() => startListening(name => {
-                    userName = name.trim();
-                    localStorage.setItem('userName', name);
-                    speak(`Xush kelibsiz, ${name}! Kimyoga yoki Tarixga kirishni xohlaysizmi?`);
-                }), 1500);
-            } else {
-                speak(`Salom, ${userName}! Sizga qanday yordam bera olaman?`);
-            }
-            return;
-        }
-
-        // Fanlarga o'tish
-        for (const [key, url] of Object.entries(subjectMap)) {
-            if (txt.includes(key) || txt.includes(`${key}ga`) || txt.includes(`${key}ga kir`)) {
-                speak(`Ajoyib! Siz "${key}" faniga yo'naltirilyapsiz.`);
-                setTimeout(() => window.location.href = url, 1800);
-                return;
-            }
-        }
-
-        speak("Kechirasiz, bu buyruqni tushunmadim. Iltimos, 'Kimyoga kir' yoki 'Tarixga bor' deb aytishingiz mumkin.");
-    }
-
-    // BUTTON CLICK
-    document.getElementById('aiBtn').addEventListener('click', function () {
-        if (isListening) {
-            stopListening();
-            return;
-        }
-
-        if (!userName) {
-            speak("Assalomu alaykum! Men — Temur, test portali yordamchisi. Iltimos, ismingizni ayting.");
-            setTimeout(() => startListening(name => {
-                userName = name.trim();
-                localStorage.setItem('userName', name);
-                speak(`Xush kelibsiz, ${name}! Endi menga "Kimyoga kir", "Tarixga bor" yoki boshqa fan nomini ayta olasiz.`);
-                setTimeout(() => startListening(handleVoiceCommand), 2000);
-            }), 2000);
-        } else {
-            speak(`Salom qaytadan, ${userName}! Qaysi fan testiga kirmoqchisiz?`);
-            setTimeout(() => startListening(handleVoiceCommand), 1500);
-        }
-    });
-
-    // INIT
-    function hideSplash() {
-        const mainContent = document.getElementById('main-content');
-        mainContent.classList.add('loaded');
-        setTimeout(() => {
-            document.getElementById('splash-screen').style.opacity = '0';
-        }, 500);
-        setTimeout(() => {
-            document.getElementById('splash-screen').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }, 1000);
-    }
-
+  // === INIT ===
+  function init() {
+    setupLanguageToggle();
     renderSubjects();
-    window.addEventListener('load', () => {
-        setTimeout(hideSplash, 2000);
-        // Ovozlar ro'yxatini dastlabki yuklash
-        setTimeout(() => speechSynthesis.getVoices(), 500);
+    setupAI();
+    hideSplash();
+    loadVoices();
+  }
+
+  function setupLanguageToggle() {
+    const toggle = document.getElementById('langToggle');
+    toggle.addEventListener('click', e => {
+      if (e.target.classList.contains('lang-btn')) {
+        const newLang = e.target.dataset.lang;
+        if (newLang !== currentLang) {
+          currentLang = newLang;
+          localStorage.setItem('userLang', currentLang);
+          updateUI();
+        }
+      }
     });
+    updateUI();
+  }
+
+  function updateUI() {
+    const t = translations[currentLang];
+    document.querySelector('h1').textContent = t.title;
+    document.querySelector('h3').textContent = t.subtitle;
+    document.querySelector('footer').textContent = t.footer;
+    document.querySelector('.splash-text').textContent = t.loading;
+
+    const btns = document.querySelectorAll('.lang-btn');
+    btns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    });
+
+    renderSubjects(); // Re-render with correct language
+  }
+
+  function renderSubjects() {
+    const grid = document.getElementById('subject-grid');
+    grid.innerHTML = '';
+    const t = translations[currentLang];
+    subjects.forEach((subj, i) => {
+      const card = document.createElement('a');
+      card.href = subj.link;
+      card.className = 'subject-card';
+      const displayName = currentLang === 'en'
+        ? t.subjects[i]
+        : subj.name;
+      card.innerHTML = `<span class="icon">${subj.icon}</span><span class="name">${displayName}</span>`;
+      grid.appendChild(card);
+    });
+  }
+
+  function loadVoices() {
+    // Ensure voices are loaded
+    speechSynthesis.onvoiceschanged = () => {};
+    setTimeout(() => speechSynthesis.getVoices(), 500);
+  }
+
+  function speak(text) {
+    if (speechSynthesis.speaking) speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = currentLang === 'en' ? 'en-US' : 'uz-UZ';
+    utterance.rate = currentLang === 'en' ? 1.0 : 0.92;
+    utterance.pitch = 1.0;
+
+    const voices = speechSynthesis.getVoices();
+    const targetVoice = voices.find(v => v.lang.startsWith(utterance.lang)) || voices[0];
+    if (targetVoice) utterance.voice = targetVoice;
+
+    speechSynthesis.speak(utterance);
+  }
+
+  function stopListening() {
+    if (recognition) recognition.stop();
+    isListening = false;
+    document.getElementById('aiBtn').classList.remove('listening');
+  }
+
+  function startListening(callback, timeout = 12000) {
+    if (isListening) return;
+    isListening = true;
+    document.getElementById('aiBtn').classList.add('listening');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      speak("Kechirasiz, brauzeringiz nutqni qo‘llab-quvvatlamaydi.");
+      isListening = false;
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = currentLang === 'en' ? 'en-US' : 'uz-UZ';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      callback(transcript);
+      stopListening();
+    };
+
+    recognition.onerror = () => {
+      stopListening();
+      speak(translations[currentLang].no_audio);
+    };
+
+    recognition.onend = () => {
+      if (isListening) {
+        speak(translations[currentLang].no_audio);
+        setTimeout(() => startListening(callback, timeout), 3000);
+      }
+    };
+
+    setTimeout(() => {
+      if (isListening) recognition.stop();
+    }, timeout);
+  }
+
+  function handleVoiceCommand(command) {
+    const t = translations[currentLang];
+    const txt = command.toLowerCase();
+
+    // Name handling
+    if (!userName && (txt.includes('ism') || txt.includes('name') || txt.includes('meni ism'))) {
+      speak(t.ask_name);
+      setTimeout(() => startListening(name => {
+        userName = name.trim();
+        localStorage.setItem('userName', name);
+        speak(t.welcome(name));
+      }), 1200);
+      return;
+    }
+
+    // Greetings
+    if (txt.includes('salom') || txt.includes('hello') || txt.includes('hi') || txt.includes('qalesan')) {
+      if (!userName) {
+        speak(t.greeting_new);
+        setTimeout(() => startListening(name => {
+          userName = name.trim();
+          localStorage.setItem('userName', name);
+          speak(t.welcome(name));
+        }), 1500);
+      } else {
+        speak(t.greeting_known(userName));
+      }
+      return;
+    }
+
+    // Subject navigation
+    for (const key in subjectMap) {
+      const subj = subjectMap[key];
+      const nameUz = subj.name.toLowerCase();
+      const nameEn = translations.en.subjects[subjects.findIndex(s => s.key === key)].toLowerCase();
+      if (
+        txt.includes(key) ||
+        txt.includes(nameUz) ||
+        txt.includes(nameEn) ||
+        txt.includes(`${nameUz}ga`) ||
+        txt.includes(`to ${nameEn}`)
+      ) {
+        speak(t.redirecting(currentLang === 'en' ? nameEn : nameUz));
+        setTimeout(() => window.location.href = subj.link, 1800);
+        return;
+      }
+    }
+
+    speak(t.not_understood);
+  }
+
+  function setupAI() {
+    document.getElementById('aiBtn').addEventListener('click', () => {
+      if (isListening) {
+        stopListening();
+        return;
+      }
+
+      const t = translations[currentLang];
+      if (!userName) {
+        speak(t.greeting_new);
+        setTimeout(() => startListening(name => {
+          userName = name.trim();
+          localStorage.setItem('userName', name);
+          speak(t.welcome(name));
+          setTimeout(() => startListening(handleVoiceCommand), 2000);
+        }), 2000);
+      } else {
+        speak(t.greeting_known(userName));
+        setTimeout(() => startListening(handleVoiceCommand), 1500);
+      }
+    });
+  }
+
+  function hideSplash() {
+    gsap.to('#main-content', {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: "power2.out",
+      delay: 0.4
+    });
+    setTimeout(() => {
+      document.getElementById('splash-screen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('splash-screen').remove();
+      }, 800);
+    }, 2200);
+  }
+
+  window.addEventListener('load', init);
 </script>
 
 </body>
