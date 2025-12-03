@@ -1,190 +1,350 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O'qituvchilar Bo'limi</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <style>
-        /* ==================================== */
-        /* 1. Umumiy Stil va Animatsiya Sozlamalari */
-        /* ==================================== */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f9;
-            color: #333;
-            text-align: center;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>O'qituvchilar Bo'limi — Ta'lim Vazirligi</title>
+  <link rel="stylesheet" href="6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* Kirish Animatsiyasi uchun Dastlabki Holat */
-        .page-content {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            transition-delay: 0.5s; /* Animatsiya biroz kechikib boshlansin */
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    :root {
+      --primary-bg: #011f4b;
+      --accent-gold: #ffd700;
+      --text-light: #ffffff;
+      --text-off: #f0f8ff;
+      --card-bg: rgba(2, 25, 59, 0.85);
+      --glow: 0 0 20px rgba(255, 215, 0, 0.6);
+    }
 
-        .page-content.loaded {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: var(--primary-bg);
+      background-image: 
+        linear-gradient(135deg, #011f4b 0%, #03396c 50%, #005b96 100%),
+        radial-gradient(circle at top right, rgba(255, 215, 0, 0.05), transparent 30%);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
 
-        /* ==================================== */
-        /* 2. Bo'lim Sarlavhasi Stili */
-        /* ==================================== */
-        .header-content {
-            padding: 40px 0;
-            margin-bottom: 30px;
-        }
+    body::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(90deg, var(--accent-gold), transparent, var(--accent-gold));
+      animation: goldPulse 4s infinite;
+    }
 
-        .header-content h1 {
-            font-size: 2.8em;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
+    @keyframes goldPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
 
-        .header-content p {
-            font-size: 1.2em;
-            color: #555;
-        }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
 
-        /* ==================================== */
-        /* 3. Sinf Tanlovi Stili */
-        /* ==================================== */
-        .class-selection {
-            display: flex;
-            flex-wrap: wrap; /* Sinflarni yangi qatorga o'tkazish */
-            justify-content: center;
-            gap: 20px;
-        }
+    .hero {
+      min-height: 95vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+    }
 
-        .class-card {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            width: 150px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      font-family: "Font Awesome 6 Free";
+      content: "\f19c";
+      font-weight: 900;
+      font-size: 200px;
+      color: rgba(255, 215, 0, 0.05);
+      z-index: -1;
+      animation: float 12s infinite ease-in-out;
+    }
 
-        .class-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-        }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(5deg); }
+    }
 
-        .class-card i {
-            font-size: 3em;
-            color: #28a745; /* Yashil rang */
-            margin-bottom: 15px;
-        }
+    .hero h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      font-weight: 900;
+      margin-bottom: 30px;
+      background: linear-gradient(to right, var(--text-light), var(--accent-gold), var(--text-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      letter-spacing: 1px;
+      animation: titleGlow 3s infinite alternate;
+    }
 
-        .class-card h3 {
-            font-size: 1.5em;
-            margin: 0;
-            color: #007bff;
-        }
-        
-        /* Mobil qurilmalar uchun stil */
-        @media (max-width: 768px) {
-            .class-card {
-                width: 45%; /* Mobil ekranda ikkitadan joylashish */
-                min-width: 120px;
-            }
-        }
+    @keyframes titleGlow {
+      from { text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+      to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.6); }
+    }
 
-    </style>
+    .hero p {
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--text-off);
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .about-section {
+      padding: 100px 20px 80px;
+      text-align: center;
+    }
+
+    .about-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 50px;
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      max-width: 950px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      animation: cardPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    @keyframes cardPop {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .about-box::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, transparent, var(--accent-gold), transparent);
+      z-index: -1;
+      border-radius: 26px;
+      animation: borderSpin 8s linear infinite;
+    }
+
+    @keyframes borderSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .about-box h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 25px;
+      color: var(--accent-gold);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+
+    .about-box p {
+      font-size: 1.3rem;
+      color: #e0f0ff;
+      line-height: 1.8;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2.2rem, 7vw, 3.2rem);
+      margin: 90px 0 50px;
+      color: var(--accent-gold);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 120px;
+      height: 4px;
+      background: var(--accent-gold);
+      margin: 15px auto;
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 36px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    .class-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 15px;
+      background: rgba(1, 25, 60, 0.7);
+      border-radius: 24px;
+      text-decoration: none;
+      color: var(--text-light);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      border: 2px solid transparent;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .class-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 1;
+    }
+
+    .class-card:hover {
+      transform: translateY(-18px) scale(1.06);
+      border-color: var(--accent-gold);
+      box-shadow: var(--glow), 0 12px 25px rgba(0, 0, 0, 0.5);
+      z-index: 20;
+    }
+
+    .class-card:hover::before {
+      opacity: 1;
+    }
+
+    .class-card:active {
+      transform: translateY(-10px) scale(1.02);
+    }
+
+    .class-card i {
+      font-size: 4rem;
+      margin-bottom: 22px;
+      color: var(--accent-gold);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+      transition: transform 0.5s;
+    }
+
+    .class-card:hover i {
+      transform: rotate(15deg) scale(1.2);
+    }
+
+    .class-card h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 3.2rem; }
+      .hero p { font-size: 1.3rem; }
+      .about-box { padding: 30px 20px; }
+      .about-box h2 { font-size: 2rem; }
+      .about-box p { font-size: 1.1rem; }
+      .class-card { padding: 30px 10px; }
+      .class-card i { font-size: 3rem; }
+      .class-card h3 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero::before { font-size: 120px; top: -30px; }
+      .section-title { font-size: 2rem; }
+      .class-card { padding: 25px 5px; min-height: 140px; }
+      .class-card i { font-size: 2.5rem; }
+      .class-card h3 { font-size: 1.25rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="page-content">
-        
-        <header class="header-content">
-            <h1><i class="fas fa-chalkboard-teacher"></i> O'qituvchilar Bo'limi</h1>
-            <p>Iltimos, dars berishni yoki ma'lumot olishni istagan sinfni tanlang.</p>
-        </header>
+  <div class="container">
+    <section class="hero">
+      <h1><i class="fas fa-chalkboard-teacher"></i> O'QITUVCHILAR BO'LIMI</h1>
+      <p>O'zbekiston Respublikasi YMT HUB tomonidan qo'llab-quvvatlanadigan elektron ta'lim platformasi</p>
+    </section>
 
-        <section class="class-selection">
-            <a href="5sinf.html" class="class-card" data-class="5">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>5-Sinf</h3>
-            </a>
-            <a href="6sinf.html" class="class-card" data-class="6">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>6-Sinf</h3>
-            </a>
-            <a href="7sinf.html" class="class-card" data-class="7">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>7-Sinf</h3>
-            </a>
-            <a href="8sinf.html" class="class-card" data-class="8">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>8-Sinf</h3>
-            </a>
-            <a href="9sinf.html" class="class-card" data-class="9">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>9-Sinf</h3>
-            </a>
-            <a href="10sinf.html" class="class-card" data-class="10">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>10-Sinf</h3>
-            </a>
-            <a href="11sinf.html" class="class-card" data-class="11">
-                <i class="fas fa-graduation-cap"></i>
-                <h3>11-Sinf</h3>
-            </a>
-        </section>
+    <section class="about-section">
+      <div class="about-box">
+        <h2><i class="fas fa-landmark"></i> SAYT HAQIDA</h2>
+        <p>
+          Ushbu platforma O'zbekiston Respublikasi YMT HUB bilan hamkorlikda ishlab chiqilgan bo'lib,
+          o'quvchilar va har qanady insonlar uchun markazlashtirilgan elektron ta'lim tizimini taqdim etadi.
+          Siz 5-sinfdan 11-sinfgacha bo'lgan barcha fanlar bo'yicha dars ishlanmalarini,
+          metodik tavsiyalarni  va interaktiv darsliklarni bepul foydalanishingiz mumkin.
+          Barcha ma'lumotlar O'zbekiston ta'lim standartlariga moslashtirilgan.
+        </p>
+      </div>
+    </section>
 
-    </div>
+    <h2 class="section-title">SINFNI TANLANG</h2>
+    <section class="class-grid">
+      <!-- To'g'ridan-to'g'ri <a> teglarini yozib qo'yamiz — hech qanday JS to'sqinlik qilmaydi -->
+      <a href="5sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>5-SINF</h3>
+      </a>
+      <a href="6sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>6-SINF</h3>
+      </a>
+      <a href="7sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>7-SINF</h3>
+      </a>
+      <a href="8sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>8-SINF</h3>
+      </a>
+      <a href="9sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>9-SINF</h3>
+      </a>
+      <a href="10sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>10-SINF</h3>
+      </a>
+      <a href="11sinf.html" class="class-card">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>11-SINF</h3>
+      </a>
+    </section>
+  </div>
 
-    <script>
-        // ====================================
-        // JavaScript: Kirish Animatsiyasi
-        // ====================================
-        document.addEventListener('DOMContentLoaded', () => {
-            const pageContent = document.querySelector('.page-content');
-            
-            // Sahifa yuklangach, animatsiya sinfini qo'shish (CSS effektini ishga tushiradi)
-            setTimeout(() => {
-                pageContent.classList.add('loaded');
-            }, 100); 
-
-            // ====================================
-            // JavaScript: Sinf Tanlanganda Harakat (Majburiy emas, lekin qo'shimcha interaktivlik)
-            // ====================================
-            const classCards = document.querySelectorAll('.class-card');
-            
-            classCards.forEach(card => {
-                card.addEventListener('click', (event) => {
-                    // Sinf raqamini olish
-                    const sinfRaqami = card.getAttribute('data-class');
-                    
-                    // A tegining standart harakatini o'chirish (Agar JavaScript orqali boshqarilsa)
-                    // event.preventDefault(); 
-
-                    // Foydalanuvchiga xabar berish (ixtiyoriy)
-                    console.log(`${sinfRaqami}-sinf tanlandi. Navigatsiya boshlanmoqda...`);
-                    
-                    // Bu yerda siz AJAX so'rovi yoki boshqa JS harakatini qo'shishingiz mumkin
-                    
-                    // Hozirda biz to'g'ridan-to'g'ri HTML dagi `href` manziliga o'tyapmiz.
-                    // window.location.href = `sinf${sinfRaqami}.html`;
-                });
-            });
-        });
-    </script>
+  <!-- Hech qanday JavaScript navigatsiyani to'smaydi -->
+  <!-- Faqat stil animatsiyalari uchun kerak bo'lsa, oddiy hover qoldirildi -->
 </body>
 </html>
+
