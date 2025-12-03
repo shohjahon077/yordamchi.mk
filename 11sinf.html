@@ -1,390 +1,436 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="title">11-Sinf Fanlari (Yakuniy Bosqich)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <style>
-        /* ==================================== */
-        /* 1. Mavzu (Theme) Sozlamalari (CSS Variables) */
-        /* ==================================== */
-        :root {
-            /* Light Theme (Default) */
-            --primary-color: #dc3545; /* Qizil rang - Yakuniy bosqich belgisi */
-            --accent-color: #17a2b8;
-            --bg-color: #ffffff;
-            --text-color: #343a40;
-            --card-bg: #f8f9fa;
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            --border-color: #e9ecef;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-key="title">11-SINF FANLARI (YAKUNIY BOSQICH)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body.dark-theme {
-            --primary-color: #e66775; 
-            --accent-color: #20c997;
-            --bg-color: #22222a;
-            --text-color: #e0e0e0;
-            --card-bg: #33333c;
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            --border-color: #495057;
-        }
-        
-        body.blue-theme {
-            --primary-color: #17a2b8; 
-            --accent-color: #ffc107;
-            --bg-color: #f0f8ff;
-            --text-color: #1e3a5f;
-            --card-bg: #ffffff;
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            --border-color: #d8e6f1;
-        }
+    :root {
+      --bg: #09091a;
+      --primary: #ff3366;
+      --accent: #00f0ff;
+      --text: #e0f8ff;
+      --card-bg: rgba(12, 12, 30, 0.7);
+      --grid-color: rgba(255, 51, 102, 0.05);
+    }
 
-        /* ==================================== */
-        /* 2. Umumiy Stil va Kontrol Paneli */
-        /* ==================================== */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            text-align: center;
-            overflow-x: hidden;
-            line-height: 1.6;
-            transition: background-color 0.5s, color 0.5s;
-        }
-        
-        .control-panel {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-wrap: wrap; 
-            gap: 10px;
-        }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.6;
+    }
 
-        .control-btn, .lang-select {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            background-color: var(--card-bg);
-            color: var(--text-color);
-        }
-        
-        .theme-btn-group { display: flex; align-items: center; gap: 5px; }
-        .theme-color-btn {
-            width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
-            border: 2px solid var(--text-color); transition: transform 0.2s;
-        }
-        .theme-color-btn:hover { transform: scale(1.1); }
-        #light-theme-btn { background-color: white; border-color: #ccc; }
-        #dark-theme-btn { background-color: #22222a; border-color: #666; }
-        #blue-theme-btn { background-color: #17a2b8; border-color: #ccc; }
-        
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background: 
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+        linear-gradient(180deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 30px 30px;
+      animation: pan 25s linear infinite;
+      z-index: -1;
+    }
 
-        /* ==================================== */
-        /* 3. Kirish Animatsiyasi */
-        /* ==================================== */
-        .animated-item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        body.loaded .animated-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    @keyframes pan {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-30px, -30px); }
+    }
 
-        /* ==================================== */
-        /* 4. Kontent va Kartochkalar */
-        /* ==================================== */
-        .main-container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
-        .header-content h1 { font-size: 3em; color: var(--primary-color); font-weight: 700; }
-        .header-content p { font-size: 1.1em; color: var(--text-color); opacity: 0.8; margin-bottom: 40px; }
+    .control-panel {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--primary);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
 
-        .subject-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
+    .control-btn, .lang-select {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
 
-        .subject-card {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-            border-left: 5px solid var(--accent-color);
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-        /* Asosiy fanlar uchun maxsus chegara */
-        .core {
-            border-left: 5px solid var(--primary-color);
-        }
+    .control-btn:hover, .lang-select:hover {
+      background: rgba(255, 51, 102, 0.15);
+      box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+    }
 
-        .subject-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transform: translateY(-5px);
-            border-left-color: var(--primary-color);
-        }
-        
-        .subject-card h3 { color: var(--text-color); margin-top: 0; }
-        .subject-card p { color: var(--text-color); opacity: 0.7; font-size: 0.9em;}
-        .teacher-info span { display: block; font-weight: 600; color: var(--text-color); opacity: 0.9; }
+    .theme-btn-group {
+      display: flex;
+      gap: 6px;
+      margin-left: 8px;
+    }
 
-        .contact-btn {
-            display: block;
-            margin-top: 10px;
-            padding: 8px;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
+    .theme-color-btn {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid var(--text);
+    }
 
-        .contact-btn:hover { background-color: #b32a39; }
-        
-        /* Mobil uchun sozlash */
-        @media (max-width: 600px) {
-            .control-panel { position: static; padding: 20px; display: flex; flex-direction: column; }
-            .main-container { padding-top: 20px; }
-        }
-    </style>
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 140px 30px 60px;
+    }
+
+    .header-content {
+      text-align: center;
+      margin-bottom: 70px;
+    }
+
+    .header-content h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.8rem, 9vw, 4.5rem);
+      color: var(--primary);
+      text-shadow: 0 0 20px rgba(255, 51, 102, 0.7);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .header-content p {
+      font-size: 1.2rem;
+      color: var(--accent);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 36px;
+    }
+
+    .subject-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .subject-card.core {
+      border: 1px solid var(--primary);
+    }
+
+    .subject-card::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), var(--accent), var(--primary));
+      z-index: -1;
+      border-radius: 18px;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 25px rgba(255, 51, 102, 0.5);
+      z-index: 10;
+    }
+
+    .subject-card:hover::before {
+      opacity: 1;
+    }
+
+    .subject-card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .subject-card.core h3 {
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+    }
+
+    .subject-card p {
+      font-size: 1.05rem;
+      color: #b0e0ff;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .teacher-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      background: linear-gradient(90deg, var(--primary), #ff6699);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 51, 102, 0.7);
+    }
+
+    .contact-btn i {
+      margin-right: 6px;
+    }
+
+    .animated-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+
+    .loaded .animated-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .control-panel { position: static; margin: 20px auto; width: fit-content; }
+      .main-container { padding: 100px 20px 40px; }
+      .subject-grid { grid-template-columns: 1fr; }
+      .header-content h1 { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .main-container { padding: 90px 15px 30px; }
+      .subject-card { padding: 22px; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="control-panel animated-item" style="transition-delay: 0.1s;">
-        <div class="control-btn" data-key="theme_label" style="display: flex; align-items: center; justify-content: space-between;">
-            Mavzu:
-            <div class="theme-btn-group">
-                <div id="light-theme-btn" class="theme-color-btn" onclick="setTheme('light-theme')"></div>
-                <div id="dark-theme-btn" class="theme-color-btn" onclick="setTheme('dark-theme')"></div>
-                <div id="blue-theme-btn" class="theme-color-btn" onclick="setTheme('blue-theme')"></div>
-            </div>
-        </div>
-        <a href="sinf.html">
-        <button id="back-btn" class="control-btn" onclick="history.back()">
-            <i class="fas fa-arrow-left"></i> <span data-key="back">Ortga Qaytish</span>
-        </button></a>
-        
-        <select id="lang-select" class="lang-select">
-            <option value="uzb">O'zbekcha</option>
-            <option value="kor">한국어</option>
-            <option value="rus">Русский</option>
-            <option value="eng">English</option>
-            <option value="chi">中文</option>
-        </select>
+  <div class="control-panel animated-item" style="transition-delay: 0.1s;">
+    <div class="control-btn" style="display: flex; align-items: center; gap: 8px;">
+      <span data-key="theme_label">THEME:</span>
+      <div class="theme-btn-group">
+        <div id="light-theme-btn" class="theme-color-btn" style="background:white;" onclick="setTheme('light-theme')"></div>
+        <div id="dark-theme-btn" class="theme-color-btn" style="background:#222;" onclick="setTheme('dark-theme')"></div>
+        <div id="blue-theme-btn" class="theme-color-btn" style="background:#17a2b8;" onclick="setTheme('blue-theme')"></div>
+      </div>
     </div>
+    
+    <button class="control-btn" onclick="history.back()">
+      <i class="fas fa-arrow-left"></i> <span data-key="back">BACK</span>
+    </button>
+    
+    <select id="lang-select" class="lang-select">
+      <option value="uzb">O'ZB</option>
+      <option value="kor">KOR</option>
+      <option value="rus">RUS</option>
+      <option value="eng">ENG</option>
+      <option value="chi">CHI</option>
+    </select>
+  </div>
 
-    <div class="main-container">
-        
-        <header class="header-content">
-            <h1 class="animated-item" style="transition-delay: 0.2s;" data-key="main_header">11-Sinf Dars Fanlari Ro'yxati (Imtihon Bosqichi)</h1>
-            <p class="animated-item" style="transition-delay: 0.3s;" data-key="subheader">Oliy o‘quv yurtlariga tayyorgarlik, bilimlar sintezi va ixtisoslashuvning yakuniy bosqichi.</p>
-        </header>
+  <div class="main-container">
+    <header class="header-content">
+      <h1 class="animated-item" style="transition-delay: 0.2s;" data-key="main_header">11-SINF FANLARI (IMTIHON BOSQICHI)</h1>
+      <p class="animated-item" style="transition-delay: 0.3s;" data-key="subheader">Oliy o‘quv yurtlariga tayyorgarlik, bilimlar sintezi va ixtisoslashuvning yakuniy bosqichi.</p>
+    </header>
 
-        <section class="subject-grid">
-            
-            <div class="subject-card core animated-item" style="transition-delay: 0.4s;"><h3 data-key="sub_1">Ona tili va adabiyot</h3><p data-key="sub_1_desc">Adabiy janrlarning chuqur tahlili, ijodiy insholar yozish va tanqidiy nutq qobiliyatini rivojlantirish.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Dildora Karimova</span><a href="onatili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card core animated-item" style="transition-delay: 0.5s;"><h3 data-key="sub_2">Rus tili</h3><p data-key="sub_2_desc">Akademik muloqot, ilmiy matnlar ustida ishlash va rasmiy hujjatlarni tahlil qilish (ta’lim tiliga qarab).</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Nodira Saidova</span><a href="rustili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            
-            <div class="subject-card core animated-item" style="transition-delay: 0.6s;"><h3 data-key="sub_3">Algebra va analiz asoslari</h3><p data-key="sub_3_desc">Limitlar, hosila, integralga kirish, yuqori darajali funksiyalar va imtihon tipidagi masalalar.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Alisher Hamidov</span><a href="algebra11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card core animated-item" style="transition-delay: 0.7s;"><h3 data-key="sub_4">Geometriya</h3><p data-key="sub_4_desc">Fazoviy o‘lchovlar, stereometriya, geometrik tengsizliklar va murakkab masalalarni yechish usullari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Sardor Azimov</span><a href="geometriya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            
-            <div class="subject-card core animated-item" style="transition-delay: 0.8s;"><h3 data-key="sub_5">Fizika</h3><p data-key="sub_5_desc">Kvant fizikasi, nisbiylik nazariyasi, astrofizika asoslari va oliy o‘quv yurtlari kirish testlariga tayyorgarlik.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Javlon Ibragimov</span><a href="fizika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card core animated-item" style="transition-delay: 0.9s;"><h3 data-key="sub_6">Kimyo</h3><p data-key="sub_6_desc">Kimyoviy hisob-kitoblar, polimerlar, yuqori molekulyar birikmalar va kimyoning amaliyotdagi o‘rni.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Lola Karimova</span><a href="kimyo11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card core animated-item" style="transition-delay: 1.0s;"><h3 data-key="sub_7">Biologiya</h3><p data-key="sub_7_desc">Hujayra biologiyasi, genetik muhandislik, evolyutsiya nazariyasi va tibbiy-ekologik masalalar.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Malika Oripova</span><a href="bialogiya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            
-            <div class="subject-card animated-item" style="transition-delay: 1.1s;"><h3 data-key="sub_8">Ekonomika asoslari / Iqtisodiy bilimlar</h3><p data-key="sub_8_desc">Makro va mikro iqtisodiyot asoslari, biznesni rejalashtirish, bozor mexanizmlari va moliya savodxonligi.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Botir Ergashev</span><a href="iqdisod11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            
-            <div class="subject-card animated-item" style="transition-delay: 1.2s;"><h3 data-key="sub_9">Tarix</h3><p data-key="sub_9_desc">Jahon sivilizatsiyalari, O‘zbekistonning mustaqillik davri tarixi va jahonning siyosiy kartasi tahlili.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Shavkat Rasulov</span><a href="tarix11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card animated-item" style="transition-delay: 1.3s;"><h3 data-key="sub_10">Huquq asoslari</h3><p data-key="sub_10_desc">Konstitutsiyaviy huquq, davlat boshqaruvi tizimi va xalqaro huquqning asosiy prinsiplari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Gulzoda G'anieva</span><a href="huquq11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            
-            <div class="subject-card animated-item" style="transition-delay: 1.4s;"><h3 data-key="sub_11">Informatika va axborot texnologiyalari</h3><p data-key="sub_11_desc">Dasturlash (Web/Mobile), Kiberxavfsizlik asoslari va ma’lumotlar bazasini boshqarishning murakkabliklari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Shohrux Rahimov</span><a href="infarmatika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card animated-item" style="transition-delay: 1.5s;"><h3 data-key="sub_12">Robototexnika / Sun’iy intellekt asoslari</h3><p data-key="sub_12_desc">Mashinani o'qitish (Machine Learning) va neyron tarmoqlar (Neural Networks)ning nazariy asoslari (IT maktablar uchun).</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Shohrux Rahimov</span><a href="Robototexnika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+    <section class="subject-grid">
+      <div class="subject-card core animated-item" style="transition-delay: 0.4s;">
+        <h3 data-key="sub_1">Ona tili va adabiyot</h3>
+        <p data-key="sub_1_desc">Adabiy janrlarning chuqur tahlili, ijodiy insholar yozish va tanqidiy nutq qobiliyatini rivojlantirish.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="onatili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
 
-            <div class="subject-card animated-item" style="transition-delay: 1.6s;"><h3 data-key="sub_13">Ingliz tili</h3><p data-key="sub_13_desc">C1 darajasiga intilish, akademik maqolalar yozish va ixtisoslashgan sohada erkin professional muloqot.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Yulduz Axmedova</span><a href="ingliztili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card animated-item" style="transition-delay: 1.7s;"><h3 data-key="sub_14">Psixologiya / Kasbiy yo‘naltirish</h3><p data-key="sub_14_desc">Shaxsiy samaradorlikni oshirish, stressni boshqarish va oliy ta'lim muassasasini ongli tanlash.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Jasur Maxkamov</span><a href="kasbyunalish11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
-            <div class="subject-card animated-item" style="transition-delay: 1.8s;"><h3 data-key="sub_15">Jismoniy tarbiya va Hayotiy ko‘nikmalar</h3><p data-key="sub_15_desc">Sog‘lom turmush tarzi, birinchi tibbiy yordam ko‘nikmalari va ijtimoiy moslashuv strategiyalari.</p><div class="teacher-info"><span data-key="teacher_label">O'qituvchi:</span> <span data-key="teacher_name">Erkin Voxidov</span><a href="jstarbiya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> @shohcore bilan bog'lanish</a></div></div>
+      <div class="subject-card core animated-item" style="transition-delay: 0.5s;">
+        <h3 data-key="sub_2">Rus tili</h3>
+        <p data-key="sub_2_desc">Akademik muloqot, ilmiy matnlar ustida ishlash va rasmiy hujjatlarni tahlil qilish (ta’lim tiliga qarab).</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="rustili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
 
-        </section>
+      <div class="subject-card core animated-item" style="transition-delay: 0.6s;">
+        <h3 data-key="sub_3">Algebra va analiz asoslari</h3>
+        <p data-key="sub_3_desc">Limitlar, hosila, integralga kirish, yuqori darajali funksiyalar va imtihon tipidagi masalalar.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="algebra11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
 
-    </div>
+      <div class="subject-card core animated-item" style="transition-delay: 0.7s;">
+        <h3 data-key="sub_4">Geometriya</h3>
+        <p data-key="sub_4_desc">Fazoviy o‘lchovlar, stereometriya, geometrik tengsizliklar va murakkab masalalarni yechish usullari.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="geometriya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
 
-    <script>
-        // ====================================
-        // JavaScript: Tarjimalar va Funksiyalar
-        // ====================================
-        
-        const translations = {
-            uzb: {
-                title: "11-Sinf Fanlari (Yakuniy Bosqich)", back: "Ortga Qaytish", theme_label: "Mavzu:", main_header: "11-Sinf Dars Fanlari Ro'yxati (Imtihon Bosqichi)", subheader: "Oliy o‘quv yurtlariga tayyorgarlik, bilimlar sintezi va ixtisoslashuvning yakuniy bosqichi.", teacher_label: "O'qituvchi:", contact_btn: " bilan bog'lanish",
-                sub_1: "Ona tili va adabiyot", sub_1_desc: "Adabiy janrlarning chuqur tahlili, ijodiy insholar yozish va tanqidiy nutq qobiliyatini rivojlantirish.",
-                sub_2: "O‘zbek tili / Rus tili", sub_2_desc: "Akademik muloqot, ilmiy matnlar ustida ishlash va rasmiy hujjatlarni tahlil qilish (ta’lim tiliga qarab).",
-                sub_3: "Algebra va analiz asoslari", sub_3_desc: "Limitlar, hosila, integralga kirish, yuqori darajali funksiyalar va imtihon tipidagi masalalar.",
-                sub_4: "Geometriya", sub_4_desc: "Fazoviy o‘lchovlar, stereometriya, geometrik tengsizliklar va murakkab masalalarni yechish usullari.",
-                sub_5: "Fizika", sub_5_desc: "Kvant fizikasi, nisbiylik nazariyasi, astrofizika asoslari va oliy o‘quv yurtlari kirish testlariga tayyorgarlik.",
-                sub_6: "Kimyo", sub_6_desc: "Kimyoviy hisob-kitoblar, polimerlar, yuqori molekulyar birikmalar va kimyoning amaliyotdagi o‘rni.",
-                sub_7: "Biologiya", sub_7_desc: "Hujayra biologiyasi, genetik muhandislik, evolyutsiya nazariyasi va tibbiy-ekologik masalalar.",
-                sub_8: "Ekonomika asoslari / Iqtisodiy bilimlar", sub_8_desc: "Makro va mikro iqtisodiyot asoslari, biznesni rejalashtirish, bozor mexanizmlari va moliya savodxonligi.",
-                sub_9: "Tarix", sub_9_desc: "Jahon sivilizatsiyalari, O‘zbekistonning mustaqillik davri tarixi va jahonning siyosiy kartasi tahlili.",
-                sub_10: "Huquq asoslari", sub_10_desc: "Konstitutsiyaviy huquq, davlat boshqaruvi tizimi va xalqaro huquqning asosiy prinsiplari.",
-                sub_11: "Informatika va axborot texnologiyalari", sub_11_desc: "Dasturlash (Web/Mobile), Kiberxavfsizlik asoslari va ma’lumotlar bazasini boshqarishning murakkabliklari.",
-                sub_12: "Robototexnika / Sun’iy intellekt asoslari", sub_12_desc: "Mashinani o'qitish (Machine Learning) va neyron tarmoqlar (Neural Networks)ning nazariy asoslari (IT maktablar uchun).",
-                sub_13: "Chet tili (Ingliz/Rus)", sub_13_desc: "C1 darajasiga intilish, akademik maqolalar yozish va ixtisoslashgan sohada erkin professional muloqot.",
-                sub_14: "Psixologiya / Kasbiy yo‘naltirish", sub_14_desc: "Shaxsiy samaradorlikni oshirish, stressni boshqarish va oliy ta'lim muassasasini ongli tanlash.",
-                sub_15: "Jismoniy tarbiya va Hayotiy ko‘nikmalar", sub_15_desc: "Sog‘lom turmush tarzi, birinchi tibbiy yordam ko‘nikmalari va ijtimoiy moslashuv strategiyalari.",
-            },
-            kor: {
-                title: "11학년 과목 (최종 단계)", back: "뒤로 가기", theme_label: "테마:", main_header: "11학년 과목 목록 (시험 단계)", subheader: "고등 교육 기관 준비, 지식 통합 및 전문화의 최종 단계.", teacher_label: "교사:", contact_btn: " 에게 연락하기",
-                sub_1: "모국어 및 문학", sub_1_desc: "문학 장르 심층 분석, 창의적인 에세이 작성 및 비판적 말하기 능력 개발.",
-                sub_2: "우즈벡어 / 러시아어", sub_2_desc: "학술 커뮤니케이션, 과학 텍스트 작업 및 공식 문서 분석 (교육 언어에 따라).",
-                sub_3: "대수 및 해석학 기초", sub_3_desc: "극한, 미분, 적분 입문, 고차 함수 및 시험 유형 문제.",
-                sub_4: "기하", sub_4_desc: "공간 측정, 입체 기하학, 기하학적 부등식 및 복잡한 문제 해결 방법.",
-                sub_5: "물리", sub_5_desc: "양자 물리학, 상대성 이론, 천체 물리학 기초 및 고등 교육 기관 입학 시험 준비.",
-                sub_6: "화학", sub_6_desc: "화학 계산, 고분자, 고분자 화합물 및 화학의 실제 응용.",
-                sub_7: "생물", sub_7_desc: "세포 생물학, 유전 공학, 진화론 및 의료-생태학적 문제.",
-                sub_8: "경제학 기초 / 경제 지식", sub_8_desc: "거시 및 미시 경제학 기초, 사업 계획, 시장 메커니즘 및 금융 이해력.",
-                sub_9: "역사", sub_9_desc: "세계 문명, 우즈베키스탄 독립 시대 역사 및 세계 정치 지도 분석.",
-                sub_10: "법의 기초", sub_10_desc: "헌법, 국가 통치 시스템 및 국제법의 기본 원칙.",
-                sub_11: "정보학 및 정보 기술", sub_11_desc: "프로그래밍 (웹/모바일), 사이버 보안 기초 및 데이터베이스 관리의 복잡성.",
-                sub_12: "로봇 공학 / AI 기초", sub_12_desc: "기계 학습 (Machine Learning) 및 신경망 (Neural Networks)의 이론적 기초 (IT 학교용).",
-                sub_13: "외국어 (영어/러시아어)", sub_13_desc: "C1 수준 목표, 학술 기사 작성 및 전문 분야에서 자유로운 전문적 의사소통.",
-                sub_14: "심리학 / 진로 지도", sub_14_desc: "개인 효율성 향상, 스트레스 관리 및 고등 교육 기관 의식적인 선택.",
-                sub_15: "체육 및 생활 기술", sub_15_desc: "건강한 생활 방식, 응급 처치 기술 및 사회 적응 전략.",
-            },
-            rus: {
-                title: "Предметы 11 класса (Финальный этап)", back: "Назад", theme_label: "Тема:", main_header: "Список предметов для 11-го класса (Этап Экзаменов)", subheader: "Подготовка к вузам, синтез знаний и завершающий этап специализации.", teacher_label: "Учитель:", contact_btn: " связаться",
-                sub_1: "Родной язык и литература", sub_1_desc: "Глубокий анализ литературных жанров, написание творческих эссе и развитие навыков критического мышления.",
-                sub_2: "Узбекский / Русский язык", sub_2_desc: "Академическое общение, работа с научными текстами и анализ официальных документов (в зависимости от языка обучения).",
-                sub_3: "Алгебра и основы анализа", sub_3_desc: "Пределы, введение в производную и интеграл, функции высших степеней и задачи экзаменационного типа.",
-                sub_4: "Геометрия", sub_4_desc: "Пространственные измерения, стереометрия, геометрические неравенства и методы решения сложных задач.",
-                sub_5: "Физика", sub_5_desc: "Квантовая физика, теория относительности, основы астрофизики и подготовка к вступительным тестам в вузы.",
-                sub_6: "Химия", sub_6_desc: "Химические расчеты, полимеры, высокомолекулярные соединения и практическое значение химии.",
-                sub_7: "Биология", sub_7_desc: "Клеточная биология, генная инженерия, теория эволюции и медико-экологические вопросы.",
-                sub_8: "Основы экономики / Экономические знания", sub_8_desc: "Основы макро- и микроэкономики, бизнес-планирование, рыночные механизмы и финансовая грамотность.",
-                sub_9: "История", sub_9_desc: "Мировые цивилизации, история Узбекистана периода независимости и анализ политической карты мира.",
-                sub_10: "Основы права", sub_10_desc: "Конституционное право, система государственного управления и основные принципы международного права.",
-                sub_11: "Информатика и ИТ", sub_11_desc: "Программирование (Web/Mobile), основы кибербезопасности и сложности управления базами данных.",
-                sub_12: "Робототехника / Основы ИИ", sub_12_desc: "Теоретические основы машинного обучения (Machine Learning) и нейронных сетей (Neural Networks) (Для IT-школ).",
-                sub_13: "Иностранный язык (Англ./Рус.)", sub_13_desc: "Стремление к уровню C1, написание академических статей и свободное профессиональное общение в специализированной сфере.",
-                sub_14: "Психология / Профориентация", sub_14_desc: "Повышение личной эффективности, управление стрессом и осознанный выбор вуза.",
-                sub_15: "Физическая культура и Жизненные навыки", sub_15_desc: "Здоровый образ жизни, навыки первой медицинской помощи и стратегии социальной адаптации.",
-            },
-            eng: {
-                title: "11th Grade Subjects (Final Stage)", back: "Go Back", theme_label: "Theme:", main_header: "List of 11th Grade Subjects (Exam Stage)", subheader: "Preparation for higher education, knowledge synthesis, and the final stage of specialization.", teacher_label: "Teacher:", contact_btn: " contact",
-                sub_1: "Native Language and Literature", sub_1_desc: "In-depth analysis of literary genres, creative essay writing, and developing critical discourse skills.",
-                sub_2: "Uzbek / Russian Language", sub_2_desc: "Academic communication, working with scientific texts, and analysis of official documents (based on language of instruction).",
-                sub_3: "Algebra and Basics of Analysis", sub_3_desc: "Limits, introduction to derivatives and integrals, higher-order functions, and exam-type problems.",
-                sub_4: "Geometry", sub_4_desc: "Spatial measurements, stereometry, geometric inequalities, and methods for solving complex problems.",
-                sub_5: "Physics", sub_5_desc: "Quantum physics, theory of relativity, basics of astrophysics, and preparation for university entrance exams.",
-                sub_6: "Chemistry", sub_6_desc: "Chemical calculations, polymers, high-molecular compounds, and the practical role of chemistry.",
-                sub_7: "Biology", sub_7_desc: "Cell biology, genetic engineering, evolutionary theory, and medical-ecological issues.",
-                sub_8: "Fundamentals of Economics / Economic Knowledge", sub_8_desc: "Basics of macro and microeconomics, business planning, market mechanisms, and financial literacy.",
-                sub_9: "History", sub_9_desc: "World civilizations, history of Uzbekistan during independence, and analysis of the world's political map.",
-                sub_10: "Basics of Law", sub_10_desc: "Constitutional law, government system, and fundamental principles of international law.",
-                sub_11: "Informatics and Information Technologies", sub_11_desc: "Programming (Web/Mobile), fundamentals of Cybersecurity, and complexities of database management.",
-                sub_12: "Robotics / AI Fundamentals", sub_12_desc: "Theoretical foundations of Machine Learning and Neural Networks (For IT schools).",
-                sub_13: "Foreign Language (Eng/Rus)", sub_13_desc: "Aiming for C1 level, academic article writing, and free professional communication in a specialized field.",
-                sub_14: "Psychology / Career Guidance", sub_14_desc: "Enhancing personal effectiveness, stress management, and making a conscious choice of a university.",
-                sub_15: "Physical Education and Life Skills", sub_15_desc: "Healthy lifestyle, first aid skills, and social adaptation strategies.",
-            },
-            chi: {
-                title: "11年级科目 (最终阶段)", back: "返回", theme_label: "主题:", main_header: "11年级科目列表 (考试阶段)", subheader: "高等教育准备、知识综合和专业化的最后阶段。", teacher_label: "老师:", contact_btn: " 联系",
-                sub_1: "母语和文学", sub_1_desc: "文学体裁的深入分析、创意作文写作和批判性话语能力的培养。",
-                sub_2: "乌兹别克语 / 俄语", sub_2_desc: "学术交流、科学文本处理和正式文件分析（取决于教学语言）。",
-                sub_3: "代数与分析学基础", sub_3_desc: "极限、导数和积分入门、高阶函数和考试类型问题。",
-                sub_4: "几何", sub_4_desc: "空间测量、立体几何、几何不等式和复杂问题的解决方法。",
-                sub_5: "物理", sub_5_desc: "量子物理学、相对论、天体物理学基础和高等教育入学考试准备。",
-                sub_6: "化学", sub_6_desc: "化学计算、聚合物、高分子化合物和化学的实际作用。",
-                sub_7: "生物", sub_7_desc: "细胞生物学、基因工程、进化论和医疗-生态问题。",
-                sub_8: "经济学基础 / 经济知识", sub_8_desc: "宏观和微观经济学基础、商业规划、市场机制和金融素养。",
-                sub_9: "历史", sub_9_desc: "世界文明、乌兹别克斯坦独立时期的历史和世界政治地图分析。",
-                sub_10: "法律基础", sub_10_desc: "宪法、国家管理制度和国际法的基本原则。",
-                sub_11: "信息学与信息技术", sub_11_desc: "编程（Web/Mobile）、网络安全基础和数据库管理的复杂性。",
-                sub_12: "机器人技术 / AI基础", sub_12_desc: "机器学习 (Machine Learning) 和神经网络 (Neural Networks) 的理论基础（面向 IT 学校）。",
-                sub_13: "外语 (英/俄)", sub_13_desc: "目标 C1 级、学术文章写作和专业领域内的自由专业交流。",
-                sub_14: "心理学 / 职业指导", sub_14_desc: "提高个人效率、压力管理和有意识地选择高等教育机构。",
-                sub_15: "体育和生活技能", sub_15_desc: "健康生活方式、急救技能和社会适应策略。",
-            }
-        };
+      <div class="subject-card core animated-item" style="transition-delay: 0.8s;">
+        <h3 data-key="sub_5">Fizika</h3>
+        <p data-key="sub_5_desc">Kvant fizikasi, nisbiylik nazariyasi, astrofizika asoslari va oliy o‘quv yurtlari kirish testlariga tayyorgarlik.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="fizika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
 
-        // 1. Mavzu Almashtirish Funksiyasi (To'g'ri ishlaydigan versiya)
-        function setTheme(themeName) {
-            document.body.className = themeName;
-            localStorage.setItem('theme', themeName);
+      <div class="subject-card core animated-item" style="transition-delay: 0.9s;">
+        <h3 data-key="sub_6">Kimyo</h3>
+        <p data-key="sub_6_desc">Kimyoviy hisob-kitoblar, polimerlar, yuqori molekulyar birikmalar va kimyoning amaliyotdagi o‘rni.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="kimyo11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card core animated-item" style="transition-delay: 1.0s;">
+        <h3 data-key="sub_7">Biologiya</h3>
+        <p data-key="sub_7_desc">Hujayra biologiyasi, genetik muhandislik, evolyutsiya nazariyasi va tibbiy-ekologik masalalar.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="bialogiya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.1s;">
+        <h3 data-key="sub_8">Ekonomika asoslari / Iqtisodiy bilimlar</h3>
+        <p data-key="sub_8_desc">Makro va mikro iqtisodiyot asoslari, biznesni rejalashtirish, bozor mexanizmlari va moliya savodxonligi.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="iqdisod11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.2s;">
+        <h3 data-key="sub_9">Tarix</h3>
+        <p data-key="sub_9_desc">Jahon sivilizatsiyalari, O‘zbekistonning mustaqillik davri tarixi va jahonning siyosiy kartasi tahlili.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="tarix11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.3s;">
+        <h3 data-key="sub_10">Huquq asoslari</h3>
+        <p data-key="sub_10_desc">Konstitutsiyaviy huquq, davlat boshqaruvi tizimi va xalqaro huquqning asosiy prinsiplari.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="huquq11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.4s;">
+        <h3 data-key="sub_11">Informatika va axborot texnologiyalari</h3>
+        <p data-key="sub_11_desc">Dasturlash (Web/Mobile), Kiberxavfsizlik asoslari va ma’lumotlar bazasini boshqarishning murakkabliklari.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="infarmatika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.5s;">
+        <h3 data-key="sub_12">Robototexnika / Sun’iy intellekt asoslari</h3>
+        <p data-key="sub_12_desc">Mashinani o'qitish (Machine Learning) va neyron tarmoqlar (Neural Networks)ning nazariy asoslari (IT maktablar uchun).</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="Robototexnika11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.6s;">
+        <h3 data-key="sub_13">Ingliz tili</h3>
+        <p data-key="sub_13_desc">C1 darajasiga intilish, akademik maqolalar yozish va ixtisoslashgan sohada erkin professional muloqot.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="ingliztili11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.7s;">
+        <h3 data-key="sub_14">Psixologiya / Kasbiy yo‘naltirish</h3>
+        <p data-key="sub_14_desc">Shaxsiy samaradorlikni oshirish, stressni boshqarish va oliy ta'lim muassasasini ongli tanlash.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="kasbyunalish11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+
+      <div class="subject-card animated-item" style="transition-delay: 1.8s;">
+        <h3 data-key="sub_15">Jismoniy tarbiya va Hayotiy ko‘nikmalar</h3>
+        <p data-key="sub_15_desc">Sog‘lom turmush tarzi, birinchi tibbiy yordam ko‘nikmalari va ijtimoiy moslashuv strategiyalari.</p>
+        <div class="teacher-info"><i class="fas fa-robot"></i> <span data-key="teacher_label">AI Chatbot:</span></div>
+        <a href="jstarbiya11.html" target="_blank" class="contact-btn" data-key="contact_btn"><i class="fab fa-telegram-plane"></i> AI BOG'LANISH</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const translations = {
+      uzb: {
+        title: "11-SINF FANLARI (YAKUNIY BOSQICH)", back: "ORTGA", theme_label: "MAVZU:", main_header: "11-SINF FANLARI (IMTIHON BOSQICHI)", subheader: "Oliy o‘quv yurtlariga tayyorgarlik, bilimlar sintezi va ixtisoslashuvning yakuniy bosqichi.", teacher_label: "AI Chatbot:", contact_btn: "AI BOG'LANISH",
+        sub_1: "Ona tili va adabiyot", sub_1_desc: "Adabiy janrlarning chuqur tahlili, ijodiy insholar yozish va tanqidiy nutq qobiliyatini rivojlantirish.",
+        sub_2: "O‘zbek tili / Rus tili", sub_2_desc: "Akademik muloqot, ilmiy matnlar ustida ishlash va rasmiy hujjatlarni tahlil qilish (ta’lim tiliga qarab).",
+        sub_3: "Algebra va analiz asoslari", sub_3_desc: "Limitlar, hosila, integralga kirish, yuqori darajali funksiyalar va imtihon tipidagi masalalar.",
+        sub_4: "Geometriya", sub_4_desc: "Fazoviy o‘lchovlar, stereometriya, geometrik tengsizliklar va murakkab masalalarni yechish usullari.",
+        sub_5: "Fizika", sub_5_desc: "Kvant fizikasi, nisbiylik nazariyasi, astrofizika asoslari va oliy o‘quv yurtlari kirish testlariga tayyorgarlik.",
+        sub_6: "Kimyo", sub_6_desc: "Kimyoviy hisob-kitoblar, polimerlar, yuqori molekulyar birikmalar va kimyoning amaliyotdagi o‘rni.",
+        sub_7: "Biologiya", sub_7_desc: "Hujayra biologiyasi, genetik muhandislik, evolyutsiya nazariyasi va tibbiy-ekologik masalalar.",
+        sub_8: "Ekonomika asoslari / Iqtisodiy bilimlar", sub_8_desc: "Makro va mikro iqtisodiyot asoslari, biznesni rejalashtirish, bozor mexanizmlari va moliya savodxonligi.",
+        sub_9: "Tarix", sub_9_desc: "Jahon sivilizatsiyalari, O‘zbekistonning mustaqillik davri tarixi va jahonning siyosiy kartasi tahlili.",
+        sub_10: "Huquq asoslari", sub_10_desc: "Konstitutsiyaviy huquq, davlat boshqaruvi tizimi va xalqaro huquqning asosiy prinsiplari.",
+        sub_11: "Informatika va axborot texnologiyalari", sub_11_desc: "Dasturlash (Web/Mobile), Kiberxavfsizlik asoslari va ma’lumotlar bazasini boshqarishning murakkabliklari.",
+        sub_12: "Robototexnika / Sun’iy intellekt asoslari", sub_12_desc: "Mashinani o'qitish (Machine Learning) va neyron tarmoqlar (Neural Networks)ning nazariy asoslari (IT maktablar uchun).",
+        sub_13: "Chet tili", sub_13_desc: "C1 darajasiga intilish, akademik maqolalar yozish va ixtisoslashgan sohada erkin professional muloqot.",
+        sub_14: "Psixologiya / Kasbiy yo‘naltirish", sub_14_desc: "Shaxsiy samaradorlikni oshirish, stressni boshqarish va oliy ta'lim muassasasini ongli tanlash.",
+        sub_15: "Jismoniy tarbiya va Hayotiy ko‘nikmalar", sub_15_desc: "Sog‘lom turmush tarzi, birinchi tibbiy yordam ko‘nikmalari va ijtimoiy moslashuv strategiyalari.",
+      },
+      kor: { /* ... */ },
+      rus: { /* ... */ },
+      eng: { /* ... */ },
+      chi: { /* ... */ }
+    };
+
+    function setTheme(themeName) {
+      localStorage.setItem('theme', themeName);
+    }
+
+    function updateContent(lang) {
+      const tr = translations[lang];
+      if (!tr) return;
+      document.title = tr.title;
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.getAttribute('data-key');
+        if (tr[key]) {
+          el.textContent = tr[key];
         }
+      });
+    }
 
-        // 2. Til Almashtirish Funksiyasi
-        function updateContent(lang) {
-            const tr = translations[lang];
-            if (!tr) return;
-
-            // Umumiy matnlar
-            document.title = tr.title;
-            document.querySelector('[data-key="title"]').textContent = tr.title;
-            document.querySelector('[data-key="back"]').textContent = tr.back;
-            
-            // Mavzu tugmasidagi matnni yangilash
-            const themeLabel = document.querySelector('[data-key="theme_label"]');
-            if (themeLabel && themeLabel.childNodes.length > 0) {
-                 themeLabel.childNodes[0].nodeValue = tr.theme_label + ' '; 
-            }
-
-            document.querySelector('[data-key="main_header"]').textContent = tr.main_header;
-            document.querySelector('[data-key="subheader"]').textContent = tr.subheader;
-            document.querySelectorAll('[data-key="teacher_label"]').forEach(span => span.textContent = tr.teacher_label);
-            
-            // Fan kartochkalarini yangilash (15 tagacha)
-            for(let i = 1; i <= 15; i++) {
-                const subTitle = document.querySelector(`[data-key="sub_${i}"]`);
-                const subDesc = document.querySelector(`[data-key="sub_${i}_desc"]`);
-                if (subTitle) subTitle.textContent = tr[`sub_${i}`];
-                if (subDesc) subDesc.textContent = tr[`sub_${i}_desc`];
-            }
-
-            // Kontakt tugmalari
-            document.querySelectorAll('.contact-btn').forEach(btn => {
-                const tgHandle = btn.href.split('/').pop();
-                btn.innerHTML = `<i class="fab fa-telegram-plane"></i> @${tgHandle}` + tr.contact_btn;
-            });
-        }
-
-
-        // 3. Asosiy Yuklanish Funksiyasi
-        document.addEventListener('DOMContentLoaded', () => {
-            const body = document.body;
-            const animatedItems = document.querySelectorAll('.animated-item');
-            const langSelect = document.getElementById('lang-select');
-            
-            // Kirish animatsiyasini ishga tushirish
-            let delay = 0.1;
-            const delayStep = 0.15;
-            animatedItems.forEach((item, index) => {
-                item.style.transitionDelay = `${delay + (index * delayStep)}s`;
-            });
-            setTimeout(() => {
-                body.classList.add('loaded');
-            }, 100); 
-
-            // Mavzu Holatini O'rnatish
-            const savedTheme = localStorage.getItem('theme');
-            setTheme(savedTheme || 'light-theme'); 
-
-            // Til Almashtirishni Boshlash
-            updateContent(langSelect.value); 
-            langSelect.addEventListener('change', (event) => {
-                updateContent(event.target.value);
-            });
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => document.body.classList.add('loaded'), 100);
+      const saved = localStorage.getItem('theme') || 'light-theme';
+      setTheme(saved);
+      const langSelect = document.getElementById('lang-select');
+      updateContent(langSelect.value);
+      langSelect.addEventListener('change', e => updateContent(e.target.value));
+    });
+  </script>
 </body>
 </html>
