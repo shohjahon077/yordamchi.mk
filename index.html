@@ -607,6 +607,68 @@
             border-radius: 50%;
             box-shadow: 0 0 6px #4cff88;
         }
+        #sponsorAd {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 9998;
+    color: white;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  #sponsorAd.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #sponsorAd h2 {
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    animation: pulse 2s infinite;
+  }
+  #sponsorAd p {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    max-width: 600px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  #goToDonat {
+    background: #ffcc00;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  #goToDonat:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  #skipAd {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  #skipAd:hover {
+    background: rgba(255,255,255,0.3);
+  }
     </style>
 </head>
 <body id="body" class="theme-default">
@@ -619,6 +681,18 @@
         <div class="progress-bar"><div class="progress-fill"></div></div>
         <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
     </div>
+    
+    
+    
+<div id="sponsorAd" onclick="window.location.href='donat.html'">
+  <h2>🌟 YMT HUB ga homiy bo'ling!</h2>
+  <p>Sayt rivojlanishiga yordam berish uchun xayriya qiling. Har bir homiylik — yangi imkoniyat!</p>
+  <button id="goToDonat" aria-label="Homiylik qilish">Homiy bo'lish 💖</button>
+  <button id="skipAd" aria-label="Reklamani o'tkazib yuborish">⏩ O'tkazib yuborish</button>
+</div>
+    
+    
+    
     <div id="main-content">
         <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
         <nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
@@ -782,6 +856,61 @@
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+  
+      
+  function showSponsorAd() {
+    const ad = document.getElementById('sponsorAd');
+    const now = Date.now();
+    const lastShown = localStorage.getItem('lastSponsorAdTime');
+    const oneMinute = 60 * 1000; // 60,000 ms
+
+    // 1 daqiqadan kam bo'lsa, ko'rsatma!
+    if (lastShown && now - parseInt(lastShown) < oneMinute) {
+      return;
+    }
+
+    // Asosiy kontent ko'rinayotganda reklamani ko'rsat
+    if (!document.getElementById('main-content').classList.contains('visible')) {
+      setTimeout(showSponsorAd, 1000);
+      return;
+    }
+
+    ad.classList.add('visible');
+    localStorage.setItem('lastSponsorAdTime', now.toString());
+
+    // 10 soniyadan keyin yop
+    setTimeout(() => {
+      if (ad.classList.contains('visible')) {
+        ad.classList.remove('visible');
+      }
+    }, 10000);
+  }
+
+  // Har 60 soniyada tekshirish (faqat ekranda bo'lsa)
+  setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      showSponsorAd();
+    }
+  }, 60000);
+
+  // Dastlabki tekshirish (sahifa yuklanganda)
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.visibilityState === 'visible') {
+      setTimeout(showSponsorAd, 3000); // intro tugagandan keyin
+    }
+  });
+
+  // Tugmalarga click qilish
+  document.getElementById('goToDonat').addEventListener('click', e => {
+    e.stopPropagation();
+    window.location.href = 'donat.html';
+  });
+  document.getElementById('skipAd').addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('sponsorAd').classList.remove('visible');
+  });
+      
+      
         // ONLINE RANDOM COUNT
         function updateOnline() {
             const min = 9500;
