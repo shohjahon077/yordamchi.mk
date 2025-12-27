@@ -1,24 +1,10 @@
-// public/js/full-monitor.js
-class AdvancedVisitorMonitor {
+// public/js/smart-control.js
+class SmartControlBot {
   constructor() {
-    // Telegram bot ma'lumotlari
-    this.BOT_TOKEN = '8055090268:AAHtu9cy9lnZw_GFZqo8mc860Bj9G3H7vOU'; // O'z bot tokeningizni qo'ying
-    this.CHAT_ID = '8136720315'; // O'z chat ID'ingizni qo'ying
-    
-    // Visitor ma'lumotlari
+    this.BOT_TOKEN = '8055090268:AAHtu9cy9lnZw_GFZqo8mc860Bj9G3H7vOU';
+    this.CHAT_ID = '8136720315';
     this.visitorId = this.getVisitorId();
-    this.sessionId = 'session_' + Date.now();
-    this.isBanned = false;
-    this.isVerified = false;
-    this.userData = {};
-    this.activities = [];
-    this.startTime = Date.now();
-    
-    // Anti-bot o'zgaruvchilari
-    this.mouseMoves = 0;
-    this.clicks = 0;
-    this.keyPresses = 0;
-    this.lastActivity = Date.now();
+    this.sessionId = 'sess_' + Date.now();
     
     this.init();
   }
@@ -26,897 +12,509 @@ class AdvancedVisitorMonitor {
   getVisitorId() {
     let id = localStorage.getItem('visitor_id');
     if (!id) {
-      id = 'vis_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+      id = 'vis_' + Date.now().toString(36);
       localStorage.setItem('visitor_id', id);
     }
     return id;
   }
   
   async init() {
-    console.log('🔍 Monitoring tizimi ishga tushdi...');
+    // Blokni tekshirish
+    if (this.checkBan()) return;
     
-    // Dastlabki ma'lumotlarni yig'ish
-    const basicInfo = await this.collectBasicInfo();
+    // Dastlabki xabar
+    await this.sendWelcome();
     
-    // Telegramga birinchi xabar
-    this.sendInitialReport(basicInfo);
+    // Harakatlarni kuzatish
+    this.trackActions();
     
-    // Foydalanuvchi harakatlarini kuzatish
-    this.startTracking();
-    
-    // Anti-bot tekshiruvlari
-    this.startAntiBotChecks();
-    
-    // Telegram command'larini tinglash (polling)
-    this.startCommandPolling();
-    
-    // Har 30 soniyada faollikni tekshirish
-    setInterval(() => this.checkActivity(), 30000);
+    // Komandalarni tekshirish
+    this.checkCommands();
   }
   
-  async collectBasicInfo() {
-    const info = {
-      // Asosiy ma'lumotlar
-      visitorId: this.visitorId,
-      url: window.location.href,
-      referrer: document.referrer || 'To\'g\'ridan',
-      
-      // Qurilma ma'lumotlari
-      device: this.getDeviceType(),
-      os: this.getOS(),
-      browser: this.getBrowser(),
-      screen: `${window.screen.width}x${window.screen.height}`,
-      language: navigator.language,
-      userAgent: navigator.userAgent,
-      
-      // Vaqt ma'lumotlari
-      time: new Date().toLocaleString('uz-UZ'),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      
-      // Onlayn status
-      online: navigator.onLine,
-      cookies: navigator.cookieEnabled ? '✅' : '❌',
-      
-      // IP manzili
-      ip: 'Yuklanmoqda...'
+  checkBan() {
+    const banData = localStorage.getItem(`ban_${this.visitorId}`);
+    if (banData) {
+      const { reason, expiry } = JSON.parse(banData);
+      if (expiry > Date.now()) {
+        this.showBanScreen(reason, expiry);
+        return true;
+      } else {
+        localStorage.removeItem(`ban_${this.visitorId}`);
+      }
+    }
+    return false;
+  }
+  
+  async sendWelcome() {
+    const ip = await this.getIP();
+    const location = await this.getLocation(ip);
+    
+    const message = `
+👤 *Yangi Visitor*
+🆔 ID: \`${this.visitorId}\`
+📍 URL: ${window.location.href}
+📱 Qurilma: ${this.getDevice()}
+🌐 IP: \`${ip}\`
+🏙️ Joy: ${location}
+
+📊 *Boshqaruv Tugmalari:*
+    `.trim();
+    
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: '🚫 Blok', callback_data: 'ban' },
+          { text: '⏰ 10 kun', callback_data: 'ban10' },
+          { text: '❌ Chiqar', callback_data: 'kick' }
+        ],
+        [
+          { text: '📝 Xabar', callback_data: 'msg' },
+          { text: '⚠️ Ogoh', callback_data: 'warn' },
+          { text: '✅ Tasdiq', callback_data: 'verify' }
+        ],
+        [
+          { text: '🔍 Info', callback_data: 'info' },
+          { text: '📊 Stat', callback_data: 'stats' },
+          { text: '🔄 Yangila', callback_data: 'refresh' }
+        ]
+      ]
     };
     
-    // IP olish
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      info.ip = data.ip;
-      
-      // Geolocation
-      try {
-        const geoResponse = await fetch(`https://ipapi.co/${info.ip}/json/`);
-        const geoData = await geoResponse.json();
-        info.location = geoData.city ? 
-          `${geoData.city}, ${geoData.country_name}` : 'Noma\'lum';
-        info.isp = geoData.org || 'Noma\'lum';
-      } catch {
-        info.location = 'Noma\'lum';
-      }
-    } catch {
-      info.ip = 'Noma\'lum';
-    }
-    
-    return info;
+    await this.sendToTelegram(message, keyboard);
   }
   
-  getDeviceType() {
+  async getIP() {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      return data.ip;
+    } catch {
+      return 'Noma\'lum';
+    }
+  }
+  
+  async getLocation(ip) {
+    try {
+      const res = await fetch(`https://ipapi.co/${ip}/json/`);
+      const data = await res.json();
+      return data.city ? `${data.city}, ${data.country}` : 'Noma\'lum';
+    } catch {
+      return 'Noma\'lum';
+    }
+  }
+  
+  getDevice() {
     const ua = navigator.userAgent;
-    if (/Mobile|Android|iPhone|iPad|iPod/i.test(ua)) return '📱 Telefon';
+    if (/Mobile|Android|iPhone/i.test(ua)) return '📱 Mobil';
     if (/Tablet/i.test(ua)) return '📟 Planshet';
     return '💻 Kompyuter';
   }
   
-  getOS() {
-    const ua = navigator.userAgent;
-    if (/Windows/i.test(ua)) return 'Windows';
-    if (/Mac/i.test(ua)) return 'MacOS';
-    if (/Linux/i.test(ua)) return 'Linux';
-    if (/Android/i.test(ua)) return 'Android';
-    if (/iOS|iPhone|iPad|iPod/i.test(ua)) return 'iOS';
-    return 'Noma\'lum';
-  }
-  
-  getBrowser() {
-    const ua = navigator.userAgent;
-    if (/chrome|chromium|crios/i.test(ua)) return 'Chrome';
-    if (/firefox|fxios/i.test(ua)) return 'Firefox';
-    if (/safari/i.test(ua) && !/chrome/i.test(ua)) return 'Safari';
-    if (/edg/i.test(ua)) return 'Edge';
-    return 'Noma\'lum';
-  }
-  
-  async sendInitialReport(info) {
-    const riskLevel = this.calculateRiskLevel(info);
-    
-    const message = `
-🎯 *YANGI VISITOR KIRDI*
-
-👤 *ID:* \`${info.visitorId}\`
-📅 *Vaqt:* ${info.time}
-📍 *URL:* [Sahifa](${info.url})
-🔄 *Kelgan joy:* ${info.referrer}
-
-📱 *QURILMA:*
-• Turi: ${info.device}
-• OS: ${info.os}
-• Browser: ${info.browser}
-• Ekran: ${info.screen}
-• Til: ${info.language}
-
-🌍 *LOKATSIYA:*
-• IP: \`${info.ip}\`
-• Joy: ${info.location || 'Noma\'lum'}
-• ISP: ${info.isp || 'Noma\'lum'}
-
-⚙️ *TEXNIK:*
-• Cookie: ${info.cookies}
-• Online: ${info.online ? '✅' : '❌'}
-• Timezone: ${info.timezone}
-
-🚨 *XAVF DARAJASI:* ${riskLevel}
-
-🎮 *BOSHQARUV:*
-• \`/ban_${this.visitorId}\` - Bloklash
-• \`/verify_${this.visitorId}\` - Tasdiqlash
-• \`/info_${this.visitorId}\` - Batafsil
-• \`/kick_${this.visitorId}\` - Chiqarib yuborish
-    `.trim();
-    
-    await this.sendToTelegram(message);
-    
-    // Agar yuqori risk bo'lsa, darhol tasdiqlash so'rash
-    if (riskLevel.includes('🔴') || riskLevel.includes('🟡')) {
-      setTimeout(() => this.showVerificationModal(), 5000);
-    }
-  }
-  
-  calculateRiskLevel(info) {
-    let score = 0;
-    
-    // VPN/Proxy tekshirish (soddalashtirilgan)
-    if (info.isp && (
-      info.isp.toLowerCase().includes('vpn') ||
-      info.isp.toLowerCase().includes('proxy') ||
-      info.isp.toLowerCase().includes('tor')
-    )) score += 30;
-    
-    // No cookies
-    if (info.cookies === '❌') score += 20;
-    
-    // Mobile emas, lekin mobil user agent
-    if (info.device.includes('📱') && !/Mobile|Android|iPhone/i.test(info.userAgent)) {
-      score += 15;
-    }
-    
-    // Developer tools ochiqmi?
-    const devTools = window.outerWidth - window.innerWidth > 100 ||
-                     window.outerHeight - window.innerHeight > 100;
-    if (devTools) score += 25;
-    
-    // Risk darajasi
-    if (score >= 40) return '🔴 YUQORI';
-    if (score >= 20) return '🟡 O\'RTA';
-    return '🟢 PAST';
-  }
-  
-  startTracking() {
-    // Sichqoncha harakatlari
-    document.addEventListener('mousemove', () => {
-      this.mouseMoves++;
-      this.lastActivity = Date.now();
-      this.activities.push({
-        type: 'mouse_move',
-        time: Date.now()
-      });
-    });
-    
-    // Click harakatlari
-    document.addEventListener('click', (e) => {
-      this.clicks++;
-      this.lastActivity = Date.now();
-      
-      this.activities.push({
-        type: 'click',
-        element: e.target.tagName,
-        text: e.target.textContent?.substring(0, 30),
-        time: Date.now()
-      });
-      
-      // Har 10 ta click da aktivlik hisobotini yuborish
-      if (this.clicks % 10 === 0) {
-        this.sendActivityUpdate();
-      }
-    });
-    
-    // Klaviatura harakatlari
-    document.addEventListener('keydown', (e) => {
-      this.keyPresses++;
-      this.lastActivity = Date.now();
-      
-      // Enter, Tab, Escape kabi tugmalarni kuzatish
-      if (['Enter', 'Tab', 'Escape', 'F5', 'F12'].includes(e.key)) {
-        this.activities.push({
-          type: 'key_special',
-          key: e.key,
-          time: Date.now()
-        });
-      }
-    });
-    
-    // Scroll harakatlari
-    let scrollCount = 0;
-    window.addEventListener('scroll', () => {
-      scrollCount++;
-      this.lastActivity = Date.now();
-      
-      if (scrollCount % 20 === 0) {
-        this.activities.push({
-          type: 'scroll',
-          position: window.pageYOffset,
-          time: Date.now()
-        });
-      }
-    });
-    
-    // Form inputlarni kuzatish
-    document.addEventListener('input', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        this.activities.push({
-          type: 'input',
-          field: e.target.name || e.target.id || 'noma\'lum',
-          length: e.target.value.length,
-          time: Date.now()
-        });
-      }
-    });
-    
-    // Tab o'zgarishi
-    document.addEventListener('visibilitychange', () => {
-      this.activities.push({
-        type: 'tab_change',
-        state: document.visibilityState,
-        time: Date.now()
-      });
-    });
-    
-    // Saytdan chiqish
-    window.addEventListener('beforeunload', () => {
-      const duration = Math.floor((Date.now() - this.startTime) / 1000);
-      this.sendExitReport(duration);
+  trackActions() {
+    // Oddiy tracking
+    document.addEventListener('click', () => {
+      this.actionsCount = (this.actionsCount || 0) + 1;
     });
   }
   
-  startAntiBotChecks() {
-    // Tez-tez bir xil harakatlar (bot belgisi)
-    setInterval(() => {
-      const recentClicks = this.activities.filter(a => 
-        a.type === 'click' && 
-        Date.now() - a.time < 5000
-      ).length;
-      
-      if (recentClicks > 20) { // 5 soniyada 20 marta click
-        this.sendWarning('⚠️ Botga o\'xshash harakatlar aniqlandi!');
-      }
-    }, 10000);
-    
-    // Faolsizlikni tekshirish
-    setInterval(() => {
-      const inactiveTime = Date.now() - this.lastActivity;
-      if (inactiveTime > 120000) { // 2 daqiqa
-        this.sendWarning('💤 Visitor 2 daqiqa davomida faol emas');
-      }
-    }, 60000);
-  }
-  
-  async sendActivityUpdate() {
-    const duration = Math.floor((Date.now() - this.startTime) / 1000);
-    const pages = this.getVisitedPages();
-    
-    const message = `
-📊 *FAOLLIK HISOBOTI*
-
-👤 Visitor: \`${this.visitorId}\`
-⏱️ Davomiylik: ${Math.floor(duration / 60)}m ${duration % 60}s
-📍 Joriy sahifa: ${window.location.pathname}
-
-📈 *STATISTIKA:*
-• Clicks: ${this.clicks}
-• Mouse harakatlari: ${this.mouseMoves}
-• Klaviatura: ${this.keyPresses}
-• Ko'rilgan sahifalar: ${pages.length}
-
-🔄 *SONGI HARAKATLAR:*
-${this.activities.slice(-3).map(a => 
-  `• ${a.type} - ${new Date(a.time).toLocaleTimeString('uz-UZ')}`
-).join('\n')}
-
-${this.isVerified ? '✅ Tasdiqlangan' : '⚠️ Tasdiqlanmagan'}
-    `.trim();
-    
-    await this.sendToTelegram(message);
-  }
-  
-  async sendExitReport(durationSeconds) {
-    const message = `
-🚪 *VISITOR CHIQDI*
-
-👤 ID: \`${this.visitorId}\`
-⏱️ Umumiy vaqt: ${Math.floor(durationSeconds / 60)}m ${durationSeconds % 60}s
-📊 Faollik: 
-• Clicks: ${this.clicks}
-• Harakatlar: ${this.mouseMoves}
-• Sahifalar: ${this.getVisitedPages().length}
-
-${this.isVerified ? '✅ Tasdiqlangan foydalanuvchi' : '⚠️ Tasdiqlanmagan'}
-${this.isBanned ? '🚫 Bloklangan' : '🟢 Normal chiqish'}
-    `.trim();
-    
-    // Offline saqlash va keyin yuborish
-    const report = {
-      type: 'exit_report',
-      message: message,
-      timestamp: Date.now()
-    };
-    
-    localStorage.setItem('last_exit_report', JSON.stringify(report));
-    
-    // Agar onlayn bo'lsa, darhol yuborish
-    if (navigator.onLine) {
-      await this.sendToTelegram(message);
-    }
-  }
-  
-  async sendWarning(text) {
-    const message = `
-🚨 *OGOHLANTIRISH*
-
-👤 Visitor: \`${this.visitorId}\`
-⚠️ Sabab: ${text}
-📍 Sahifa: ${window.location.href}
-🕒 Vaqt: ${new Date().toLocaleTimeString('uz-UZ')}
-    `.trim();
-    
-    await this.sendToTelegram(message);
-  }
-  
-  showVerificationModal() {
-    if (this.isVerified || this.verificationShown) return;
-    this.verificationShown = true;
-    
-    const modal = document.createElement('div');
-    modal.id = 'verificationModal';
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999999;
-      font-family: Arial, sans-serif;
-    `;
-    
-    modal.innerHTML = `
-      <div style="
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        padding: 40px;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 90%;
-        color: white;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        border: 2px solid #00b4d8;
-      ">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <div style="font-size: 48px; margin-bottom: 10px;">🔐</div>
-          <h2 style="margin: 0 0 10px 0; color: #00b4d8;">TASDIQLASH TALABI</h2>
-          <p style="color: #90e0ef; margin-bottom: 30px;">
-            Xavfsizlik tizimi sizni tasdiqlashni talab qilmoqda.
-            Iltimos, quyidagi ma'lumotlarni to'ldiring:
-          </p>
-        </div>
-        
-        <form id="verifyForm" style="display: flex; flex-direction: column; gap: 20px;">
-          <div>
-            <label style="display: block; margin-bottom: 8px; color: #90e0ef;">Ismingiz *</label>
-            <input type="text" 
-                   name="name" 
-                   required 
-                   placeholder="Ism Familiya"
-                   style="
-                     width: 100%;
-                     padding: 15px;
-                     background: rgba(255,255,255,0.1);
-                     border: 2px solid #00b4d8;
-                     border-radius: 10px;
-                     color: white;
-                     font-size: 16px;
-                   ">
-          </div>
-          
-          <div>
-            <label style="display: block; margin-bottom: 8px; color: #90e0ef;">Yoshingiz *</label>
-            <input type="number" 
-                   name="age" 
-                   required 
-                   min="1" 
-                   max="120"
-                   placeholder="Masalan: 25"
-                   style="
-                     width: 100%;
-                     padding: 15px;
-                     background: rgba(255,255,255,0.1);
-                     border: 2px solid #00b4d8;
-                     border-radius: 10px;
-                     color: white;
-                     font-size: 16px;
-                   ">
-          </div>
-          
-          <div>
-            <label style="display: block; margin-bottom: 8px; color: #90e0ef;">Maqsadingiz *</label>
-            <select name="purpose" 
-                    required
-                    style="
-                      width: 100%;
-                      padding: 15px;
-                      background: rgba(255,255,255,0.1);
-                      border: 2px solid #00b4d8;
-                      border-radius: 10px;
-                      color: white;
-                      font-size: 16px;
-                    ">
-              <option value="">Tanlang...</option>
-              <option value="learn">O'rganish</option>
-              <option value="work">Ish</option>
-              <option value="entertainment">Ko'ngilochar</option>
-              <option value="research">Tadqiqot</option>
-              <option value="other">Boshqa</option>
-            </select>
-          </div>
-          
-          <div>
-            <label style="display: block; margin-bottom: 8px; color: #90e0ef;">Qo'shimcha izoh</label>
-            <textarea name="comment" 
-                     placeholder="Nima uchun bu saytga kirdingiz?"
-                     rows="3"
-                     style="
-                       width: 100%;
-                       padding: 15px;
-                       background: rgba(255,255,255,0.1);
-                       border: 2px solid #00b4d8;
-                       border-radius: 10px;
-                       color: white;
-                       font-size: 16px;
-                       resize: vertical;
-                     "></textarea>
-          </div>
-          
-          <div style="
-            background: rgba(0,180,216,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #00b4d8;
-            margin: 10px 0;
-          ">
-            <p style="margin: 0; color: #90e0ef; font-size: 14px;">
-              📝 Ma'lumotlaringiz faqat xavfsizlik maqsadida ishlatiladi va 24 soatdan keyin o'chiriladi.
-            </p>
-          </div>
-          
-          <div style="display: flex; gap: 15px; margin-top: 20px;">
-            <button type="submit" 
-                    style="
-                      flex: 1;
-                      padding: 18px;
-                      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
-                      color: white;
-                      border: none;
-                      border-radius: 10px;
-                      font-size: 16px;
-                      font-weight: bold;
-                      cursor: pointer;
-                      transition: all 0.3s;
-                    "
-                    onmouseover="this.style.transform='translateY(-2px)';"
-                    onmouseout="this.style.transform='translateY(0)';">
-              ✅ TASDIQLASH
-            </button>
-            
-            <button type="button" 
-                    id="cancelBtn"
-                    style="
-                      flex: 1;
-                      padding: 18px;
-                      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-                      color: white;
-                      border: none;
-                      border-radius: 10px;
-                      font-size: 16px;
-                      font-weight: bold;
-                      cursor: pointer;
-                      transition: all 0.3s;
-                    "
-                    onmouseover="this.style.transform='translateY(-2px)';"
-                    onmouseout="this.style.transform='translateY(0)';">
-              ❌ RAD ETISH
-            </button>
-          </div>
-        </form>
-        
-        <div style="text-align: center; margin-top: 30px; color: #90e0ef; font-size: 14px;">
-          <p>Visitor ID: <code style="background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 3px;">${this.visitorId}</code></p>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Form submit
-    modal.querySelector('#verifyForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      this.userData = {
-        name: formData.get('name'),
-        age: formData.get('age'),
-        purpose: formData.get('purpose'),
-        comment: formData.get('comment'),
-        verifiedAt: new Date().toISOString()
-      };
-      
-      this.isVerified = true;
-      modal.remove();
-      
-      // Telegramga tasdiqlanganligi haqida xabar
-      await this.sendVerificationSuccess();
-      
-      // Cookie saqlash
-      document.cookie = `verified=true; max-age=86400; path=/`;
-    });
-    
-    // Cancel tugmasi
-    modal.querySelector('#cancelBtn').addEventListener('click', async () => {
-      modal.remove();
-      await this.sendVerificationRejected();
-      
-      // 10 soniyadan keyin yana so'rash
-      setTimeout(() => {
-        if (!this.isVerified) {
-          this.showVerificationModal();
-        }
-      }, 10000);
-    });
-    
-    // 30 soniyadan keyin avtomatik rad etish
-    setTimeout(() => {
-      if (!this.isVerified && document.contains(modal)) {
-        modal.remove();
-        this.sendVerificationTimeout();
-      }
-    }, 30000);
-  }
-  
-  async sendVerificationSuccess() {
-    const message = `
-✅ *TASDIQLASH MUVAFFAQIYATLI*
-
-👤 Visitor: \`${this.visitorId}\`
-📅 Vaqt: ${new Date().toLocaleString('uz-UZ')}
-👤 Ism: ${this.userData.name}
-🎂 Yosh: ${this.userData.age}
-🎯 Maqsad: ${this.userData.purpose}
-💬 Izoh: ${this.userData.comment || 'Yo\'q'}
-
-🟢 Visitor muvaffaqiyatli tasdiqlandi!
-    `.trim();
-    
-    await this.sendToTelegram(message);
-  }
-  
-  async sendVerificationRejected() {
-    const message = `
-❌ *TASDIQLASH RAD ETILDI*
-
-👤 Visitor: \`${this.visitorId}\`
-📅 Vaqt: ${new Date().toLocaleString('uz-UZ')}
-⚠️ Sabab: Foydalanuvchi tasdiqlashni rad etdi
-
-🚨 Ehtiyot bo'ling! Shubhali harakat.
-/blok_${this.visitorId} - Bloklash uchun
-    `.trim();
-    
-    await this.sendToTelegram(message);
-  }
-  
-  async sendVerificationTimeout() {
-    const message = `
-⏰ *TASDIQLASH VAQTI TUGADI*
-
-👤 Visitor: \`${this.visitorId}\`
-⚠️ Sabab: 30 soniya ichida javob berilmadi
-
-🚨 Bot yoki shubhali foydalanuvchi bo'lishi mumkin.
-/blok_${this.visitorId} - Darhol bloklash
-    `.trim();
-    
-    await this.sendToTelegram(message);
-  }
-  
-  startCommandPolling() {
-    // Har 10 soniyada telegram command'larini tekshirish
+  checkCommands() {
     setInterval(async () => {
-      await this.checkForCommands();
-    }, 10000);
-  }
-  
-  async checkForCommands() {
-    try {
-      // So'nggi xabarlarni olish
-      const response = await fetch(
-        `https://api.telegram.org/bot${this.BOT_TOKEN}/getUpdates?offset=-10`
-      );
-      const data = await response.json();
-      
-      if (data.ok && data.result) {
-        for (const update of data.result) {
-          if (update.message && update.message.text) {
-            const text = update.message.text;
-            
-            // Bloklash command'asi
-            if (text.includes(`/ban_${this.visitorId}`) || 
-                text.includes(`/kick_${this.visitorId}`) ||
-                text.includes(`/blok_${this.visitorId}`)) {
-              this.banVisitor('Administrator buyrug\'i bilan');
-              break;
-            }
-            
-            // Tasdiqlash command'asi
-            if (text.includes(`/verify_${this.visitorId}`)) {
-              this.showVerificationModal();
-              break;
-            }
-            
-            // IP bloklash
-            if (text.includes(`/blockip_`) && text.includes(this.getCurrentIP())) {
-              this.banVisitor('IP manzil bloklandi');
-              break;
-            }
-          }
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${this.BOT_TOKEN}/getUpdates?offset=-10`);
+        const data = await res.json();
+        
+        if (data.ok) {
+          data.result.forEach(update => {
+            if (update.callback_query) this.handleButton(update.callback_query);
+            if (update.message?.text) this.handleCommand(update.message);
+          });
         }
-      }
-    } catch (error) {
-      console.warn('Command polling xatosi:', error);
+      } catch (e) {}
+    }, 3000);
+  }
+  
+  async handleButton(callback) {
+    const action = callback.data;
+    
+    switch(action) {
+      case 'ban':
+        await this.banVisitor('Administrator bloki');
+        break;
+      case 'ban10':
+        await this.ban10Days('10 kunlik blok');
+        break;
+      case 'kick':
+        await this.kickVisitor();
+        break;
+      case 'msg':
+        await this.askForMessage();
+        break;
+      case 'warn':
+        await this.sendWarning();
+        break;
+      case 'verify':
+        await this.requestVerification();
+        break;
+      case 'info':
+        await this.sendInfo();
+        break;
+      case 'stats':
+        await this.sendStats();
+        break;
+      case 'refresh':
+        await this.sendWelcome();
+        break;
     }
   }
   
-  async getCurrentIP() {
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip;
-    } catch {
-      return 'unknown';
+  async handleCommand(msg) {
+    const text = msg.text;
+    
+    // Bloklash
+    if (text === `/ban ${this.visitorId}`) {
+      await this.banVisitor('Command orqali');
+    }
+    
+    // 10 kunlik blok
+    else if (text === `/ban10 ${this.visitorId}`) {
+      await this.ban10Days('10 kunlik blok');
+    }
+    
+    // Chiqarish
+    else if (text === `/kick ${this.visitorId}`) {
+      await this.kickVisitor();
+    }
+    
+    // Xabar yuborish
+    else if (text.startsWith(`/msg ${this.visitorId}`)) {
+      const message = text.replace(`/msg ${this.visitorId}`, '').trim();
+      this.showMessage(message);
+    }
+    
+    // Blokni olish
+    else if (text === `/unban ${this.visitorId}`) {
+      this.unbanVisitor();
+    }
+    
+    // Qayta kirish
+    else if (text === `/allow ${this.visitorId}`) {
+      this.allowReentry();
     }
   }
   
-  banVisitor(reason) {
-    if (this.isBanned) return;
+  // ========== ASOSIY FUNKSIYALAR ==========
+  
+  async banVisitor(reason) {
+    // Bloklash
+    const banData = {
+      reason: reason,
+      time: Date.now(),
+      expiry: 0 // Doimiy
+    };
+    localStorage.setItem(`ban_${this.visitorId}`, JSON.stringify(banData));
     
-    this.isBanned = true;
-    localStorage.setItem('banned_visitor', 'true');
-    
-    // Bloklash ekrani ko'rsatish
     this.showBanScreen(reason);
     
-    // Telegramga bloklanganligi haqida xabar
-    this.sendBanNotification(reason);
+    await this.sendToTelegram(`🚫 ${this.visitorId} bloklandi\nSabab: ${reason}`);
+  }
+  
+  async ban10Days(reason) {
+    // 10 kunlik blok
+    const tenDays = 10 * 24 * 60 * 60 * 1000;
+    const banData = {
+      reason: reason,
+      time: Date.now(),
+      expiry: Date.now() + tenDays
+    };
+    localStorage.setItem(`ban_${this.visitorId}`, JSON.stringify(banData));
     
-    // 10 soniyadan keyin boshqa saytga yo'naltirish
+    this.showBanScreen(reason + ' (10 kun)');
+    
+    await this.sendToTelegram(
+      `⏰ ${this.visitorId} 10 kunga bloklandi\n` +
+      `Tugash: ${new Date(Date.now() + tenDays).toLocaleDateString('uz-UZ')}`
+    );
+  }
+  
+  async kickVisitor() {
+    // Chiqarish
+    this.showKickScreen();
+    
+    await this.sendToTelegram(`👢 ${this.visitorId} chiqarib yuborildi`);
+    
+    // 10 soniyadan keyin Google'ga yo'naltirish
     setTimeout(() => {
-      window.location.href = 'https://www.google.com/search?q=xavfsiz+internet';
+      window.location.href = 'https://www.google.com';
     }, 10000);
   }
   
+  async askForMessage() {
+    await this.sendToTelegram(
+      `📝 ${this.visitorId} ga xabar yuborish:\n` +
+      `Format: /msg ${this.visitorId} [matn]`
+    );
+  }
+  
+  async sendWarning() {
+    this.showWarning('⚠️ Administrator sizni ogohlantirmoqda!');
+    
+    await this.sendToTelegram(`⚠️ ${this.visitorId} ga ogohlantirish yuborildi`);
+  }
+  
+  async requestVerification() {
+    this.showVerificationForm();
+    
+    await this.sendToTelegram(`🔐 ${this.visitorId} ga tasdiqlash so\'rovi yuborildi`);
+  }
+  
+  async sendInfo() {
+    const ip = await this.getIP();
+    const device = this.getDevice();
+    
+    await this.sendToTelegram(
+      `📋 ${this.visitorId} ma\'lumoti:\n` +
+      `🌐 IP: ${ip}\n` +
+      `📱 Qurilma: ${device}\n` +
+      `🔗 URL: ${window.location.href}\n` +
+      `🕐 Vaqt: ${new Date().toLocaleTimeString('uz-UZ')}`
+    );
+  }
+  
+  async sendStats() {
+    await this.sendToTelegram(
+      `📊 ${this.visitorId} statistikasi:\n` +
+      `🖱️ Clicks: ${this.actionsCount || 0}\n` +
+      `🕐 Sessiya: ${Math.floor((Date.now() - this.sessionStart) / 1000)}s\n` +
+      `📍 Sahifa: ${window.location.pathname}`
+    );
+  }
+  
+  unbanVisitor() {
+    localStorage.removeItem(`ban_${this.visitorId}`);
+    this.removeBanScreen();
+    
+    this.sendToTelegram(`🔓 ${this.visitorId} blokdan chiqarildi`);
+  }
+  
+  allowReentry() {
+    this.removeKickScreen();
+    this.sendToTelegram(`🔄 ${this.visitorId} qayta kirishga ruxsat berildi`);
+  }
+  
+  // ========== EKRAN KO'RSATISH ==========
+  
   showBanScreen(reason) {
-    // Hozirgi sahifani to'liq bloklash
-    document.body.innerHTML = '';
-    
-    const banScreen = document.createElement('div');
-    banScreen.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      z-index: 9999999;
-    `;
-    
-    banScreen.innerHTML = `
-      <div style="font-size: 120px; margin-bottom: 20px;">🚫</div>
-      <h1 style="font-size: 48px; margin-bottom: 20px; color: #ff6b6b;">KIRISH BLOKLANDI</h1>
-      
+    document.body.innerHTML = `
       <div style="
-        background: rgba(255,255,255,0.1);
-        padding: 30px;
-        border-radius: 15px;
-        max-width: 600px;
-        margin-bottom: 30px;
-        border-left: 5px solid #ff6b6b;
+        position:fixed; top:0; left:0; width:100%; height:100%;
+        background:#0f0c29; color:white; display:flex; flex-direction:column;
+        justify-content:center; align-items:center; text-align:center;
+        padding:20px; font-family:Arial; z-index:99999;
       ">
-        <p style="font-size: 20px; margin-bottom: 15px;">
-          ${reason}
-        </p>
-        
+        <div style="font-size:80px">🚫</div>
+        <h1 style="color:#ff6b6b">BLOKLANDINGIZ</h1>
+        <p>${reason}</p>
         <div style="
-          background: rgba(0,0,0,0.3);
-          padding: 20px;
-          border-radius: 10px;
-          margin-top: 20px;
-          text-align: left;
+          background:rgba(255,255,255,0.1); padding:20px; border-radius:10px;
+          margin:20px 0; text-align:left; font-family:monospace;
         ">
-          <p><strong>Visitor ID:</strong> <code>${this.visitorId}</code></p>
-          <p><strong>IP Manzil:</strong> <code>${localStorage.getItem('last_ip') || 'Noma\'lum'}</code></p>
-          <p><strong>Bloklangan vaqt:</strong> ${new Date().toLocaleString('uz-UZ')}</p>
-          <p><strong>Sabab:</strong> Xavfsizlik qoidasini buzish</p>
+          <p>ID: ${this.visitorId}</p>
+          <p>Vaqt: ${new Date().toLocaleString('uz-UZ')}</p>
         </div>
-      </div>
-      
-      <div style="margin-top: 30px; color: #aaa; max-width: 500px;">
-        <p>⚠️ Agar bu xato deb o'ylasangiz, sayt administratori bilan bog'lanishingiz mumkin.</p>
-        <p style="font-size: 14px; margin-top: 20px;">
-          Siz 10 soniyadan keyin Google.com sahifasiga yo'naltirilasiz...
-        </p>
-        <div id="countdown" style="
-          font-size: 36px;
-          font-weight: bold;
-          color: #00b4d8;
-          margin: 20px 0;
-        ">10</div>
+        <button onclick="requestUnban()" style="
+          padding:12px 24px; background:#00b4d8; color:white;
+          border:none; border-radius:8px; font-size:16px; cursor:pointer;
+        ">
+          🔓 Blokni olish so'rovi
+        </button>
       </div>
     `;
     
-    document.body.appendChild(banScreen);
+    window.requestUnban = async () => {
+      await this.sendToTelegram(`🔓 ${this.visitorId} blok olish so'radi`);
+      alert('So\'rov yuborildi!');
+    };
     
-    // Countdown timer
-    let count = 10;
-    const countdownEl = document.getElementById('countdown');
-    const timer = setInterval(() => {
-      count--;
-      countdownEl.textContent = count;
-      if (count <= 0) {
-        clearInterval(timer);
-      }
-    }, 1000);
-    
-    // Barcha event listenerlarni o'chirish
-    document.querySelectorAll('*').forEach(el => {
-      const newEl = el.cloneNode(true);
-      el.parentNode.replaceChild(newEl, el);
+    // F5 ni bloklash
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F5') e.preventDefault();
     });
   }
   
-  async sendBanNotification(reason) {
-    const message = `
-🚫 *VISITOR BLOKLANDI*
-
-👤 ID: \`${this.visitorId}\`
-📅 Vaqt: ${new Date().toLocaleString('uz-UZ')}
-📍 URL: ${window.location.href}
-⚠️ Sabab: ${reason}
-
-📊 *STATISTIKA:*
-• Sessiya: ${Math.floor((Date.now() - this.startTime) / 1000)}s
-• Clicks: ${this.clicks}
-• Harakatlar: ${this.mouseMoves}
-• Tasdiqlangan: ${this.isVerified ? '✅' : '❌'}
-
-🛡️ Visitor muvaffaqiyatli bloklandi.
-    `.trim();
+  showKickScreen() {
+    document.body.innerHTML = `
+      <div style="
+        position:fixed; top:0; left:0; width:100%; height:100%;
+        background:linear-gradient(135deg,#ff9a00,#ff6a00); 
+        color:white; display:flex; flex-direction:column;
+        justify-content:center; align-items:center; text-align:center;
+        padding:20px; font-family:Arial; z-index:99999;
+      ">
+        <div style="font-size:80px">👢</div>
+        <h1>CHIQARIB YUBORILDINGIZ</h1>
+        <p style="margin:20px 0">10 soniyadan keyin chiqarilasiz...</p>
+        <div id="timer" style="font-size:48px; font-weight:bold">10</div>
+      </div>
+    `;
     
-    await this.sendToTelegram(message);
+    let time = 10;
+    const timer = setInterval(() => {
+      time--;
+      document.getElementById('timer').textContent = time;
+      if (time <= 0) {
+        clearInterval(timer);
+        window.location.href = 'https://www.google.com';
+      }
+    }, 1000);
   }
   
-  getVisitedPages() {
-    const pages = JSON.parse(sessionStorage.getItem('visited_pages') || '[]');
-    if (!pages.includes(window.location.pathname)) {
-      pages.push(window.location.pathname);
-      sessionStorage.setItem('visited_pages', JSON.stringify(pages));
-    }
-    return pages;
+  showMessage(text) {
+    const msg = document.createElement('div');
+    msg.style.cssText = `
+      position:fixed; top:20px; right:20px; background:#1e40af;
+      color:white; padding:15px; border-radius:10px; z-index:99999;
+      max-width:300px; box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    `;
+    msg.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
+        <div style="font-size:24px">📨</div>
+        <strong>Administrator xabari:</strong>
+      </div>
+      <p>${text}</p>
+      <button onclick="this.parentElement.remove()" style="
+        margin-top:10px; padding:5px 15px; background:white;
+        color:#1e40af; border:none; border-radius:5px; cursor:pointer;
+      ">
+        OK
+      </button>
+    `;
+    document.body.appendChild(msg);
   }
   
-  checkActivity() {
-    const currentPage = window.location.pathname;
-    const pages = this.getVisitedPages();
-    
-    // Agar 5 daqiqada 10 dan ortiq sahifaga o'tsa
-    if (pages.length > 10) {
-      this.sendWarning('⚠️ Juda tez sahifa o\'zgartirish (bot belgisi)');
-    }
-    
-    // Faollik hisobotini yuborish
-    if (this.activities.length > 0) {
-      this.sendActivityUpdate();
-    }
+  showWarning(text) {
+    const warn = document.createElement('div');
+    warn.style.cssText = `
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:#f59e0b; color:white; padding:15px; border-radius:10px;
+      z-index:99999; max-width:400px; text-align:center;
+      animation:slideDown 0.5s ease;
+    `;
+    warn.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px; justify-content:center">
+        <div style="font-size:24px">⚠️</div>
+        <strong>OGOHLANTIRISH</strong>
+      </div>
+      <p style="margin:10px 0">${text}</p>
+      <button onclick="this.parentElement.remove()" style="
+        padding:5px 15px; background:white; color:#f59e0b;
+        border:none; border-radius:5px; cursor:pointer;
+      ">
+        Tushundim
+      </button>
+    `;
+    document.body.appendChild(warn);
   }
   
-  async sendToTelegram(message) {
-    try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${this.BOT_TOKEN}/sendMessage`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: this.CHAT_ID,
-            text: message,
-            parse_mode: 'Markdown',
-            disable_web_page_preview: true
-          })
-        }
-      );
+  showVerificationForm() {
+    const form = document.createElement('div');
+    form.style.cssText = `
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.9); display:flex; justify-content:center;
+      align-items:center; z-index:99999;
+    `;
+    form.innerHTML = `
+      <div style="
+        background:white; padding:30px; border-radius:15px;
+        max-width:400px; width:90%;
+      ">
+        <h2 style="color:#333; margin-bottom:20px">🔐 Tasdiqlash</h2>
+        <input type="text" placeholder="Ismingiz" id="name" style="
+          width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd;
+          border-radius:8px; box-sizing:border-box;
+        ">
+        <input type="number" placeholder="Yoshingiz" id="age" style="
+          width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd;
+          border-radius:8px; box-sizing:border-box;
+        ">
+        <textarea placeholder="Nima uchun kirdingiz?" id="reason" style="
+          width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd;
+          border-radius:8px; box-sizing:border-box; height:100px;
+        "></textarea>
+        <div style="display:flex; gap:10px">
+          <button onclick="submitVerification()" style="
+            flex:1; padding:12px; background:#10b981; color:white;
+            border:none; border-radius:8px; cursor:pointer;
+          ">
+            ✅ Tasdiqlash
+          </button>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            flex:1; padding:12px; background:#ef4444; color:white;
+            border:none; border-radius:8px; cursor:pointer;
+          ">
+            ❌ Bekor qilish
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(form);
+    
+    window.submitVerification = async () => {
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      const reason = document.getElementById('reason').value;
       
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Telegram xatosi:', error);
-      // Offline saqlash
-      const failedMessages = JSON.parse(localStorage.getItem('failed_messages') || '[]');
-      failedMessages.push({
-        message: message,
-        timestamp: Date.now()
+      if (name && age) {
+        await this.sendToTelegram(
+          `✅ ${this.visitorId} tasdiqlandi:\n` +
+          `👤 Ism: ${name}\n` +
+          `🎂 Yosh: ${age}\n` +
+          `🎯 Sabab: ${reason || 'Ko\'rsatilmagan'}`
+        );
+        form.remove();
+        alert('Tasdiqlandi!');
+      } else {
+        alert('Ism va yoshni kiriting!');
+      }
+    };
+  }
+  
+  removeBanScreen() {
+    const banScreen = document.querySelector('div[style*="background:#0f0c29"]');
+    if (banScreen) banScreen.remove();
+  }
+  
+  removeKickScreen() {
+    const kickScreen = document.querySelector('div[style*="background:linear-gradient"]');
+    if (kickScreen) kickScreen.remove();
+  }
+  
+  async sendToTelegram(text, keyboard = null) {
+    try {
+      const payload = {
+        chat_id: this.CHAT_ID,
+        text: text,
+        parse_mode: 'Markdown'
+      };
+      
+      if (keyboard) {
+        payload.reply_markup = keyboard;
+      }
+      
+      await fetch(`https://api.telegram.org/bot${this.BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-      localStorage.setItem('failed_messages', JSON.stringify(failedMessages));
+    } catch (error) {
+      console.error('Xato:', error);
     }
   }
 }
 
-// Offline xabarlarni yuborish
-async function sendFailedMessages() {
-  const failedMessages = JSON.parse(localStorage.getItem('failed_messages') || '[]');
-  if (failedMessages.length > 0 && navigator.onLine) {
-    // Bu yerda offline xabarlarni yuborish kodini qo'shish mumkin
-    localStorage.removeItem('failed_messages');
-  }
-}
-
-// Tizimni ishga tushirish
-document.addEventListener('DOMContentLoaded', function() {
-  // Faqat bir marta ishga tushirish
-  if (!window.visitorMonitor) {
-    window.visitorMonitor = new AdvancedVisitorMonitor();
-    
-    // Offline xabarlarni tekshirish
-    setInterval(sendFailedMessages, 60000);
+// Ishga tushirish
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.botControl) {
+    window.botControl = new SmartControlBot();
   }
 });
-
-// IP ni saqlash
-fetch('https://api.ipify.org?format=json')
-  .then(res => res.json())
-  .then(data => {
-    localStorage.setItem('last_ip', data.ip);
-  })
-  .catch(() => {
-    localStorage.setItem('last_ip', 'unknown');
-  });
