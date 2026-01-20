@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TERMINAL 666 | VOID</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&display=swap');
+
+        :root {
+            --blood-dark: #300000;
+            --blood-bright: #ff0000;
+            --void-black: #020202;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--void-black);
+            color: #666;
+            font-family: 'Special Elite', serif;
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.05s;
+        }
+
+        /* --- THE CURSE: JUMPSCARE LAYER --- */
+        #demon-layer {
+            position: fixed; inset: 0; z-index: 100000;
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-M8v9xP9Nf8oO0O-j5B9yXvG-Y1Wf-O-OQ&s') center/cover no-repeat;
+            display: none; opacity: 0.6; pointer-events: none;
+            mix-blend-mode: color-dodge;
+        }
+
+        /* --- SEQUENTIAL CINEMATIC INTRO --- */
+        #horror-intro {
+            position: fixed; inset: 0; z-index: 99999;
+            background: #000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+
+        .intro-msg { font-family: 'Nosifer'; font-size: 20px; color: var(--blood-bright); display: none; text-align: center; padding: 20px; }
+        .glitch-text { animation: scream 0.05s infinite; }
+        @keyframes scream {
+            0% { transform: scale(1); filter: blur(0); }
+            50% { transform: scale(1.05); filter: blur(2px); opacity: 0.7; }
+            100% { transform: scale(0.95); filter: blur(0); }
+        }
+
+        /* --- ASOSIY INTERFEYS --- */
+        #app-root { display: none; height: 100%; flex-direction: column; }
+
+        .scanline {
+            width: 100%; height: 100%; position: fixed; top: 0; left: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%);
+            background-size: 100% 4px; pointer-events: none; z-index: 999;
+        }
+
+        /* --- STAGES (LINKS) --- */
+        .page { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; display: none; }
+        .page.active { display: block; }
+
+        .stage-box {
+            display: block; text-decoration: none; margin-bottom: 20px;
+            border: 1px solid #111; position: relative; height: 160px;
+            overflow: hidden; background: #050505;
+        }
+        .stage-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.2; filter: grayscale(1) invert(0); transition: 0.3s; }
+        .stage-box:active img { opacity: 0.5; filter: grayscale(0) invert(1); }
+        .stage-title { position: absolute; bottom: 15px; left: 15px; font-family: 'Creepster'; color: #444; font-size: 22px; }
+
+        /* --- COMPLEX SETTINGS (DNA) --- */
+        .dna-block { background: #080000; padding: 15px; border-left: 2px solid var(--blood-bright); margin-bottom: 15px; }
+        .dna-block h5 { font-size: 10px; color: #333; margin-bottom: 10px; letter-spacing: 3px; }
+        .param-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .param-row span { font-size: 11px; color: #555; }
+        input[type="range"] { accent-color: var(--blood-bright); width: 65%; }
+
+        /* --- FOOTER NAV --- */
+        nav {
+            position: fixed; bottom: 0; width: 100%; height: 80px;
+            background: #000; border-top: 1px solid #1a0000;
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+        }
+        .nav-link { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #222; }
+        .nav-link.active { color: var(--blood-bright); text-shadow: 0 0 10px red; }
+
+    </style>
+</head>
+<body id="v-body">
+
+    <div id="demon-layer"></div>
+    <div class="scanline"></div>
+
+    <div id="horror-intro">
+        <h1 id="m1" class="intro-msg">KOMPYUTER RUHLAR BILAN BOG'LANDI</h1>
+        <h1 id="m2" class="intro-msg glitch-text">ENDI CHIQISH YO'Q</h1>
+        <div id="loading" style="width:0; height:1px; background:red; position:absolute; bottom:20%;"></div>
+    </div>
+
+    <div id="app-root">
+        <header style="padding:15px; text-align:center; border-bottom:1px solid #111;">
+            <p id="system-log" style="font-size:8px; color:#300;">ACCESS_GRANTED: SOUL_ID_666</p>
+        </header>
+
+        <div id="home" class="page active">
+            <a href="zulmatormon.html" class="stage-box" onclick="fakeError('Zulmat O\'rmoni')">
+                <img src="https://picsum.photos/400/200?grayscale&sig=10">
+                <div class="stage-title">ZULMAT O'RMONI</div>
+            </a>
+            <a href="qonlilabaratoriya.html" class="stage-box" onclick="fakeError('Qonli Laboratoriya')">
+                <img src="https://picsum.photos/400/200?grayscale&sig=20">
+                <div class="stage-title">QONLI LABORATORIYA</div>
+            </a>
+            <a href="javascript:void(0)" class="stage-box" onclick="fakeError('Ruhlar Qabri')">
+                <img src="https://picsum.photos/400/200?grayscale&sig=30">
+                <div class="stage-title">RUHLAR QABRI</div>
+            </a>
+        </div>
+
+        <div id="settings" class="page">
+            <div id="dna-container"></div>
+        </div>
+
+        <nav>
+            <div class="nav-link active" onclick="changeTab('home', this)"><i class="fas fa-skull"></i><span style="font-size:8px">ZONA</span></div>
+            <div class="nav-link" onclick="changeTab('settings', this)"><i class="fas fa-microchip"></i><span style="font-size:8px">DNA</span></div>
+            <div class="nav-link" onclick="location.reload()"><i class="fas fa-door-closed"></i><span style="font-size:8px">CHIQISH</span></div>
+        </nav>
+    </div>
+
+    <script>
+        // --- CINEMATIC INTRO SCRIPT ---
+        const loader = document.getElementById('loading');
+        let progress = 0;
+
+        function startIntro() {
+            document.getElementById('m1').style.display = 'block';
+            
+            const timer = setInterval(() => {
+                progress += 0.5;
+                loader.style.width = progress + "%";
+                
+                if(progress === 40) {
+                    document.getElementById('m1').style.display = 'none';
+                    document.getElementById('m2').style.display = 'block';
+                }
+
+                if(progress >= 100) {
+                    clearInterval(timer);
+                    document.getElementById('horror-intro').style.transition = '0.5s';
+                    document.getElementById('horror-intro').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('horror-intro').style.display = 'none';
+                        document.getElementById('app-root').style.display = 'flex';
+                        generateSettings();
+                    }, 500);
+                }
+            }, 40);
+        }
+
+        // --- 100+ SETTINGS GENERATOR ---
+        function generateSettings() {
+            const container = document.getElementById('dna-container');
+            const params = ["Qichqiriq", "Zulmat", "Vibratsiya", "Qon", "Miya", "Ruh", "Nafas"];
+            
+            for(let i=0; i<15; i++) {
+                let block = `<div class="dna-block"><h5>SECTOR_0x${i.toString(16).toUpperCase()}</h5>`;
+                for(let j=0; j<7; j++) {
+                    const type = params[j];
+                    block += `
+                        <div class="param-row">
+                            <span>${type.toUpperCase()} level</span>
+                            <input type="range" min="0" max="100" value="0" oninput="liveEngine('${type}', this.value)">
+                        </div>`;
+                }
+                block += `</div>`;
+                container.innerHTML += block;
+            }
+        }
+
+        // --- REAL-TIME HORROR ENGINE ---
+        function liveEngine(type, val) {
+            const body = document.getElementById('v-body');
+            const log = document.getElementById('system-log');
+            vibrate(val/10);
+
+            if(type === "Zulmat") body.style.filter = `brightness(${100 - val}%) contrast(${100 + val/2}%)`;
+            if(type === "Qon") body.style.boxShadow = `inset 0 0 ${val}px #ff0000`;
+            if(type === "Miya") body.style.transform = `skewX(${val/20}deg) scale(${1 + val/1000})`;
+            
+            if(val > 90) {
+                log.innerText = "ERROR: HUMAN_SOUL_OVERFLOWING!";
+                log.style.color = "red";
+                triggerDemon();
+            }
+        }
+
+        function triggerDemon() {
+            const demon = document.getElementById('demon-layer');
+            demon.style.display = 'block';
+            setTimeout(() => demon.style.display = 'none', 100);
+        }
+
+        function fakeError(name) {
+            vibrate(300);
+            triggerDemon();
+            alert("SISTEMA XATOSI: " + name + " zonasiga ulanish uchun ruh yetarli emas!");
+        }
+
+        function changeTab(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+            vibrate(40);
+        }
+
+        function vibrate(ms) { if(navigator.vibrate) navigator.vibrate(ms); }
+
+        window.onload = startIntro;
+    </script>
+</body>
+</html>

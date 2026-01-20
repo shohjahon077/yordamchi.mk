@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZULMAT O'RMONI: SNIPER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nosifer&family=Orbitron&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; }
+        body { background: #000; color: white; height: 100vh; overflow: hidden; font-family: 'Orbitron', sans-serif; }
+
+        /* --- NISHONLAGICH (CROSSHAIR) --- */
+        #crosshair {
+            position: fixed; top: 50%; left: 50%;
+            width: 30px; height: 30px;
+            border: 2px solid rgba(255, 0, 0, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50; pointer-events: none;
+            display: none;
+        }
+        #crosshair::before { content: ''; position: absolute; top: 50%; left: -5px; width: 40px; height: 2px; background: red; transform: translateY(-50%); }
+        #crosshair::after { content: ''; position: absolute; left: 50%; top: -5px; width: 2px; height: 40px; background: red; transform: translateX(-50%); }
+
+        /* --- XARITA VA DUNYO --- */
+        #world {
+            position: absolute; width: 4000px; height: 4000px;
+            background: #050505 url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            display: none;
+        }
+
+        #mask {
+            position: fixed; inset: 0; z-index: 10;
+            background: radial-gradient(circle 180px at 50% 50%, transparent 10%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none;
+        }
+
+        /* --- OBYEKTLAR --- */
+        .obj { position: absolute; display: flex; align-items: center; justify-content: center; z-index: 5; }
+        .ghost { color: rgba(255,255,255,0.2); font-size: 40px; transition: 0.3s; }
+        .gun { color: gold; font-size: 50px; filter: drop-shadow(0 0 15px gold); cursor: pointer; }
+        .key { color: cyan; font-size: 50px; filter: drop-shadow(0 0 15px cyan); display: none; cursor: pointer; }
+        .door { width: 150px; height: 200px; border: 5px solid #300; font-family: 'Nosifer'; color: #300; text-align: center; font-size: 15px; }
+
+        /* --- UI --- */
+        #hud { position: fixed; top: 20px; width: 100%; text-align: center; z-index: 100; color: #ff0; text-shadow: 2px 2px #000; }
+        #fire-btn {
+            position: fixed; bottom: 40px; right: 40px; width: 90px; height: 90px;
+            background: rgba(150, 0, 0, 0.6); border: 3px solid #fff; border-radius: 50%;
+            z-index: 100; display: none; align-items: center; justify-content: center; font-size: 40px;
+            box-shadow: 0 0 20px red;
+        }
+
+        #flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 60; }
+    </style>
+</head>
+<body>
+
+    <div id="intro" style="position:fixed; inset:0; z-index:1000; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <h1 style="font-family:'Nosifer'; color:red;">ZULMAT MERGANI</h1>
+        <p style="margin:20px; color:#555;">Nishon markazda bo'ladi!</p>
+        <button onclick="startGame()" style="padding:15px 40px; background:red; color:white; border:none; border-radius:10px; font-family:'Orbitron'; cursor:pointer;">BOSHLASH</button>
+    </div>
+
+    <div id="hud">VAZIFA: QUROLNI TOPING (SARIQ PISTOLET)</div>
+    <div id="crosshair"></div>
+    <div id="flash"></div>
+
+    <div id="world">
+        <div id="gun" class="obj gun" style="left: 600px; top: 600px;" onclick="getGun()"><i class="fas fa-gun"></i></div>
+        <div id="key" class="obj key" style="left: 2000px; top: 1500px;" onclick="getKey()"><i class="fas fa-key"></i></div>
+        <div id="door" class="obj door" style="left: 3500px; top: 3500px;">LA'NATLANGAN DARVOZA</div>
+    </div>
+
+    <div id="mask"></div>
+    <div id="fire-btn" onclick="shoot()"><i class="fas fa-bullseye"></i></div>
+
+    <script>
+        let hasGun = false, hasKey = false, isPlaying = false;
+        let worldX = -200, worldY = -200; // Boshlang'ich koordinata
+
+        function startGame() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('world').style.display = 'block';
+            isPlaying = true;
+            spawnGhosts();
+            // Mobil uchun markazga o'tkazish
+            moveWorld(window.innerWidth/2, window.innerHeight/2);
+        }
+
+        // --- HARAKAT (Markazga nisbatan surish) ---
+        function moveWorld(x, y) {
+            if(!isPlaying) return;
+            // Xarita suriladi, nishon esa markazda (fixed) qoladi
+            let moveX = -(x / window.innerWidth) * 3500;
+            let moveY = -(y / window.innerHeight) * 3500;
+            document.getElementById('world').style.transform = `translate(${moveX}px, ${moveY}px)`;
+        }
+
+        window.addEventListener('mousemove', e => moveWorld(e.clientX, e.clientY));
+        window.addEventListener('touchmove', e => moveWorld(e.touches[0].clientX, e.touches[0].clientY));
+
+        function spawnGhosts() {
+            const world = document.getElementById('world');
+            for(let i=0; i<45; i++) {
+                let g = document.createElement('div');
+                g.className = 'obj ghost';
+                g.innerHTML = '<i class="fas fa-ghost"></i>';
+                g.style.left = Math.random() * 3800 + 'px';
+                g.style.top = Math.random() * 3800 + 'px';
+                world.appendChild(g);
+            }
+        }
+
+        function getGun() {
+            hasGun = true;
+            document.getElementById('gun').style.display = 'none';
+            document.getElementById('crosshair').style.display = 'block';
+            document.getElementById('fire-btn').style.display = 'flex';
+            document.getElementById('key').style.display = 'flex';
+            document.getElementById('hud').innerText = "NISHONNI ARVOHGA TO'G'IRLAB OTING!";
+            document.getElementById('hud').style.color = "red";
+            if(navigator.vibrate) navigator.vibrate(200);
+        }
+
+        function getKey() {
+            hasKey = true;
+            document.getElementById('key').style.display = 'none';
+            const door = document.getElementById('door');
+            door.style.borderColor = "#0f0";
+            door.style.color = "#0f0";
+            door.style.boxShadow = "0 0 30px #0f0";
+            document.getElementById('hud').innerText = "DARVOZA OCHILDI! TEZROQ QOCHING!";
+            if(navigator.vibrate) navigator.vibrate(200);
+            door.onclick = () => { if(hasKey) { alert("G'ALABA! SIZ OMON QOLDINGIZ!"); location.reload(); } };
+        }
+
+        function shoot() {
+            if(!hasGun) return;
+
+            // Otish effekti
+            const f = document.getElementById('flash');
+            f.style.opacity = '1';
+            setTimeout(() => f.style.opacity = '0', 40);
+            if(navigator.vibrate) navigator.vibrate(60);
+
+            // Nishon markazi koordinatasi
+            let centerX = window.innerWidth / 2;
+            let centerY = window.innerHeight / 2;
+
+            const ghosts = document.querySelectorAll('.ghost');
+            ghosts.forEach(g => {
+                let rect = g.getBoundingClientRect();
+                // Arvoh markaziy nishon ichidami? (Pluscha ichidami)
+                let dist = Math.hypot((rect.left + rect.width/2) - centerX, (rect.top + rect.height/2) - centerY);
+                
+                if(dist < 50) { // Nishonga yaqin bo'lsa
+                    g.style.color = "red";
+                    g.style.transform = "scale(0) rotate(180deg)";
+                    setTimeout(() => g.remove(), 300);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
