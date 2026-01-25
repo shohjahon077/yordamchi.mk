@@ -1,192 +1,365 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <style>
-                body {
-                  background-color: white; /* Ensure the iframe has a white background */
-                }
-
-                
-              </style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>YMT HUB — Homiylik</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ezgulik | Animated Donate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --card-glass: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-light: #ffffff;
+            --text-muted: #a0aec0;
+            --accent-blue: #00bfff; /* Deep Sky Blue */
+            --accent-purple: #9333ea; /* Purple 600 */
+        }
 
-    body {
-      background: #020410;
-      color: #0ff;
-      font-family: 'Segoe UI', monospace;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Mobilga moslashuv */
+            font-family: 'Space Grotesk', sans-serif;
+        }
 
-    .stars {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            perspective: 2500px; /* Chuqur 3D perspektiva */
+        }
 
-    .star {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle var(--d) infinite ease-in-out;
-    }
+        /* Orqa fondagi murakkab animatsiyalar */
+        .animated-bg-sphere {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 60%);
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.2;
+            animation: moveSphere1 15s infinite alternate ease-in-out;
+            z-index: -1;
+        }
 
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.1; }
-      50% { opacity: 1; }
-    }
+        .animated-bg-sphere:nth-child(2) {
+            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 60%);
+            width: 600px;
+            height: 600px;
+            top: auto;
+            bottom: -100px;
+            left: -100px;
+            animation: moveSphere2 18s infinite alternate-reverse ease-in-out;
+        }
 
-    .card-3d-container {
-      position: relative;
-      z-index: 2;
-      perspective: 1000px;
-    }
+        @keyframes moveSphere1 {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(50%, 50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
 
-    .donate-card {
-      width: 320px;
-      height: 200px;
-      background: linear-gradient(135deg, #0a0f20, #050a15);
-      border: 2px solid #0ff;
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-      color: white;
-      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-      transform-style: preserve-3d;
-      transition: transform 0.3s ease;
-    }
+        @keyframes moveSphere2 {
+            0% { transform: translate(50%, 50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(50%, 50%) scale(1); }
+        }
 
-    .donate-card:hover {
-      transform: rotateX(10deg) rotateY(10deg) scale(1.03);
-      box-shadow: 0 0 40px #0ff, 0 0 60px #f0f;
-    }
+        /* Sarlavha animatsiyasi */
+        header {
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInTop 1s forwards cubic-bezier(0.19, 1, 0.22, 1);
+        }
 
-    .card-header {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #0ff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
-    }
+        @keyframes fadeInTop {
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .card-number {
-      font-family: monospace;
-      font-size: 1.2rem;
-      letter-spacing: 4px;
-      color: #aaa;
-      text-align: center;
-      margin: 10px 0;
-    }
+        header h1 {
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            background: linear-gradient(180deg, #e0e0e0 0%, #808080 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
 
-    .card-footer {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #888;
-    }
+        header p {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
 
-    .support-btn {
-      margin-top: 30px;
-      padding: 12px 36px;
-      background: transparent;
-      color: #ff00ff;
-      border: 2px solid #ff00ff;
-      border-radius: 50px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      font-family: inherit;
-      letter-spacing: 2px;
-    }
+        /* 3D Karta */
+        .scene {
+            width: 380px;
+            height: 240px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateY(50px) rotateX(15deg); /* Boshlang'ich animatsiya holati */
+            opacity: 0;
+            animation: cardEntrance 1.2s forwards 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
 
-    .support-btn:hover {
-      background: rgba(255, 0, 255, 0.2);
-      box-shadow: 0 0 20px #ff00ff;
-      transform: scale(1.1);
-    }
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: translateY(0px) rotateX(0deg); }
+        }
 
-    .glow {
-      animation: glow 3s infinite alternate;
-    }
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out; /* Mouse tracking */
+        }
 
-    @keyframes glow {
-      from { box-shadow: 0 0 10px #0ff; }
-      to { box-shadow: 0 0 20px #f0f, 0 0 30px #0af; }
-    }
-  </style>
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--card-glass);
+            backdrop-filter: blur(35px) saturate(200%); /* Kuchliroq glassmorphism */
+            -webkit-backdrop-filter: blur(35px) saturate(200%);
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+
+        .shine {
+            position: absolute;
+            top: -100%; left: -100%;
+            width: 200%; height: 200%;
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.2) 0%,
+                transparent 50%,
+                rgba(255,255,255,0.05) 100%
+            );
+            transform: rotateZ(45deg); /* Nur effekti */
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .chip {
+            width: 55px; height: 42px;
+            background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .card-number {
+            font-size: 26px;
+            font-weight: 500;
+            letter-spacing: 5px;
+            color: var(--text-light);
+            margin-top: 25px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .label {
+            font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px;
+        }
+        .value {
+            font-size: 16px; font-weight: 700;
+        }
+
+        /* Tugmalar va UI elementlar */
+        .actions {
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%; max-width: 320px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInBottom 1s forwards 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        @keyframes fadeInBottom {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 18px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: var(--text-light);
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 191, 255, 0.3);
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 191, 255, 0.4);
+        }
+        .btn-main:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 5px 20px rgba(0, 191, 255, 0.2);
+        }
+
+        .toast {
+            position: fixed;
+            top: -100px;
+            background: linear-gradient(90deg, #fff 0%, #eee 100%);
+            color: #000;
+            padding: 14px 28px;
+            border-radius: 35px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 100;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .toast.active { top: 30px; }
+
+        /* Mobil qurilmalar uchun moslashuv */
+        @media (max-width: 480px) {
+            .scene { width: 90vw; height: 58vw; }
+            .card-face { padding: 25px; border-radius: 20px; }
+            .card-number { font-size: 5vw; letter-spacing: 3px; }
+            header h1 { font-size: 30px; }
+            .chip { width: 45px; height: 35px; border-radius: 8px; }
+            .value { font-size: 14px; }
+            .label { font-size: 9px; }
+            .btn-main { padding: 16px; font-size: 15px; border-radius: 20px; }
+            .toast { padding: 12px 20px; font-size: 13px; border-radius: 25px; }
+        }
+    </style>
 </head>
 <body>
-  <!-- Yulduzlar -->
-  <div class="stars" id="stars"></div>
 
-  <!-- 3D Homiylik Karta -->
-  <div class="card-3d-container">
-    <div class="donate-card glow">
-      <div class="card-header">YMT HUB</div>
-      <div class="card-number">4916 9903 1360 2143</div>
-      <div class="card-footer">Homiylik qilish — kelajakni qurish</div>
+    <div class="animated-bg-sphere" style="top: 10%; left: 10%;"></div>
+    <div class="animated-bg-sphere" style="bottom: 5%; right: 15%;"></div>
+
+    <header>
+        <h1>YMT HUB</h1>
+        <p>Qalbingizning iliqligini ulashing, dunyoni yaxshiroq qiling.</p>
+    </header>
+
+    <div class="scene" id="scene">
+        <div class="card-inner" id="cardInner">
+            <div class="card-face">
+                <div class="shine" id="cardShine"></div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div class="chip"></div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Humo_logo.svg/1024px-Humo_logo.svg.png" width="75" style="filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255,255,255,0.3));">
+                </div>
+                
+                <div class="card-number" id="cardNumber">9860 1201 5678 9012</div>
+                
+                <div class="card-footer">
+                    <div>
+                        <p class="label">Karta Egasi</p>
+                        <p class="value">Shohjahon mahkamov</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="label">Muddati</p>
+                        <p class="value">12/27</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div style="text-align: center; margin-top: 20px;">
-      <button class="support-btn" onclick="support()">
-        💫 Homiylik qilish
-      </button>
+
+    <div class="actions">
+        <button class="btn-main" id="copyBtn">
+            <span>Karta raqamini nusxalash</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
     </div>
-  </div>
 
-  <script>
-    // Yulduzlar
-    const stars = document.getElementById('stars');
-    for (let i = 0; i < 150; i++) {
-      const s = document.createElement('div');
-      s.classList.add('star');
-      s.style.width = `${Math.random() * 2 + 1}px`;
-      s.style.height = s.style.width;
-      s.style.left = `${Math.random() * 100}%`;
-      s.style.top = `${Math.random() * 100}%`;
-      s.style.setProperty('--d', `${2 + Math.random() * 4}s`);
-      s.style.opacity = Math.random() * 0.7;
-      stars.appendChild(s);
-    }
+    <div id="toast" class="toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-8.1"></path><path d="M22 4L12 14.01l-3-3"></path></svg>
+        <span>Nusxa olindi!</span>
+    </div>
 
-    // Homiylik havolasi — O'ZINGIZNI HAVOLANGIZNI QO'YING!
-    function support() {
-      const url = "https://pay.click.uz/donate/ymt-hub"; // ⬅️ BUNI O'ZGARTIRING!
-      window.open(url, '_blank');
-    }
-  </script>
+    <script>
+        const cardInner = document.getElementById('cardInner');
+        const cardShine = document.getElementById('cardShine');
+        const cardNumber = document.getElementById('cardNumber').innerText;
+        const copyBtn = document.getElementById('copyBtn');
+        const toast = document.getElementById('toast');
+
+        // Mouse va Touch harakatiga qarab 3D effekt va yorug'lik
+        const applyTilt = (event) => {
+            let x, y;
+            if (event.type.startsWith('touch')) {
+                const touch = event.touches[0];
+                x = touch.clientX;
+                y = touch.clientY;
+            } else {
+                x = event.clientX;
+                y = event.clientY;
+            }
+
+            const rect = cardInner.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const rotateX = (y - centerY) / 15;
+            const rotateY = (centerX - x) / 15;
+
+            cardInner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Yorug'lik effekti (Shine)
+            const shineX = (x - rect.left) / rect.width * 200 - 100;
+            const shineY = (y - rect.top) / rect.height * 200 - 100;
+            cardShine.style.transform = `translate(${shineX}%, ${shineY}%) rotateZ(45deg)`;
+        };
+
+        window.addEventListener('mousemove', applyTilt);
+        window.addEventListener('touchmove', applyTilt);
+
+        // Karta holatini tiklash
+        const resetTilt = () => {
+            cardInner.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            cardShine.style.transform = `translate(-100%, -100%) rotateZ(45deg)`;
+        };
+
+        window.addEventListener('mouseleave', resetTilt);
+        window.addEventListener('touchend', resetTilt);
+
+        // Nusxalash funksiyasi
+        const copyCardNumber = () => {
+            const cleanNum = cardNumber.replace(/\s/g, '');
+            navigator.clipboard.writeText(cleanNum).then(() => {
+                // Toast bildirishnoma
+                toast.classList.add('active');
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(70); // Haptic feedback
+                }
+                setTimeout(() => {
+                    toast.classList.remove('active');
+                }, 2500);
+            });
+        };
+
+        copyBtn.addEventListener('click', copyCardNumber);
+        cardInner.addEventListener('click', copyCardNumber); // Kartani bosganda ham nusxalash
+    </script>
 </body>
 </html>
-
-
-
-              <script>
-                                 const url = "https://pay.click.uz/donate/ymt-hub"; // ← SIZNING HAVOLANGIZ
-   
-
-              </script>
-                        </body>
-                        </html>
-                    
