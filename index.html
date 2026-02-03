@@ -1,1477 +1,2293 @@
 <!DOCTYPE html>
 <html lang="uz" dir="ltr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Yordamchi Maktab – barcha fanlar bo‘yicha darsliklar, testlar, video darslar va maslahatlar." />
-    <title>Yordamchi Maktab | 3D Neumorphism + PWA</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XFE4VVB84B"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XFE4VVB84B');
-    </script>
-    <style>
-        /* ====== GLOBAL CSS VARIABLES ====== */
-        :root {
-            --base-color: #ecf0f3;
-            --primary-color: #3d5a80;
-            --accent-color: #98c1d9;
-            --light-shadow: #ffffff;
-            --dark-shadow: #a8b0c2;
-            --transition-speed: 0.3s;
-            --btn-radius: 20px;
-            --big-btn-height: 120px;
-            --font-size-base: 16px;
-            --ai-btn-size: 70px;
-            --ai-btn-bottom: 30px;
-            --ai-btn-right: 30px;
-        }
-        /* THEMES */
-        .theme-ocean { --primary-color: #1a535c; --accent-color: #4ecdc4; --dark-shadow: #4a5d73; }
-        .theme-green { --primary-color: #4CAF50; --accent-color: #8BC34A; --dark-shadow: #90a4ae; }
-        .theme-violet { --primary-color: #673AB7; --accent-color: #B39DDB; --dark-shadow: #9e8fb8; }
-        .theme-dark-red { --primary-color: #7f1d1d; --accent-color: #fca5a5; --dark-shadow: #a39999; }
-        .theme-soft { --primary-color: #5e6066; --accent-color: #b5c1d1; --dark-shadow: #b0b8c5; }
-        /* DARK MODE */
-        .dark-mode {
-            --base-color: #2c2f33;
-            --primary-color: #f5f7fa;
-            --accent-color: #7289da;
-            --light-shadow: #3b3f45;
-            --dark-shadow: #1e1e21;
-        }
-        /* ANIMATION REDUCTION (accessibility) */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        /* ====== RESET & BASE STYLES ====== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Rubik', sans-serif;
-            background-color: var(--base-color);
-            color: var(--primary-color);
-            font-size: var(--font-size-base);
-            line-height: 1.6;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            min-height: 100vh;
-            transition:
-                background-color var(--transition-speed),
-                color var(--transition-speed);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            position: relative;
-        }
-        /* ====== 3D PARTICLES BACKGROUND ====== */
-        #particles-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            pointer-events: none;
-        }
-        /* ====== CSS GRADIENT BACKGROUND ====== */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(152, 193, 217, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(61, 90, 128, 0.06) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-            animation: bgFloat 25s infinite alternate ease-in-out;
-        }
-        @keyframes bgFloat {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100px, 100px); }
-        }
-        /* ====== NEUMORPHISM CORE ====== */
-        .neumorphic {
-            border-radius: var(--btn-radius);
-            background: var(--base-color);
-            box-shadow:
-                8px 8px 16px var(--dark-shadow),
-                -8px -8px 16px var(--light-shadow);
-            transition: all var(--transition-speed) ease;
-        }
-        .neumorphic.pressed {
-            box-shadow:
-                inset 6px 6px 12px var(--dark-shadow),
-                inset -6px -6px 12px var(--light-shadow);
-        }
-        /* ====== INTRO SCREEN ====== */
-        #intro {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, var(--primary-color), #293241);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 9999;
-            padding: 0 20px;
-            opacity: 1;
-            pointer-events: all;
-            transition: opacity 0.8s ease;
-        }
-        .intro-logo {
-            font-size: clamp(2.8rem, 8vw, 5.5rem);
-            font-weight: 800;
-            letter-spacing: 3px;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            animation: float 3.5s ease-in-out infinite, fadeIn 1s forwards;
-        }
-        .intro-sub {
-            font-size: clamp(1rem, 3vw, 1.6rem);
-            margin-top: 12px;
-            font-weight: 400;
-            max-width: 800px;
-            opacity: 0.9;
-        }
-        .progress-bar {
-            width: 80%;
-            max-width: 500px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            margin-top: 30px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--accent-color);
-            border-radius: 3px;
-            animation: progress 3s linear forwards;
-        }
-        .skip-btn {
-            margin-top: 20px;
-            padding: 10px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .skip-btn:hover {
-            background: rgba(255,255,255,0.25);
-            transform: scale(1.05);
-        }
-        /* Animations */
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-        @keyframes progress { to { width: 100%; } }
-        @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        /* ====== MAIN CONTENT ====== */
-        #main-content {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.8s ease 0.2s;
-        }
-        #main-content.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        /* ====== NAVIGATION ====== */
-        .menu-toggle {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            width: 52px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            cursor: pointer;
-            z-index: 1000;
-            color: var(--primary-color);
-            background: var(--base-color);
-            border-radius: 50%;
-            box-shadow:
-                6px 6px 12px var(--dark-shadow),
-                -6px -6px 12px var(--light-shadow);
-            transition: all 0.3s ease;
-        }
-        .menu-toggle:hover,
-        .menu-toggle:focus {
-            color: var(--accent-color);
-            box-shadow:
-                inset 4px 4px 8px var(--dark-shadow),
-                inset -4px -4px 8px var(--light-shadow);
-        }
-        .menu-toggle:focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 4px;
-        }
-        .mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            max-width: 320px;
-            height: 100vh;
-            background: var(--base-color);
-            display: flex;
-            flex-direction: column;
-            padding: 70px 20px 30px;
-            gap: 12px;
-            z-index: 999;
-            transition: right 0.4s cubic-bezier(0.6, 0, 0.4, 1);
-            box-shadow: -5px 0 20px rgba(0,0,0,0.12);
-            overscroll-behavior: contain;
-        }
-        .mobile-menu.active {
-            right: 0;
-        }
-        .mobile-link {
-            display: block;
-            padding: 14px 20px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            border-radius: 18px;
-            background: var(--base-color);
-            box-shadow:
-                5px 5px 10px var(--dark-shadow),
-                -5px -5px 10px var(--light-shadow);
-            transition: all 0.25s ease;
-        }
-        .mobile-link:hover,
-        .mobile-link:focus {
-            color: var(--accent-color);
-            box-shadow:
-                inset 4px 4px 8px var(--dark-shadow),
-                inset -4px -4px 8px var(--light-shadow);
-        }
-        .mobile-link:focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 4px;
-        }
-        .navbar {
-            display: none;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 12px 0;
-            position: sticky;
-            top: 15px;
-            z-index: 900;
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto 20px;
-        }
-        .nav-link {
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            border-radius: 15px;
-            background: var(--base-color);
-            box-shadow:
-                4px 4px 8px var(--dark-shadow),
-                -4px -4px 8px var(--light-shadow);
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .nav-link:hover,
-        .nav-link:focus {
-            color: var(--accent-color);
-            box-shadow:
-                inset 3px 3px 6px var(--dark-shadow),
-                inset -3px -3px 6px var(--light-shadow);
-        }
-        .nav-link:focus-visible {
-            outline: 2px solid var(--accent-color);
-            outline-offset: 3px;
-        }
-        /* ====== MAIN BUTTONS (3D POP-OUT) ====== */
-        .main-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 30px;
-            padding: 110px 20px 70px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .big-btn-container {
-            display: block;
-            text-decoration: none;
-            perspective: 1000px;
-        }
-        .big-btn {
-            width: 100%;
-            min-height: var(--big-btn-height);
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            background: var(--base-color);
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
-            box-shadow:
-                12px 12px 24px var(--dark-shadow),
-                -12px -12px 24px var(--light-shadow);
-            transform-style: preserve-3d;
-        }
-        .big-btn:hover {
-            transform: translateY(-8px) scale(1.04) translateZ(20px);
-            color: var(--accent-color);
-            box-shadow:
-                18px 18px 36px var(--dark-shadow),
-                -18px -18px 36px var(--light-shadow);
-        }
-        .big-btn:active,
-        .big-btn:focus.pressed {
-            transform: translateY(0) scale(1);
-            box-shadow:
-                inset 10px 10px 20px var(--dark-shadow),
-                inset -10px -10px 20px var(--light-shadow);
-        }
-        .big-btn:focus-visible {
-            outline: 3px solid var(--accent-color);
-            outline-offset: 6px;
-            transform: translateY(-4px);
-        }
-        .big-btn span {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #777;
-            margin-top: 6px;
-            transition: color 0.3s;
-        }
-        .dark-mode .big-btn span { color: #aaa; }
-        /* ====== YORDAMCHI AI BUTTON ====== */
-        .ai-btn-container {
-            position: fixed;
-            bottom: var(--ai-btn-bottom);
-            right: var(--ai-btn-right);
-            z-index: 1001;
-            animation: pulse 3s infinite, float 4s ease-in-out infinite;
-        }
-        .ai-btn {
-            width: var(--ai-btn-size);
-            height: var(--ai-btn-size);
-            border-radius: 50%;
-            background: var(--accent-color);
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                6px 6px 12px var(--dark-shadow),
-                -6px -6px 12px var(--light-shadow);
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .ai-btn:hover {
-            transform: scale(1.1);
-            background: var(--primary-color);
-            box-shadow:
-                8px 8px 16px var(--dark-shadow),
-                -8px -8px 16px var(--light-shadow);
-        }
-        .ai-btn.listening {
-            background: #e74c3c;
-        }
-        .ai-btn:focus {
-            outline: 3px solid var(--accent-color);
-            outline-offset: 4px;
-        }
-        /* ====== FOOTER ====== */
-        .footer {
-            text-align: center;
-            padding: 24px;
-            background: var(--primary-color);
-            color: #00000097;
-            font-size: 0.95rem;
-            margin-top: 60px;
-        }
-        .footer a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .footer a:hover { text-decoration: underline; }
-        /* ====== SETTINGS MODAL ====== */
-        .settings-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            z-index: 10001;
-            padding-top: 30px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .settings-modal.active {
-            display: flex;
-            align-items: start;
-            justify-content: center;
-            opacity: 1;
-            pointer-events: all;
-        }
-        .settings-content {
-            background: var(--base-color);
-            width: 92%;
-            max-width: 580px;
-            border-radius: 26px;
-            padding: 32px;
-            box-shadow:
-                15px 15px 30px var(--dark-shadow),
-                -15px -15px 30px var(--light-shadow);
-            animation: slideIn 0.4s ease-out;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary-color);
-            background: none;
-            border: none;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-        .close-btn:hover { color: var(--accent-color); }
-        .settings-content h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 28px;
-            font-weight: 700;
-            font-size: 1.8rem;
-        }
-        .settings-group {
-            margin-bottom: 26px;
-            padding: 18px;
-            border-radius: 18px;
-            background: var(--base-color);
-            box-shadow:
-                inset 3px 3px 7px var(--dark-shadow),
-                inset -3px -3px 7px var(--light-shadow);
-        }
-        .settings-group h3 {
-            font-size: 1.25rem;
-            margin-bottom: 16px;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        .options-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .setting-btn {
-            flex: 1;
-            min-width: 90px;
-            padding: 12px 0;
-            border: none;
-            border-radius: 14px;
-            background: var(--base-color);
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow:
-                4px 4px 8px var(--dark-shadow),
-                -4px -4px 8px var(--light-shadow);
-            transition: all 0.2s;
-        }
-        .setting-btn:hover { color: var(--accent-color); }
-        .setting-btn.active {
-            color: var(--accent-color);
-            font-weight: 700;
-            box-shadow:
-                inset 4px 4px 8px var(--dark-shadow),
-                inset -4px -4px 8px var(--light-shadow);
-        }
-        /* ====== ACCESSIBILITY: SKIP TO CONTENT ====== */
-        .skip-link {
-            position: absolute;
-            top: -40px;
-            left: 6px;
-            background: var(--accent-color);
-            color: white;
-            padding: 8px;
-            text-decoration: none;
-            border-radius: 4px;
-            z-index: 10002;
-            transition: top 0.3s;
-        }
-        .skip-link:focus {
-            top: 6px;
-        }
-        /* ====== MEDIA QUERIES ====== */
-        @media (min-width: 769px) {
-            .navbar { display: flex; }
-            .menu-toggle { display: none; }
-            .main-buttons { padding: 140px 20px 80px; }
-        }
-        @media (max-width: 768px) {
-            :root { --big-btn-height: 100px; --ai-btn-size: 60px; --ai-btn-bottom: 20px; --ai-btn-right: 20px; }
-            .main-buttons { padding: 100px 15px 60px; }
-        }
-        @media (max-width: 480px) {
-            :root { --big-btn-height: 92px; --ai-btn-size: 56px; }
-            .main-buttons { grid-template-columns: 1fr; }
-            .options-container { flex-direction: column; }
-        }
-        /* ====== ACCESSIBILITY ====== */
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-        .online-box {
-            padding: 8px 18px;
-            background: #1a1f2b;
-            border: 1px solid #2b3243;
-            border-radius: 10px;
-            color: #4cff88;
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            box-shadow: 0 0 12px rgba(76,255,136,0.2);
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: #4cff88;
-            border-radius: 50%;
-            box-shadow: 0 0 6px #4cff88;
-        }
-        #sponsorAd {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    z-index: 9998;
-    color: white;
-    padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.6s ease;
-  }
-  #sponsorAd.visible {
-    opacity: 1;
-    pointer-events: all;
-  }
-  #sponsorAd h2 {
-    font-size: clamp(1.8rem, 6vw, 2.8rem);
-    font-weight: 800;
-    margin-bottom: 16px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    animation: pulse 2s infinite;
-  }
-  #sponsorAd p {
-    font-size: clamp(1rem, 4vw, 1.4rem);
-    max-width: 600px;
-    margin-bottom: 30px;
-    line-height: 1.5;
-  }
-  #goToDonat {
-    background: #ffcc00;
-    color: #1a1a1a;
-    font-weight: 700;
-    font-size: 1.3rem;
-    padding: 14px 32px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  #goToDonat:hover {
-    transform: scale(1.08);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  #skipAd {
-    margin-top: 16px;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.95rem;
-  }
-  #skipAd:hover {
-    background: rgba(255,255,255,0.3);
-  }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="Yordamchi Maktab – barcha fanlar bo‘yicha darsliklar, testlar, video darslar va maslahatlar." />
+<meta name="theme-color" content="#3d5a80" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<title>Yordamchi Maktab | SUPER VERSIYA 🌟</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XFE4VVB84B"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XFE4VVB84B');
+</script>
+<style>
+/* ====== GLOBAL CSS VARIABLES ====== */
+:root {
+--base-color: #ecf0f3;
+--primary-color: #3d5a80;
+--accent-color: #98c1d9;
+--secondary-accent: #ee6c4d;
+--light-shadow: #ffffff;
+--dark-shadow: #a8b0c2;
+--success-color: #4CAF50;
+--warning-color: #ff9800;
+--danger-color: #f44336;
+--info-color: #2196F3;
+--transition-speed: 0.3s;
+--btn-radius: 20px;
+--big-btn-height: 120px;
+--font-size-base: 16px;
+--chat-btn-size: 65px;
+--chat-btn-bottom: 30px;
+--chat-btn-right: 30px;
+--notification-badge-size: 20px;
+--notification-badge-top: -8px;
+--notification-badge-right: -8px;
+--particles-density: 0.7;
+}
+
+/* THEMES */
+.theme-ocean { 
+--primary-color: #1a535c; 
+--accent-color: #4ecdc4; 
+--secondary-accent: #ff6b6b;
+--dark-shadow: #4a5d73; 
+}
+.theme-green { 
+--primary-color: #2e7d32; 
+--accent-color: #8bc34a; 
+--secondary-accent: #ff9800;
+--dark-shadow: #90a4ae; 
+}
+.theme-violet { 
+--primary-color: #4a148c; 
+--accent-color: #b39ddb; 
+--secondary-accent: #f06292;
+--dark-shadow: #9e8fb8; 
+}
+.theme-dark-red { 
+--primary-color: #7f1d1d; 
+--accent-color: #fca5a5; 
+--secondary-accent: #fbbf24;
+--dark-shadow: #a39999; 
+}
+.theme-soft { 
+--primary-color: #5e6066; 
+--accent-color: #b5c1d1; 
+--secondary-accent: #64b5f6;
+--dark-shadow: #b0b8c5; 
+}
+.theme-sunset { 
+--primary-color: #5e35b1; 
+--accent-color: #ff9800; 
+--secondary-accent: #e91e63;
+--dark-shadow: #7e57c2; 
+}
+
+/* DARK MODE */
+.dark-mode {
+--base-color: #1e2128;
+--primary-color: #e0e6ef;
+--accent-color: #7289da;
+--secondary-accent: #ff7043;
+--light-shadow: #2a2e37;
+--dark-shadow: #14161a;
+--success-color: #43a047;
+--warning-color: #ffb300;
+--danger-color: #e53935;
+--info-color: #1e88e5;
+}
+
+/* ANIMATION REDUCTION (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+* {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+}
+
+/* ====== RESET & BASE STYLES ====== */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Rubik', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+background-color: var(--base-color);
+color: var(--primary-color);
+font-size: var(--font-size-base);
+line-height: 1.6;
+overflow-x: hidden;
+scroll-behavior: smooth;
+min-height: 100vh;
+transition: background-color var(--transition-speed), color var(--transition-speed);
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+position: relative;
+}
+body.dragging * {
+user-select: none !important;
+-webkit-user-select: none !important;
+}
+
+/* ====== PROGRESS BAR ====== */
+#progress-container {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 4px;
+background: var(--light-shadow);
+z-index: 9999;
+}
+#progress-bar {
+height: 100%;
+width: 0%;
+background: var(--accent-color);
+transition: width 0.3s ease;
+box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* ====== 3D PARTICLES BACKGROUND ====== */
+#particles-bg {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -2;
+pointer-events: none;
+}
+@media (max-width: 768px) {
+#particles-bg {
+display: none;
+}
+}
+
+/* ====== CSS GRADIENT BACKGROUND ====== */
+body::before {
+content: "";
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: radial-gradient(circle at 20% 30%, rgba(152, 193, 217, 0.08) 0%, transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(61, 90, 128, 0.06) 0%, transparent 50%);
+pointer-events: none;
+z-index: -1;
+animation: bgFloat 25s infinite alternate ease-in-out;
+}
+@keyframes bgFloat {
+0% { transform: translate(0, 0); }
+100% { transform: translate(100px, 100px); }
+}
+
+/* ====== NEUMORPHISM CORE ====== */
+.neumorphic {
+border-radius: var(--btn-radius);
+background: var(--base-color);
+box-shadow:
+8px 8px 16px var(--dark-shadow),
+-8px -8px 16px var(--light-shadow);
+transition: all var(--transition-speed) ease;
+}
+.neumorphic.pressed {
+box-shadow:
+inset 6px 6px 12px var(--dark-shadow),
+inset -6px -6px 12px var(--light-shadow);
+}
+
+/* ====== BADGE ====== */
+.badge {
+position: absolute;
+top: var(--notification-badge-top);
+right: var(--notification-badge-right);
+background: var(--secondary-accent);
+color: white;
+font-size: 0.7rem;
+font-weight: 700;
+width: var(--notification-badge-size);
+height: var(--notification-badge-size);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 0 6px rgba(0,0,0,0.3);
+z-index: 10;
+animation: pulse 2s infinite;
+}
+@keyframes pulse {
+0% { box-shadow: 0 0 0 0 rgba(238, 108, 77, 0.7); }
+70% { box-shadow: 0 0 0 8px rgba(238, 108, 77, 0); }
+100% { box-shadow: 0 0 0 0 rgba(238, 108, 77, 0); }
+}
+
+/* ====== INTRO SCREEN ====== */
+#intro {
+position: fixed;
+inset: 0;
+background: linear-gradient(135deg, var(--primary-color), #293241);
+color: white;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+z-index: 9999;
+padding: 0 20px;
+opacity: 1;
+pointer-events: all;
+transition: opacity 0.8s ease;
+}
+.intro-logo {
+font-size: clamp(2.8rem, 8vw, 5.5rem);
+font-weight: 800;
+letter-spacing: 3px;
+text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+animation: float 3.5s ease-in-out infinite, fadeIn 1s forwards;
+background: linear-gradient(to right, #ff8a00, #da1b60, #6a11cb);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+}
+.intro-sub {
+font-size: clamp(1rem, 3vw, 1.6rem);
+margin-top: 12px;
+font-weight: 400;
+max-width: 800px;
+opacity: 0.9;
+}
+.progress-bar {
+width: 80%;
+max-width: 500px;
+height: 6px;
+background: rgba(255,255,255,0.2);
+border-radius: 3px;
+margin-top: 30px;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+width: 0%;
+background: var(--accent-color);
+border-radius: 3px;
+animation: progress 3s linear forwards;
+}
+.skip-btn {
+margin-top: 20px;
+padding: 10px 24px;
+font-size: 1rem;
+font-weight: 600;
+background: rgba(255,255,255,0.15);
+border: 1px solid rgba(255,255,255,0.3);
+border-radius: 50px;
+color: white;
+cursor: pointer;
+transition: all 0.3s;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.skip-btn:hover {
+background: rgba(255,255,255,0.25);
+transform: scale(1.05);
+}
+/* Animations */
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes float {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-12px); }
+}
+@keyframes progress { to { width: 100%; } }
+@keyframes slideIn {
+from { transform: translateY(20px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+@keyframes pulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.05); }
+100% { transform: scale(1); }
+}
+@keyframes shine {
+0% { background-position: -100% 0; }
+100% { background-position: 200% 0; }
+}
+
+/* ====== MAIN CONTENT ====== */
+#main-content {
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.8s ease 0.2s;
+}
+#main-content.visible {
+opacity: 1;
+visibility: visible;
+}
+
+/* ====== NAVIGATION ====== */
+.menu-toggle {
+position: fixed;
+top: 25px;
+right: 25px;
+width: 52px;
+height: 52px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.8rem;
+cursor: pointer;
+z-index: 1000;
+color: var(--primary-color);
+background: var(--base-color);
+border-radius: 50%;
+box-shadow:
+6px 6px 12px var(--dark-shadow),
+-6px -6px 12px var(--light-shadow);
+transition: all 0.3s ease;
+}
+.menu-toggle:hover,
+.menu-toggle:focus {
+color: var(--accent-color);
+box-shadow:
+inset 4px 4px 8px var(--dark-shadow),
+inset -4px -4px 8px var(--light-shadow);
+}
+.menu-toggle:focus-visible {
+outline: 2px solid var(--accent-color);
+outline-offset: 4px;
+}
+.mobile-menu {
+position: fixed;
+top: 0;
+right: -100%;
+width: 85%;
+max-width: 320px;
+height: 100vh;
+background: var(--base-color);
+display: flex;
+flex-direction: column;
+padding: 70px 20px 30px;
+gap: 12px;
+z-index: 999;
+transition: right 0.4s cubic-bezier(0.6, 0, 0.4, 1);
+box-shadow: -5px 0 20px rgba(0,0,0,0.12);
+overscroll-behavior: contain;
+}
+.mobile-menu.active {
+right: 0;
+}
+.mobile-link {
+display: block;
+padding: 14px 20px;
+text-align: center;
+font-weight: 600;
+font-size: 1.05rem;
+color: var(--primary-color);
+text-decoration: none;
+border-radius: 18px;
+background: var(--base-color);
+box-shadow:
+5px 5px 10px var(--dark-shadow),
+-5px -5px 10px var(--light-shadow);
+transition: all 0.25s ease;
+position: relative;
+overflow: hidden;
+}
+.mobile-link::after {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: left 0.6s;
+}
+.mobile-link:hover::after {
+left: 100%;
+}
+.mobile-link:hover,
+.mobile-link:focus {
+color: var(--accent-color);
+box-shadow:
+inset 4px 4px 8px var(--dark-shadow),
+inset -4px -4px 8px var(--light-shadow);
+}
+.mobile-link:focus-visible {
+outline: 2px solid var(--accent-color);
+outline-offset: 4px;
+}
+.navbar {
+display: none;
+justify-content: center;
+flex-wrap: wrap;
+gap: 10px;
+padding: 12px 0;
+position: sticky;
+top: 15px;
+z-index: 900;
+width: 90%;
+max-width: 1200px;
+margin: 0 auto 20px;
+}
+.nav-link {
+padding: 10px 16px;
+font-weight: 600;
+font-size: 0.95rem;
+color: var(--primary-color);
+text-decoration: none;
+border-radius: 15px;
+background: var(--base-color);
+box-shadow:
+4px 4px 8px var(--dark-shadow),
+-4px -4px 8px var(--light-shadow);
+transition: all 0.2s;
+white-space: nowrap;
+position: relative;
+overflow: hidden;
+}
+.nav-link::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: left 0.6s;
+}
+.nav-link:hover::before {
+left: 100%;
+}
+.nav-link:hover,
+.nav-link:focus {
+color: var(--accent-color);
+box-shadow:
+inset 3px 3px 6px var(--dark-shadow),
+inset -3px -3px 6px var(--light-shadow);
+}
+.nav-link:focus-visible {
+outline: 2px solid var(--accent-color);
+outline-offset: 3px;
+}
+
+/* ====== USER PROFILE BADGE ====== */
+.user-profile {
+display: flex;
+align-items: center;
+gap: 8px;
+margin-left: 15px;
+font-weight: 600;
+color: var(--accent-color);
+}
+.user-avatar {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+background: var(--accent-color);
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-weight: 700;
+font-size: 0.9rem;
+box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ====== MAIN BUTTONS (3D POP-OUT) ====== */
+.main-buttons {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+gap: 30px;
+padding: 110px 20px 70px;
+max-width: 1200px;
+margin: 0 auto;
+}
+.big-btn-container {
+display: block;
+text-decoration: none;
+perspective: 1000px;
+position: relative;
+overflow: hidden;
+border-radius: 25px;
+}
+.big-btn-container::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+transition: all 0.5s ease;
+opacity: 0;
+z-index: 1;
+}
+.big-btn-container:hover::before {
+opacity: 1;
+transform: scale(1.2);
+}
+.big-btn {
+width: 100%;
+min-height: var(--big-btn-height);
+padding: 16px 20px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+font-size: 1.45rem;
+font-weight: 700;
+color: var(--primary-color);
+background: var(--base-color);
+border: none;
+border-radius: 25px;
+cursor: pointer;
+transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+box-shadow:
+12px 12px 24px var(--dark-shadow),
+-12px -12px 24px var(--light-shadow);
+transform-style: preserve-3d;
+position: relative;
+z-index: 2;
+}
+.big-btn:hover {
+transform: translateY(-8px) scale(1.04) translateZ(20px);
+color: var(--accent-color);
+box-shadow:
+18px 18px 36px var(--dark-shadow),
+-18px -18px 36px var(--light-shadow);
+}
+.big-btn:active,
+.big-btn:focus.pressed {
+transform: translateY(0) scale(1);
+box-shadow:
+inset 10px 10px 20px var(--dark-shadow),
+inset -10px -10px 20px var(--light-shadow);
+}
+.big-btn:focus-visible {
+outline: 3px solid var(--accent-color);
+outline-offset: 6px;
+transform: translateY(-4px);
+}
+.big-btn span {
+display: block;
+font-size: 0.9rem;
+font-weight: 400;
+color: #777;
+margin-top: 6px;
+transition: color 0.3s;
+}
+.dark-mode .big-btn span { color: #aaa; }
+.big-btn.new::after {
+content: "NEW";
+position: absolute;
+top: 10px;
+right: 10px;
+background: var(--secondary-accent);
+color: white;
+font-size: 0.7rem;
+font-weight: 700;
+padding: 2px 6px;
+border-radius: 10px;
+animation: pulse 2s infinite;
+}
+
+/* ====== DAILY CHALLENGE CARD ====== */
+.daily-challenge {
+background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+color: white;
+border-radius: 25px;
+padding: 20px;
+text-align: center;
+box-shadow:
+12px 12px 24px rgba(0,0,0,0.2),
+-12px -12px 24px rgba(255,255,255,0.1);
+margin: 20px auto;
+max-width: 1200px;
+position: relative;
+overflow: hidden;
+}
+.daily-challenge::before {
+content: "";
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+animation: rotate 10s linear infinite;
+}
+@keyframes rotate {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.daily-challenge h3 {
+font-size: 1.5rem;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+}
+.daily-challenge p {
+font-size: 1.1rem;
+margin: 8px 0;
+opacity: 0.9;
+}
+.challenge-progress {
+height: 8px;
+background: rgba(255,255,255,0.2);
+border-radius: 4px;
+margin: 15px 0;
+overflow: hidden;
+}
+.challenge-progress-fill {
+height: 100%;
+width: 65%;
+background: white;
+border-radius: 4px;
+}
+.challenge-reward {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 5px;
+font-weight: 700;
+margin-top: 10px;
+color: #ffd700;
+}
+
+/* ====== CHAT BOT BUTTON & MODAL ====== */
+.chat-bot-btn-container {
+position: fixed;
+bottom: var(--chat-btn-bottom);
+right: var(--chat-btn-right);
+z-index: 1001;
+animation: pulse 3s infinite, float 4s ease-in-out infinite;
+}
+.chat-bot-btn {
+width: var(--chat-btn-size);
+height: var(--chat-btn-size);
+border-radius: 50%;
+background: var(--accent-color);
+color: white;
+font-size: 1.8rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow:
+6px 6px 12px var(--dark-shadow),
+-6px -6px 12px var(--light-shadow);
+cursor: pointer;
+border: none;
+transition: all 0.3s ease;
+position: relative;
+}
+.chat-bot-btn:hover {
+transform: scale(1.1);
+background: var(--primary-color);
+box-shadow:
+8px 8px 16px var(--dark-shadow),
+-8px -8px 16px var(--light-shadow);
+}
+.chat-bot-btn:focus {
+outline: 3px solid var(--accent-color);
+outline-offset: 4px;
+}
+.chat-bot-modal {
+display: none;
+position: fixed;
+bottom: 90px;
+right: 30px;
+width: 380px;
+max-width: 95%;
+max-height: 80vh;
+background: var(--base-color);
+border-radius: 24px;
+box-shadow:
+15px 15px 30px var(--dark-shadow),
+-15px -15px 30px var(--light-shadow);
+z-index: 10000;
+flex-direction: column;
+overflow: hidden;
+transform: scale(0.95);
+opacity: 0;
+transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+touch-action: none;
+}
+.chat-bot-modal.active {
+display: flex;
+transform: scale(1);
+opacity: 1;
+}
+.chat-bot-header {
+padding: 16px 20px;
+background: var(--primary-color);
+color: white;
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-weight: 700;
+font-size: 1.3rem;
+border-bottom: 2px solid var(--accent-color);
+cursor: move;
+user-select: none;
+}
+.chat-bot-modes {
+display: flex;
+gap: 8px;
+margin-left: 15px;
+}
+.mode-btn {
+width: 24px;
+height: 24px;
+border-radius: 50%;
+font-size: 0.8rem;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: all 0.2s;
+border: 2px solid white;
+background: rgba(255,255,255,0.2);
+}
+.mode-btn.active {
+background: white;
+color: var(--primary-color);
+transform: scale(1.1);
+}
+.mode-btn:hover {
+transform: scale(1.05);
+}
+.chat-bot-close-btn {
+background: rgba(255,255,255,0.2);
+color: white;
+width: 32px;
+height: 32px;
+border-radius: 50%;
+border: none;
+font-size: 1.5rem;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+}
+.chat-bot-close-btn:hover {
+background: rgba(255,255,255,0.35);
+transform: rotate(90deg);
+}
+.chat-bot-messages {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 16px;
+max-height: calc(80vh - 150px);
+background: var(--base-color);
+}
+.message-timestamp {
+font-size: 0.7rem;
+color: #888;
+margin-top: 4px;
+text-align: right;
+}
+.chat-message {
+max-width: 85%;
+padding: 12px 16px;
+border-radius: 18px;
+position: relative;
+animation: slideIn 0.3s ease-out;
+line-height: 1.5;
+}
+.chat-message.user {
+align-self: flex-end;
+background: var(--accent-color);
+color: white;
+border-bottom-right-radius: 6px;
+}
+.chat-message.bot {
+align-self: flex-start;
+background: var(--base-color);
+color: var(--primary-color);
+border-bottom-left-radius: 6px;
+box-shadow:
+4px 4px 8px var(--dark-shadow),
+-4px -4px 8px var(--light-shadow);
+}
+.chat-message.bot::after {
+content: "";
+position: absolute;
+bottom: -6px;
+left: 15px;
+width: 12px;
+height: 12px;
+background: var(--base-color);
+transform: rotate(45deg);
+box-shadow: 4px 4px 8px var(--dark-shadow);
+z-index: -1;
+}
+.quick-replies {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-top: 10px;
+}
+.quick-reply-btn {
+background: var(--accent-color);
+color: white;
+border: none;
+border-radius: 20px;
+padding: 6px 12px;
+font-size: 0.85rem;
+cursor: pointer;
+transition: all 0.2s;
+}
+.quick-reply-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.chat-bot-input-container {
+padding: 15px;
+border-top: 1px solid var(--dark-shadow);
+display: flex;
+gap: 10px;
+background: var(--base-color);
+}
+#userInput {
+flex: 1;
+padding: 14px 18px;
+border-radius: 50px;
+border: none;
+background: var(--base-color);
+color: var(--primary-color);
+font-family: 'Rubik', sans-serif;
+font-size: 1rem;
+box-shadow:
+inset 4px 4px 8px var(--dark-shadow),
+inset -4px -4px 8px var(--light-shadow);
+transition: all 0.2s;
+}
+#userInput:focus {
+outline: none;
+box-shadow:
+inset 6px 6px 12px var(--dark-shadow),
+inset -6px -6px 12px var(--light-shadow);
+}
+#sendBtn {
+width: 48px;
+height: 48px;
+border-radius: 50%;
+background: var(--accent-color);
+color: white;
+border: none;
+font-size: 1.3rem;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow:
+4px 4px 8px var(--dark-shadow),
+-4px -4px 8px var(--light-shadow);
+transition: all 0.2s;
+}
+#sendBtn:hover {
+transform: scale(1.08);
+background: var(--primary-color);
+box-shadow:
+6px 6px 12px var(--dark-shadow),
+-6px -6px 12px var(--light-shadow);
+}
+#sendBtn:active {
+transform: scale(0.95);
+box-shadow:
+inset 4px 4px 8px var(--dark-shadow),
+inset -4px -4px 8px var(--light-shadow);
+}
+.typing-indicator {
+display: flex;
+padding: 12px 16px;
+background: var(--base-color);
+border-radius: 18px;
+margin-top: 8px;
+align-self: flex-start;
+box-shadow:
+4px 4px 8px var(--dark-shadow),
+-4px -4px 8px var(--light-shadow);
+}
+.typing-indicator span {
+height: 8px;
+width: 8px;
+margin: 0 1px;
+background-color: var(--primary-color);
+border-radius: 50%;
+display: inline-block;
+animation: bounce 1.4s infinite ease-in-out both;
+}
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+0%, 80%, 100% { transform: scale(0); }
+40% { transform: scale(1); }
+}
+
+/* ====== NOTIFICATION SYSTEM ====== */
+.notification-container {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 9999;
+display: flex;
+flex-direction: column;
+gap: 10px;
+max-width: 350px;
+}
+.notification {
+background: white;
+color: var(--primary-color);
+border-radius: 16px;
+padding: 15px 20px;
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+display: flex;
+align-items: center;
+gap: 12px;
+animation: slideInRight 0.3s ease-out, fadeOut 0.5s 2.5s ease-in forwards;
+min-width: 280px;
+border-left: 4px solid var(--accent-color);
+}
+.notification.success { border-left-color: var(--success-color); }
+.notification.warning { border-left-color: var(--warning-color); }
+.notification.error { border-left-color: var(--danger-color); }
+.notification.info { border-left-color: var(--info-color); }
+@keyframes slideInRight {
+from { transform: translateX(400px); opacity: 0; }
+to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOut {
+from { opacity: 1; transform: translateX(0); }
+to { opacity: 0; transform: translateX(400px); }
+}
+.notification-icon {
+font-size: 1.5rem;
+}
+.notification-content h4 {
+font-weight: 600;
+margin-bottom: 4px;
+}
+.notification-content p {
+font-size: 0.9rem;
+opacity: 0.9;
+}
+
+/* ====== FOOTER ====== */
+.footer {
+text-align: center;
+padding: 24px;
+background: var(--primary-color);
+color: rgba(255,255,255,0.85);
+font-size: 0.95rem;
+margin-top: 60px;
+position: relative;
+overflow: hidden;
+}
+.footer::before {
+content: "";
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+animation: rotate 15s linear infinite;
+}
+.footer a {
+color: var(--accent-color);
+text-decoration: none;
+font-weight: 600;
+transition: all 0.2s;
+}
+.footer a:hover { 
+text-decoration: underline; 
+color: white;
+}
+.footer-links {
+display: flex;
+justify-content: center;
+gap: 20px;
+margin-top: 10px;
+flex-wrap: wrap;
+}
+.footer-link {
+color: rgba(255,255,255,0.7);
+font-size: 0.9rem;
+transition: all 0.2s;
+}
+.footer-link:hover {
+color: white;
+}
+
+/* ====== SETTINGS MODAL ====== */
+.settings-modal {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+backdrop-filter: blur(8px);
+z-index: 10001;
+padding-top: 30px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.3s ease;
+}
+.settings-modal.active {
+display: flex;
+align-items: start;
+justify-content: center;
+opacity: 1;
+pointer-events: all;
+}
+.settings-content {
+background: var(--base-color);
+width: 92%;
+max-width: 580px;
+border-radius: 26px;
+padding: 32px;
+box-shadow:
+15px 15px 30px var(--dark-shadow),
+-15px -15px 30px var(--light-shadow);
+animation: slideIn 0.4s ease-out;
+max-height: 85vh;
+overflow-y: auto;
+position: relative;
+}
+.close-btn {
+position: absolute;
+top: 20px;
+right: 20px;
+font-size: 28px;
+font-weight: bold;
+color: var(--primary-color);
+background: none;
+border: none;
+cursor: pointer;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+}
+.close-btn:hover { 
+color: var(--accent-color);
+transform: rotate(90deg);
+}
+.settings-content h2 {
+text-align: center;
+color: var(--primary-color);
+margin-bottom: 28px;
+font-weight: 700;
+font-size: 1.8rem;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+}
+.settings-group {
+margin-bottom: 26px;
+padding: 18px;
+border-radius: 18px;
+background: var(--base-color);
+box-shadow:
+inset 3px 3px 7px var(--dark-shadow),
+inset -3px -3px 7px var(--light-shadow);
+}
+.settings-group h3 {
+font-size: 1.25rem;
+margin-bottom: 16px;
+color: var(--primary-color);
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.options-container {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+}
+.setting-btn {
+flex: 1;
+min-width: 90px;
+padding: 12px 0;
+border: none;
+border-radius: 14px;
+background: var(--base-color);
+color: var(--primary-color);
+font-weight: 600;
+font-size: 0.95rem;
+cursor: pointer;
+box-shadow:
+4px 4px 8px var(--dark-shadow),
+-4px -4px 8px var(--light-shadow);
+transition: all 0.2s;
+position: relative;
+overflow: hidden;
+}
+.setting-btn::after {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: left 0.6s;
+}
+.setting-btn:hover::after {
+left: 100%;
+}
+.setting-btn:hover { 
+color: var(--accent-color); 
+transform: translateY(-2px);
+}
+.setting-btn.active {
+color: var(--accent-color);
+font-weight: 700;
+box-shadow:
+inset 4px 4px 8px var(--dark-shadow),
+inset -4px -4px 8px var(--light-shadow);
+background: rgba(152, 193, 217, 0.15);
+}
+
+/* ====== ACCESSIBILITY: SKIP TO CONTENT ====== */
+.skip-link {
+position: absolute;
+top: -40px;
+left: 6px;
+background: var(--accent-color);
+color: white;
+padding: 8px;
+text-decoration: none;
+border-radius: 4px;
+z-index: 10002;
+transition: top 0.3s;
+font-weight: 600;
+}
+.skip-link:focus {
+top: 6px;
+}
+
+/* ====== SKELETON LOADING ====== */
+.skeleton {
+background: linear-gradient(90deg, var(--light-shadow) 0%, var(--dark-shadow) 50%, var(--light-shadow) 100%);
+background-size: 200% 100%;
+animation: loading 1.5s infinite;
+border-radius: 10px;
+}
+@keyframes loading {
+0% { background-position: 200% 0; }
+100% { background-position: -200% 0; }
+}
+
+/* ====== MEDIA QUERIES ====== */
+@media (min-width: 769px) {
+.navbar { display: flex; }
+.menu-toggle { display: none; }
+.main-buttons { padding: 140px 20px 80px; }
+}
+@media (max-width: 768px) {
+:root { 
+--big-btn-height: 100px; 
+--chat-btn-size: 60px; 
+--chat-btn-bottom: 20px; 
+--chat-btn-right: 20px; 
+--notification-badge-size: 18px;
+}
+.main-buttons { padding: 100px 15px 60px; }
+.chat-bot-modal {
+width: 95%;
+max-width: 95%;
+bottom: 85px;
+right: 10px;
+}
+.daily-challenge {
+margin: 15px 10px;
+padding: 15px;
+}
+}
+@media (max-width: 480px) {
+:root { --big-btn-height: 92px; --chat-btn-size: 56px; }
+.main-buttons { grid-template-columns: 1fr; }
+.options-container { flex-direction: column; }
+.chat-bot-header { font-size: 1.15rem; padding: 14px 16px; }
+.chat-bot-messages { padding: 15px; }
+.chat-bot-input-container { padding: 12px; }
+#userInput { padding: 12px 16px; font-size: 0.95rem; }
+#sendBtn { width: 44px; height: 44px; font-size: 1.2rem; }
+.notification {
+min-width: 250px;
+font-size: 0.9rem;
+padding: 12px 15px;
+}
+.intro-logo { font-size: clamp(2.5rem, 7vw, 4.5rem); }
+}
+@media (prefers-color-scheme: dark) {
+body:not(.light-mode) {
+--base-color: #1e2128;
+--primary-color: #e0e6ef;
+--accent-color: #7289da;
+--light-shadow: #2a2e37;
+--dark-shadow: #14161a;
+}
+}
+
+/* ====== ACCESSIBILITY ====== */
+.visually-hidden {
+position: absolute;
+width: 1px;
+height: 1px;
+padding: 0;
+margin: -1px;
+overflow: hidden;
+clip: rect(0, 0, 0, 0);
+white-space: nowrap;
+border: 0;
+}
+:focus-visible {
+outline: 3px solid var(--accent-color);
+outline-offset: 2px;
+}
+</style>
 </head>
 <body id="body" class="theme-default">
-    <!-- PARTICLES BACKGROUND -->
-    <canvas id="particles-bg"></canvas>
-    <a href="#main-content" class="skip-link">Asosiy kontentga o'tish</a>
-    <div id="intro">
-        <div class="intro-logo">YORDAMCHI MAKTAB</div>
-        <div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
-        <div class="progress-bar"><div class="progress-fill"></div></div>
-        <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
-    </div>
-    
-    
-    
-<div id="sponsorAd" onclick="window.location.href='donat.html'">
-  <h2>🌟 YMT HUB ga homiy bo'ling!</h2>
-  <p>Sayt rivojlanishiga yordam berish uchun xayriya qiling. Har bir homiylik — yangi imkoniyat!</p>
-  <button id="goToDonat" aria-label="Homiylik qilish">Homiy bo'lish 💖</button>
-  <button id="skipAd" aria-label="Reklamani o'tkazib yuborish">⏩ O'tkazib yuborish</button>
+<!-- PROGRESS BAR -->
+<div id="progress-container"><div id="progress-bar"></div></div>
+
+<!-- PARTICLES BACKGROUND -->
+<canvas id="particles-bg"></canvas>
+
+<!-- SKIP LINK -->
+<a href="#main-content" class="skip-link">Asosiy kontentga o'tish</a>
+
+<!-- INTRO SCREEN -->
+<div id="intro">
+<div class="intro-logo">YORDAMCHI MAKTAB</div>
+<div class="intro-sub" id="introSubText">Bilim Makoni. Yangi Imkoniyatlar. 💡</div>
+<div class="progress-bar"><div class="progress-fill"></div></div>
+<button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
 </div>
-    
-    
-    
-    <div id="main-content">
-        <button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
-        <nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
-            <a href="sinf.html" class="mobile-link" data-key="lessons">🤖 Ustoz AI</a>
-            <a href="testlarboshqarmasi.html" class="mobile-link" data-key="tests">📝 Testlar</a>
-            <a href="game.html" class="mobile-link" data-key="videos">🎮 O'yinlar</a>
-            <a href="maslahat.html" class="mobile-link" data-key="advice">💡 Maslahatlar</a>
-            <a href="bayroq.html" class="mobile-link" data-key="flags">🏳️ Bayroqlar</a>
-            <a href="galati.html" class="mobile-link" data-key="teachers">👩‍🏫 G‘alati</a>
-            <a href="biz.html" class="mobile-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
-            <a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
-            <a href="sinov3.html" class="mobile-link" data-key="contactt">ICHU bo'lim</a>
-            <a href="uzb.html" class="mobile-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
-            <a href="kokmak.html" class="mobile-link" data-key="yashil_makon">🌿 Yashil Makon</a>
-            <a href="kitob.html" class="mobile-link" data-key="kutubxona">📚 Kutubxona</a>
-            <a href="yolhar.html" class="mobile-link" data-key="yol_qoidasi">🛣️ Yo'l harakati qoidalari</a>
-            <a href="#" class="mobile-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
-        </nav>
-        <nav class="navbar neumorphic" aria-label="Desktop navigatsiya">
-            <a href="sinf.html" class="nav-link" data-key="lessons">🤖 Ustoz AI</a>
-            <a href="testlarboshqarmasi.html" class="nav-link" data-key="tests">📝 Testlar</a>
-            <a href="game.html" class="nav-link" data-key="videos">🎮 O'yinlar</a>
-            <a href="maslahat.html" class="nav-link" data-key="advice">💡 Maslahatlar</a>
-            <a href="bayroq.html" class="nav-link" data-key="flags">🏳️ Bayroqlar</a>
-            <a href="galati.html" class="nav-link" data-key="teachers">👩‍🏫 G‘alati</a>
-            <a href="biz.html" class="nav-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
-            <a href="aloqa.html" class="nav-link" data-key="contact">📞 Aloqa</a>
-            <a href="sinov3.html" class="nav-link" data-key="contactt">ICHU bo'lim</a>
-            <a href="uzb.html" class="nav-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
-            <a href="kokmak.html" class="nav-link" data-key="yashil_makon">🌿 Yashil Makon</a>
-            <a href="kitob.html" class="nav-link" data-key="kutubxona">📚 Kutubxona</a>
-            <a href="yolhar.html" class="nav-link" data-key="yol_qoidasi">🛣️ Yo'l qoidalari</a>
-            <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
-        </nav>
-        <main class="main-buttons">
-            <a href="sinf.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="lessons" data-sub-key="lessons_sub">
-                    <span>🤖 Ustoz AI</span>
-                    <span>Barcha fanlar bo‘yicha</span>
-                </div>
-            </a>
-            <a href="testlarboshqarmasi.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="tests" data-sub-key="tests_sub">
-                    <span>📝 Testlar</span>
-                    <span>Bilimingizni sinovdan o‘tkazing</span>
-                </div>
-            </a>
-            <a href="game.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="videos" data-sub-key="videos_sub">
-                    <span>🎮 O'yinlar</span>
-                    <span>Qiziqarli o'yinlar</span>
-                </div>
-            </a>
-            <a href="maslahat.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="advice" data-sub-key="advice_sub">
-                    <span>💡 Maslahatlar</span>
-                    <span>O‘qish sirlari</span>
-                </div>
-            </a>
-            <a href="bayroq.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="flags" data-sub-key="flags_sub">
-                    <span>🏳️ Bayroqlar</span>
-                    <span>Dunyo davlatlarining bayroqlari</span>
-                </div>
-            </a>
-            <a href="galati.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="teachers" data-sub-key="teachers_sub">
-                    <span>👩‍🏫 G‘alati</span>
-                    <span>G'alati bo'lim bilan tanishing</span>
-                </div>
-            </a>
-            <a href="biz.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="aboutUs" data-sub-key="aboutUs_sub">
-                    <span>ℹ️ Biz Haqimizda</span>
-                    <span>Loyihaning maqsadi</span>
-                </div>
-            </a>
-            <a href="aloqa.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="contact" data-sub-key="contact_sub">
-                    <span>📞 Aloqa</span>
-                    <span>Murojaat uchun</span>
-                </div>
-            </a>
-            <a href="uzb.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="uzbekistan" data-sub-key="uzbekistan_sub">
-                    <span>🇺🇿 O‘zbekiston</span>
-                    <span>Mamlakatimiz haqida</span>
-                </div>
-            </a>
-            <a href="kokmak.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="yashil_makon" data-sub-key="yashil_makon_sub">
-                    <span>🌿 Yashil Makon</span>
-                    <span>Ekologik hayot</span>
-                </div>
-            </a>
-            <a href="kitob.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="kutubxona" data-sub-key="kutubxona_sub">
-                    <span>📚 Kutubxona</span>
-                    <span>Kitoblar dunyosi</span>
-                </div>
-            </a>
-            <a href="yolhar.html" class="big-btn-container">
-                <div class="big-btn" tabindex="0" data-key="yol_qoidasi" data-sub-key="yol_qoidasi_sub">
-                    <span>🛣️ Yo'l qoidalari</span>
-                    <span>Xavfsizlik qoidalari</span>
-                </div>
-            </a>
-        </main>
-        <div style="position: absolute; z-index: 99999">
-      <input autocomplete="off" type="checkbox" id="aadsstickymjiiamjd" hidden />
-      <div style="padding-top: 0; padding-bottom: 0;">
-        <div style="width:15%;height:100%;position:fixed;text-align:center;font-size:0;top:50%;transform:translateY(-50%);right:0;min-width:100px">
-          <label for="aadsstickymjiiamjd" style="bottom: 24px;margin:0 auto;right:0;left:0;max-width:24px; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
-            <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-              <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-            </svg>
-          </label>
-          
-    </div></div>
-        <footer class="footer">
-            <span data-key="footer_protected">Ushbu sayt ASCO tomonidan yaratilgan va 🔒 himoyalangan</span> |
-            © 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
-        </footer>
-    </div>
-    <!-- OVOZLI YORDAMCHI TUGMASI (AI + Microphone) -->
-    <div class="ai-btn-container" id="aiBtnContainer">
-        <button class="ai-btn" id="aiBtn" aria-label="Ovozli yordamchini yoqish">🎙️</button>
-    </div>
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle">
-        <div class="settings-content">
-            <button class="close-btn" id="closeSettings" aria-label="Sozlamalarni yopish">&times;</button>
-            <h2 id="settingsModalTitle">⚙️ Sozlamalar</h2>
-            <div class="settings-group">
-                <h3 id="languageTitle">🌐 Tilni tanlang:</h3>
-                <div class="options-container" id="language-options">
-                    <button class="setting-btn" data-lang="uz">O‘zbekcha</button>
-                    <button class="setting-btn" data-lang="ru">Русский</button>
-                    <button class="setting-btn" data-lang="en">English</button>
-                    <button class="setting-btn" data-lang="ko">한국어</button>
-                    <button class="setting-btn" data-lang="zh">中文</button>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h3 id="modeTitle">🌙 Rejim:</h3>
-                <div class="options-container" id="mode-options">
-                    <button class="setting-btn" data-mode="light">☀️ Yorug‘</button>
-                    <button class="setting-btn" data-mode="dark">🌑 To‘q</button>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h3 id="themeTitle">🎨 Mavzu:</h3>
-                <div class="options-container" id="theme-options">
-                    <button class="setting-btn" data-theme="default">Asosiy</button>
-                    <button class="setting-btn" data-theme="ocean">Okean</button>
-                    <button class="setting-btn" data-theme="green">Yashil</button>
-                    <button class="setting-btn" data-theme="violet">Binafsha</button>
-                    <button class="setting-btn" data-theme="dark-red">Qizil</button>
-                    <button class="setting-btn" data-theme="soft">Pastel</button>
-                </div>
-            </div>
-            <div class="settings-group">
-                <h3 id="accessibilityTitle">♿ Qulaylik:</h3>
-                <div class="options-container">
-                    <button class="setting-btn" id="increaseFont">A+</button>
-                    <button class="setting-btn" id="decreaseFont">A−</button>
-                    <button class="setting-btn" id="resetFont">A</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Three.js CDN -->
-    <!-- Har bir sahifaning <head> qismiga qo'shing -->
-<script src="tg.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-  
-      
-  function showSponsorAd() {
-    const ad = document.getElementById('sponsorAd');
-    const now = Date.now();
-    const lastShown = localStorage.getItem('lastSponsorAdTime');
-    const oneMinute = 60 * 1000; // 60,000 ms
 
-    // 1 daqiqadan kam bo'lsa, ko'rsatma!
-    if (lastShown && now - parseInt(lastShown) < oneMinute) {
-      return;
-    }
+<!-- MAIN CONTENT -->
+<div id="main-content">
+<!-- MOBILE MENU TOGGLE -->
+<button class="menu-toggle" id="menuToggle" aria-label="Mobil menyuni ochish">☰</button>
 
-    // Asosiy kontent ko'rinayotganda reklamani ko'rsat
-    if (!document.getElementById('main-content').classList.contains('visible')) {
-      setTimeout(showSponsorAd, 1000);
-      return;
-    }
+<!-- USER PROFILE (Desktop) -->
+<div class="user-profile" id="userProfile" style="display: none; position: fixed; top: 25px; left: 25px; z-index: 1000;">
+<div class="user-avatar" id="userAvatar">U</div>
+<span id="userName">Foydalanuvchi</span>
+</div>
 
-    ad.classList.add('visible');
-    localStorage.setItem('lastSponsorAdTime', now.toString());
+<!-- MOBILE MENU -->
+<nav class="mobile-menu" id="mobileMenu" aria-label="Mobil navigatsiya">
+<a href="sinf.html" class="mobile-link" data-key="lessons">🤖 Ustoz AI</a>
+<a href="testlarboshqarmasi.html" class="mobile-link" data-key="tests">📝 Testlar</a>
+<a href="game.html" class="mobile-link" data-key="videos">🎮 O'yinlar</a>
+<a href="maslahat.html" class="mobile-link" data-key="advice">💡 Maslahatlar</a>
+<a href="bayroq.html" class="mobile-link" data-key="flags">🏳️ Bayroqlar</a>
+<a href="galati.html" class="mobile-link" data-key="teachers">👩‍🏫 G‘alati</a>
+<a href="biz.html" class="mobile-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
+<a href="aloqa.html" class="mobile-link" data-key="contact">📞 Aloqa</a>
+<a href="sinov3.html" class="mobile-link" data-key="contactt">ICHU bo'lim</a>
+<a href="uzb.html" class="mobile-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
+<a href="kokmak.html" class="mobile-link" data-key="yashil_makon">🌿 Yashil Makon</a>
+<a href="kitob.html" class="mobile-link" data-key="kutubxona">📚 Kutubxona</a>
+<a href="yolhar.html" class="mobile-link" data-key="yol_qoidasi">🛣️ Yo'l qoidalari</a>
+<a href="#" class="mobile-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
+</nav>
 
-    // 10 soniyadan keyin yop
-    setTimeout(() => {
-      if (ad.classList.contains('visible')) {
-        ad.classList.remove('visible');
-      }
-    }, 10000);
-  }
+<!-- DESKTOP NAVIGATION -->
+<nav class="navbar neumorphic" aria-label="Desktop navigatsiya">
+<a href="sinf.html" class="nav-link" data-key="lessons">🤖 Ustoz AI</a>
+<a href="testlarboshqarmasi.html" class="nav-link" data-key="tests">📝 Testlar</a>
+<a href="game.html" class="nav-link" data-key="videos">🎮 O'yinlar</a>
+<a href="maslahat.html" class="nav-link" data-key="advice">💡 Maslahatlar</a>
+<a href="bayroq.html" class="nav-link" data-key="flags">🏳️ Bayroqlar</a>
+<a href="galati.html" class="nav-link" data-key="teachers">👩‍🏫 G‘alati</a>
+<a href="biz.html" class="nav-link" data-key="aboutUs">ℹ️ Biz Haqimizda</a>
+<a href="aloqa.html" class="nav-link" data-key="contact">📞 Aloqa</a>
+<a href="sinov3.html" class="nav-link" data-key="contactt">ICHU bo'lim</a>
+<a href="uzb.html" class="nav-link" data-key="uzbekistan">🇺🇿 O‘zbekiston</a>
+<a href="kokmak.html" class="nav-link" data-key="yashil_makon">🌿 Yashil Makon</a>
+<a href="kitob.html" class="nav-link" data-key="kutubxona">📚 Kutubxona</a>
+<a href="yolhar.html" class="nav-link" data-key="yol_qoidasi">🛣️ Yo'l qoidalari</a>
+<a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
+</nav>
 
-  // Har 60 soniyada tekshirish (faqat ekranda bo'lsa)
-  setInterval(() => {
-    if (document.visibilityState === 'visible') {
-      showSponsorAd();
-    }
-  }, 60000);
+<!-- DAILY CHALLENGE -->
+<div class="daily-challenge">
+<h3>🌟 <span data-key="daily_challenge">Kundalik Vazifa</span></h3>
+<p><span data-key="challenge_text">Bugun 5 ta test topshiring va 50 yulduzcha yig'ing!</span></p>
+<div class="challenge-progress">
+<div class="challenge-progress-fill"></div>
+</div>
+<div class="challenge-reward">⭐ 50 yulduzcha + 🥉 Bronza medal</div>
+</div>
 
-  // Dastlabki tekshirish (sahifa yuklanganda)
-  document.addEventListener('DOMContentLoaded', () => {
-    if (document.visibilityState === 'visible') {
-      setTimeout(showSponsorAd, 3000); // intro tugagandan keyin
-    }
-  });
+<!-- MAIN BUTTONS -->
+<main class="main-buttons">
+<a href="sinf.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="lessons" data-sub-key="lessons_sub">
+<span>🤖 Ustoz AI</span>
+<span>Barcha fanlar bo‘yicha</span>
+</div>
+</a>
+<a href="testlarboshqarmasi.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="tests" data-sub-key="tests_sub">
+<span>📝 Testlar</span>
+<span>Bilimingizni sinovdan o‘tkazing</span>
+</div>
+</a>
+<a href="game.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="videos" data-sub-key="videos_sub">
+<span>🎮 O'yinlar</span>
+<span>Qiziqarli o'yinlar</span>
+</div>
+</a>
+<a href="maslahat.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="advice" data-sub-key="advice_sub">
+<span>💡 Maslahatlar</span>
+<span>O‘qish sirlari</span>
+</div>
+</a>
+<a href="bayroq.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="flags" data-sub-key="flags_sub">
+<span>🏳️ Bayroqlar</span>
+<span>Dunyo davlatlarining bayroqlari</span>
+</div>
+</a>
+<a href="galati.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="teachers" data-sub-key="teachers_sub">
+<span>👩‍🏫 G‘alati</span>
+<span>G'alati bo'lim bilan tanishing</span>
+</div>
+</a>
+<a href="biz.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="aboutUs" data-sub-key="aboutUs_sub">
+<span>ℹ️ Biz Haqimizda</span>
+<span>Loyihaning maqsadi</span>
+</div>
+</a>
+<a href="aloqa.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="contact" data-sub-key="contact_sub">
+<span>📞 Aloqa</span>
+<span>Murojaat uchun</span>
+</div>
+</a>
+<a href="uzb.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="uzbekistan" data-sub-key="uzbekistan_sub">
+<span>🇺🇿 O‘zbekiston</span>
+<span>Mamlakatimiz haqida</span>
+</div>
+</a>
+<a href="kokmak.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="yashil_makon" data-sub-key="yashil_makon_sub">
+<span>🌿 Yashil Makon</span>
+<span>Ekologik hayot</span>
+</div>
+</a>
+<a href="kitob.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="kutubxona" data-sub-key="kutubxona_sub">
+<span>📚 Kutubxona</span>
+<span>Kitoblar dunyosi</span>
+</div>
+</a>
+<a href="yolhar.html" class="big-btn-container">
+<div class="big-btn" tabindex="0" data-key="yol_qoidasi" data-sub-key="yol_qoidasi_sub">
+<span>🛣️ Yo'l qoidalari</span>
+<span>Xavfsizlik qoidalari</span>
+</div>
+</a>
+</main>
 
-  // Tugmalarga click qilish
-  document.getElementById('goToDonat').addEventListener('click', e => {
-    e.stopPropagation();
-    window.location.href = 'donat.html';
-  });
-  document.getElementById('skipAd').addEventListener('click', e => {
-    e.stopPropagation();
-    document.getElementById('sponsorAd').classList.remove('visible');
-  });
-      
-      
-        // ONLINE RANDOM COUNT
-        function updateOnline() {
-            const min = 9500;
-            const max = 10500;
-            const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
-            if (document.getElementById("onlineCount")) {
-                document.getElementById("onlineCount").textContent = randomNum;
-            }
-        }
-        setInterval(updateOnline, 1000);
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-content">
+<span data-key="footer_protected">Ushbu sayt ASCO tomonidan yaratilgan va 🔒 himoyalangan</span> |
+© 2025 <a href="#" data-key="footer_name">Yordamchi Maktab</a>
+</div>
+<div class="footer-links">
+<a href="#" class="footer-link" data-key="privacy">Maxfiylik siyosati</a>
+<a href="#" class="footer-link" data-key="terms">Foydalanish shartlari</a>
+<a href="#" class="footer-link" data-key="help_center">Yordam markazi</a>
+<a href="#" class="footer-link" data-key="feedback">Fikr bildirish</a>
+</div>
+</footer>
 
-        // TARJIMALAR
-        const content = {
-            uz: {
-                yol_qoidasi: "🛣️ Yo'l qoidalari",
-                yol_qoidasi_sub: "Xavfsizlik qoidalari",
-                uzbekistan: "🇺🇿 O‘zbekiston",
-                yashil_makon: "🌿 Yashil Makon",
-                kutubxona: "📚 Kutubxona",
-                uzbekistan_sub: "Mamlakatimiz haqida",
-                yashil_makon_sub: "Ekologik hayot",
-                kutubxona_sub: "Kitoblar dunyosi",
-                introSubText: "Bilim Makoni. Yangi Imkoniyatlar. 💡",
-                lessons: "🤖 Ustoz AI",
-                lessons_sub: "Barcha fanlar bo‘yicha",
-                tests: "📝 Testlar",
-                tests_sub: "Bilimingizni sinovdan o‘tkazing",
-                videos: "🎮 O'yinlar",
-                videos_sub: "Qiziqarli o'yinlar",
-                advice: "💡 Maslahatlar",
-                advice_sub: "O‘qish sirlari",
-                flags: "🏳️ Bayroqlar",
-                flags_sub: "Dunyo davlatlarining bayroqlari",
-                teachers: "👩‍🏫 G‘alati",
-                teachers_sub: "G'alati bo'limga tashrif buyuring",
-                aboutUs: "ℹ️ Biz Haqimizda",
-                aboutUs_sub: "Loyihaning maqsadi",
-                contact: "📞 Aloqa",
-                contactt: "ICHU bo'lim",
-                ichu: "ichu bo'limi",
-                contact_sub: "Murojaat uchun",
-                footer_protected: "🔒 Sayt himoyalangan",
-                footer_name: "Yordamchi Maktab",
-                settings: "⚙️ Sozlamalar",
-                settingsModalTitle: "⚙️ Sozlamalar",
-                languageTitle: "🌐 Tilni tanlang:",
-                modeTitle: "🌙 Rejim:",
-                themeTitle: "🎨 Mavzu:",
-                accessibilityTitle: "♿ Qulaylik:",
-                askName: "Ismingiz nima?",
-                fallback: "Kechirasiz, tushunmadim.",
-                unknownCommand: "Kechirasiz, bu buyruqni tushunmadim. Iltimos, 'sayt haqida' yoki bo'lim nomini ayting.",
-                greeting: "Hush kelibsiz, YMT hub ilimlar dargohiga! Men Temur — yordamchi sun’iy intellektman.",
-                nameResponse: (name) => `Ajoyib! Mening ismim Temur. Siz bilan tanishganimdan xursandman, ${name}!`,
-                howAreYou: "Men har doim yaxshi! Siz o'zingiz yaxshimisiz?",
-                goodReply: "Har doim shunday yaxshi bo'ling!",
-                badReply: "Xavotir olmang, hamma narsa yaxshi bo'ladi. Siz kuchli odagsiz!",
-                siteInfo: "Ajoyib! Bu sayt 'Yordamchi Maktab' deb nomlanadi va YMT hub tomonidan yaratilgan hamda himoyalangan. Siz bu yerda quyidagi bo'limlarga o'tishingiz mumkin: Ustoz AI, Testlar, O'yinlar, Maslahatlar, Bayroqlar, G'alati, Biz haqimizda, Aloqa, ICHU bo'limi, O'zbekiston, Yashil Makon, Kutubxona va Yo'l harakati qoidalari.",
-                settingsOpened: "Sozlamalar ochildi. Rejim, mavzu yoki shirft o'lchamini ayting.",
-                modeChanged: (mode) => mode === 'light' ? "Yorug‘ rejimga o'tildi." : "To‘q rejimga o'tildi.",
-                themeChanged: (theme) => `Mavzu "${theme}" sifatida sozlandi.`,
-                fontSizeChanged: "Shrift hajmi o'zgartirildi.",
-                closingSettings: "Sozlamalar yopildi."
-            }
-        };
+<!-- CHAT BOT BUTTON WITH BADGE -->
+<div class="chat-bot-btn-container" id="chatBotBtnContainer">
+<button class="chat-bot-btn" id="chatBotBtn" aria-label="Yordamchi chat botni ochish">💬</button>
+<div class="badge" id="chatBadge" style="display: none;">1</div>
+</div>
 
-        // Fill missing langs
-        ['ru','en','ko','zh'].forEach(lang => {
-            if (!content[lang]) content[lang] = {};
-            Object.keys(content.uz).forEach(k => {
-                if (!content[lang][k]) content[lang][k] = content.uz[k];
-            });
-        });
+<!-- NOTIFICATION CONTAINER -->
+<div class="notification-container" id="notificationContainer"></div>
 
-        // GLOBAL STATE
-        let currentLang = localStorage.getItem('siteLang') || getLangFromURL() || 'uz';
-        let currentTheme = localStorage.getItem('siteTheme') || 'default';
-        let currentMode = localStorage.getItem('siteMode') || 'light';
-        let fontSize = parseFloat(localStorage.getItem('fontSize') || '16');
-        let userName = localStorage.getItem('userName') || null;
-        let isListening = false;
-        let recognition;
+<!-- CHAT BOT MODAL -->
+<div id="chatBotModal" class="chat-bot-modal" role="dialog" aria-labelledby="chatBotTitle">
+<div class="chat-bot-header" id="chatHeader">
+<h2 id="chatBotTitle">Yordamchi Bot</h2>
+<div class="chat-bot-modes">
+<button class="mode-btn active" data-mode="help" title="Yordam rejimi">❓</button>
+<button class="mode-btn" data-mode="navigate" title="Navigatsiya rejimi">🧭</button>
+<button class="mode-btn" data-mode="fun" title="Kulgili rejim">😄</button>
+</div>
+<button class="chat-bot-close-btn" id="closeChatBot" aria-label="Chat botni yopish">&times;</button>
+</div>
+<div class="chat-bot-messages" id="chatMessages">
+<div class="chat-message bot">
+<span>Assalomu alaykum! Men Yordamchi Maktabning sun'iy intellekt yordamchiman. Sizga qanday yordam bera olaman? 😊</span>
+<div class="message-timestamp">Hozir</div>
+</div>
+</div>
+<div class="chat-bot-input-container">
+<input type="text" id="userInput" placeholder="Xabaringizni yozing..." aria-label="Chat xabari" />
+<button id="sendBtn" aria-label="Xabarni yuborish">➤</button>
+</div>
+</div>
 
-        function getLangFromURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const lang = urlParams.get('lang');
-            return ['uz','ru','en','ko','zh'].includes(lang) ? lang : null;
-        }
-
-        // === OVOZ SOZLASH ===
-        function speak(text, lang = currentLang) {
-            if (speechSynthesis.speaking) speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = getVoiceLangCode(lang);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.0;
-            utterance.volume = 1;
-
-            const voices = speechSynthesis.getVoices();
-            let targetVoice = voices.find(v => v.lang === 'uz-UZ') || 
-                             voices.find(v => v.lang.startsWith('uz')) ||
-                             voices.find(v => v.lang.startsWith(utterance.lang)) ||
-                             voices[0];
-            if (targetVoice) utterance.voice = targetVoice;
-
-            speechSynthesis.speak(utterance);
-        }
-
-        function getVoiceLangCode(lang) {
-            return { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-US', ko: 'ko-KR', zh: 'zh-CN' }[lang] || 'uz-UZ';
-        }
-
-        // === OVOZNI TINGLASH ===
-        function stopListening() {
-            if (recognition) recognition.stop();
-            isListening = false;
-            document.getElementById('aiBtn').classList.remove('listening');
-        }
-
-        function startListening(callback, timeout = 10000) {
-            if (isListening) return;
-            isListening = true;
-            document.getElementById('aiBtn').classList.add('listening');
-
-            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = getVoiceLangCode(currentLang);
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            recognition.start();
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.trim().toLowerCase();
-                callback(transcript);
-                stopListening();
-            };
-
-            recognition.onerror = () => stopListening();
-            recognition.onend = () => {
-                if (isListening) {
-                    speak("Hech narsa eshitilmadi. Qayta aytishingiz mumkinmi?");
-                    setTimeout(() => startListening(callback, timeout), 3000);
-                }
-            };
-
-            setTimeout(() => {
-                if (isListening) recognition.stop();
-            }, timeout);
-        }
-
-        // === BO'LIMLAR XARITASI ===
-        const sectionMap = {
-            uz: {
-                'ustoz ai': 'sinf.html',
-                'testlar': 'testlarboshqarmasi.html',
-                'o\'yinlar': 'game.html',
-                'maslahatlar': 'maslahat.html',
-                'bayroqlar': 'bayroq.html',
-                'g\'alati': 'galati.html',
-                'biz haqimizda': 'biz.html',
-                'aloqa': 'aloqa.html',
-                'ichu bo\'lim': 'sinov3.html',
-                'o\'zbekiston': 'uzb.html',
-                'yashil makon': 'ymakon.html',
-                'kutubxona': 'kitob.html',
-                'yo\'l qoidasi': 'yolhar.html',
-                'yo\'l harakati qoidalari': 'yolhar.html'
-            }
-        };
-        ['ru','en','ko','zh'].forEach(lang => sectionMap[lang] = sectionMap.uz);
-
-        // === SOZLAMALARNI OVOZ BILAN BOSHQARISH ===
-        const modePhrases = {
-            uz: { light: ['yorug', 'yorug\' rejim', 'yorug rejim'], dark: ['to\'q', 'to\'q rejim', 'toq rejim'] }
-        };
-        const themePhrases = {
-            uz: {
-                default: ['asosiy', 'oddiy'],
-                ocean: ['okean', 'ko\'k'],
-                green: ['yashil'],
-                violet: ['binafsha', 'suyuq'],
-                'dark-red': ['qizil'],
-                soft: ['pastel', 'yumshoq']
-            }
-        };
-
-        function applyVoiceSettings(command) {
-            const lang = currentLang;
-            const txt = command.toLowerCase();
-
-            // Sozlamalarni ochish
-            if (txt.includes('sozlamalar') || txt.includes('settings')) {
-                openSettingsModal();
-                speak(content[lang].settingsOpened);
-                return true;
-            }
-
-            // Yopish
-            if (txt.includes('yop') || txt.includes('chiq')) {
-                closeSettingsModal();
-                speak(content[lang].closingSettings);
-                return true;
-            }
-
-            // Rejim
-            if (modePhrases[lang]) {
-                if (modePhrases[lang].light.some(p => txt.includes(p))) {
-                    setMode('light');
-                    speak(content[lang].modeChanged('light'));
-                    return true;
-                }
-                if (modePhrases[lang].dark.some(p => txt.includes(p))) {
-                    setMode('dark');
-                    speak(content[lang].modeChanged('dark'));
-                    return true;
-                }
-            }
-
-            // Mavzu
-            if (themePhrases[lang]) {
-                for (const [theme, phrases] of Object.entries(themePhrases[lang])) {
-                    if (phrases.some(p => txt.includes(p))) {
-                        setTheme(theme);
-                        speak(content[lang].themeChanged(themeMap[theme] || theme));
-                        return true;
-                    }
-                }
-            }
-
-            // Shrift
-            if (txt.includes('shrift') || txt.includes('matn') || txt.includes('harf')) {
-                if (txt.includes('katta') || txt.includes('kattalashtir')) {
-                    fontSize = Math.min(fontSize + 2, 24);
-                    applyFontSize(fontSize);
-                    speak(content[lang].fontSizeChanged);
-                    return true;
-                }
-                if (txt.includes('kichik') || txt.includes('kichraytir')) {
-                    fontSize = Math.max(fontSize - 2, 12);
-                    applyFontSize(fontSize);
-                    speak(content[lang].fontSizeChanged);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        const themeMap = {
-            default: 'Asosiy',
-            ocean: 'Okean',
-            green: 'Yashil',
-            violet: 'Binafsha',
-            'dark-red': 'Qizil',
-            soft: 'Pastel'
-        };
-
-        // === ASOSIY BUYRUQLAR ===
-        function handleVoiceCommand(command) {
-            const lang = currentLang;
-            const txt = command.toLowerCase();
-
-            // Sozlamalarda tekshirish
-            if (document.getElementById('settingsModal').classList.contains('active')) {
-                if (applyVoiceSettings(txt)) return;
-            }
-
-            // Ism so'rash
-            if (!userName && /ism|name|имя|이름|名字|meni\s+ism/i.test(txt)) {
-                speak(content[lang].askName);
-                setTimeout(() => startListening(name => {
-                    userName = name.trim();
-                    localStorage.setItem('userName', name);
-                    speak(content[lang].nameResponse(name));
-                }), 1000);
-                return;
-            }
-
-            // Salom
-            if (/salom|привет|hello|안녕|你好/i.test(txt)) {
-                speak(userName ? `Salom, ${userName}!` : content[lang].greeting);
-                return;
-            }
-
-            // Qalesan?
-            if (/qalesan|how are you|как дела|어떻게 지내|你好吗/i.test(txt)) {
-                speak(content[lang].howAreYou);
-                setTimeout(() => startListening(reply => {
-                    if (/yaxshi|хорошо|good|잘|好/i.test(reply)) {
-                        speak(content[lang].goodReply);
-                    } else {
-                        speak(content[lang].badReply);
-                    }
-                }, 5000), 1500);
-                return;
-            }
-
-            // Sayt haqida
-            if (/sayt|сайт|website|웹사이트|网站/i.test(txt)) {
-                speak(content[lang].siteInfo);
-                return;
-            }
-
-            // Bo'limlarga o'tish
-            for (const [phrase, url] of Object.entries(sectionMap[lang])) {
-                if (txt.includes(phrase)) {
-                    speak(`Ajoyib! Siz "${phrase}" bo'limiga yo'naltirilyapsiz.`);
-                    setTimeout(() => window.location.href = url, 1800);
-                    return;
-                }
-            }
-
-            // Noma'lum buyruq
-            speak(content[lang].unknownCommand);
-        }
-
-        // === TUGMA BOSILGANDA ===
-        document.getElementById('aiBtn').addEventListener('click', function () {
-            if (isListening) {
-                stopListening();
-                return;
-            }
-
-            if (!userName) {
-                speak(content[currentLang].greeting + " " + content[currentLang].askName);
-                setTimeout(() => startListening(name => {
-                    userName = name.trim();
-                    localStorage.setItem('userName', name);
-                    speak(content[currentLang].nameResponse(name));
-                    setTimeout(() => startListening(handleVoiceCommand), 2000);
-                }), 2000);
-            } else {
-                speak(`Salom qaytadan, ${userName}! Menga nima buyurasiz?`);
-                setTimeout(() => startListening(handleVoiceCommand), 1500);
-            }
-        });
-
-        // === SAYT ISHGA TUSHGANDA ===
-        function updateContent(lang) {
-            if (!content[lang]) return;
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if (content[lang][key]) el.textContent = content[lang][key];
-            });
-            document.querySelectorAll('[data-sub-key]').forEach(el => {
-                const key = el.getAttribute('data-sub-key');
-                if (content[lang][key]) el.textContent = content[lang][key];
-            });
-            document.getElementById('introSubText').textContent = content[lang].introSubText;
-            document.getElementById('settingsModalTitle').textContent = content[lang].settingsModalTitle;
-            document.getElementById('languageTitle').textContent = content[lang].languageTitle;
-            document.getElementById('modeTitle').textContent = content[lang].modeTitle;
-            document.getElementById('themeTitle').textContent = content[lang].themeTitle;
-            document.getElementById('accessibilityTitle').textContent = content[lang].accessibilityTitle;
-            document.documentElement.lang = lang;
-        }
-
-        function applyTheme(theme) {
-            const body = document.body;
-            body.className = body.className
-                .split(' ')
-                .filter(c => !c.startsWith('theme-') && c !== 'dark-mode' && c !== 'light-mode')
-                .join(' ')
-                .trim();
-            if (theme !== 'default') body.classList.add(`theme-${theme}`);
-            if (currentMode === 'dark') body.classList.add('dark-mode');
-        }
-
-        function applyMode(mode) {
-            currentMode = mode;
-            localStorage.setItem('siteMode', mode);
-            document.body.classList.toggle('dark-mode', mode === 'dark');
-            setActiveButton('mode-options', mode, 'data-mode');
-        }
-
-        function applyFontSize(size) {
-            fontSize = size;
-            document.documentElement.style.setProperty('--font-size-base', `${size}px`);
-            localStorage.setItem('fontSize', size.toString());
-        }
-
-        function setLanguage(lang) {
-            if (!content[lang]) return;
-            currentLang = lang;
-            localStorage.setItem('siteLang', lang);
-            updateContent(lang);
-            setActiveButton('language-options', lang, 'data-lang');
-            history.replaceState(null, '', `?lang=${lang}`);
-            // Ovozlar ro'yxatini yangilash
-            setTimeout(() => speechSynthesis.getVoices(), 500);
-        }
-
-        function setMode(mode) {
-            applyMode(mode);
-        }
-
-        function setTheme(theme) {
-            currentTheme = theme;
-            localStorage.setItem('siteTheme', theme);
-            applyTheme(theme);
-            setActiveButton('theme-options', theme, 'data-theme');
-        }
-
-        function setActiveButton(containerId, value, attr = 'data-lang') {
-            const container = document.getElementById(containerId);
-            container?.querySelectorAll('.setting-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute(attr) === value);
-            });
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.add('active');
-        }
-
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').classList.remove('active');
-        }
-
-        function toggleMobileMenu(forceState = null) {
-            const menu = document.getElementById('mobileMenu');
-            if (forceState === null) {
-                menu.classList.toggle('active');
-            } else {
-                menu.classList.toggle('active', forceState);
-            }
-        }
-
-        function initApp() {
-            updateContent(currentLang);
-            applyTheme(currentTheme);
-            applyMode(currentMode);
-            applyFontSize(fontSize);
-            setActiveButton('language-options', currentLang, 'data-lang');
-            setActiveButton('mode-options', currentMode, 'data-mode');
-            setActiveButton('theme-options', currentTheme, 'data-theme');
-
-            const intro = document.getElementById('intro');
-            const mainContent = document.getElementById('main-content');
-            const skipBtn = document.getElementById('skipIntro');
-            const hideIntro = () => {
-                intro.style.opacity = '0';
-                intro.style.pointerEvents = 'none';
-                setTimeout(() => {
-                    intro.style.display = 'none';
-                    mainContent.classList.add('visible');
-                }, 800);
-            };
-            setTimeout(hideIntro, 3000);
-            skipBtn?.addEventListener('click', hideIntro);
-
-            document.getElementById('menuToggle')?.addEventListener('click', () => toggleMobileMenu());
-            document.getElementById('closeSettings')?.addEventListener('click', closeSettingsModal);
-            document.getElementById('settingsModal')?.addEventListener('click', e => {
-                if (e.target === e.currentTarget) closeSettingsModal();
-            });
-
-            document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', e => setLanguage(e.target.dataset.lang)));
-            document.querySelectorAll('[data-mode]').forEach(btn => btn.addEventListener('click', e => setMode(e.target.dataset.mode)));
-            document.querySelectorAll('[data-theme]').forEach(btn => btn.addEventListener('click', e => setTheme(e.target.dataset.theme)));
-
-            document.getElementById('increaseFont')?.addEventListener('click', () => {
-                fontSize = Math.min(fontSize + 2, 24);
-                applyFontSize(fontSize);
-            });
-            document.getElementById('decreaseFont')?.addEventListener('click', () => {
-                fontSize = Math.max(fontSize - 2, 12);
-                applyFontSize(fontSize);
-            });
-            document.getElementById('resetFont')?.addEventListener('click', () => {
-                fontSize = 16;
-                applyFontSize(fontSize);
-            });
-
-            document.addEventListener('click', e => {
-                const menu = document.getElementById('mobileMenu');
-                const toggle = document.getElementById('menuToggle');
-                if (menu.classList.contains('active') && !menu.contains(e.target) && e.target !== toggle) {
-                    toggleMobileMenu(false);
-                }
-            });
-
-            document.querySelectorAll('.big-btn').forEach(btn => {
-                btn.addEventListener('keydown', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        btn.classList.add('pressed');
-                        setTimeout(() => btn.classList.remove('pressed'), 150);
-                    }
-                });
-                btn.addEventListener('keyup', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        btn.closest('a').click();
-                    }
-                });
-            });
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW ro‘yxatdan o‘tmadi:', err));
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', initApp);
-        window.addEventListener('load', () => {
-            const canvas = document.getElementById('particles-bg');
-            if (!canvas) return;
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            const particlesCount = 2000;
-            const posArray = new Float32Array(particlesCount * 3);
-            for (let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 20;
-            }
-            const particlesGeometry = new THREE.BufferGeometry();
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const getAccentColor = () => {
-                const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color')?.trim();
-                return accent || '#98c1d9';
-            };
-            const particlesMaterial = new THREE.PointsMaterial({
-                color: getAccentColor(),
-                size: 0.05,
-                transparent: true,
-                opacity: 0.6
-            });
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particlesMesh);
-            camera.position.z = 5;
-            function animate() {
-                requestAnimationFrame(animate);
-                particlesMesh.rotation.x += 0.0005;
-                particlesMesh.rotation.y += 0.0005;
-                renderer.render(scene, camera);
-            }
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-            animate();
-        });
-        window.addEventListener('scroll', () => {
-            const offset = window.scrollY * 0.3;
-            document.body.style.backgroundPositionY = `${offset}px`;
-        });
-    </script>
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle">
+<div class="settings-content">
+<button class="close-btn" id="closeSettings" aria-label="Sozlamalarni yopish">&times;</button>
+<h2 id="settingsModalTitle">⚙️ <span data-key="settings_title">Sozlamalar</span></h2>
+<div class="settings-group">
+<h3>🌐 <span data-key="language_title">Tilni tanlang:</span></h3>
+<div class="options-container" id="language-options">
+<button class="setting-btn" data-lang="uz">O‘zbekcha</button>
+<button class="setting-btn" data-lang="ru">Русский</button>
+<button class="setting-btn" data-lang="en">English</button>
+<button class="setting-btn" data-lang="ko">한국어</button>
+<button class="setting-btn" data-lang="zh">中文</button>
+</div>
+</div>
+<div class="settings-group">
+<h3>🌙 <span data-key="mode_title">Rejim:</span></h3>
+<div class="options-container" id="mode-options">
+<button class="setting-btn" data-mode="light">☀️ Yorug‘</button>
+<button class="setting-btn" data-mode="dark">🌑 To‘q</button>
+<button class="setting-btn" data-mode="auto">🤖 Avtomatik</button>
+</div>
+</div>
+<div class="settings-group">
+<h3>🎨 <span data-key="theme_title">Mavzu:</span></h3>
+<div class="options-container" id="theme-options">
+<button class="setting-btn" data-theme="default">Asosiy</button>
+<button class="setting-btn" data-theme="ocean">Okean</button>
+<button class="setting-btn" data-theme="green">Yashil</button>
+<button class="setting-btn" data-theme="violet">Binafsha</button>
+<button class="setting-btn" data-theme="dark-red">Qizil</button>
+<button class="setting-btn" data-theme="soft">Pastel</button>
+<button class="setting-btn" data-theme="sunset">Oqshom</button>
+</div>
+</div>
+<div class="settings-group">
+<h3>♿ <span data-key="accessibility_title">Qulaylik:</span></h3>
+<div class="options-container">
+<button class="setting-btn" id="increaseFont">A+</button>
+<button class="setting-btn" id="decreaseFont">A−</button>
+<button class="setting-btn" id="resetFont">A</button>
+<button class="setting-btn" id="highContrast">HC</button>
+</div>
+</div>
+<div class="settings-group">
+<h3>🔔 <span data-key="notifications_title">Bildirishnomalar:</span></h3>
+<div class="options-container">
+<button class="setting-btn" id="enableNotifications">Yoqish</button>
+<button class="setting-btn" id="disableNotifications">O'chirish</button>
+</div>
+</div>
+</div>
+</div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// PROGRESS BAR
+document.addEventListener('DOMContentLoaded', () => {
+const progressBar = document.getElementById('progress-bar');
+let progress = 0;
+const interval = setInterval(() => {
+progress += Math.random() * 10;
+if (progress > 95) progress = 95;
+progressBar.style.width = `${progress}%`;
+}, 300);
+window.addEventListener('load', () => {
+progressBar.style.width = '100%';
+setTimeout(() => {
+document.getElementById('progress-container').style.display = 'none';
+clearInterval(interval);
+}, 300);
+});
+});
+
+// TARJIMALAR
+const content = {
+uz: {
+introSubText: "Bilim Makoni. Yangi Imkoniyatlar. 💡",
+lessons: "🤖 Ustoz AI",
+lessons_sub: "Barcha fanlar bo‘yicha",
+tests: "📝 Testlar",
+tests_sub: "Bilimingizni sinovdan o‘tkazing",
+videos: "🎮 O'yinlar",
+videos_sub: "Qiziqarli o'yinlar",
+advice: "💡 Maslahatlar",
+advice_sub: "O‘qish sirlari",
+flags: "🏳️ Bayroqlar",
+flags_sub: "Dunyo davlatlarining bayroqlari",
+teachers: "👩‍🏫 G‘alati",
+teachers_sub: "G'alati bo'limga tashrif buyuring",
+aboutUs: "ℹ️ Biz Haqimizda",
+aboutUs_sub: "Loyihaning maqsadi",
+contact: "📞 Aloqa",
+contactt: "ICHU bo'lim",
+contact_sub: "Murojaat uchun",
+uzbekistan: "🇺🇿 O‘zbekiston",
+uzbekistan_sub: "Mamlakatimiz haqida",
+yashil_makon: "🌿 Yashil Makon",
+yashil_makon_sub: "Ekologik hayot",
+kutubxona: "📚 Kutubxona",
+kutubxona_sub: "Kitoblar dunyosi",
+yol_qoidasi: "🛣️ Yo'l qoidalari",
+yol_qoidasi_sub: "Xavfsizlik qoidalari",
+daily_challenge: "Kundalik Vazifa",
+challenge_text: "Bugun 5 ta test topshiring va 50 yulduzcha yig'ing!",
+footer_protected: "Ushbu sayt ASCO tomonidan yaratilgan va 🔒 himoyalangan",
+footer_name: "Yordamchi Maktab",
+privacy: "Maxfiylik siyosati",
+terms: "Foydalanish shartlari",
+help_center: "Yordam markazi",
+feedback: "Fikr bildirish",
+settings_title: "Sozlamalar",
+language_title: "Tilni tanlang:",
+mode_title: "Rejim:",
+theme_title: "Mavzu:",
+accessibility_title: "Qulaylik:",
+notifications_title: "Bildirishnomalar:",
+chat_welcome: "Assalomu alaykum! Men Yordamchi Maktabning sun'iy intellekt yordamchiman. Sizga qanday yordam bera olaman? 😊",
+chat_greeting: "Va alaykum assalom! Sizga qanday yordam bera olaman?",
+chat_help: "Siz quyidagi buyruqlardan foydalanishingiz mumkin:\n- 'Testlar' - testlar bo'limiga o'tish\n- 'O'yinlar' - o'yinlar bo'limiga o'tish\n- 'Maslahatlar' - o'qish maslahatlari\n- 'Sozlamalar' - sayt sozlamalarini ochish\n- 'Biz haqimizda' - loyiha haqida ma'lumot",
+chat_tests: "Ajoyib! Testlar bo'limiga o'tmoqchimisiz. Bu yerda siz turli fanlardan testlarni topasiz.",
+chat_games: "O'yinlar bo'limiga xush kelibsiz! Bu yerda o'qishni qiziqarli qiladigan o'yinlarni topasiz.",
+chat_advice: "Maslahatlar bo'limida o'qish va o'rganish sirlarini topasiz. Bu sizning akademik yutuqlaringizga yordam beradi.",
+chat_about: "Yordamchi Maktab - barcha o'quvchilar uchun bilimlar bazasi. Biz turli fanlardan darsliklar, testlar, video darslar va foydali maslahatlarni taqdim etamiz.",
+chat_settings: "Sozlamalar ochildi. Bu yerda til, ko'rinish va boshqa parametrlarni sozlashingiz mumkin.",
+chat_unknown: "Kechirasiz, men bu buyruqni tushunmadim. Iltimos, 'yordam' deb yozing va mavjud buyruqlarni ko'ring.",
+chat_thanks: "Sizga yordam bera olganimdan xursandman! Yana savollaringiz bo'lsa, bemalol menga yozing. 😊",
+chat_profile: "Profil sahifangizga xush kelibsiz! Sizning ismingiz:",
+chat_mode_help: "Yordam rejimi faollashtirildi. Men sizga sayt bo'yicha yordam beraman.",
+chat_mode_navigate: "Navigatsiya rejimi faollashtirildi. Men sizni kerakli bo'limga olib boraman.",
+chat_mode_fun: "Kulgili rejim faollashtirildi! Keling, biroz dam olaylik! 😄",
+notification_welcome: "Xush kelibsiz!",
+notification_welcome_msg: "Yordamchi Maktabga xush kelibsiz! Yangi imkoniyatlarni kashf qiling.",
+notification_settings: "Sozlamalar saqlandi",
+notification_settings_msg: "Tanlovlaringiz muvaffaqiyatli saqlandi.",
+notification_dark_mode: "To'q rejim yoqildi",
+notification_dark_mode_msg: "Ko'zlar uchun qulay ko'rinishda ishlaysiz.",
+quick_reply_tests: "Testlar",
+quick_reply_games: "O'yinlar",
+quick_reply_advice: "Maslahatlar",
+quick_reply_settings: "Sozlamalar",
+quick_reply_help: "Yordam"
+}
+};
+
+// Fill missing langs
+['ru','en','ko','zh'].forEach(lang => {
+if (!content[lang]) content[lang] = {};
+Object.keys(content.uz).forEach(k => {
+if (!content[lang][k]) content[lang][k] = content.uz[k];
+});
+});
+
+// GLOBAL STATE
+let currentLang = localStorage.getItem('siteLang') || getLangFromURL() || 'uz';
+let currentTheme = localStorage.getItem('siteTheme') || 'default';
+let currentMode = localStorage.getItem('siteMode') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+let fontSize = parseFloat(localStorage.getItem('fontSize') || '16');
+let chatOpen = false;
+let chatMode = 'help'; // 'help', 'navigate', 'fun'
+let userName = localStorage.getItem('userName') || null;
+let notificationsEnabled = localStorage.getItem('notificationsEnabled') !== 'false';
+let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+let isFirstVisit = localStorage.getItem('isFirstVisit') !== 'false';
+
+// DOM ELEMENTS
+const chatMessages = document.getElementById('chatMessages');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const chatBotBtn = document.getElementById('chatBotBtn');
+const chatBotModal = document.getElementById('chatBotModal');
+const closeChatBot = document.getElementById('closeChatBot');
+const chatBadge = document.getElementById('chatBadge');
+const chatHeader = document.getElementById('chatHeader');
+const modeBtns = document.querySelectorAll('.mode-btn');
+const notificationContainer = document.getElementById('notificationContainer');
+const userProfile = document.getElementById('userProfile');
+const userAvatar = document.getElementById('userAvatar');
+const userNameEl = document.getElementById('userName');
+
+// CHAT BOT FUNCTIONALITY
+function getCurrentTime() {
+const now = new Date();
+return now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+}
+
+function addMessage(text, isUser = false, showTimestamp = true) {
+const messageDiv = document.createElement('div');
+messageDiv.classList.add('chat-message');
+if (isUser) messageDiv.classList.add('user');
+messageDiv.innerHTML = `<span>${text}</span>`;
+if (showTimestamp) {
+const timestamp = document.createElement('div');
+timestamp.classList.add('message-timestamp');
+timestamp.textContent = getCurrentTime();
+messageDiv.appendChild(timestamp);
+}
+chatMessages.appendChild(messageDiv);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+// Save to history
+if (isUser || (!isUser && text !== content[currentLang].chat_welcome)) {
+chatHistory.push({ text, isUser, timestamp: new Date().toISOString() });
+localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+}
+}
+
+function showTyping() {
+const indicator = document.createElement('div');
+indicator.className = 'typing-indicator';
+indicator.innerHTML = '<span></span><span></span><span></span>';
+chatMessages.appendChild(indicator);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+return indicator;
+}
+
+function removeTyping(indicator) {
+if (indicator && indicator.parentNode) {
+indicator.parentNode.removeChild(indicator);
+}
+}
+
+function showQuickReplies(buttons) {
+const quickReplies = document.createElement('div');
+quickReplies.className = 'quick-replies';
+buttons.forEach(btn => {
+const button = document.createElement('button');
+button.className = 'quick-reply-btn';
+button.textContent = btn.text;
+button.onclick = () => {
+userInput.value = btn.text;
+sendMessage();
+};
+quickReplies.appendChild(button);
+});
+chatMessages.appendChild(quickReplies);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function getBotResponse(userMessage) {
+const msg = userMessage.toLowerCase().trim();
+const lang = currentLang;
+const responses = {
+uz: {
+salom: content[lang].chat_greeting,
+yordam: content[lang].chat_help,
+test: content[lang].chat_tests,
+testlar: content[lang].chat_tests,
+oyin: content[lang].chat_games,
+oyinlar: content[lang].chat_games,
+maslahat: content[lang].chat_advice,
+maslahatlar: content[lang].chat_advice,
+biz : content[lang].chat_about,
+haqida: content[lang].chat_about,
+sozlamalar: content[lang].chat_settings,
+rahmat: content[lang].chat_thanks,
+raxmat: content[lang].chat_thanks,
+thanks: content[lang].chat_thanks,
+profil: content[lang].chat_profile + (userName ? ` ${userName}` : '')
+}
+};
+
+// Check for exact matches
+for (const [key, response] of Object.entries(responses[lang])) {
+if (msg.includes(key)) {
+return response;
+}
+}
+
+// Check for navigation commands based on mode
+if (chatMode === 'navigate') {
+const sections = {
+'ustoz ai': 'sinf.html',
+'testlar': 'testlarboshqarmasi.html',
+'o\'yinlar': 'game.html',
+'maslahatlar': 'maslahat.html',
+'bayroqlar': 'bayroq.html',
+'g\'alati': 'galati.html',
+'biz haqimizda': 'biz.html',
+'aloqa': 'aloqa.html',
+'ichu bo\'lim': 'sinov3.html',
+'o\'zbekiston': 'uzb.html',
+'yashil makon': 'kokmak.html',
+'kutubxona': 'kitob.html',
+'yo\'l qoidasi': 'yolhar.html',
+'sozlamalar': '#settings'
+};
+for (const [phrase, url] of Object.entries(sections)) {
+if (msg.includes(phrase)) {
+if (url === '#settings') {
+openSettingsModal();
+return content[lang].chat_settings;
+} else {
+setTimeout(() => {
+window.location.href = url;
+}, 2000);
+return `Ajoyib! Siz "${phrase}" bo'limiga yo'naltirilasiz...`;
+}
+}
+}
+}
+
+// Fun mode responses
+if (chatMode === 'fun') {
+const funResponses = [
+" 😂", " 🤣", " 😆", " 😁", " 🤪", " 🤭", " 🤓", " 🧐", " 🤠", " 🥳"
+];
+return `Bu juda qiziq!${funResponses[Math.floor(Math.random() * funResponses.length)]}`;
+}
+
+// Default response
+return content[lang].chat_unknown;
+}
+
+function sendMessage() {
+const message = userInput.value.trim();
+if (message === '') return;
+addMessage(message, true);
+userInput.value = '';
+const typingIndicator = showTyping();
+setTimeout(() => {
+removeTyping(typingIndicator);
+const response = getBotResponse(message);
+addMessage(response);
+// Show quick replies after bot response in help mode
+if (chatMode === 'help' && chatMessages.children.length === 2) {
+showQuickReplies([
+{ text: content[currentLang].quick_reply_tests },
+{ text: content[currentLang].quick_reply_games },
+{ text: content[currentLang].quick_reply_advice },
+{ text: content[currentLang].quick_reply_settings },
+{ text: content[currentLang].quick_reply_help }
+]);
+}
+// Special handling for navigation commands
+if (response.includes('yo\'naltirilasiz')) {
+setTimeout(() => {
+addMessage("Agar yo'nalish to'g'ri bo'lmasa, qaytadan so'rang yoki kerakli bo'limni saytdan tanlang.");
+}, 2500);
+}
+}, 1000 + Math.random() * 1000);
+}
+
+// Event listeners for chat
+sendBtn.addEventListener('click', sendMessage);
+userInput.addEventListener('keypress', (e) => {
+if (e.key === 'Enter') sendMessage();
+});
+chatBotBtn.addEventListener('click', () => {
+chatBotModal.classList.toggle('active');
+chatOpen = chatBotModal.classList.contains('active');
+if (chatOpen) {
+userInput.focus();
+chatBadge.style.display = 'none';
+localStorage.setItem('chatBadgeCount', '0');
+// Load chat history if exists
+if (chatMessages.children.length === 1 && chatHistory.length > 0) {
+chatMessages.innerHTML = '';
+chatHistory.forEach(msg => {
+addMessage(msg.text, msg.isUser, false);
+});
+// Add welcome message if not exists
+if (chatMessages.children.length === 0) {
+addMessage(content[currentLang].chat_welcome);
+}
+}
+} else {
+saveChatPosition();
+}
+});
+closeChatBot.addEventListener('click', () => {
+chatBotModal.classList.remove('active');
+chatOpen = false;
+saveChatPosition();
+});
+
+// Mode switching
+modeBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+modeBtns.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+chatMode = btn.dataset.mode;
+// Show mode confirmation message
+let modeMessage = '';
+switch(chatMode) {
+case 'help': modeMessage = content[currentLang].chat_mode_help; break;
+case 'navigate': modeMessage = content[currentLang].chat_mode_navigate; break;
+case 'fun': modeMessage = content[currentLang].chat_mode_fun; break;
+}
+addMessage(modeMessage);
+// Clear quick replies if exist
+const quickReplies = chatMessages.querySelector('.quick-replies');
+if (quickReplies) quickReplies.remove();
+// Show relevant quick replies
+if (chatMode === 'help') {
+showQuickReplies([
+{ text: content[currentLang].quick_reply_tests },
+{ text: content[currentLang].quick_reply_games },
+{ text: content[currentLang].quick_reply_advice },
+{ text: content[currentLang].quick_reply_settings },
+{ text: content[currentLang].quick_reply_help }
+]);
+} else if (chatMode === 'navigate') {
+showQuickReplies([
+{ text: 'Testlar' },
+{ text: 'O\'yinlar' },
+{ text: 'Maslahatlar' },
+{ text: 'Sozlamalar' }
+]);
+}
+});
+});
+
+// Close chat when clicking outside on mobile
+document.addEventListener('click', (e) => {
+if (chatOpen && window.innerWidth <= 768) {
+if (!chatBotModal.contains(e.target) && e.target !== chatBotBtn) {
+chatBotModal.classList.remove('active');
+chatOpen = false;
+saveChatPosition();
+}
+}
+});
+
+// Make chat window draggable on desktop
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+chatHeader.addEventListener('mousedown', (e) => {
+if (window.innerWidth > 768) { // Only on desktop
+isDragging = true;
+dragOffsetX = e.clientX - chatBotModal.getBoundingClientRect().left;
+dragOffsetY = e.clientY - chatBotModal.getBoundingClientRect().top;
+chatBotModal.style.transition = 'none';
+document.body.classList.add('dragging');
+}
+});
+
+document.addEventListener('mousemove', (e) => {
+if (isDragging) {
+const x = e.clientX - dragOffsetX;
+const y = e.clientY - dragOffsetY;
+// Keep within viewport bounds
+const maxX = window.innerWidth - chatBotModal.offsetWidth;
+const maxY = window.innerHeight - chatBotModal.offsetHeight;
+chatBotModal.style.left = `${Math.max(0, Math.min(x, maxX))}px`;
+chatBotModal.style.top = `${Math.max(0, Math.min(y, maxY))}px`;
+chatBotModal.style.right = 'auto';
+chatBotModal.style.bottom = 'auto';
+}
+});
+
+document.addEventListener('mouseup', () => {
+if (isDragging) {
+isDragging = false;
+chatBotModal.style.transition = '';
+document.body.classList.remove('dragging');
+saveChatPosition();
+}
+});
+
+function saveChatPosition() {
+if (window.innerWidth > 768 && chatBotModal.style.left) {
+localStorage.setItem('chatPosition', JSON.stringify({
+left: chatBotModal.style.left,
+top: chatBotModal.style.top
+}));
+}
+}
+
+// Load chat position
+document.addEventListener('DOMContentLoaded', () => {
+const savedPosition = localStorage.getItem('chatPosition');
+if (savedPosition && window.innerWidth > 768) {
+const pos = JSON.parse(savedPosition);
+chatBotModal.style.left = pos.left;
+chatBotModal.style.top = pos.top;
+chatBotModal.style.right = 'auto';
+chatBotModal.style.bottom = 'auto';
+}
+});
+
+// === SAYT ISHGA TUSHGANDA ===
+function updateContent(lang) {
+if (!content[lang]) return;
+document.querySelectorAll('[data-key]').forEach(el => {
+const key = el.getAttribute('data-key');
+if (content[lang][key]) el.textContent = content[lang][key];
+});
+document.querySelectorAll('[data-sub-key]').forEach(el => {
+const key = el.getAttribute('data-sub-key');
+if (content[lang][key]) el.textContent = content[lang][key];
+});
+document.getElementById('introSubText').textContent = content[lang].introSubText;
+document.documentElement.lang = lang;
+}
+
+function applyTheme(theme) {
+const body = document.body;
+body.className = body.className
+.split(' ')
+.filter(c => !c.startsWith('theme-') && c !== 'dark-mode' && c !== 'light-mode')
+.join(' ')
+.trim();
+if (theme !== 'default') body.classList.add(`theme-${theme}`);
+if (currentMode === 'dark') body.classList.add('dark-mode');
+}
+
+function applyMode(mode) {
+currentMode = mode;
+localStorage.setItem('siteMode', mode);
+if (mode === 'auto') {
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+document.body.classList.add('dark-mode');
+} else {
+document.body.classList.remove('dark-mode');
+}
+} else {
+document.body.classList.toggle('dark-mode', mode === 'dark');
+}
+setActiveButton('mode-options', mode, 'data-mode');
+// Show notification
+if (notificationsEnabled && mode !== 'auto') {
+showNotification(mode === 'dark' ? content[currentLang].notification_dark_mode : 'Yorug\' rejim yoqildi', 
+mode === 'dark' ? content[currentLang].notification_dark_mode_msg : 'Ko\'zlar uchun qulay ko\'rinishda ishlaysiz.', 
+'dark-mode');
+}
+}
+
+function applyFontSize(size) {
+fontSize = size;
+document.documentElement.style.setProperty('--font-size-base', `${size}px`);
+localStorage.setItem('fontSize', size.toString());
+}
+
+function setLanguage(lang) {
+if (!content[lang]) return;
+currentLang = lang;
+localStorage.setItem('siteLang', lang);
+updateContent(lang);
+setActiveButton('language-options', lang, 'data-lang');
+history.replaceState(null, '', `?lang=${lang}`);
+// Update chat if open
+if (chatOpen) {
+addMessage(`Til "${lang === 'uz' ? 'O\'zbekcha' : lang}" ga o\'zgartirildi.`);
+}
+}
+
+function setMode(mode) {
+applyMode(mode);
+}
+
+function setTheme(theme) {
+currentTheme = theme;
+localStorage.setItem('siteTheme', theme);
+applyTheme(theme);
+setActiveButton('theme-options', theme, 'data-theme');
+}
+
+function setActiveButton(containerId, value, attr = 'data-lang') {
+const container = document.getElementById(containerId);
+container?.querySelectorAll('.setting-btn').forEach(btn => {
+btn.classList.toggle('active', btn.getAttribute(attr) === value);
+});
+}
+
+function openSettingsModal() {
+document.getElementById('settingsModal').classList.add('active');
+// Send message to chat bot if open
+if (chatOpen) {
+addMessage(content[currentLang].chat_settings);
+}
+// Show notification
+if (notificationsEnabled) {
+showNotification(content[currentLang].notification_settings, content[currentLang].notification_settings_msg, 'success');
+}
+}
+
+function closeSettingsModal() {
+document.getElementById('settingsModal').classList.remove('active');
+}
+
+function toggleMobileMenu(forceState = null) {
+const menu = document.getElementById('mobileMenu');
+if (forceState === null) {
+menu.classList.toggle('active');
+} else {
+menu.classList.toggle('active', forceState);
+}
+}
+
+function getLangFromURL() {
+const urlParams = new URLSearchParams(window.location.search);
+const lang = urlParams.get('lang');
+return ['uz','ru','en','ko','zh'].includes(lang) ? lang : null;
+}
+
+function initUserProfile() {
+if (userName) {
+userProfile.style.display = 'flex';
+userNameEl.textContent = userName;
+userAvatar.textContent = userName.charAt(0).toUpperCase();
+} else {
+// Ask for name after intro
+setTimeout(() => {
+if (!userName && chatMessages.children.length === 1) {
+addMessage("Ismingiz nima? Men sizga shaxsiy yordam berishim mumkin.");
+}
+}, 5000);
+}
+}
+
+function showNotification(title, message, type = 'info') {
+if (!notificationsEnabled) return;
+const notification = document.createElement('div');
+notification.className = `notification ${type}`;
+notification.innerHTML = `
+<div class="notification-icon">${type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️'}</div>
+<div class="notification-content">
+<h4>${title}</h4>
+<p>${message}</p>
+</div>
+`;
+notificationContainer.appendChild(notification);
+setTimeout(() => {
+notification.remove();
+}, 3000);
+}
+
+function initApp() {
+// Initialize state from localStorage
+if (currentMode === 'auto') {
+applyMode('auto');
+} else {
+applyMode(currentMode);
+}
+updateContent(currentLang);
+applyTheme(currentTheme);
+applyFontSize(fontSize);
+setActiveButton('language-options', currentLang, 'data-lang');
+setActiveButton('mode-options', currentMode, 'data-mode');
+setActiveButton('theme-options', currentTheme, 'data-theme');
+initUserProfile();
+// Show welcome notification on first visit
+if (isFirstVisit) {
+setTimeout(() => {
+showNotification(content[currentLang].notification_welcome, content[currentLang].notification_welcome_msg, 'success');
+}, 2000);
+localStorage.setItem('isFirstVisit', 'false');
+// Show chat badge
+chatBadge.style.display = 'flex';
+localStorage.setItem('chatBadgeCount', '1');
+}
+// Show chat welcome message
+if (chatHistory.length === 0) {
+setTimeout(() => {
+if (chatMessages.children.length === 1) {
+addMessage("Masalan, 'testlar' yoki 'o'yinlar' deb yozing, men sizga mos bo'limni topib beraman!");
+}
+}, 1500);
+}
+// Event listeners
+const intro = document.getElementById('intro');
+const mainContent = document.getElementById('main-content');
+const skipBtn = document.getElementById('skipIntro');
+const hideIntro = () => {
+intro.style.opacity = '0';
+intro.style.pointerEvents = 'none';
+setTimeout(() => {
+intro.style.display = 'none';
+mainContent.classList.add('visible');
+}, 800);
+};
+setTimeout(hideIntro, 3000);
+skipBtn?.addEventListener('click', hideIntro);
+document.getElementById('menuToggle')?.addEventListener('click', () => toggleMobileMenu());
+document.getElementById('closeSettings')?.addEventListener('click', closeSettingsModal);
+document.getElementById('settingsModal')?.addEventListener('click', e => {
+if (e.target === e.currentTarget) closeSettingsModal();
+});
+document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', e => setLanguage(e.target.dataset.lang)));
+document.querySelectorAll('[data-mode]').forEach(btn => btn.addEventListener('click', e => setMode(e.target.dataset.mode)));
+document.querySelectorAll('[data-theme]').forEach(btn => btn.addEventListener('click', e => setTheme(e.target.dataset.theme)));
+document.getElementById('increaseFont')?.addEventListener('click', () => {
+fontSize = Math.min(fontSize + 2, 24);
+applyFontSize(fontSize);
+});
+document.getElementById('decreaseFont')?.addEventListener('click', () => {
+fontSize = Math.max(fontSize - 2, 12);
+applyFontSize(fontSize);
+});
+document.getElementById('resetFont')?.addEventListener('click', () => {
+fontSize = 16;
+applyFontSize(fontSize);
+});
+document.getElementById('highContrast')?.addEventListener('click', () => {
+document.body.classList.toggle('high-contrast');
+showNotification('Yuqori kontrast', 'Yuqori kontrast rejimi yoqildi', 'success');
+});
+document.getElementById('enableNotifications')?.addEventListener('click', () => {
+notificationsEnabled = true;
+localStorage.setItem('notificationsEnabled', 'true');
+showNotification('Bildirishnomalar', 'Bildirishnomalar yoqildi', 'success');
+});
+document.getElementById('disableNotifications')?.addEventListener('click', () => {
+notificationsEnabled = false;
+localStorage.setItem('notificationsEnabled', 'false');
+showNotification('Bildirishnomalar', 'Bildirishnomalar o\'chirildi', 'warning');
+});
+document.addEventListener('click', e => {
+const menu = document.getElementById('mobileMenu');
+const toggle = document.getElementById('menuToggle');
+if (menu.classList.contains('active') && !menu.contains(e.target) && e.target !== toggle) {
+toggleMobileMenu(false);
+}
+});
+document.querySelectorAll('.big-btn').forEach(btn => {
+btn.addEventListener('keydown', e => {
+if (e.key === 'Enter' || e.key === ' ') {
+e.preventDefault();
+btn.classList.add('pressed');
+setTimeout(() => btn.classList.remove('pressed'), 150);
+}
+});
+btn.addEventListener('keyup', e => {
+if (e.key === 'Enter' || e.key === ' ') {
+btn.closest('a').click();
+}
+});
+});
+// Settings link in mobile menu
+document.querySelectorAll('.mobile-link[data-key="settings"]').forEach(el => {
+el.addEventListener('click', (e) => {
+e.preventDefault();
+openSettingsModal();
+});
+});
+// Quick reply buttons in chat
+document.addEventListener('click', (e) => {
+if (e.target.classList.contains('quick-reply-btn')) {
+userInput.value = e.target.textContent;
+sendMessage();
+}
+});
+// Close chat with Escape key
+document.addEventListener('keydown', (e) => {
+if (e.key === 'Escape' && chatOpen) {
+chatBotModal.classList.remove('active');
+chatOpen = false;
+saveChatPosition();
+}
+});
+// Handle user name input
+userInput.addEventListener('keypress', (e) => {
+if (e.key === 'Enter' && !userName && chatMessages.lastChild.textContent.includes('Ismingiz nima?')) {
+const name = userInput.value.trim();
+if (name) {
+userName = name;
+localStorage.setItem('userName', name);
+addMessage(name, true);
+setTimeout(() => {
+addMessage(`Xush kelibsiz, ${name}! Endi men sizga shaxsiy yordam bera olaman.`);
+userProfile.style.display = 'flex';
+userNameEl.textContent = name;
+userAvatar.textContent = name.charAt(0).toUpperCase();
+}, 800);
+}
+}
+});
+}
+// PWA Registration
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', () => {
+navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW ro‘yxatdan o‘tmadi:', err));
+});
+}
+// Particles Background
+window.addEventListener('load', () => {
+const canvas = document.getElementById('particles-bg');
+if (!canvas || window.innerWidth <= 768) return; // Skip on mobile
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const particlesCount = Math.floor(1000 * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--particles-density')));
+const posArray = new Float32Array(particlesCount * 3);
+for (let i = 0; i < particlesCount * 3; i++) {
+posArray[i] = (Math.random() - 0.5) * 20;
+}
+const particlesGeometry = new THREE.BufferGeometry();
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+const getAccentColor = () => {
+const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent-color')?.trim();
+return accent || '#98c1d9';
+};
+const particlesMaterial = new THREE.PointsMaterial({
+color: getAccentColor(),
+size: 0.03,
+transparent: true,
+opacity: 0.7,
+sizeAttenuation: true
+});
+const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particlesMesh);
+camera.position.z = 5;
+function animate() {
+requestAnimationFrame(animate);
+particlesMesh.rotation.x += 0.0002;
+particlesMesh.rotation.y += 0.0005;
+renderer.render(scene, camera);
+}
+window.addEventListener('resize', () => {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+});
+animate();
+});
+// Scroll background effect
+window.addEventListener('scroll', () => {
+const offset = window.scrollY * 0.3;
+document.body.style.backgroundPositionY = `${offset}px`;
+});
+// Initialize app
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
 </html>
