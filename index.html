@@ -4,12 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="description" content="Yordamchi Maktab – barcha fanlar bo‘yicha darsliklar, testlar, video darslar va maslahatlar." />
-<meta name="theme-color" content="#3d5a80" />
+<meta name="theme-color" content="#3d7fd9" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Yordamchi Maktab" />
+<meta name="format-detection" content="telephone=no" />
 <title>Yordamchi Maktab | SUPER VERSIYA 🌟</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2398c1d9'/%3E%3Cstop offset='100%25' stop-color='%233d5a80'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='54' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2398c1d9'/%3E%3Cstop offset='100%25' stop-color='%233d5a80'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ctext x='90' y='122' font-size='96' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json">
 <!-- Google tag (gtag.js) -->
@@ -21,20 +24,34 @@ gtag('js', new Date());
 gtag('config', 'G-XFE4VVB84B');
 </script>
 <style>
-/* ====== GLOBAL CSS VARIABLES ====== */
+/* ====== GLOBAL CSS VARIABLES — LIQUID GLASS SYSTEM ====== */
 :root {
---base-color: #ecf0f3;
---primary-color: #3d5a80;
---accent-color: #98c1d9;
+--base-color: #eef3f9;
+--bg-blob-1: #98c1d9;
+--bg-blob-2: #ee6c4d;
+--bg-blob-3: #3d5a80;
+--primary-color: #23324a;
+--accent-color: #3d7fd9;
+--accent-color-rgb: 61, 127, 217;
 --secondary-accent: #ee6c4d;
 --light-shadow: #ffffff;
 --dark-shadow: #a8b0c2;
+--glass-bg: rgba(255, 255, 255, 0.16);
+--glass-bg-strong: rgba(255, 255, 255, 0.30);
+--glass-bg-soft: rgba(255, 255, 255, 0.09);
+--glass-border: rgba(255, 255, 255, 0.55);
+--glass-highlight: rgba(255, 255, 255, 0.95);
+--glass-blur: 26px;
+--glass-saturate: 200%;
+--glass-shadow: 0 8px 32px rgba(31, 45, 61, 0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+--glass-shadow-pressed: inset 0 3px 10px rgba(31, 45, 61, 0.18), inset 0 -1px 0 rgba(255,255,255,0.3);
+--glass-shadow-hover: 0 14px 40px rgba(31, 45, 61, 0.2), inset 0 1px 0 rgba(255,255,255,0.6);
 --success-color: #4CAF50;
 --warning-color: #ff9800;
 --danger-color: #f44336;
 --info-color: #2196F3;
 --transition-speed: 0.3s;
---btn-radius: 20px;
+--btn-radius: 22px;
 --big-btn-height: 120px;
 --font-size-base: 16px;
 --chat-btn-size: 65px;
@@ -46,52 +63,82 @@ gtag('config', 'G-XFE4VVB84B');
 --particles-density: 0.7;
 }
 
-/* THEMES */
-.theme-ocean { 
---primary-color: #1a535c; 
---accent-color: #4ecdc4; 
+/* THEMES — tint the glass accent + background blobs */
+.theme-ocean {
+--primary-color: #0f2f36;
+--accent-color: #1aa39a;
+--accent-color-rgb: 26, 163, 154;
 --secondary-accent: #ff6b6b;
---dark-shadow: #4a5d73; 
+--bg-blob-1: #4ecdc4;
+--bg-blob-2: #ff6b6b;
+--bg-blob-3: #1a535c;
 }
-.theme-green { 
---primary-color: #2e7d32; 
---accent-color: #8bc34a; 
+.theme-green {
+--primary-color: #1b3d1e;
+--accent-color: #4c9a2a;
+--accent-color-rgb: 76, 154, 42;
 --secondary-accent: #ff9800;
---dark-shadow: #90a4ae; 
+--bg-blob-1: #8bc34a;
+--bg-blob-2: #ff9800;
+--bg-blob-3: #2e7d32;
 }
-.theme-violet { 
---primary-color: #4a148c; 
---accent-color: #b39ddb; 
+.theme-violet {
+--primary-color: #2f0f4d;
+--accent-color: #7c3aed;
+--accent-color-rgb: 124, 58, 237;
 --secondary-accent: #f06292;
---dark-shadow: #9e8fb8; 
+--bg-blob-1: #b39ddb;
+--bg-blob-2: #f06292;
+--bg-blob-3: #4a148c;
 }
-.theme-dark-red { 
---primary-color: #7f1d1d; 
---accent-color: #fca5a5; 
+.theme-dark-red {
+--primary-color: #3d0f0f;
+--accent-color: #d64545;
+--accent-color-rgb: 214, 69, 69;
 --secondary-accent: #fbbf24;
---dark-shadow: #a39999; 
+--bg-blob-1: #fca5a5;
+--bg-blob-2: #fbbf24;
+--bg-blob-3: #7f1d1d;
 }
-.theme-soft { 
---primary-color: #5e6066; 
---accent-color: #b5c1d1; 
+.theme-soft {
+--primary-color: #33383f;
+--accent-color: #4f8fd1;
+--accent-color-rgb: 79, 143, 209;
 --secondary-accent: #64b5f6;
---dark-shadow: #b0b8c5; 
+--bg-blob-1: #b5c1d1;
+--bg-blob-2: #64b5f6;
+--bg-blob-3: #5e6066;
 }
-.theme-sunset { 
---primary-color: #5e35b1; 
---accent-color: #ff9800; 
+.theme-sunset {
+--primary-color: #331a5e;
+--accent-color: #8b5cf6;
+--accent-color-rgb: 139, 92, 246;
 --secondary-accent: #e91e63;
---dark-shadow: #7e57c2; 
+--bg-blob-1: #ff9800;
+--bg-blob-2: #e91e63;
+--bg-blob-3: #5e35b1;
 }
 
 /* DARK MODE */
 .dark-mode {
---base-color: #1e2128;
---primary-color: #e0e6ef;
---accent-color: #7289da;
---secondary-accent: #ff7043;
+--base-color: #0f1420;
+--bg-blob-1: #2a3a5c;
+--bg-blob-2: #5c2a3a;
+--bg-blob-3: #1a2436;
+--primary-color: #eef2fa;
+--accent-color: #6fa8ff;
+--accent-color-rgb: 111, 168, 255;
+--secondary-accent: #ff8a65;
 --light-shadow: #2a2e37;
---dark-shadow: #14161a;
+--dark-shadow: #05070b;
+--glass-bg: rgba(30, 36, 50, 0.28);
+--glass-bg-strong: rgba(30, 36, 50, 0.42);
+--glass-bg-soft: rgba(30, 36, 50, 0.16);
+--glass-border: rgba(255, 255, 255, 0.16);
+--glass-highlight: rgba(255, 255, 255, 0.14);
+--glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+--glass-shadow-pressed: inset 0 3px 10px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255,255,255,0.03);
+--glass-shadow-hover: 0 14px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
 --success-color: #43a047;
 --warning-color: #ffb300;
 --danger-color: #e53935;
@@ -166,38 +213,83 @@ display: none;
 }
 }
 
-/* ====== CSS GRADIENT BACKGROUND ====== */
+/* ====== LIQUID GLASS BACKGROUND (floating blurred color blobs) ====== */
 body::before {
 content: "";
 position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: radial-gradient(circle at 20% 30%, rgba(152, 193, 217, 0.08) 0%, transparent 40%),
-radial-gradient(circle at 80% 70%, rgba(61, 90, 128, 0.06) 0%, transparent 50%);
+top: -10%;
+left: -10%;
+width: 120%;
+height: 120%;
+background:
+radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--bg-blob-1) 45%, transparent) 0%, transparent 38%),
+radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--bg-blob-2) 35%, transparent) 0%, transparent 40%),
+radial-gradient(circle at 25% 85%, color-mix(in srgb, var(--bg-blob-3) 35%, transparent) 0%, transparent 42%),
+radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--bg-blob-1) 30%, transparent) 0%, transparent 40%);
+filter: blur(60px) saturate(140%);
 pointer-events: none;
 z-index: -1;
-animation: bgFloat 25s infinite alternate ease-in-out;
+animation: bgFloat 22s infinite alternate ease-in-out;
+transition: background var(--transition-speed);
 }
 @keyframes bgFloat {
-0% { transform: translate(0, 0); }
-100% { transform: translate(100px, 100px); }
+0% { transform: translate(0, 0) scale(1); }
+100% { transform: translate(60px, 80px) scale(1.08); }
 }
 
 /* ====== NEUMORPHISM CORE ====== */
 .neumorphic {
 border-radius: var(--btn-radius);
-background: var(--base-color);
-box-shadow:
-8px 8px 16px var(--dark-shadow),
--8px -8px 16px var(--light-shadow);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
+box-shadow: var(--glass-shadow);
 transition: all var(--transition-speed) ease;
 }
 .neumorphic.pressed {
-box-shadow:
-inset 6px 6px 12px var(--dark-shadow),
-inset -6px -6px 12px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
+}
+
+/* ====== LIQUID GLASS GLOSSY SHEEN ====== */
+.neumorphic,
+.big-btn,
+.mobile-menu,
+.settings-content {
+position: relative;
+overflow: hidden;
+}
+.neumorphic::before,
+.big-btn::before,
+.mobile-menu::before,
+.settings-content::before {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 60%;
+background: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 100%);
+opacity: 0.22;
+pointer-events: none;
+mix-blend-mode: overlay;
+}
+.big-btn::after {
+content: "";
+position: absolute;
+top: -60%;
+left: -20%;
+width: 60%;
+height: 220%;
+background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+transform: rotate(20deg);
+opacity: 0;
+transition: opacity 0.4s ease, left 0.6s ease;
+pointer-events: none;
+}
+.big-btn:hover::after {
+opacity: 1;
+left: 120%;
 }
 
 /* ====== BADGE ====== */
@@ -341,19 +433,18 @@ font-size: 1.8rem;
 cursor: pointer;
 z-index: 1000;
 color: var(--primary-color);
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 border-radius: 50%;
-box-shadow:
-6px 6px 12px var(--dark-shadow),
--6px -6px 12px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 transition: all 0.3s ease;
 }
 .menu-toggle:hover,
 .menu-toggle:focus {
 color: var(--accent-color);
-box-shadow:
-inset 4px 4px 8px var(--dark-shadow),
-inset -4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 .menu-toggle:focus-visible {
 outline: 2px solid var(--accent-color);
@@ -366,7 +457,10 @@ right: -100%;
 width: 85%;
 max-width: 320px;
 height: 100vh;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 display: flex;
 flex-direction: column;
 padding: 70px 20px 30px;
@@ -388,10 +482,11 @@ font-size: 1.05rem;
 color: var(--primary-color);
 text-decoration: none;
 border-radius: 18px;
-background: var(--base-color);
-box-shadow:
-5px 5px 10px var(--dark-shadow),
--5px -5px 10px var(--light-shadow);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
+box-shadow: var(--glass-shadow);
 transition: all 0.25s ease;
 position: relative;
 overflow: hidden;
@@ -412,9 +507,7 @@ left: 100%;
 .mobile-link:hover,
 .mobile-link:focus {
 color: var(--accent-color);
-box-shadow:
-inset 4px 4px 8px var(--dark-shadow),
-inset -4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 .mobile-link:focus-visible {
 outline: 2px solid var(--accent-color);
@@ -440,10 +533,11 @@ font-size: 0.95rem;
 color: var(--primary-color);
 text-decoration: none;
 border-radius: 15px;
-background: var(--base-color);
-box-shadow:
-4px 4px 8px var(--dark-shadow),
--4px -4px 8px var(--light-shadow);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
+box-shadow: var(--glass-shadow);
 transition: all 0.2s;
 white-space: nowrap;
 position: relative;
@@ -465,9 +559,7 @@ left: 100%;
 .nav-link:hover,
 .nav-link:focus {
 color: var(--accent-color);
-box-shadow:
-inset 3px 3px 6px var(--dark-shadow),
-inset -3px -3px 6px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 .nav-link:focus-visible {
 outline: 2px solid var(--accent-color);
@@ -539,17 +631,17 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 text-align: center;
-font-size: 1.45rem;
+font-size: clamp(1.05rem, 4vw, 1.45rem);
 font-weight: 700;
 color: var(--primary-color);
-background: var(--base-color);
-border: none;
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 border-radius: 25px;
 cursor: pointer;
 transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
-box-shadow:
-12px 12px 24px var(--dark-shadow),
--12px -12px 24px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 transform-style: preserve-3d;
 position: relative;
 z-index: 2;
@@ -557,16 +649,14 @@ z-index: 2;
 .big-btn:hover {
 transform: translateY(-8px) scale(1.04) translateZ(20px);
 color: var(--accent-color);
-box-shadow:
-18px 18px 36px var(--dark-shadow),
--18px -18px 36px var(--light-shadow);
+background: var(--glass-bg-strong);
+border-color: color-mix(in srgb, var(--accent-color) 40%, var(--glass-border));
+box-shadow: var(--glass-shadow-hover);
 }
 .big-btn:active,
 .big-btn:focus.pressed {
 transform: translateY(0) scale(1);
-box-shadow:
-inset 10px 10px 20px var(--dark-shadow),
-inset -10px -10px 20px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 .big-btn:focus-visible {
 outline: 3px solid var(--accent-color);
@@ -596,69 +686,9 @@ border-radius: 10px;
 animation: pulse 2s infinite;
 }
 
-/* ====== DAILY CHALLENGE CARD ====== */
-.daily-challenge {
-background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-color: white;
-border-radius: 25px;
-padding: 20px;
-text-align: center;
-box-shadow:
-12px 12px 24px rgba(0,0,0,0.2),
--12px -12px 24px rgba(255,255,255,0.1);
-margin: 20px auto;
-max-width: 1200px;
-position: relative;
-overflow: hidden;
-}
-.daily-challenge::before {
-content: "";
-position: absolute;
-top: -50%;
-left: -50%;
-width: 200%;
-height: 200%;
-background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-animation: rotate 10s linear infinite;
-}
 @keyframes rotate {
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
-}
-.daily-challenge h3 {
-font-size: 1.5rem;
-margin-bottom: 10px;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 10px;
-}
-.daily-challenge p {
-font-size: 1.1rem;
-margin: 8px 0;
-opacity: 0.9;
-}
-.challenge-progress {
-height: 8px;
-background: rgba(255,255,255,0.2);
-border-radius: 4px;
-margin: 15px 0;
-overflow: hidden;
-}
-.challenge-progress-fill {
-height: 100%;
-width: 65%;
-background: white;
-border-radius: 4px;
-}
-.challenge-reward {
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 5px;
-font-weight: 700;
-margin-top: 10px;
-color: #ffd700;
 }
 
 /* ====== CHAT BOT BUTTON & MODAL ====== */
@@ -673,27 +703,25 @@ animation: pulse 3s infinite, float 4s ease-in-out infinite;
 width: var(--chat-btn-size);
 height: var(--chat-btn-size);
 border-radius: 50%;
-background: var(--accent-color);
+background: color-mix(in srgb, var(--accent-color) 65%, transparent);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid rgba(255,255,255,0.5);
 color: white;
 font-size: 1.8rem;
 font-weight: 700;
 display: flex;
 align-items: center;
 justify-content: center;
-box-shadow:
-6px 6px 12px var(--dark-shadow),
--6px -6px 12px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 cursor: pointer;
-border: none;
 transition: all 0.3s ease;
 position: relative;
 }
 .chat-bot-btn:hover {
 transform: scale(1.1);
 background: var(--primary-color);
-box-shadow:
-8px 8px 16px var(--dark-shadow),
--8px -8px 16px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 }
 .chat-bot-btn:focus {
 outline: 3px solid var(--accent-color);
@@ -707,11 +735,12 @@ right: 30px;
 width: 380px;
 max-width: 95%;
 max-height: 80vh;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 border-radius: 24px;
-box-shadow:
-15px 15px 30px var(--dark-shadow),
--15px -15px 30px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 z-index: 10000;
 flex-direction: column;
 overflow: hidden;
@@ -727,14 +756,14 @@ opacity: 1;
 }
 .chat-bot-header {
 padding: 16px 20px;
-background: var(--primary-color);
+background: linear-gradient(120deg, var(--accent-color), var(--primary-color));
 color: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
 font-weight: 700;
 font-size: 1.3rem;
-border-bottom: 2px solid var(--accent-color);
+border-bottom: 1px solid var(--glass-border);
 cursor: move;
 user-select: none;
 }
@@ -744,10 +773,10 @@ gap: 8px;
 margin-left: 15px;
 }
 .mode-btn {
-width: 24px;
-height: 24px;
+width: 32px;
+height: 32px;
 border-radius: 50%;
-font-size: 0.8rem;
+font-size: 0.9rem;
 display: flex;
 align-items: center;
 justify-content: center;
@@ -790,7 +819,10 @@ display: flex;
 flex-direction: column;
 gap: 16px;
 max-height: calc(80vh - 150px);
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 }
 .message-timestamp {
 font-size: 0.7rem;
@@ -808,18 +840,22 @@ line-height: 1.5;
 }
 .chat-message.user {
 align-self: flex-end;
-background: var(--accent-color);
+background: color-mix(in srgb, var(--accent-color) 75%, transparent);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid rgba(255,255,255,0.35);
 color: white;
 border-bottom-right-radius: 6px;
 }
 .chat-message.bot {
 align-self: flex-start;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 color: var(--primary-color);
 border-bottom-left-radius: 6px;
-box-shadow:
-4px 4px 8px var(--dark-shadow),
--4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 }
 .chat-message.bot::after {
 content: "";
@@ -828,9 +864,10 @@ bottom: -6px;
 left: 15px;
 width: 12px;
 height: 12px;
-background: var(--base-color);
-transform: rotate(45deg);
-box-shadow: 4px 4px 8px var(--dark-shadow);
+background: var(--glass-bg-strong);
+border-left: 1px solid var(--glass-border);
+border-bottom: 1px solid var(--glass-border);
+transform: rotate(-45deg);
 z-index: -1;
 }
 .quick-replies {
@@ -840,9 +877,11 @@ gap: 8px;
 margin-top: 10px;
 }
 .quick-reply-btn {
-background: var(--accent-color);
+background: color-mix(in srgb, var(--accent-color) 70%, transparent);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
 color: white;
-border: none;
+border: 1px solid rgba(255,255,255,0.4);
 border-radius: 20px;
 padding: 6px 12px;
 font-size: 0.85rem;
@@ -855,71 +894,70 @@ box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 .chat-bot-input-container {
 padding: 15px;
-border-top: 1px solid var(--dark-shadow);
+border-top: 1px solid var(--glass-border);
 display: flex;
 gap: 10px;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 }
 #userInput {
 flex: 1;
 padding: 14px 18px;
 border-radius: 50px;
 border: none;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 color: var(--primary-color);
 font-family: 'Rubik', sans-serif;
 font-size: 1rem;
-box-shadow:
-inset 4px 4px 8px var(--dark-shadow),
-inset -4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 transition: all 0.2s;
 }
 #userInput:focus {
 outline: none;
-box-shadow:
-inset 6px 6px 12px var(--dark-shadow),
-inset -6px -6px 12px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 #sendBtn {
 width: 48px;
 height: 48px;
 border-radius: 50%;
-background: var(--accent-color);
+background: color-mix(in srgb, var(--accent-color) 70%, transparent);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
 color: white;
-border: none;
+border: 1px solid rgba(255,255,255,0.5);
 font-size: 1.3rem;
 cursor: pointer;
 display: flex;
 align-items: center;
 justify-content: center;
-box-shadow:
-4px 4px 8px var(--dark-shadow),
--4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 transition: all 0.2s;
 }
 #sendBtn:hover {
 transform: scale(1.08);
 background: var(--primary-color);
-box-shadow:
-6px 6px 12px var(--dark-shadow),
--6px -6px 12px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 }
 #sendBtn:active {
 transform: scale(0.95);
-box-shadow:
-inset 4px 4px 8px var(--dark-shadow),
-inset -4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 }
 .typing-indicator {
 display: flex;
 padding: 12px 16px;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 border-radius: 18px;
 margin-top: 8px;
 align-self: flex-start;
-box-shadow:
-4px 4px 8px var(--dark-shadow),
--4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 }
 .typing-indicator span {
 height: 8px;
@@ -1053,14 +1091,15 @@ opacity: 1;
 pointer-events: all;
 }
 .settings-content {
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 width: 92%;
 max-width: 580px;
 border-radius: 26px;
 padding: 32px;
-box-shadow:
-15px 15px 30px var(--dark-shadow),
--15px -15px 30px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 animation: slideIn 0.4s ease-out;
 max-height: 85vh;
 overflow-y: auto;
@@ -1103,10 +1142,11 @@ gap: 10px;
 margin-bottom: 26px;
 padding: 18px;
 border-radius: 18px;
-background: var(--base-color);
-box-shadow:
-inset 3px 3px 7px var(--dark-shadow),
-inset -3px -3px 7px var(--light-shadow);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
+box-shadow: var(--glass-shadow-pressed);
 }
 .settings-group h3 {
 font-size: 1.25rem;
@@ -1126,16 +1166,16 @@ gap: 10px;
 flex: 1;
 min-width: 90px;
 padding: 12px 0;
-border: none;
 border-radius: 14px;
-background: var(--base-color);
+background: var(--glass-bg);
+backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate, 180%));
+border: 1px solid var(--glass-border);
 color: var(--primary-color);
 font-weight: 600;
 font-size: 0.95rem;
 cursor: pointer;
-box-shadow:
-4px 4px 8px var(--dark-shadow),
--4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow);
 transition: all 0.2s;
 position: relative;
 overflow: hidden;
@@ -1160,9 +1200,7 @@ transform: translateY(-2px);
 .setting-btn.active {
 color: var(--accent-color);
 font-weight: 700;
-box-shadow:
-inset 4px 4px 8px var(--dark-shadow),
-inset -4px -4px 8px var(--light-shadow);
+box-shadow: var(--glass-shadow-pressed);
 background: rgba(152, 193, 217, 0.15);
 }
 
@@ -1186,7 +1224,7 @@ top: 6px;
 
 /* ====== SKELETON LOADING ====== */
 .skeleton {
-background: linear-gradient(90deg, var(--light-shadow) 0%, var(--dark-shadow) 50%, var(--light-shadow) 100%);
+background: linear-gradient(90deg, var(--glass-bg-soft) 0%, var(--glass-bg-strong) 50%, var(--glass-bg-soft) 100%);
 background-size: 200% 100%;
 animation: loading 1.5s infinite;
 border-radius: 10px;
@@ -1210,16 +1248,12 @@ border-radius: 10px;
 --chat-btn-right: 20px; 
 --notification-badge-size: 18px;
 }
-.main-buttons { padding: 100px 15px 60px; }
+.main-buttons { padding: 100px 15px 60px; gap: 18px; }
 .chat-bot-modal {
 width: 95%;
 max-width: 95%;
 bottom: 85px;
 right: 10px;
-}
-.daily-challenge {
-margin: 15px 10px;
-padding: 15px;
 }
 }
 @media (max-width: 480px) {
@@ -1330,16 +1364,6 @@ outline-offset: 2px;
 <a href="yolhar.html" class="nav-link" data-key="yol_qoidasi">🛣️ Yo'l qoidalari</a>
 <a href="#" class="nav-link" onclick="openSettingsModal(); return false" data-key="settings">⚙️ Sozlamalar</a>
 </nav>
-
-<!-- DAILY CHALLENGE -->
-<div class="daily-challenge">
-<h3>🌟 <span data-key="daily_challenge">Kundalik Vazifa</span></h3>
-<p><span data-key="challenge_text">Bugun 5 ta test topshiring va 50 yulduzcha yig'ing!</span></p>
-<div class="challenge-progress">
-<div class="challenge-progress-fill"></div>
-</div>
-<div class="challenge-reward">⭐ 50 yulduzcha + 🥉 Bronza medal</div>
-</div>
 
 <!-- MAIN BUTTONS -->
 <main class="main-buttons">
@@ -1566,8 +1590,6 @@ kutubxona: "📚 Kutubxona",
 kutubxona_sub: "Kitoblar dunyosi",
 yol_qoidasi: "🛣️ Yo'l qoidalari",
 yol_qoidasi_sub: "Xavfsizlik qoidalari",
-daily_challenge: "Kundalik Vazifa",
-challenge_text: "Bugun 5 ta test topshiring va 50 yulduzcha yig'ing!",
 footer_protected: "Ushbu sayt ASCO tomonidan yaratilgan va 🔒 himoyalangan",
 footer_name: "Yordamchi Maktab",
 privacy: "Maxfiylik siyosati",
@@ -1605,16 +1627,268 @@ quick_reply_games: "O'yinlar",
 quick_reply_advice: "Maslahatlar",
 quick_reply_settings: "Sozlamalar",
 quick_reply_help: "Yordam"
+},
+ru: {
+introSubText: "Пространство знаний. Новые возможности. 💡",
+lessons: "🤖 Учитель ИИ",
+lessons_sub: "По всем предметам",
+tests: "📝 Тесты",
+tests_sub: "Проверьте свои знания",
+videos: "🎮 Игры",
+videos_sub: "Увлекательные игры",
+advice: "💡 Советы",
+advice_sub: "Секреты учёбы",
+flags: "🏳️ Флаги",
+flags_sub: "Флаги стран мира",
+teachers: "👩‍🏫 Интересное",
+teachers_sub: "Загляните в необычный раздел",
+aboutUs: "ℹ️ О нас",
+aboutUs_sub: "Цель проекта",
+contact: "📞 Контакты",
+contactt: "Раздел ICHU",
+contact_sub: "Для обращений",
+uzbekistan: "🇺🇿 Узбекистан",
+uzbekistan_sub: "О нашей стране",
+yashil_makon: "🌿 Зелёное пространство",
+yashil_makon_sub: "Экологичная жизнь",
+kutubxona: "📚 Библиотека",
+kutubxona_sub: "Мир книг",
+yol_qoidasi: "🛣️ ПДД",
+yol_qoidasi_sub: "Правила безопасности",
+footer_protected: "Этот сайт создан и 🔒 защищён компанией ASCO",
+footer_name: "Yordamchi Maktab",
+privacy: "Политика конфиденциальности",
+terms: "Условия использования",
+help_center: "Центр помощи",
+feedback: "Обратная связь",
+settings_title: "Настройки",
+language_title: "Выберите язык:",
+mode_title: "Режим:",
+theme_title: "Тема:",
+accessibility_title: "Доступность:",
+notifications_title: "Уведомления:",
+chat_welcome: "Здравствуйте! Я ИИ-помощник Yordamchi Maktab. Чем могу помочь? 😊",
+chat_greeting: "И вам здравствуйте! Чем могу помочь?",
+chat_help: "Вы можете использовать следующие команды:\n- «Тесты» — перейти к тестам\n- «Игры» — перейти к играм\n- «Советы» — советы по учёбе\n- «Настройки» — открыть настройки сайта\n- «О нас» — информация о проекте",
+chat_tests: "Отлично! Переходим в раздел тестов. Здесь вы найдёте тесты по разным предметам.",
+chat_games: "Добро пожаловать в раздел игр! Здесь учёба станет увлекательной.",
+chat_advice: "В разделе советов вы найдёте секреты учёбы, которые помогут вашим успехам.",
+chat_about: "Yordamchi Maktab — база знаний для всех учеников. Мы предлагаем уроки, тесты, видеоуроки и полезные советы по разным предметам.",
+chat_settings: "Настройки открыты. Здесь можно изменить язык, оформление и другие параметры.",
+chat_unknown: "Извините, я не понял эту команду. Напишите «помощь», чтобы увидеть доступные команды.",
+chat_thanks: "Рад был помочь! Если появятся вопросы, смело пишите. 😊",
+chat_profile: "Добро пожаловать в свой профиль! Ваше имя:",
+chat_mode_help: "Режим помощи включён. Я помогу вам с сайтом.",
+chat_mode_navigate: "Режим навигации включён. Я отведу вас в нужный раздел.",
+chat_mode_fun: "Весёлый режим включён! Давайте немного отдохнём! 😄",
+notification_welcome: "Добро пожаловать!",
+notification_welcome_msg: "Добро пожаловать в Yordamchi Maktab! Откройте новые возможности.",
+notification_settings: "Настройки сохранены",
+notification_settings_msg: "Ваш выбор успешно сохранён.",
+notification_dark_mode: "Тёмный режим включён",
+notification_dark_mode_msg: "Теперь удобнее для глаз.",
+quick_reply_tests: "Тесты",
+quick_reply_games: "Игры",
+quick_reply_advice: "Советы",
+quick_reply_settings: "Настройки",
+quick_reply_help: "Помощь"
+},
+en: {
+introSubText: "Space of Knowledge. New Opportunities. 💡",
+lessons: "🤖 AI Teacher",
+lessons_sub: "All subjects covered",
+tests: "📝 Tests",
+tests_sub: "Test your knowledge",
+videos: "🎮 Games",
+videos_sub: "Fun learning games",
+advice: "💡 Tips",
+advice_sub: "Study secrets",
+flags: "🏳️ Flags",
+flags_sub: "Flags of the world",
+teachers: "👩‍🏫 Fun Facts",
+teachers_sub: "Explore our fun section",
+aboutUs: "ℹ️ About Us",
+aboutUs_sub: "Our project's mission",
+contact: "📞 Contact",
+contactt: "ICHU Section",
+contact_sub: "Get in touch",
+uzbekistan: "🇺🇿 Uzbekistan",
+uzbekistan_sub: "About our country",
+yashil_makon: "🌿 Green Space",
+yashil_makon_sub: "Eco-friendly living",
+kutubxona: "📚 Library",
+kutubxona_sub: "World of books",
+yol_qoidasi: "🛣️ Traffic Rules",
+yol_qoidasi_sub: "Safety rules",
+footer_protected: "This site was built by ASCO and is 🔒 protected",
+footer_name: "Yordamchi Maktab",
+privacy: "Privacy Policy",
+terms: "Terms of Use",
+help_center: "Help Center",
+feedback: "Send Feedback",
+settings_title: "Settings",
+language_title: "Choose a language:",
+mode_title: "Mode:",
+theme_title: "Theme:",
+accessibility_title: "Accessibility:",
+notifications_title: "Notifications:",
+chat_welcome: "Hello! I'm Yordamchi Maktab's AI assistant. How can I help you today? 😊",
+chat_greeting: "Hello to you too! How can I help?",
+chat_help: "You can use the following commands:\n- 'Tests' — go to the tests section\n- 'Games' — go to the games section\n- 'Tips' — study tips\n- 'Settings' — open site settings\n- 'About us' — info about the project",
+chat_tests: "Great! Heading to the tests section. You'll find tests on various subjects here.",
+chat_games: "Welcome to the games section! Here learning becomes fun.",
+chat_advice: "In the tips section you'll find study secrets to help your academic success.",
+chat_about: "Yordamchi Maktab is a knowledge hub for all students. We offer lessons, tests, video lessons and useful tips across many subjects.",
+chat_settings: "Settings opened. Here you can adjust language, appearance and other options.",
+chat_unknown: "Sorry, I didn't understand that. Type 'help' to see the available commands.",
+chat_thanks: "Glad I could help! Feel free to ask if you have more questions. 😊",
+chat_profile: "Welcome to your profile! Your name:",
+chat_mode_help: "Help mode activated. I'll assist you around the site.",
+chat_mode_navigate: "Navigation mode activated. I'll take you to the section you need.",
+chat_mode_fun: "Fun mode activated! Let's have some fun! 😄",
+notification_welcome: "Welcome!",
+notification_welcome_msg: "Welcome to Yordamchi Maktab! Discover new opportunities.",
+notification_settings: "Settings saved",
+notification_settings_msg: "Your preferences were saved successfully.",
+notification_dark_mode: "Dark mode enabled",
+notification_dark_mode_msg: "Now easier on the eyes.",
+quick_reply_tests: "Tests",
+quick_reply_games: "Games",
+quick_reply_advice: "Tips",
+quick_reply_settings: "Settings",
+quick_reply_help: "Help"
+},
+ko: {
+introSubText: "지식의 공간. 새로운 기회. 💡",
+lessons: "🤖 AI 선생님",
+lessons_sub: "모든 과목 학습",
+tests: "📝 테스트",
+tests_sub: "실력을 확인해보세요",
+videos: "🎮 게임",
+videos_sub: "재미있는 학습 게임",
+advice: "💡 조언",
+advice_sub: "공부 비법",
+flags: "🏳️ 국기",
+flags_sub: "세계 여러 나라의 국기",
+teachers: "👩‍🏫 흥미로운 이야기",
+teachers_sub: "특별한 코너를 만나보세요",
+aboutUs: "ℹ️ 소개",
+aboutUs_sub: "프로젝트의 목표",
+contact: "📞 문의",
+contactt: "ICHU 섹션",
+contact_sub: "문의하기",
+uzbekistan: "🇺🇿 우즈베키스탄",
+uzbekistan_sub: "우리나라에 대하여",
+yashil_makon: "🌿 그린 스페이스",
+yashil_makon_sub: "친환경적인 삶",
+kutubxona: "📚 도서관",
+kutubxona_sub: "책의 세계",
+yol_qoidasi: "🛣️ 교통 규칙",
+yol_qoidasi_sub: "안전 수칙",
+footer_protected: "이 사이트는 ASCO가 제작했으며 🔒 보호되고 있습니다",
+footer_name: "Yordamchi Maktab",
+privacy: "개인정보 처리방침",
+terms: "이용 약관",
+help_center: "고객센터",
+feedback: "의견 보내기",
+settings_title: "설정",
+language_title: "언어 선택:",
+mode_title: "모드:",
+theme_title: "테마:",
+accessibility_title: "접근성:",
+notifications_title: "알림:",
+chat_welcome: "안녕하세요! 저는 Yordamchi Maktab의 AI 도우미입니다. 무엇을 도와드릴까요? 😊",
+chat_greeting: "안녕하세요! 무엇을 도와드릴까요?",
+chat_help: "다음 명령어를 사용할 수 있습니다:\n- '테스트' — 테스트 섹션으로 이동\n- '게임' — 게임 섹션으로 이동\n- '조언' — 학습 조언\n- '설정' — 사이트 설정 열기\n- '소개' — 프로젝트 정보",
+chat_tests: "좋아요! 테스트 섹션으로 이동합니다. 다양한 과목의 테스트를 확인하세요.",
+chat_games: "게임 섹션에 오신 것을 환영합니다! 재미있게 공부해보세요.",
+chat_advice: "조언 섹션에서 학습 비법을 확인하세요. 성적 향상에 도움이 됩니다.",
+chat_about: "Yordamchi Maktab은 모든 학생을 위한 지식 플랫폼입니다. 다양한 과목의 수업, 테스트, 동영상 강의 및 유용한 조언을 제공합니다.",
+chat_settings: "설정이 열렸습니다. 여기서 언어, 화면 모드 등을 설정할 수 있습니다.",
+chat_unknown: "죄송해요, 이해하지 못했어요. '도움말'이라고 입력하시면 사용 가능한 명령어를 볼 수 있습니다.",
+chat_thanks: "도움이 되어 기쁩니다! 더 궁금한 점이 있으면 언제든지 물어보세요. 😊",
+chat_profile: "프로필 페이지에 오신 것을 환영합니다! 당신의 이름:",
+chat_mode_help: "도움 모드가 활성화되었습니다. 사이트 이용을 도와드릴게요.",
+chat_mode_navigate: "탐색 모드가 활성화되었습니다. 원하는 섹션으로 안내해드릴게요.",
+chat_mode_fun: "재미 모드가 활성화되었습니다! 잠시 즐겨봐요! 😄",
+notification_welcome: "환영합니다!",
+notification_welcome_msg: "Yordamchi Maktab에 오신 것을 환영합니다! 새로운 기회를 발견해보세요.",
+notification_settings: "설정이 저장되었습니다",
+notification_settings_msg: "선택하신 내용이 성공적으로 저장되었습니다.",
+notification_dark_mode: "다크 모드 켜짐",
+notification_dark_mode_msg: "눈이 더 편안해졌습니다.",
+quick_reply_tests: "테스트",
+quick_reply_games: "게임",
+quick_reply_advice: "조언",
+quick_reply_settings: "설정",
+quick_reply_help: "도움말"
+},
+zh: {
+introSubText: "知识空间。全新机遇。💡",
+lessons: "🤖 AI 老师",
+lessons_sub: "涵盖所有科目",
+tests: "📝 测试",
+tests_sub: "检验你的知识",
+videos: "🎮 游戏",
+videos_sub: "有趣的学习游戏",
+advice: "💡 建议",
+advice_sub: "学习小窍门",
+flags: "🏳️ 国旗",
+flags_sub: "世界各国国旗",
+teachers: "👩‍🏫 趣味专区",
+teachers_sub: "来看看有趣的板块吧",
+aboutUs: "ℹ️ 关于我们",
+aboutUs_sub: "项目的目标",
+contact: "📞 联系我们",
+contactt: "ICHU 板块",
+contact_sub: "如需联系",
+uzbekistan: "🇺🇿 乌兹别克斯坦",
+uzbekistan_sub: "关于我们的国家",
+yashil_makon: "🌿 绿色空间",
+yashil_makon_sub: "环保生活",
+kutubxona: "📚 图书馆",
+kutubxona_sub: "书的世界",
+yol_qoidasi: "🛣️ 交通规则",
+yol_qoidasi_sub: "安全规则",
+footer_protected: "本网站由 ASCO 创建并受到 🔒 保护",
+footer_name: "Yordamchi Maktab",
+privacy: "隐私政策",
+terms: "使用条款",
+help_center: "帮助中心",
+feedback: "意见反馈",
+settings_title: "设置",
+language_title: "选择语言：",
+mode_title: "模式：",
+theme_title: "主题：",
+accessibility_title: "无障碍：",
+notifications_title: "通知：",
+chat_welcome: "您好！我是 Yordamchi Maktab 的人工智能助手。有什么可以帮您的吗？😊",
+chat_greeting: "您好！我能帮您做什么？",
+chat_help: "您可以使用以下指令：\n- “测试” — 前往测试板块\n- “游戏” — 前往游戏板块\n- “建议” — 学习建议\n- “设置” — 打开网站设置\n- “关于我们” — 了解项目信息",
+chat_tests: "太好了！即将前往测试板块，这里有各科目的测试。",
+chat_games: "欢迎来到游戏板块！在这里学习也能变得有趣。",
+chat_advice: "在建议板块，您可以找到学习的小窍门，帮助您取得更好的成绩。",
+chat_about: "Yordamchi Maktab 是面向所有学生的知识平台，提供各科课程、测试、视频课程以及实用的学习建议。",
+chat_settings: "设置已打开。您可以在这里调整语言、外观等选项。",
+chat_unknown: "抱歉，我没有理解这个指令。请输入“帮助”查看可用指令。",
+chat_thanks: "很高兴能帮到您！如果还有问题，请随时告诉我。😊",
+chat_profile: "欢迎来到您的个人主页！您的名字：",
+chat_mode_help: "帮助模式已开启，我会协助您使用本网站。",
+chat_mode_navigate: "导航模式已开启，我会带您前往需要的板块。",
+chat_mode_fun: "趣味模式已开启！让我们放松一下吧！😄",
+notification_welcome: "欢迎！",
+notification_welcome_msg: "欢迎来到 Yordamchi Maktab！发现全新机遇。",
+notification_settings: "设置已保存",
+notification_settings_msg: "您的选择已成功保存。",
+notification_dark_mode: "深色模式已开启",
+notification_dark_mode_msg: "现在看起来对眼睛更舒适。",
+quick_reply_tests: "测试",
+quick_reply_games: "游戏",
+quick_reply_advice: "建议",
+quick_reply_settings: "设置",
+quick_reply_help: "帮助"
 }
 };
-
-// Fill missing langs
-['ru','en','ko','zh'].forEach(lang => {
-if (!content[lang]) content[lang] = {};
-Object.keys(content.uz).forEach(k => {
-if (!content[lang][k]) content[lang][k] = content.uz[k];
-});
-});
 
 // GLOBAL STATE
 let currentLang = localStorage.getItem('siteLang') || getLangFromURL() || 'uz';
