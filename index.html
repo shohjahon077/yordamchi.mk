@@ -1298,6 +1298,116 @@ border: 0;
 outline: 3px solid var(--accent-color);
 outline-offset: 2px;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* User Bar */
+.user-profile-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+#logoutBtn {
+  background: rgba(255, 77, 77, 0.2);
+  border: 1px solid rgba(255, 77, 77, 0.4);
+  color: #ff6b6b;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#logoutBtn:hover {
+  background: rgba(255, 77, 77, 0.4);
+}
+
+/* Modal Window */
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.auth-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  color: #fff;
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.auth-box input::placeholder {
+  color: #aaa;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.auth-toggle {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.auth-toggle a {
+  color: #818cf8;
+  text-decoration: none;
+  margin-left: 4px;
+}
 </style>
 </head>
 <body id="body" class="theme-default">
@@ -1317,6 +1427,37 @@ outline-offset: 2px;
 <div class="progress-bar"><div class="progress-fill"></div></div>
 <button class="skip-btn" id="skipIntro">⏩ Tezroq davom etish</button>
 </div>
+<!-- Foydalanuvchi profili knopkasi (Header qismida turadi) -->
+<div id="userProfileBar" class="user-profile-bar" style="display: none;">
+  <span id="userNameDisplay">Foydalanuvchi</span>
+  <button id="logoutBtn" onclick="logoutUser()">Chiqish</button>
+</div>
+
+<!-- Login / Registratsiya Modal Oynasi -->
+<div id="authModal" class="auth-modal">
+  <div class="auth-box">
+    <h2 id="authTitle">Roʻyxatdan oʻtish</h2>
+    
+    <input type="text" id="regName" placeholder="Ismingiz (masalan: Shohjahon)" />
+    <input type="email" id="regEmail" placeholder="Email manzilingiz" />
+    <input type="password" id="regPassword" placeholder="Parol kiriting" />
+    
+    <button onclick="handleAuth()" id="authSubmitBtn">Roʻyxatdan oʻtish</button>
+    
+    <p class="auth-toggle">
+      <span id="authToggleText">Hisobingiz bormi?</span>
+      <a href="#" onclick="toggleAuthMode(event)" id="authToggleLink">Kirish</a>
+    </p>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 
 <!-- MAIN CONTENT -->
 <div id="main-content">
@@ -1545,7 +1686,123 @@ outline-offset: 2px;
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+let isLoginMode = false; // default: registratsiya rejimi
+
+// Sahifa yuklanganda foydalanuvchi sessiyasini tekshirish
+document.addEventListener("DOMContentLoaded", () => {
+  checkUserSession();
+});
+
+function checkUserSession() {
+  const currentUser = JSON.parse(localStorage.getItem("ymt_current_user"));
+  const modal = document.getElementById("authModal");
+  const userBar = document.getElementById("userProfileBar");
+  const userNameDisplay = document.getElementById("userNameDisplay");
+
+  if (currentUser) {
+    modal.style.display = "none";
+    userBar.style.display = "flex";
+    userNameDisplay.innerText = `👋 ${currentUser.name}`;
+  } else {
+    modal.style.display = "flex";
+    userBar.style.display = "none";
+  }
+}
+
+// Kirish / Ro'yxatdan o'tish holatini almashtirish
+function toggleAuthMode(e) {
+  e.preventDefault();
+  isLoginMode = !isLoginMode;
+
+  const title = document.getElementById("authTitle");
+  const nameInput = document.getElementById("regName");
+  const btn = document.getElementById("authSubmitBtn");
+  const toggleText = document.getElementById("authToggleText");
+  const toggleLink = document.getElementById("authToggleLink");
+
+  if (isLoginMode) {
+    title.innerText = "Kirish";
+    nameInput.style.display = "none";
+    btn.innerText = "Kirish";
+    toggleText.innerText = "Hisobingiz yoʻqmi?";
+    toggleLink.innerText = "Roʻyxatdan oʻtish";
+  } else {
+    title.innerText = "Roʻyxatdan oʻtish";
+    nameInput.style.display = "block";
+    btn.innerText = "Roʻyxatdan oʻtish";
+    toggleText.innerText = "Hisobingiz bormi?";
+    toggleLink.innerText = "Kirish";
+  }
+}
+
+// Autentifikatsiya operatsiyasi
+function handleAuth() {
+  const email = document.getElementById("regEmail").value.trim();
+  const password = document.getElementById("regPassword").value.trim();
+  const name = document.getElementById("regName").value.trim();
+
+  if (!email || !password || (!isLoginMode && !name)) {
+    alert("Iltimos, barcha maydonlarni toʻldiring!");
+    return;
+  }
+
+  // Saqlangan foydalanuvchilar ro'yxatini olish
+  let users = JSON.parse(localStorage.getItem("ymt_users")) || [];
+
+  if (isLoginMode) {
+    // KIRISH
+    const foundUser = users.find(u => u.email === email && u.password === password);
+    if (foundUser) {
+      localStorage.setItem("ymt_current_user", JSON.stringify(foundUser));
+      checkUserSession();
+    } else {
+      alert("Email yoki parol notoʻgʻri!");
+    }
+  } else {
+    // RO'YXATDAN O'TISH
+    const userExists = users.some(u => u.email === email);
+    if (userExists) {
+      alert("Ushbu email bilan roʻyxatdan oʻtilgan!");
+      return;
+    }
+
+    const newUser = { name, email, password };
+    users.push(newUser);
+    localStorage.setItem("ymt_users", JSON.stringify(users));
+    localStorage.setItem("ymt_current_user", JSON.stringify(newUser));
+    checkUserSession();
+  }
+}
+
+// Tizimdan chiqish
+function logoutUser() {
+  localStorage.removeItem("ymt_current_user");
+  checkUserSession();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // PROGRESS BAR
+
 document.addEventListener('DOMContentLoaded', () => {
 const progressBar = document.getElementById('progress-bar');
 let progress = 0;
