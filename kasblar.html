@@ -1,42 +1,2296 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kasblar olami | Yordamchi Maktab</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f2f6fc;color:#17233b}.top{background:#fff;padding:16px 5%;display:flex;justify-content:space-between;box-shadow:0 2px 12px #0001}.top a{color:#2563eb;text-decoration:none;font-weight:bold}.hero{padding:40px 5%;background:linear-gradient(120deg,#dceaff,#e3fff5)}h1{font-size:clamp(30px,5vw,48px);margin:12px 0}.hero p{max-width:650px;line-height:1.7}.wrap{max-width:1150px;margin:auto;padding:22px 16px}.controls{display:grid;grid-template-columns:2fr 1fr;gap:12px}input,select{padding:14px;border:1px solid #d8e1ee;border-radius:12px;font-size:15px;background:white;width:100%}.chips{display:flex;gap:8px;overflow:auto;padding:16px 0}.chip{white-space:nowrap;border:1px solid #d8e1ee;background:#fff;border-radius:30px;padding:9px 13px;cursor:pointer}.chip.active{background:#2563eb;color:#fff}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.career{background:white;border:1px solid #e0e7f0;border-radius:16px;padding:17px;text-align:left;cursor:pointer;min-height:155px}.career:hover{border-color:#2563eb;transform:translateY(-2px)}.emoji{font-size:28px}.career h3{margin:10px 0 6px}.career p{font-size:13px;color:#64748b;line-height:1.5}.tag{font-size:11px;color:#2563eb;background:#edf3ff;padding:5px 8px;border-radius:7px}.note{margin:24px 0;background:#fff7e6;padding:15px;border-radius:12px;line-height:1.6;font-size:13px}.modal{display:none;position:fixed;inset:0;background:#101c31aa;padding:20px;overflow:auto;z-index:5}.modal.open{display:flex;justify-content:center;align-items:flex-start}.box{background:white;border-radius:18px;max-width:680px;width:100%;padding:23px;margin:auto}.close{float:right;font-size:24px;border:0;background:#edf3ff;border-radius:9px;padding:5px 12px;cursor:pointer}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.tab{padding:9px;border:1px solid #dce5f2;background:#fff;border-radius:9px;cursor:pointer}.tab.active{background:#2563eb;color:white}.panel{line-height:1.7}.answer{display:block;width:100%;padding:12px;text-align:left;margin:8px 0;border:1px solid #dce5f2;border-radius:10px;background:white;cursor:pointer}.answer.correct{background:#e6fff0;border-color:#2aaf6d}.answer.wrong{background:#fff0f0;border-color:#d66}.foot{text-align:center;padding:22px;color:#64748b;font-size:12px}@media(max-width:750px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{grid-template-columns:1fr}}@media(max-width:430px){.grid{gap:8px}.career{padding:12px}.career h3{font-size:15px}.career p{font-size:12px}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kasblar olami - Kelajagingizni kashf eting. 50+ professional kasblar haqida batafsil ma'lumot.">
+    <title>Kasblar olami | Yordamchi.mk</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <style>
+      /* ===== CSS VARIABLES ===== */
+:root {
+    /* Colors */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary: #ec4899;
+    --accent: #06b6d4;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-dark: #0f172a;
+    
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    
+    --border: #e2e8f0;
+    --border-dark: #cbd5e1;
+    
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 5rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Z-index */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal: 400;
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* ===== UTILITIES ===== */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== NAVIGATION ===== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-fixed);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition-base);
+}
+
+.navbar.scrolled {
+    box-shadow: var(--shadow-md);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    transition: var(--transition-fast);
+}
+
+.logo-icon {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.nav-links a {
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: var(--transition-base);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-xs);
+    z-index: var(--z-modal);
+}
+
+.mobile-menu-btn span {
+    width: 25px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.mobile-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    padding: var(--space-md);
+    flex-direction: column;
+    gap: var(--space-sm);
+    box-shadow: var(--shadow-xl);
+}
+
+.mobile-nav.active {
+    display: flex;
+}
+
+.mobile-nav a {
+    padding: var(--space-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.mobile-nav a:hover,
+.mobile-nav a.active {
+    background: var(--bg-secondary);
+    color: var(--primary);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    padding: calc(80px + var(--space-2xl)) var(--space-lg) var(--space-2xl);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #fce7f3 100%);
+    overflow: hidden;
+}
+
+.hero-bg-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-text {
+    max-width: 600px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: var(--space-lg);
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    line-height: 1.7;
+}
+
+.hero-search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--space-md);
+    color: var(--text-light);
+    pointer-events: none;
+}
+
+#searchInput {
+    width: 100%;
+    padding: var(--space-md) var(--space-md) var(--space-md) calc(var(--space-md) * 2 + 20px);
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    transition: var(--transition-base);
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: var(--space-md);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    transition: var(--transition-fast);
+}
+
+.search-clear:hover {
+    color: var(--text-primary);
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-base);
+    transform: translateY(0);
+}
+
+.hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.hero-stats {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+.hero-visual {
+    position: relative;
+}
+
+.hero-image-container {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-2xl);
+}
+
+.hero-main-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    transition: var(--transition-slow);
+}
+
+.hero-image-container:hover .hero-main-image {
+    transform: scale(1.05);
+}
+
+.floating-card {
+    position: absolute;
+    background: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    animation: float 6s ease-in-out infinite;
+}
+
+.card-1 {
+    top: 10%;
+    left: -10%;
+    animation-delay: 0s;
+}
+
+.card-2 {
+    bottom: 20%;
+    right: -5%;
+    animation-delay: 2s;
+}
+
+.card-3 {
+    top: 40%;
+    right: -15%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.card-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text strong {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.card-text span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    animation: bounce 2s infinite;
+}
+
+.scroll-arrow {
+    width: 24px;
+    height: 40px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 20px;
+    position: relative;
+}
+
+.scroll-arrow::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    animation: scroll 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+}
+
+@keyframes scroll {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(15px); }
+}
+
+/* ===== CATEGORIES SECTION ===== */
+.categories-section {
+    padding: var(--space-2xl) 0;
+    background: var(--bg-secondary);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-md);
+}
+
+.section-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+}
+
+.category-card {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    cursor: pointer;
+    aspect-ratio: 4/3;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-slow);
+}
+
+.category-card:hover .category-image {
+    transform: scale(1.1);
+}
+
+.category-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--space-lg);
+    color: white;
+}
+
+.category-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.category-count {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* ===== CATALOG SECTION ===== */
+.catalog-section {
+    padding: var(--space-2xl) 0;
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.catalog-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    margin-bottom: var(--space-xs);
+}
+
+.catalog-count {
+    color: var(--text-secondary);
+}
+
+.catalog-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: var(--space-sm) var(--space-md);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    background: white;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Asymmetric Grid Layouts */
+.catalog-grid.featured-layout .profession-card:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.catalog-grid.featured-layout .profession-card:nth-child(1) .profession-image {
+    height: 100%;
+    min-height: 400px;
+}
+
+.profession-card {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.profession-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profession-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.profession-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+}
+
+.profession-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-slow);
+}
+
+.profession-card:hover .profession-image {
+    transform: scale(1.1);
+}
+
+.profession-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-lg);
+}
+
+.profession-card:hover .profession-overlay {
+    opacity: 1;
+}
+
+.profession-overlay-text {
+    color: white;
+    transform: translateY(20px);
+    transition: var(--transition-base);
+}
+
+.profession-card:hover .profession-overlay-text {
+    transform: translateY(0);
+}
+
+.profession-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary-light);
+    margin-bottom: var(--space-xs);
+}
+
+.profession-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+}
+
+.profession-desc {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.profession-content {
+    padding: var(--space-lg);
+}
+
+.profession-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+}
+
+.profession-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.profession-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.profession-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: var(--space-md);
+    transition: var(--transition-fast);
+}
+
+.profession-link:hover {
+    gap: var(--space-sm);
+}
+
+.load-more-container {
+    text-align: center;
+    margin-top: var(--space-xl);
+}
+
+.load-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.load-more-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.no-results {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-xl);
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.no-results p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.reset-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.reset-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+    padding: var(--space-2xl) 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+}
+
+.cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-md);
+}
+
+.cta-content p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: var(--space-xl);
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: white;
+    color: var(--primary);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 1.125rem;
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition-base);
+}
+
+.cta-button:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    background: var(--bg-dark);
+    color: white;
+    padding: var(--space-2xl) 0 var(--space-lg);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-xl);
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+}
+
+.footer-brand p {
+    color: var(--text-light);
+    max-width: 300px;
+}
+
+.footer-column h4 {
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+    color: white;
+}
+
+.footer-column a {
+    display: block;
+    color: var(--text-light);
+    margin-bottom: var(--space-sm);
+    transition: var(--transition-fast);
+}
+
+.footer-column a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+.delay-3 { animation-delay: 0.6s; }
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+.reveal-text {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: revealText 1s ease-out 0.2s forwards;
+}
+
+@keyframes revealText {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll Reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger Animation */
+.stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-out;
+}
+
+.stagger-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .hero-text {
+        max-width: 100%;
+    }
+    
+    .hero-stats {
+        justify-content: center;
+    }
+    
+    .hero-visual {
+        order: -1;
+    }
+    
+    .hero-main-image {
+        height: 400px;
+    }
+    
+    .floating-card {
+        display: none;
+    }
+    
+    .catalog-grid.featured-layout .profession-card:nth-child(1) {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .catalog-grid.featured-layout .profession-card:nth-child(1) .profession-image {
+        min-height: 300px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
+    .hero {
+        padding: calc(80px + var(--space-xl)) var(--space-md) var(--space-xl);
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+    
+    .catalog-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .catalog-actions {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: var(--space-sm);
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .filter-btn {
+        white-space: nowrap;
+    }
+    
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+    
+    .profession-card {
+        margin-bottom: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .cta-content h2 {
+        font-size: 1.75rem;
+    }
+    
+    .cta-content p {
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* Focus Styles */
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Loading Skeleton */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: var(--radius-md);
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Image Fallback */
+img[src=""], img:not([src]) {
+    background: var(--bg-secondary);
+    min-height: 200px;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .hero-visual, .cta-section, .footer {
+        display: none;
+    }
+    
+    .hero {
+        min-height: auto;
+        padding: var(--space-lg);
+    }
+    
+    .catalog-grid {
+        display: block;
+    }
+    
+    .profession-card {
+        break-inside: avoid;
+        margin-bottom: var(--space-md);
+        box-shadow: none;
+        border: 1px solid var(--border);
+    }
+}
+    </style>
 </head>
 <body>
-<header class="top"><b>Yordamchi <span style="color:#2563eb">Maktab</span></b><a href="index.html">← Bosh sahifa</a></header>
-<section class="hero"><div class="wrap"><b>💼 KASBLAR OLAMI</b><h1>Qiziqishingni top.<br>Kelajagingni qur.</h1><p>Kasblar bilan tanishing, kerakli ko‘nikmalarni o‘rganing va mini test orqali o‘zingizni sinab ko‘ring.</p><b id="stats"></b></div></section>
-<main class="wrap"><div class="controls"><input id="search" placeholder="Kasb yoki yo‘nalish qidiring..."><select id="sort"><option value="default">Tavsiya etilgan</option><option value="az">Nom bo‘yicha A–Z</option></select></div><div class="chips" id="chips"></div><h2 id="heading">Barcha kasblar</h2><p id="count"></p><div class="grid" id="grid"></div><div class="note"><b>📌 Muhim:</b> bu sahifa kasblar bilan tanishish uchun. Tibbiyot, huquq va boshqa tartibga solinadigan kasblarda ishlash uchun rasmiy ta’lim va tegishli malaka talab qilinishi mumkin.</div></main>
-<footer class="foot">© 2026 Yordamchi Maktab · Kasblar olami</footer>
-<div class="modal" id="modal"><div class="box"><button class="close" id="close">×</button><div id="details"></div><div class="tabs"><button class="tab active" data-tab="about">Kasb haqida</button><button class="tab" data-tab="skills">Ko‘nikmalar</button><button class="tab" data-tab="path">Ta’lim yo‘li</button><button class="tab" data-tab="lesson">Mini dars</button><button class="tab" data-tab="quiz">Test</button></div><div class="panel" id="panel"></div></div></div>
-<script>
-const data=[
-["Tibbiyot","🩺","Umumiy shifokor","Stomatolog","Pediatr","Kardiolog","Nevrolog","Dermatolog","Oftalmolog","Hamshira","Farmatsevt","Laboratoriya mutaxassisi"],
-["IT va texnologiya","💻","Frontend dasturchi","Backend dasturchi","Full-stack dasturchi","Mobil ilova dasturchisi","Sun’iy intellekt mutaxassisi","Kiberxavfsizlik mutaxassisi","Ma’lumotlar tahlilchisi","UI/UX dizayner"],
-["Muhandislik va qurilish","🏗️","Arxitektor","Qurilish muhandisi","Elektr muhandisi","Mexanik muhandis","Payvandchi","Elektrik","Santexnik","Usta-quruvchi"],
-["Ta’lim va ilm-fan","🎓","Maktab o‘qituvchisi","Ingliz tili o‘qituvchisi","Matematika o‘qituvchisi","Dasturlash o‘qituvchisi","Psixolog","Laboratoriya tadqiqotchisi"],
-["Biznes va moliya","📊","Tadbirkor","Buxgalter","Moliyaviy tahlilchi","Bank mutaxassisi","Marketing menejeri","HR mutaxassisi"],
-["Dizayn va ijod","🎨","Grafik dizayner","Video montajchi","Fotograf","Videograf","3D dizayner","Animator"],
-["Media va kommunikatsiya","🎙️","Jurnalist","Bloger va kontent yaratuvchi","SMM mutaxassisi","Boshlovchi","Kopirayter","Ovoz rejissyori"],
-["Huquq va davlat","⚖️","Yurist","Advokat","Notarius","Davlat xizmatchisi"],
-["Transport va logistika","🚗","Avtomexanik","Avtoelektrik","Logist","Haydovchi","Aviatsiya mutaxassisi"],
-["Go‘zallik va xizmat","✂️","Sartarosh","Vizajist","Kosmetolog","Manikyur ustasi","Tikuvchi","Oshpaz"],
-["Qishloq xo‘jaligi","🌱","Agronom","Veterinar","Bog‘bon","Issiqxona mutaxassisi"],
-["Xavfsizlik va favqulodda xizmat","🛡️","Yong‘in xavfsizligi mutaxassisi","Qutqaruvchi","Mehnat muhofazasi mutaxassisi","Qo‘riqlash xizmati mutaxassisi"]
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">◆</span>
+                <span class="logo-text">Yordamchi.mk</span>
+            </a>
+            
+            <div class="nav-links desktop-nav">
+                <a href="/">Bosh sahifa</a>
+                <a href="/kasblar.html" class="active">Kasblar</a>
+                <a href="/testlar">Testlar</a>
+                <a href="/maqolalar">Maqolalar</a>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menyu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div class="mobile-nav" id="mobileNav">
+            <a href="/">Bosh sahifa</a>
+            <a href="/kasblar.html" class="active">Kasblar</a>
+            <a href="/testlar">Testlar</a>
+            <a href="/maqolalar">Maqolalar</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-bg-decoration"></div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge fade-in">
+                    <span class="badge-dot"></span>
+                    <span>50+ Professional Kasb</span>
+                </div>
+                
+                <h1 class="hero-title reveal-text">
+                    Kelajaging qaysi <span class="gradient-text">kasbdan</span> boshlanadi?
+                </h1>
+                
+                <p class="hero-subtitle fade-in delay-1">
+                    O'z qiziqishlaringizni professional kasblarga aylantiring. 
+                    Har bir kasb haqida batafsil ma'lumot, o'rganish yo'li va amaliy topshiriqlar.
+                </p>
+                
+                <div class="hero-search fade-in delay-2">
+                    <div class="search-container">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Kasb nomini kiriting (masalan: dasturchi, shifokor...)"
+                            autocomplete="off"
+                        >
+                        <button class="search-clear" id="searchClear" style="display: none;">×</button>
+                    </div>
+                    <button class="hero-cta" id="exploreBtn">
+                        Kasblarni kashf etish
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="hero-stats fade-in delay-3">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="50">0</span>
+                        <span class="stat-label">Professional kasb</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="11">0</span>
+                        <span class="stat-label">Sohalar</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="150">0</span>
+                        <span class="stat-label">+ Amaliy topshiriq</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-image-container">
+                    <img 
+                        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" 
+                        alt="Professional jamoa" 
+                        class="hero-main-image"
+                        loading="eager"
+                    >
+                    
+                    <!-- Floating Cards -->
+                    <div class="floating-card card-1">
+                        <div class="card-icon">💼</div>
+                        <div class="card-text">
+                            <strong>Kasb tanlash</strong>
+                            <span>Qiziqishlaringizni aniqlang</span>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card-2">
+                        <div class="card-icon">📚</div>
+                        <div class="card-text">
+                            <strong>O'rganish</strong>
+                            <span>Bosqichma-bosqich</span>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card-3">
+                        <div class="card-icon">🎯</div>
+                        <div class="card-text">
+                            <strong>Amaliyat</strong>
+                            <span>Haqiqiy tajriba</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-scroll-indicator">
+            <span>Sichqonchani aylantiring</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </header>
+
+    <!-- Categories Filter -->
+    <section class="categories-section" id="categoriesSection">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Kasblarni <span class="gradient-text">yo'nalishlar</span> bo'yicha ko'ring</h2>
+                <p class="section-subtitle">Qiziqishlaringizga mos sohani tanlang</p>
+            </div>
+            
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be inserted by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Catalog -->
+    <section class="catalog-section" id="catalogSection">
+        <div class="container">
+            <div class="catalog-header">
+                <div class="catalog-info">
+                    <h2 class="catalog-title">Barcha kasblar</h2>
+                    <p class="catalog-count">
+                        <span id="visibleCount">50</span> ta kasb topildi
+                    </p>
+                </div>
+                
+                <div class="catalog-actions">
+                    <button class="filter-btn active" data-filter="all">
+                        Barchasi
+                    </button>
+                    <button class="filter-btn" data-filter="tibbiyot">
+                        Tibbiyot
+                    </button>
+                    <button class="filter-btn" data-filter="it">
+                        IT
+                    </button>
+                    <button class="filter-btn" data-filter="muhandislik">
+                        Muhandislik
+                    </button>
+                    <button class="filter-btn" data-filter="ta'lim">
+                        Ta'lim
+                    </button>
+                </div>
+            </div>
+            
+            <div class="catalog-grid" id="catalogGrid">
+                <!-- Professions will be inserted by JS -->
+            </div>
+            
+            <div class="load-more-container" id="loadMoreContainer">
+                <button class="load-more-btn" id="loadMoreBtn">
+                    Yana kasblarni ko'rsatish
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>Hech narsa topilmadi</h3>
+                <p>Qidiruv so'zini o'zgartirib ko'ring yoki boshqa filtrlarni sinab ko'ring</p>
+                <button class="reset-btn" id="resetBtn">
+                    Filtrlarni tozalash
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Kasbingizni tanlashga tayyormisiz?</h2>
+                <p>Bugundan boshlab kelajagingizni shakllantiring. Har bir kasb haqida batafsil ma'lumot oling va amaliy ko'nikmalarni o'rganing.</p>
+                <a href="#catalogSection" class="cta-button">
+                    Kasblarni ko'rish
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="/" class="footer-logo">
+                        <span class="logo-icon">◆</span>
+                        <span class="logo-text">Yordamchi.mk</span>
+                    </a>
+                    <p>Kelajak avlod uchun professional kasb tanlash platformasi</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platforma</h4>
+                        <a href="/kasblar">Kasblar</a>
+                        <a href="/testlar">Testlar</a>
+                        <a href="/maqolalar">Maqolalar</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Yordam</h4>
+                        <a href="/aloqa">Aloqa</a>
+                        <a href="/faq">Ko'p so'raladigan savollar</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Yordamchi.mk. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>// ===== DATA: 50 PROFESSIONS =====
+const professions = [
+    // TIBBIYOT (10)
+    {
+        id: 'shifokor',
+        name: 'Shifokor',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80',
+        description: 'Kasalliklarni tashxis qilish va davolash',
+        specializations: ['kardiolog', 'nevrolog', 'pediatr', 'stomatolog', 'dermatolog', 'oftalmolog', 'jarroh', 'endokrinolog', 'radiolog']
+    },
+    {
+        id: 'kardiolog',
+        name: 'Kardiolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=80',
+        description: 'Yurak-qon tomir kasalliklari mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'nevrolog',
+        name: 'Nevrolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=800&q=80',
+        description: 'Nerv tizimi kasalliklari bo\'yicha mutaxassis',
+        parent: 'shifokor'
+    },
+    {
+        id: 'pediatr',
+        name: 'Pediatr',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=800&q=80',
+        description: 'Bolalar kasalliklari mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'stomatolog',
+        name: 'Stomatolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&q=80',
+        description: 'Tish va og\'iz bo\'shlig\'i mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'dermatolog',
+        name: 'Dermatolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80',
+        description: 'Teri kasalliklari mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'oftalmolog',
+        name: 'Oftalmolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80',
+        description: 'Ko\'z kasalliklari mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'jarroh',
+        name: 'Jarroh',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80',
+        description: 'Operatsiya orqali davolash mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'endokrinolog',
+        name: 'Endokrinolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&q=80',
+        description: 'Gormonal tizim mutaxassisi',
+        parent: 'shifokor'
+    },
+    {
+        id: 'radiolog',
+        name: 'Radiolog',
+        category: 'tibbiyot',
+        categoryName: 'Tibbiyot',
+        image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&q=80',
+        description: 'Rentgen va tasvirli diagnostika',
+        parent: 'shifokor'
+    },
+    
+    // IT VA TEXNOLOGIYA (7)
+    {
+        id: 'dasturchi',
+        name: 'Dasturchi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1573164713714-d95e43bbab58?w=800&q=80',
+        description: 'Dasturiy ta\'minot yaratish',
+        specializations: ['frontend-dasturchi', 'backend-dasturchi', 'fullstack-dasturchi', 'mobil-dasturchi', 'ai-mutaxassisi', 'kiberxavfsizlik', 'data-analyst']
+    },
+    {
+        id: 'frontend-dasturchi',
+        name: 'Frontend dasturchi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80',
+        description: 'Veb-sayt interfeyslarini yaratish',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'backend-dasturchi',
+        name: 'Backend dasturchi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&q=80',
+        description: 'Server va ma\'lumotlar bazasi',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'fullstack-dasturchi',
+        name: 'Full-stack dasturchi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80',
+        description: 'Frontend va backend mutaxassisi',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'mobil-dasturchi',
+        name: 'Mobil dasturchi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80',
+        description: 'Mobil ilovalar yaratish',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'ai-mutaxassisi',
+        name: 'Sun\'iy intellekt mutaxassisi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80',
+        description: 'AI va mashina o\'rganish',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'kiberxavfsizlik',
+        name: 'Kiberxavfsizlik mutaxassisi',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',
+        description: 'Axborot xavfsizligi',
+        parent: 'dasturchi'
+    },
+    {
+        id: 'data-analyst',
+        name: 'Data Analyst',
+        category: 'it',
+        categoryName: 'IT va texnologiya',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+        description: 'Ma\'lumotlarni tahlil qilish',
+        parent: 'dasturchi'
+    },
+    
+    // MUHANDISLIK (5)
+    {
+        id: 'muhandis',
+        name: 'Muhandis',
+        category: 'muhandislik',
+        categoryName: 'Muhandislik',
+        image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80',
+        description: 'Texnik tizimlarni loyihalash',
+        specializations: ['dasturiy-muhandis', 'tizim-muhandisi', 'sanoat-muhandisi', 'qurilish-muhandisi']
+    },
+    {
+        id: 'dasturiy-muhandis',
+        name: 'Dasturiy ta\'minot muhandisi',
+        category: 'muhandislik',
+        categoryName: 'Muhandislik',
+        image: 'https://images.unsplash.com/photo-1504639722598-2a3f71bf7b5e?w=800&q=80',
+        description: 'Dasturiy ta\'minot arxitekturasi',
+        parent: 'muhandis'
+    },
+    {
+        id: 'tizim-muhandisi',
+        name: 'Tizim muhandisi',
+        category: 'muhandislik',
+        categoryName: 'Muhandislik',
+        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
+        description: 'Kompyuter tizimlari',
+        parent: 'muhandis'
+    },
+    {
+        id: 'sanoat-muhandisi',
+        name: 'Sanoat muhandisi',
+        category: 'muhandislik',
+        categoryName: 'Muhandislik',
+        image: 'https://images.unsplash.com/photo-1565043589221-1a6fd9ae45f7?w=800&q=80',
+        description: 'Ishlab chiqarish jarayonlari',
+        parent: 'muhandis'
+    },
+    {
+        id: 'qurilish-muhandisi',
+        name: 'Qurilish muhandisi',
+        category: 'muhandislik',
+        categoryName: 'Muhandislik',
+        image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80',
+        description: 'Bino va inshootlar loyihasi',
+        parent: 'muhandis'
+    },
+    
+    // TA'LIM (4)
+    {
+        id: 'oqituvchi',
+        name: 'O\'qituvchi',
+        category: 'ta\'lim',
+        categoryName: 'Ta\'lim',
+        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80',
+        description: 'Bilim va ko\'nikmalar o\'rgatish',
+        specializations: ['maktabgacha-oqituvchi', 'oliy-oqituvchi', 'maxsus-pedagog']
+    },
+    {
+        id: 'maktabgacha-oqituvchi',
+        name: 'Maktabgacha ta\'lim o\'qituvchisi',
+        category: 'ta\'lim',
+        categoryName: 'Ta\'lim',
+        image: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80',
+        description: 'Bolalarga dastlabki ta\'lim',
+        parent: 'oqituvchi'
+    },
+    {
+        id: 'oliy-oqituvchi',
+        name: 'Oliy o\'quv yurti o\'qituvchisi',
+        category: 'ta\'lim',
+        categoryName: 'Ta\'lim',
+        image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80',
+        description: 'Universitetda dars berish',
+        parent: 'oqituvchi'
+    },
+    {
+        id: 'maxsus-pedagog',
+        name: 'Maxsus pedagog',
+        category: 'ta\'lim',
+        categoryName: 'Ta\'lim',
+        image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=800&q=80',
+        description: 'Maxsus ehtiyojli bolalar',
+        parent: 'oqituvchi'
+    },
+    
+    // DIZAYN VA IJOD (5)
+    {
+        id: 'dizayner',
+        name: 'Dizayner',
+        category: 'dizayn',
+        categoryName: 'Dizayn va ijod',
+        image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80',
+        description: 'Vizual kontseptsiyalar yaratish',
+        specializations: ['grafik-dizayner', 'ux-ui-dizayner', 'ichki-dizayner', 'moda-dizayneri']
+    },
+    {
+        id: 'grafik-dizayner',
+        name: 'Grafik dizayner',
+        category: 'dizayn',
+        categoryName: 'Dizayn va ijod',
+        image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800&q=80',
+        description: 'Grafik va brend dizayni',
+        parent: 'dizayner'
+    },
+    {
+        id: 'ux-ui-dizayner',
+        name: 'UX/UI dizayner',
+        category: 'dizayn',
+        categoryName: 'Dizayn va ijod',
+        image: 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80',
+        description: 'Foydalanuvchi tajribasi dizayni',
+        parent: 'dizayner'
+    },
+    {
+        id: 'ichki-dizayner',
+        name: 'Ichki dizayner',
+        category: 'dizayn',
+        categoryName: 'Dizayn va ijod',
+        image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80',
+        description: 'Interer dizayni',
+        parent: 'dizayner'
+    },
+    {
+        id: 'moda-dizayneri',
+        name: 'Moda dizayneri',
+        category: 'dizayn',
+        categoryName: 'Dizayn va ijod',
+        image: 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80',
+        description: 'Kiyim-kechak dizayni',
+        parent: 'dizayner'
+    },
+    
+    // BIZNES VA MOLIYA (4)
+    {
+        id: 'biznes-tahlilchi',
+        name: 'Biznes tahlilchisi',
+        category: 'biznes',
+        categoryName: 'Biznes va moliya',
+        image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80',
+        description: 'Biznes jarayonlarini tahlil qilish'
+    },
+    {
+        id: 'moliyachi',
+        name: 'Moliyachi',
+        category: 'biznes',
+        categoryName: 'Biznes va moliya',
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80',
+        description: 'Moliyaviy boshqaruv va rejalashtirish'
+    },
+    {
+        id: 'buxgalter',
+        name: 'Buxgalter',
+        category: 'biznes',
+        categoryName: 'Biznes va moliya',
+        image: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=800&q=80',
+        description: 'Moliyaviy hisob-kitoblar'
+    },
+    {
+        id: 'marketolog',
+        name: 'Marketolog',
+        category: 'biznes',
+        categoryName: 'Biznes va moliya',
+        image: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=800&q=80',
+        description: 'Marketing strategiyalari'
+    },
+    
+    // MEDIA (4)
+    {
+        id: 'jurnalist',
+        name: 'Jurnalist',
+        category: 'media',
+        categoryName: 'Media',
+        image: 'https://images.unsplash.com/photo-1555445054-8488d03d5e49?w=800&q=80',
+        description: 'Axborot to\'plash va tarqatish',
+        specializations: ['fotojurnalist', 'video-operator', 'smm-mutaxassisi']
+    },
+    {
+        id: 'fotojurnalist',
+        name: 'Fotojurnalist',
+        category: 'media',
+        categoryName: 'Media',
+        image: 'https://images.unsplash.com/photo-1554048612-387768052bf7?w=800&q=80',
+        description: 'Hodisalarni fotosurat orqali aks ettirish',
+        parent: 'jurnalist'
+    },
+    {
+        id: 'video-operator',
+        name: 'Video operator',
+        category: 'media',
+        categoryName: 'Media',
+        image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
+        description: 'Video kontent yaratish',
+        parent: 'jurnalist'
+    },
+    {
+        id: 'smm-mutaxassisi',
+        name: 'SMM mutaxassisi',
+        category: 'media',
+        categoryName: 'Media',
+        image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80',
+        description: 'Ijtimoiy tarmoqlarda marketing',
+        parent: 'jurnalist'
+    },
+    
+    // XIZMAT KO'RSATISH (4)
+    {
+        id: 'oshpaz',
+        name: 'Oshpaz',
+        category: 'xizmat',
+        categoryName: 'Xizmat ko\'rsatish',
+        image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=800&q=80',
+        description: 'Taomlar tayyorlash'
+    },
+    {
+        id: 'ofitsiant',
+        name: 'Ofitsiant',
+        category: 'xizmat',
+        categoryName: 'Xizmat ko\'rsatish',
+        image: 'https://images.unsplash.com/photo-1583336137350-3783b48b9817?w=800&q=80',
+        description: 'Mehmonlarga xizmat ko\'rsatish'
+    },
+    {
+        id: 'mehmonxona-administratori',
+        name: 'Mehmonxona administratori',
+        category: 'xizmat',
+        categoryName: 'Xizmat ko\'rsatish',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
+        description: 'Mehmonxonani boshqarish'
+    },
+    {
+        id: 'sartarosh',
+        name: 'Sartarosh',
+        category: 'xizmat',
+        categoryName: 'Xizmat ko\'rsatish',
+        image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&q=80',
+        description: 'Soch va soqol parvarishi'
+    },
+    
+    // HUQUQ (2)
+    {
+        id: 'advokat',
+        name: 'Advokat',
+        category: 'huquq',
+        categoryName: 'Huquq',
+        image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80',
+        description: 'Huquqiy masalalar bo\'yicha yordam'
+    },
+    {
+        id: 'notarius',
+        name: 'Notarius',
+        category: 'huquq',
+        categoryName: 'Huquq',
+        image: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800&q=80',
+        description: 'Hujjatlarni tasdiqlash'
+    },
+    
+    // QISHLOQ XO'JALIGI (2)
+    {
+        id: 'agronom',
+        name: 'Agronom',
+        category: 'qishloq',
+        categoryName: 'Qishloq xo\'jaligi',
+        image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80',
+        description: 'Qishloq xo\'jaligi ekinlari'
+    },
+    {
+        id: 'veterinar',
+        name: 'Veterinar',
+        category: 'qishloq',
+        categoryName: 'Qishloq xo\'jaligi',
+        image: 'https://images.unsplash.com/photo-1629904853716-6033e66ad60e?w=800&q=80',
+        description: 'Hayvonlarni davolash'
+    },
+    
+    // QO'SHIMCHA (3)
+    {
+        id: 'logist',
+        name: 'Logist',
+        category: 'boshqa',
+        categoryName: 'Qo\'shimcha kasblar',
+        image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80',
+        description: 'Yuk tashish va ta\'minot'
+    },
+    {
+        id: 'psixolog',
+        name: 'Psixolog',
+        category: 'boshqa',
+        categoryName: 'Qo\'shimcha kasblar',
+        image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80',
+        description: 'Ruhiy salomatlik mutaxassisi'
+    },
+    {
+        id: 'elektrik',
+        name: 'Elektrik',
+        category: 'boshqa',
+        categoryName: 'Qo\'shimcha kasblar',
+        image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80',
+        description: 'Elektr tizimlarini o\'rnatish va ta\'mirlash'
+    }
 ];
-const icons={"dasturchi":"💻","intellekt":"🤖","dizayner":"🎨","stomatolog":"🦷","kardiolog":"❤️","hamshira":"🩺","psixolog":"🧠","fotograf":"📷","video":"🎬","jurnalist":"📰","yurist":"⚖️","oshpaz":"👨‍🍳","veterinar":"🐾","qutqaruvchi":"🧯"};
-const careers=data.flatMap(d=>d.slice(2).map(name=>({name,domain:d[0],icon:icons[Object.keys(icons).find(k=>name.toLowerCase().includes(k))]||d[1]})));
-let category="Barchasi",selected=null,tab="about";
-const $=id=>document.getElementById(id);
-function renderChips(){ $("chips").innerHTML="";["Barchasi",...data.map(d=>d[0])].forEach(n=>{let b=document.createElement("button");b.className="chip"+(n===category?" active":"");b.textContent=n==="Barchasi"?"✨ "+n:(data.find(d=>d[0]===n)[1]+" "+n);b.onclick=()=>{category=n;renderChips();render()};$("chips").append(b)})}
-function render(){let q=$("search").value.toLocaleLowerCase("uz");let list=careers.filter(c=>(category==="Barchasi"||c.domain===category)&&(c.name+" "+c.domain).toLocaleLowerCase("uz").includes(q));if($("sort").value==="az")list.sort((a,b)=>a.name.localeCompare(b.name,"uz"));$("heading").textContent=category==="Barchasi"?"Barcha kasblar":category;$("count").textContent=list.length+" ta kasb";$("grid").innerHTML="";if(!list.length){$("grid").textContent="Kasb topilmadi.";return}list.forEach(c=>{let b=document.createElement("button");b.className="career";b.innerHTML='<div class="emoji"></div><h3></h3><p></p><span class="tag"></span>';b.querySelector(".emoji").textContent=c.icon;b.querySelector("h3").textContent=c.name;b.querySelector("p").textContent=c.name+" — "+c.domain.toLowerCase()+" yo‘nalishidagi kasb.";b.querySelector(".tag").textContent=c.domain;b.onclick=()=>openCareer(c);$("grid").append(b)})}
-function openCareer(c){selected=c;tab="about";$("details").innerHTML="<h2>"+c.icon+" "+c.name+"</h2><p><b>Yo‘nalish:</b> "+c.domain+"</p>";$("modal").classList.add("open");showTab()}
-function showTab(){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));let skill=selected.domain==="IT va texnologiya"?"Mantiqiy fikrlash, kompyuter savodxonligi, muammolarni yechish va loyiha yaratish.":"Asosiy nazariy bilimlar, amaliy ko‘nikmalar, muloqot, mas’uliyat va xavfsizlik qoidalari.";let content={about:"<h3>Kasb haqida</h3><p>"+selected.name+" — "+selected.domain.toLowerCase()+" yo‘nalishidagi kasb. Kundalik vazifalar ish joyi va mutaxassislikka qarab farqlanadi.</p><p>Kasbni tanlashdan avval uning vazifalari, ish muhiti va sizning qiziqishlaringizga mosligini o‘rganing.</p>",skills:"<h3>Kerakli ko‘nikmalar</h3><p>"+skill+"</p><ul><li>Muntazam o‘rganish</li><li>Jamoada ishlash va fikrni tushunarli ifodalash</li><li>Amaliy mashqlar va portfel</li></ul>",path:"<h3>Ta’lim yo‘li</h3><ol><li>Kasb va boshlang‘ich tushunchalarni o‘rganing.</li><li>Tegishli kurs, kollej yoki oliy ta’limni tanlang.</li><li>Amaliyot va kichik loyihalar orqali tajriba yig‘ing.</li></ol><p>Rasmiy malaka talablari kasb va mamlakatga qarab farq qiladi.</p>",lesson:"<h3>Mini dars</h3><p><b>1.</b> Kasbning uchta kundalik vazifasini yozing.</p><p><b>2.</b> Ushbu vazifalar uchun kerakli ko‘nikmalarni aniqlang.</p><p><b>3.</b> Bitta ko‘nikma uchun kichik, xavfsiz amaliy topshiriq bajaring.</p>",quiz:'<h3>Mini test</h3><p><b>Kasb tanlashda qaysi yondashuv foydaliroq?</b></p><button class="answer" data-ok="0">Faqat boshqalarga ergashish</button><button class="answer" data-ok="1">Qiziqish, vazifa va kerakli ko‘nikmalarni solishtirish</button><button class="answer" data-ok="0">Faqat nomiga qarab tanlash</button><p id="feedback"></p>'};$("panel").innerHTML=content[tab];$("panel").querySelectorAll(".answer").forEach(b=>b.onclick=()=>{$("feedback").textContent=b.dataset.ok==="1"?"✅ To‘g‘ri! Kasbni ongli ravishda tanlash muhim.":"🔄 Yana urinib ko‘ring.";b.classList.toggle(b.dataset.ok==="1"?"correct":"wrong")})}
-$("search").oninput=render;$("sort").onchange=render;$("close").onclick=()=>$("modal").classList.remove("open");$("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.remove("open")};document.querySelector(".tabs").onclick=e=>{if(e.target.dataset.tab){tab=e.target.dataset.tab;showTab()}};document.onkeydown=e=>{if(e.key==="Escape")$("modal").classList.remove("open")};$("stats").textContent=careers.length+" ta kasb · "+data.length+" ta yo‘nalish";renderChips();render();
-</script>
-</body></html>
+
+// ===== STATE MANAGEMENT =====
+let currentFilter = 'all';
+let searchQuery = '';
+let visibleProfessions = 12;
+let selectedCategory = null;
+
+// ===== DOM ELEMENTS =====
+const navbar = document.getElementById('navbar');
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileNav = document.getElementById('mobileNav');
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const catalogGrid = document.getElementById('catalogGrid');
+const categoriesGrid = document.getElementById('categoriesGrid');
+const visibleCount = document.getElementById('visibleCount');
+const noResults = document.getElementById('noResults');
+const loadMoreBtn = document.getElementById('loadMoreBtn');
+const loadMoreContainer = document.getElementById('loadMoreContainer');
+const filterBtns = document.querySelectorAll('.filter-btn');
+const exploreBtn = document.getElementById('exploreBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+    initNavbar();
+    initMobileMenu();
+    initSearch();
+    initCategories();
+    renderProfessions();
+    initScrollAnimations();
+    initCounters();
+    initFilters();
+});
+
+// ===== NAVBAR =====
+function initNavbar() {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+}
+
+function initMobileMenu() {
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileNav.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('active');
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            mobileNav.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+        }
+    });
+}
+
+// ===== SEARCH =====
+function initSearch() {
+    searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.toLowerCase();
+        searchClear.style.display = searchQuery ? 'block' : 'none';
+        visibleProfessions = 12;
+        renderProfessions();
+    });
+    
+    searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.style.display = 'none';
+        visibleProfessions = 12;
+        renderProfessions();
+    });
+    
+    exploreBtn.addEventListener('click', () => {
+        document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+// ===== CATEGORIES =====
+function initCategories() {
+    const categories = [
+        { id: 'tibbiyot', name: 'Tibbiyot', count: 10, image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80' },
+        { id: 'it', name: 'IT va texnologiya', count: 7, image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80' },
+        { id: 'muhandislik', name: 'Muhandislik', count: 5, image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80' },
+        { id: 'ta\'lim', name: 'Ta\'lim', count: 4, image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80' },
+        { id: 'dizayn', name: 'Dizayn va ijod', count: 5, image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&q=80' },
+        { id: 'biznes', name: 'Biznes va moliya', count: 4, image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80' },
+        { id: 'media', name: 'Media', count: 4, image: 'https://images.unsplash.com/photo-1555445054-8488d03d5e49?w=600&q=80' },
+        { id: 'xizmat', name: 'Xizmat ko\'rsatish', count: 4, image: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?w=600&q=80' },
+        { id: 'huquq', name: 'Huquq', count: 2, image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80' },
+        { id: 'qishloq', name: 'Qishloq xo\'jaligi', count: 2, image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80' },
+        { id: 'boshqa', name: 'Boshqa kasblar', count: 3, image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80' }
+    ];
+    
+    categoriesGrid.innerHTML = categories.map(cat => `
+        <div class="category-card" data-category="${cat.id}">
+            <img src="${cat.image}" alt="${cat.name}" class="category-image" loading="lazy">
+            <div class="category-overlay">
+                <div class="category-name">${cat.name}</div>
+                <div class="category-count">${cat.count} ta kasb</div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Category click handlers
+    categoriesGrid.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const categoryId = card.dataset.category;
+            selectedCategory = categoryId;
+            currentFilter = categoryId;
+            
+            // Update filter buttons
+            filterBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === categoryId) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Scroll to catalog
+            document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth' });
+            renderProfessions();
+        });
+    });
+}
+
+// ===== RENDER PROFESSIONS =====
+function renderProfessions() {
+    const filtered = getFilteredProfessions();
+    const toShow = filtered.slice(0, visibleProfessions);
+    
+    if (filtered.length === 0) {
+        catalogGrid.innerHTML = '';
+        noResults.style.display = 'block';
+        loadMoreContainer.style.display = 'none';
+        visibleCount.textContent = '0';
+        return;
+    }
+    
+    noResults.style.display = 'none';
+    visibleCount.textContent = filtered.length;
+    
+    // Check if we should use featured layout
+    const useFeaturedLayout = visibleProfessions === 12 && !searchQuery && currentFilter === 'all';
+    catalogGrid.className = 'catalog-grid' + (useFeaturedLayout ? ' featured-layout' : '');
+    
+    catalogGrid.innerHTML = toShow.map((prof, index) => createProfessionCard(prof, index)).join('');
+    
+    // Show/hide load more button
+    if (visibleProfessions >= filtered.length) {
+        loadMoreContainer.style.display = 'none';
+    } else {
+        loadMoreContainer.style.display = 'block';
+    }
+    
+    // Trigger animations
+    setTimeout(() => {
+        document.querySelectorAll('.profession-card').forEach((card, i) => {
+            setTimeout(() => {
+                card.classList.add('visible');
+            }, i * 100);
+        });
+    }, 100);
+}
+
+function getFilteredProfessions() {
+    return professions.filter(prof => {
+        const matchesSearch = prof.name.toLowerCase().includes(searchQuery) ||
+                            prof.description.toLowerCase().includes(searchQuery);
+        const matchesCategory = currentFilter === 'all' || prof.category === currentFilter;
+        return matchesSearch && matchesCategory;
+    });
+}
+
+function createProfessionCard(prof, index) {
+    const isParent = prof.specializations && prof.specializations.length > 0;
+    const parentInfo = prof.parent ? professions.find(p => p.id === prof.parent) : null;
+    
+    return `
+        <article class="profession-card stagger-item" data-category="${prof.category}">
+            <a href="/kasblar/${prof.id}.html" class="profession-link-wrapper">
+                <div class="profession-image-wrapper">
+                    <img 
+                        src="${prof.image}" 
+                        alt="${prof.name}" 
+                        class="profession-image"
+                        loading="lazy"
+                        onerror="this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80'"
+                    >
+                    <div class="profession-overlay">
+                        <div class="profession-overlay-text">
+                            <div class="profession-category">${prof.categoryName}</div>
+                            <div class="profession-name">${prof.name}</div>
+                            <div class="profession-desc">${prof.description}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profession-content">
+                    <div class="profession-header">
+                        <div>
+                            <h3 class="profession-title">${prof.name}</h3>
+                            <div class="profession-meta">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <span>${prof.categoryName}</span>
+                            </div>
+                        </div>
+                        ${isParent ? '<span class="badge">Bosh kasb</span>' : ''}
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: var(--space-sm);">
+                        ${prof.description}
+                    </p>
+                    ${parentInfo ? `<p style="font-size: 0.75rem; color: var(--primary); margin-bottom: var(--space-sm);">
+                        ← ${parentInfo.name} sohasi
+                    </p>` : ''}
+                    <span class="profession-link">
+                        Batafsil ma'lumot
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+            </a>
+        </article>
+    `;
+}
+
+// ===== LOAD MORE =====
+loadMoreBtn.addEventListener('click', () => {
+    visibleProfessions += 12;
+    renderProfessions();
+});
+
+// ===== FILTERS =====
+function initFilters() {
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            selectedCategory = currentFilter === 'all' ? null : currentFilter;
+            visibleProfessions = 12;
+            renderProfessions();
+        });
+    });
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            searchClear.style.display = 'none';
+            currentFilter = 'all';
+            selectedCategory = null;
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            filterBtns[0].classList.add('active');
+            visibleProfessions = 12;
+            renderProfessions();
+        });
+    }
+}
+
+// ===== SCROLL ANIMATIONS =====
+function initScrollAnimations() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+    
+    // Observe elements
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// ===== COUNTER ANIMATION =====
+function initCounters() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    const observerOptions = {
+        threshold: 0.5
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    counters.forEach(counter => observer.observe(counter));
+}
+
+function animateCounter(element) {
+    const target = parseInt(element.dataset.target);
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+            element.textContent = target + (target > 100 ? '+' : '');
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.floor(current);
+        }
+    }, 16);
+}
+
+// ===== UTILITY FUNCTIONS =====
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ===== PERFORMANCE OPTIMIZATION =====
+// Lazy load images
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            }
+        });
+    });
+    
+    document.querySelectorAll('img[data-src]').forEach(img => imageObserver.observe(img));
+}
+
+// Service Worker for offline support (optional enhancement)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Uncomment to enable service worker
+        // navigator.serviceWorker.register('/sw.js');
+    });
+}
+
+console.log('Kasblar olami platformasi yuklandi. Jami kasblar:', professions.length);</script>
+</body>
+</html>
