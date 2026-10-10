@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tibbiyot olamini kashf eting. 14+ tibbiy mutaxassisliklar haqida batafsil ma'lumot.">
+    <title>Tibbiyot mutaxassislari | Kasblar olami | Yordamchi.mk</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+      /* ===== CSS VARIABLES ===== */
+:root {
+    /* Medical Color Palette */
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
+    --primary-light: #38bdf8;
+    --secondary: #06b6d4;
+    --accent: #14b8a6;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f9ff;
+    --bg-tertiary: #e0f2fe;
+    --bg-dark: #0c4a6e;
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-light: #94a3b8;
+    
+    --border: #e2e8f0;
+    --border-dark: #cbd5e1;
+    
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 5rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(15 23 42 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(15 23 42 / 0.25);
+    
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* ===== UTILITIES ===== */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== NAVIGATION ===== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition-base);
+}
+
+.navbar.scrolled {
+    box-shadow: var(--shadow-md);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.logo-icon {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.nav-links a {
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: var(--transition-base);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-xs);
+}
+
+.mobile-menu-btn span {
+    width: 25px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.mobile-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    padding: var(--space-md);
+    flex-direction: column;
+    gap: var(--space-sm);
+    box-shadow: var(--shadow-xl);
+}
+
+.mobile-nav.active {
+    display: flex;
+}
+
+.mobile-nav a {
+    padding: var(--space-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.mobile-nav a:hover,
+.mobile-nav a.active {
+    background: var(--bg-secondary);
+    color: var(--primary);
+}
+
+/* ===== HERO SECTION ===== */
+.hero-medical {
+    position: relative;
+    min-height: 100vh;
+    padding: calc(80px + var(--space-2xl)) var(--space-lg) var(--space-2xl);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 50%, var(--bg-primary) 100%);
+    overflow: hidden;
+}
+
+.hero-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-gradient {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-text {
+    max-width: 600px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(14, 165, 233, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: var(--space-lg);
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.badge-icon {
+    font-size: 1rem;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    line-height: 1.7;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.hero-search {
+    margin-bottom: var(--space-xl);
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.search-wrapper {
+    position: relative;
+    max-width: 500px;
+}
+
+.search-icon {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+}
+
+#searchInput {
+    width: 100%;
+    padding: var(--space-md) var(--space-md) var(--space-md) calc(var(--space-md) * 2 + 20px);
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    transition: var(--transition-base);
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    transition: var(--transition-fast);
+}
+
+.search-clear:hover {
+    color: var(--text-primary);
+}
+
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-base);
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.hero-visual {
+    position: relative;
+}
+
+.hero-image-wrapper {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-2xl);
+    animation: fadeInRight 1s ease-out 0.5s both;
+}
+
+.hero-main-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    transition: var(--transition-slow);
+}
+
+.hero-image-wrapper:hover .hero-main-image {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.4) 0%, transparent 50%);
+}
+
+.floating-stat {
+    position: absolute;
+    background: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    animation: float 6s ease-in-out infinite;
+}
+
+.stat-1 {
+    top: 10%;
+    left: -10%;
+    animation-delay: 0s;
+}
+
+.stat-2 {
+    bottom: 20%;
+    right: -5%;
+    animation-delay: 3s;
+}
+
+.stat-icon {
+    font-size: 2rem;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-content strong {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.stat-content span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    animation: bounce 2s infinite;
+}
+
+.scroll-arrow {
+    width: 24px;
+    height: 40px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 20px;
+    position: relative;
+}
+
+.scroll-arrow::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    animation: scroll 2s infinite;
+}
+
+/* ===== SPECIALIZATIONS SECTION ===== */
+.specializations-section {
+    padding: var(--space-2xl) 0;
+    background: var(--bg-primary);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-xs);
+}
+
+.section-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.results-count {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.count-number {
+    font-size: 1.25rem;
+}
+
+.specializations-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-lg);
+}
+
+/* Asymmetric Grid Layouts */
+.spec-card {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.spec-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.spec-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+.spec-card.featured {
+    grid-column: span 7;
+    grid-row: span 2;
+}
+
+.spec-card.featured .spec-image {
+    height: 100%;
+    min-height: 400px;
+}
+
+.spec-card.wide {
+    grid-column: span 6;
+}
+
+.spec-card.tall {
+    grid-row: span 2;
+}
+
+.spec-card.standard {
+    grid-column: span 4;
+}
+
+.spec-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+}
+
+.spec-card.featured .spec-image-wrapper {
+    aspect-ratio: auto;
+}
+
+.spec-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-slow);
+}
+
+.spec-card:hover .spec-image {
+    transform: scale(1.1);
+}
+
+.spec-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 50%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-lg);
+}
+
+.spec-card:hover .spec-overlay {
+    opacity: 1;
+}
+
+.spec-overlay-text {
+    color: white;
+    transform: translateY(20px);
+    transition: var(--transition-base);
+}
+
+.spec-card:hover .spec-overlay-text {
+    transform: translateY(0);
+}
+
+.spec-content {
+    padding: var(--space-lg);
+}
+
+.spec-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.spec-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.spec-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+}
+
+.spec-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: var(--transition-fast);
+}
+
+.spec-link:hover {
+    gap: var(--space-sm);
+}
+
+.no-results {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-xl);
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.no-results p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.reset-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--primary);
+    color: white;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.reset-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* ===== INFO SECTION ===== */
+.info-section {
+    padding: var(--space-2xl) 0;
+    background: var(--bg-secondary);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+}
+
+.info-card {
+    background: white;
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: var(--transition-base);
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.info-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-md);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+.info-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+.info-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ===== CTA SECTION ===== */
+.cta-medical {
+    padding: var(--space-2xl) 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+}
+
+.cta-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: var(--space-md);
+}
+
+.cta-content p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin-bottom: var(--space-xl);
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: white;
+    color: var(--primary);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 1.125rem;
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition-base);
+}
+
+.cta-button:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    background: var(--bg-dark);
+    color: white;
+    padding: var(--space-2xl) 0 var(--space-lg);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-xl);
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+}
+
+.footer-brand p {
+    color: var(--text-light);
+    max-width: 300px;
+}
+
+.footer-column h4 {
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+    color: white;
+}
+
+.footer-column a {
+    display: block;
+    color: var(--text-light);
+    margin-bottom: var(--space-sm);
+    transition: var(--transition-fast);
+}
+
+.footer-column a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+}
+
+@keyframes scroll {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(15px); }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .hero-text {
+        max-width: 100%;
+    }
+    
+    .hero-visual {
+        order: -1;
+    }
+    
+    .hero-main-image {
+        height: 400px;
+    }
+    
+    .floating-stat {
+        display: none;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .spec-card.featured,
+    .spec-card.wide,
+    .spec-card.standard {
+        grid-column: span 12;
+    }
+    
+    .spec-card.tall {
+        grid-row: span 1;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
+    .hero {
+        padding: calc(80px + var(--space-xl)) var(--space-md) var(--space-xl);
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .specializations-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .spec-card.featured,
+    .spec-card.wide,
+    .spec-card.standard,
+    .spec-card.tall {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --space-2xl: 3rem;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .cta-content h2 {
+        font-size: 1.75rem;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">✚</span>
+                <span class="logo-text">Yordamchi.mk</span>
+            </a>
+            
+            <div class="nav-links desktop-nav">
+                <a href="/">Bosh sahifa</a>
+                <a href="/kasblar.html">Kasblar</a>
+                <a href="/kasblar/shifokor.html" class="active">Tibbiyot</a>
+                <a href="/testlar">Testlar</a>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menyu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div class="mobile-nav" id="mobileNav">
+            <a href="/">Bosh sahifa</a>
+            <a href="/kasblar.html">Kasblar</a>
+            <a href="/kasblar/shifokor.html" class="active">Tibbiyot</a>
+            <a href="/testlar">Testlar</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-medical">
+        <div class="hero-bg-pattern"></div>
+        <div class="hero-gradient"></div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span class="badge-icon"></span>
+                    <span>14 ta tibbiy mutaxassislik</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Tibbiyot olamini<br>
+                    <span class="gradient-text">kashf eting</span>
+                </h1>
+                
+                <p class="hero-subtitle">
+                    Turli tibbiy mutaxassisliklar bilan tanishing, ularning vazifalarini o'rganing 
+                    va o'zingizni qiziqtirgan yo'nalishni tanlang.
+                </p>
+                
+                <div class="hero-search">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Mutaxassislikni qidiring (masalan: yurak, ko'z, tish...)"
+                            autocomplete="off"
+                        >
+                        <button class="search-clear" id="searchClear" style="display: none;">×</button>
+                    </div>
+                </div>
+                
+                <a href="#specializations" class="hero-cta">
+                    Mutaxassisliklarni ko'rish
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-image-wrapper">
+                    <img 
+                        src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80" 
+                        alt="Professional shifokor" 
+                        class="hero-main-image"
+                        loading="eager"
+                    >
+                    <div class="image-overlay"></div>
+                </div>
+                
+                <!-- Floating Stats -->
+                <div class="floating-stat stat-1">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-content">
+                        <strong>Klinik amaliyot</strong>
+                        <span>Haqiqiy tajriba</span>
+                    </div>
+                </div>
+                
+                <div class="floating-stat stat-2">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-content">
+                        <strong>6-8 yil</strong>
+                        <span>Ta'lim muddati</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <span>Pastga tushiring</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </header>
+
+    <!-- Specializations Section -->
+    <section class="specializations-section" id="specializations">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-info">
+                    <h2 class="section-title">Tibbiy <span class="gradient-text">mutaxassisliklar</span></h2>
+                    <p class="section-subtitle">Har bir yo'nalish haqida batafsil ma'lumot oling</p>
+                </div>
+                <div class="results-count" id="resultsCount">
+                    <span class="count-number">14</span> mutaxassislik
+                </div>
+            </div>
+            
+            <div class="specializations-grid" id="specializationsGrid">
+                <!-- Cards will be inserted by JavaScript -->
+            </div>
+            
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>Hech narsa topilmadi</h3>
+                <p>Qidiruv so'zini o'zgartirib ko'ring</p>
+                <button class="reset-btn" id="resetBtn">Qidiruvni tozalash</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="info-section">
+        <div class="container">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3>Ta'lim yo'li</h3>
+                    <p>Tibbiyot universiteti (6 yil) + Internatura (2-3 yil) + Doimiy malaka oshirish</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M2 12h20"></path>
+                        </svg>
+                    </div>
+                    <h3>Karyera imkoniyatlari</h3>
+                    <p>Davlat va xususiy klinikalar, ilmiy-tadqiqot markazlari, xalqaro tashkilotlar</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </div>
+                    <h3>Ijtimoiy ahamiyat</h3>
+                    <p>Inson salomatligini saqlash, hayotlarni qutqarish, jamiyat farovonligi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-medical">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Tibbiyot sohasida o'z o'rninizni toping</h2>
+                <p>Har bir mutaxassislik haqida batafsil ma'lumot oling va kelajagingizni rejalashtiring</p>
+                <a href="#specializations" class="cta-button">
+                    Batafsil ko'rish
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="/" class="footer-logo">
+                        <span class="logo-icon">✚</span>
+                        <span class="logo-text">Yordamchi.mk</span>
+                    </a>
+                    <p>Kelajak avlod uchun professional kasb tanlash platformasi</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Platforma</h4>
+                        <a href="/kasblar">Barcha kasblar</a>
+                        <a href="/kasblar/shifokor">Tibbiyot</a>
+                        <a href="/testlar">Testlar</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Yordam</h4>
+                        <a href="/aloqa">Aloqa</a>
+                        <a href="/faq">Savollar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Yordamchi.mk. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+      // Medical Specializations Data
+const specializations = [
+    {
+        id: 'kardiolog',
+        name: 'Kardiolog',
+        category: 'Yurak-qon tomir',
+        description: 'Yurak va qon tomir kasalliklarini tashxis qilish va davolash',
+        image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=80',
+        keywords: ['yurak', 'qon tomir', 'kardiologiya', 'infarkt']
+    },
+    {
+        id: 'nevrolog',
+        name: 'Nevrolog',
+        category: 'Asab tizimi',
+        description: 'Asab tizimi kasalliklari va miya faoliyati mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=800&q=80',
+        keywords: ['asab', 'miya', 'nerv', 'nevrologiya']
+    },
+    {
+        id: 'pediatr',
+        name: 'Pediatr',
+        category: 'Bolalar',
+        description: 'Bolalar salomatligi va rivojlanishi bo\'yicha mutaxassis',
+        image: 'https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=800&q=80',
+        keywords: ['bola', 'bolalar', 'pediatriya', 'chaqaloq']
+    },
+    {
+        id: 'stomatolog',
+        name: 'Stomatolog',
+        category: 'Tish va og\'iz',
+        description: 'Tish, milklar va og\'iz bo\'shlig\'i kasalliklari',
+        image: 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=800&q=80',
+        keywords: ['tish', 'og\'iz', 'stomatologiya', 'dish']
+    },
+    {
+        id: 'dermatolog',
+        name: 'Dermatolog',
+        category: 'Teri',
+        description: 'Teri, soch va tirnoq kasalliklari mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80',
+        keywords: ['teri', 'dermatologiya', 'soch', 'tirnoq']
+    },
+    {
+        id: 'oftalmolog',
+        name: 'Oftalmolog',
+        category: 'Ko\'z',
+        description: 'Ko\'z kasalliklari va ko\'rish qobiliyati mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80',
+        keywords: ['ko\'z', 'oftalmologiya', 'ko\'rish', 'vision']
+    },
+    {
+        id: 'jarroh',
+        name: 'Jarroh',
+        category: 'Jarrohlik',
+        description: 'Operatsiya orqali kasalliklarni davolash mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80',
+        keywords: ['operatsiya', 'jarrohlik', 'xirurgiya', 'surgery']
+    },
+    {
+        id: 'endokrinolog',
+        name: 'Endokrinolog',
+        category: 'Gormonlar',
+        description: 'Gormonal tizim va endokrin bezlar mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&q=80',
+        keywords: ['gormon', 'endokrin', 'qalqonsimon', 'diabet']
+    },
+    {
+        id: 'radiolog',
+        name: 'Radiolog',
+        category: 'Tasvirli diagnostika',
+        description: 'Rentgen, MRT va KT orqali tashxis qo\'yish',
+        image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&q=80',
+        keywords: ['rentgen', 'mrt', 'kt', 'tasvir', 'diagnostika']
+    },
+    {
+        id: 'lor-shifokor',
+        name: 'LOR shifokori',
+        category: 'Quloq-burun-tomoq',
+        description: 'Quloq, burun va tomoq kasalliklari mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80',
+        keywords: ['quloq', 'burun', 'tomoq', 'lor', 'otolaringolog']
+    },
+    {
+        id: 'gastroenterolog',
+        name: 'Gastroenterolog',
+        category: 'Ovqat hazm qilish',
+        description: 'Ovqat hazm qilish tizimi kasalliklari mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800&q=80',
+        keywords: ['ovqat hazm', 'oshqozon', 'ichak', 'gastro']
+    },
+    {
+        id: 'pulmonolog',
+        name: 'Pulmonolog',
+        category: 'Nafas olish',
+        description: 'Nafas olish tizimi va o\'pka kasalliklari',
+        image: 'https://images.unsplash.com/photo-1576091160553-24118633f26a?w=800&q=80',
+        keywords: ['o\'pka', 'nafas', 'pulmonologiya', 'bronx']
+    },
+    {
+        id: 'nefrolog',
+        name: 'Nefrolog',
+        category: 'Buyraklar',
+        description: 'Buyrak kasalliklari va siydik yo\'llari mutaxassisi',
+        image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80',
+        keywords: ['buyrak', 'nefrologiya', 'siydik', 'kidney']
+    },
+    {
+        id: 'ginekolog',
+        name: 'Ginekolog',
+        category: 'Ayollar salomatligi',
+        description: 'Ayollar reproduktiv tizimi va homiladorlik',
+        image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80',
+        keywords: ['ayol', 'ginekologiya', 'homiladorlik', 'tug\'uruq']
+    }
+];
+
+// DOM Elements
+const navbar = document.getElementById('navbar');
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileNav = document.getElementById('mobileNav');
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const specializationsGrid = document.getElementById('specializationsGrid');
+const resultsCount = document.getElementById('resultsCount');
+const noResults = document.getElementById('noResults');
+const resetBtn = document.getElementById('resetBtn');
+
+// State
+let searchQuery = '';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    initNavbar();
+    initMobileMenu();
+    initSearch();
+    renderSpecializations();
+    initScrollAnimations();
+});
+
+// Navbar Scroll Effect
+function initNavbar() {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+}
+
+// Mobile Menu
+function initMobileMenu() {
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileNav.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+            mobileNav.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+        }
+    });
+}
+
+// Search Functionality
+function initSearch() {
+    searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.toLowerCase();
+        searchClear.style.display = searchQuery ? 'block' : 'none';
+        renderSpecializations();
+    });
+    
+    searchClear.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.style.display = 'none';
+        renderSpecializations();
+    });
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            searchClear.style.display = 'none';
+            renderSpecializations();
+        });
+    }
+}
+
+// Render Specializations
+function renderSpecializations() {
+    const filtered = specializations.filter(spec => {
+        const matchesSearch = 
+            spec.name.toLowerCase().includes(searchQuery) ||
+            spec.description.toLowerCase().includes(searchQuery) ||
+            spec.keywords.some(keyword => keyword.toLowerCase().includes(searchQuery));
+        return matchesSearch;
+    });
+    
+    if (filtered.length === 0) {
+        specializationsGrid.innerHTML = '';
+        noResults.style.display = 'block';
+        resultsCount.innerHTML = '<span class="count-number">0</span> mutaxassislik';
+        return;
+    }
+    
+    noResults.style.display = 'none';
+    resultsCount.innerHTML = `<span class="count-number">${filtered.length}</span> mutaxassislik`;
+    
+    // Create grid layout
+    specializationsGrid.innerHTML = filtered.map((spec, index) => {
+        const layoutClass = getLayoutClass(index, filtered.length);
+        return createSpecCard(spec, layoutClass, index);
+    }).join('');
+    
+    // Trigger animations
+    setTimeout(() => {
+        document.querySelectorAll('.spec-card').forEach((card, i) => {
+            setTimeout(() => {
+                card.classList.add('visible');
+            }, i * 100);
+        });
+    }, 100);
+}
+
+function getLayoutClass(index, total) {
+    if (index === 0 && total > 1) return 'featured';
+    if (index === 1 && total > 3) return 'tall';
+    if (index % 3 === 0 && total > 6) return 'wide';
+    return 'standard';
+}
+
+function createSpecCard(spec, layoutClass, index) {
+    return `
+        <article class="spec-card ${layoutClass}" data-spec="${spec.id}">
+            <a href="${spec.id}.html" class="spec-link-wrapper">
+                <div class="spec-image-wrapper">
+                    <img 
+                        src="${spec.image}" 
+                        alt="${spec.name}" 
+                        class="spec-image"
+                        loading="lazy"
+                        onerror="this.src='https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80'"
+                    >
+                    <div class="spec-overlay">
+                        <div class="spec-overlay-text">
+                            <div class="spec-category">${spec.category}</div>
+                            <h3 class="spec-title">${spec.name}</h3>
+                            <p class="spec-description">${spec.description}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="spec-content">
+                    <div class="spec-category">${spec.category}</div>
+                    <h3 class="spec-title">${spec.name}</h3>
+                    <p class="spec-description">${spec.description}</p>
+                    <span class="spec-link">
+                        Batafsil ma'lumot
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+            </a>
+        </article>
+    `;
+}
+
+// Scroll Animations
+function initScrollAnimations() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.spec-card').forEach(card => {
+        observer.observe(card);
+    });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+console.log('Tibbiyot bo\'limi yuklandi. Jami mutaxassisliklar:', specializations.length);
+    </script>
+</body>
+</html>
