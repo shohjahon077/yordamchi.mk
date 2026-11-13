@@ -5,482 +5,378 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>YMT HUB — Barcha imkoniyatlar bitta platformada</title>
 <meta name="description" content="YMT HUB — ta'lim, sun'iy intellekt, musiqa, o'yinlar va kundalik hayot uchun foydali xizmatlarga yagona kirish nuqtasi.">
+<meta name="theme-color" content="#05070d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%2305070d%22/><text x=%2250%22 y=%2266%22 font-size=%2254%22 text-anchor=%22middle%22 fill=%22%236e5bff%22 font-family=%22sans-serif%22 font-weight=%22700%22>Y</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  /* ===========================================================
-   YMT HUB — style.css
-   =========================================================== */
 
+<!-- 3D: three.js (modellar: odam.glb, sayyora.glb, kema.glb — shu papkada turishi kerak) -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<style>
+/* ===========================================================
+   YMT HUB — 3D edition
+   =========================================================== */
 :root{
   --bg:#05070d;
   --bg-elev:#0b0f1b;
   --panel:rgba(255,255,255,.045);
-  --panel-strong:rgba(255,255,255,.07);
+  --panel-strong:rgba(255,255,255,.08);
   --border:rgba(255,255,255,.09);
-  --border-strong:rgba(255,255,255,.16);
+  --border-strong:rgba(255,255,255,.18);
   --text:#eef1f8;
-  --text-dim:#9aa2b8;
-  --text-faint:#5e6680;
+  --text-dim:#a3abc2;
+  --text-faint:#646d88;
 
   --accent-1:#6e5bff;
   --accent-2:#00d4ff;
-  --accent-grad: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+  --accent-grad:linear-gradient(135deg,var(--accent-1),var(--accent-2));
 
   --radius-s:10px;
   --radius-m:16px;
-  --radius-l:24px;
+  --radius-l:26px;
 
   --ease:cubic-bezier(.22,.8,.3,1);
   --nav-h:72px;
-
-  color-scheme: dark;
+  --dim:0;
+  color-scheme:dark;
 }
 
-/* ---------- reset ---------- */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{
-  scroll-behavior:smooth;
-  scroll-padding-top: calc(var(--nav-h) + 12px);
-}
-@media (prefers-reduced-motion: reduce){
+[hidden]{display:none !important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 12px);background:var(--bg)}
+@media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
 }
 body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  min-height:100dvh;
-  overflow-x:hidden;
-  padding-top: env(safe-area-inset-top,0px);
-  padding-bottom: env(safe-area-inset-bottom,0px);
+  background:transparent;color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.55;
+  -webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden;
 }
-h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;letter-spacing:-0.01em}
+body.is-loading{overflow:hidden}
+h1,h2,h3{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;letter-spacing:-.01em}
 a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input{font:inherit;color:inherit;background:none;border:none}
 ul{list-style:none}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px;border-radius:6px}
 
-.skip-link{
-  position:fixed;top:-48px;left:12px;z-index:200;
-  background:var(--accent-1);color:#fff;padding:10px 16px;border-radius:8px;
-  transition:top .2s var(--ease);
-}
+.skip-link{position:fixed;top:-48px;left:12px;z-index:900;background:var(--accent-1);color:#fff;padding:10px 16px;border-radius:8px;transition:top .2s var(--ease)}
 .skip-link:focus{top:12px}
 
-:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px;border-radius:4px}
+/* ---------- 3D stage ---------- */
+#stage{position:fixed;inset:0;z-index:0;background:var(--bg)}
+#stage canvas{display:block;width:100%;height:100%}
+#dim{position:fixed;inset:0;z-index:1;pointer-events:none;background:rgba(5,7,13,var(--dim))}
+#vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 90% 80% at 50% 45%,transparent 55%,rgba(5,7,13,.65) 100%)}
+body.no-webgl #stage{background:
+  radial-gradient(ellipse 60% 50% at 80% 20%,rgba(110,91,255,.35),transparent 70%),
+  radial-gradient(ellipse 50% 40% at 10% 80%,rgba(0,212,255,.22),transparent 70%),var(--bg)}
 
-/* ===========================================================
-   INTRO ANIMATION
-   =========================================================== */
-#intro{
-  position:fixed;inset:0;z-index:999;
-  background:var(--bg);
-  display:flex;align-items:center;justify-content:center;
-  transition:opacity .6s var(--ease), visibility .6s var(--ease);
-}
-#intro.hide{opacity:0;visibility:hidden;pointer-events:none}
-#intro-particles{position:absolute;inset:0;width:100%;height:100%}
-.intro-content{position:relative;z-index:2;text-align:center;padding:0 24px}
-.intro-logo{position:relative;display:inline-block;margin-bottom:20px}
-.intro-ring{
-  position:absolute;inset:-28px;
-  border-radius:50%;
-  border:1px solid rgba(110,91,255,.35);
-  animation: ring-pulse 2.2s ease-in-out infinite;
-}
-@keyframes ring-pulse{
-  0%,100%{transform:scale(.94);opacity:.5}
-  50%{transform:scale(1.04);opacity:1}
-}
-.intro-logo h1{
-  font-size:clamp(2.6rem,9vw,4.5rem);
-  letter-spacing:.02em;
-  opacity:0;
-  animation: logo-in .9s var(--ease) .15s forwards;
-}
-.intro-logo h1 span{
-  background:var(--accent-grad);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  margin-left:.18em;
-}
-@keyframes logo-in{
-  from{opacity:0;transform:translateY(10px) scale(.96);filter:blur(6px)}
-  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
-}
-.intro-tagline{
-  margin-top:14px;color:var(--text-dim);font-size:.95rem;letter-spacing:.02em;
-  opacity:0;
-  animation: tagline-in .7s var(--ease) .65s forwards;
-}
-@keyframes tagline-in{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@media (prefers-reduced-motion: reduce){
-  .intro-ring{animation:none}
-  .intro-logo h1,.intro-tagline{animation:none;opacity:1;transform:none;filter:none}
-}
+main,.footer{position:relative;z-index:2}
 
-/* ===========================================================
-   NAVBAR
-   =========================================================== */
-.navbar{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:var(--nav-h);
-  padding-top: env(safe-area-inset-top,0px);
-  background:rgba(5,7,13,.55);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border-bottom:1px solid transparent;
-  transition: border-color .3s var(--ease), background .3s var(--ease), height .3s var(--ease);
-}
-.navbar.is-scrolled{
-  border-bottom-color:var(--border);
-  background:rgba(5,7,13,.78);
-}
-.navbar-inner{
-  max-width:1280px;margin:0 auto;height:var(--nav-h);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;
-}
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:1000;background:var(--bg);display:flex;align-items:center;justify-content:center;
+  transition:opacity .9s var(--ease),visibility .9s var(--ease)}
+#loader.hide{opacity:0;visibility:hidden;pointer-events:none}
+.loader-inner{text-align:center;padding:0 24px;width:min(360px,90vw)}
+.loader-orbit{position:relative;width:96px;height:96px;margin:0 auto 26px}
+.loader-orbit i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(110,91,255,.35)}
+.loader-orbit i:nth-child(2){inset:14px;border-color:rgba(0,212,255,.4);animation:spin 3.2s linear infinite;border-top-color:transparent}
+.loader-orbit i:nth-child(1){animation:spin 5s linear infinite reverse;border-right-color:transparent}
+.loader-orbit b{position:absolute;inset:34px;border-radius:50%;background:var(--accent-grad);box-shadow:0 0 40px rgba(110,91,255,.6)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-logo{font-family:'Space Grotesk';font-weight:700;font-size:2rem;letter-spacing:.04em}
+.loader-logo span{margin-left:.2em;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.loader-bar{height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin:22px 0 12px}
+.loader-bar i{display:block;height:100%;width:0;background:var(--accent-grad);transition:width .25s linear}
+.loader-text{font-size:.8rem;color:var(--text-dim);letter-spacing:.04em}
+.loader-text b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+
+/* ---------- navbar ---------- */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);padding-top:env(safe-area-inset-top,0px);
+  background:linear-gradient(to bottom,rgba(5,7,13,.7),rgba(5,7,13,0));
+  border-bottom:1px solid transparent;transition:background .3s var(--ease),border-color .3s var(--ease),transform .5s var(--ease),opacity .5s var(--ease)}
+.navbar.is-scrolled{background:rgba(5,7,13,.72);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);border-bottom-color:var(--border)}
+body.is-loading .navbar{transform:translateY(-100%);opacity:0}
+.navbar-inner{max-width:1280px;margin:0 auto;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-mark{
-  width:34px;height:34px;border-radius:9px;
-  background:var(--accent-grad);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Space Grotesk';font-weight:700;color:#05070d;font-size:1.05rem;
-  flex:none;
-}
-.brand-text{font-family:'Space Grotesk';font-weight:600;font-size:1.05rem;letter-spacing:-.01em}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:var(--accent-grad);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#05070d;font-size:1.05rem;flex:none;box-shadow:0 0 24px -4px rgba(110,91,255,.7)}
+.brand-text{font-family:'Space Grotesk';font-weight:600;font-size:1.05rem}
 .brand-text em{font-style:normal;color:var(--accent-2)}
-
-.nav-links{display:flex;gap:30px}
-.nav-links a{
-  font-size:.92rem;color:var(--text-dim);position:relative;padding:4px 0;
-  transition:color .2s;
-}
-.nav-links a::after{
-  content:'';position:absolute;left:0;bottom:-2px;height:1px;width:0;
-  background:var(--accent-grad);transition:width .25s var(--ease);
-}
-.nav-links a:hover{color:var(--text)}
-.nav-links a:hover::after{width:100%}
-
+.nav-links{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--border);backdrop-filter:blur(12px)}
+.nav-links a{font-size:.88rem;color:var(--text-dim);padding:7px 16px;border-radius:999px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.07)}
 .navbar-actions{display:flex;align-items:center;gap:6px}
-.icon-btn{
-  width:40px;height:40px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text-dim);
-  transition:background .2s,color .2s;
-}
-.icon-btn:hover{background:var(--panel);color:var(--text)}
-
+.icon-btn{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);transition:background .2s,color .2s}
+.icon-btn:hover{background:var(--panel-strong);color:var(--text)}
 .menu-toggle{display:none;flex-direction:column;gap:4px;width:40px}
 .menu-toggle span{width:18px;height:2px;background:currentColor;margin:0 auto;transition:transform .25s var(--ease),opacity .25s var(--ease)}
 .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
 .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
-.search-panel{
-  border-top:1px solid var(--border);
-  background:rgba(5,7,13,.92);
-  backdrop-filter:blur(16px);
-}
-.search-panel-inner{
-  max-width:720px;margin:0 auto;padding:14px 24px;
-  display:flex;align-items:center;gap:12px;color:var(--text-dim);
-}
+.search-panel{border-top:1px solid var(--border);background:rgba(5,7,13,.92);backdrop-filter:blur(16px)}
+.search-panel-inner{max-width:720px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px;color:var(--text-dim)}
 #search-input{flex:1;color:var(--text);font-size:.95rem}
 #search-input::placeholder{color:var(--text-faint)}
 .search-clear{font-size:1.4rem;line-height:1;color:var(--text-faint);padding:0 4px}
 .search-clear:hover{color:var(--text)}
 
-.mobile-menu{
-  position:fixed;top:var(--nav-h);left:0;right:0;z-index:99;
-  background:rgba(8,11,20,.97);backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--border);
-  max-height:0;overflow:hidden;opacity:0;
-  transition:max-height .35s var(--ease),opacity .3s var(--ease);
-}
-.mobile-menu.is-open{max-height:300px;opacity:1}
+.mobile-menu{position:fixed;top:var(--nav-h);left:0;right:0;z-index:99;background:rgba(8,11,20,.97);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);max-height:0;overflow:hidden;opacity:0;transition:max-height .35s var(--ease),opacity .3s var(--ease)}
+.mobile-menu.is-open{max-height:320px;opacity:1}
 .mobile-menu nav{display:flex;flex-direction:column;padding:8px 24px 20px}
 .mobile-menu a{padding:14px 0;border-bottom:1px solid var(--border);font-size:1rem;color:var(--text-dim)}
 .mobile-menu a:last-child{border-bottom:none}
 
-.scroll-progress{
-  position:fixed;top:var(--nav-h);left:0;height:2px;width:0%;z-index:101;
-  background:var(--accent-grad);
-  transition:width .08s linear;
-}
+.scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:101;background:var(--accent-grad);box-shadow:0 0 12px rgba(0,212,255,.6)}
 
-/* ===========================================================
-   HERO
-   =========================================================== */
-.hero{
-  position:relative;
-  min-height:100dvh;
-  display:flex;align-items:center;
-  padding: calc(var(--nav-h) + 40px) 24px 60px;
-  overflow:hidden;
-}
-.hero-bg{position:absolute;inset:0;z-index:0}
-.hero-grid{position:absolute;inset:0;opacity:.6;mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 40%,transparent 90%)}
-.hero-glow{
-  position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;
-  animation: drift 16s ease-in-out infinite alternate;
-}
-.hero-glow-a{width:560px;height:560px;background:var(--accent-1);top:-180px;left:-120px}
-.hero-glow-b{width:480px;height:480px;background:var(--accent-2);bottom:-160px;right:-100px;animation-delay:-8s}
-@keyframes drift{
-  from{transform:translate(0,0) scale(1)}
-  to{transform:translate(40px,30px) scale(1.08)}
-}
-@media (prefers-reduced-motion: reduce){.hero-glow{animation:none}}
+/* ---------- scene dots (HUD) ---------- */
+.scene-nav{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:14px;align-items:flex-end;
+  transition:opacity .5s var(--ease)}
+body.is-loading .scene-nav{opacity:0}
+.scene-dot{display:flex;align-items:center;gap:10px;padding:2px 0}
+.scene-dot span{font-size:.72rem;letter-spacing:.06em;color:var(--text-dim);opacity:0;transform:translateX(6px);transition:opacity .25s,transform .25s var(--ease)}
+.scene-dot i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);border:1px solid transparent;transition:all .3s var(--ease)}
+.scene-dot:hover span,.scene-dot.is-active span{opacity:1;transform:none}
+.scene-dot.is-active i{background:var(--accent-2);box-shadow:0 0 0 4px rgba(0,212,255,.2),0 0 14px rgba(0,212,255,.8);transform:scale(1.2)}
+@media (max-width:1100px){.scene-nav{display:none}}
 
-.hero-content{position:relative;z-index:1;max-width:760px;margin:0 auto;text-align:center}
-.hero-eyebrow{color:var(--accent-2);font-size:.82rem;letter-spacing:.06em;margin-bottom:18px;font-weight:500}
-.hero-title{
-  font-size:clamp(3rem,10vw,6rem);
-  line-height:.98;
-  background:linear-gradient(135deg,#fff 20%,var(--accent-2) 70%,var(--accent-1) 110%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  margin-bottom:18px;
-}
-.hero-subtitle{font-size:clamp(1.1rem,2.6vw,1.5rem);color:var(--text);font-weight:500;margin-bottom:16px;font-family:'Space Grotesk'}
-.hero-desc{color:var(--text-dim);font-size:1.02rem;max-width:560px;margin:0 auto 36px}
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(28px);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease);transition-delay:var(--d,0s)}
+.reveal.in{opacity:1;transform:none;filter:none}
+body.is-loading .hero .reveal{opacity:0 !important}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;filter:none}}
 
-.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:14px 28px;border-radius:999px;font-weight:500;font-size:.95rem;
-  transition:transform .2s var(--ease),box-shadow .2s var(--ease),background .2s,border-color .2s;
-}
-.btn-primary{background:var(--accent-grad);color:#060810}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(110,91,255,.55)}
-.btn-ghost{border:1px solid var(--border-strong);color:var(--text)}
-.btn-ghost:hover{background:var(--panel);transform:translateY(-2px)}
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:calc(var(--nav-h) + 30px) 24px 90px}
+.hero-inner{max-width:1280px;margin:0 auto;width:100%}
+.hero-content{max-width:620px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--accent-2);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:22px;font-weight:500;
+  padding:7px 14px;border-radius:999px;border:1px solid rgba(0,212,255,.25);background:rgba(0,212,255,.06)}
+.hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 10px var(--accent-2);animation:blink 2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.3}}
+.hero-title{font-size:clamp(3.4rem,11vw,7.6rem);line-height:.92;letter-spacing:-.035em;font-weight:700;
+  background:linear-gradient(135deg,#fff 15%,#b9c6ff 45%,var(--accent-2) 85%);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:22px;
+  filter:drop-shadow(0 0 40px rgba(110,91,255,.35))}
+.hero-subtitle{font-size:clamp(1.15rem,2.6vw,1.6rem);color:var(--text);font-weight:500;margin-bottom:16px;font-family:'Space Grotesk'}
+.hero-desc{color:var(--text-dim);font-size:1.02rem;max-width:520px;margin-bottom:34px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:34px}
+.hero-tags span{font-size:.78rem;color:var(--text-dim);padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);backdrop-filter:blur(8px)}
 
-/* ===========================================================
-   STATS
-   =========================================================== */
-.stats{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-elev)}
-.stats-inner{
-  max-width:1280px;margin:0 auto;padding:28px 24px;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
-}
-.stat-item{display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
-.stat-num{font-family:'Space Grotesk';font-size:2rem;font-weight:600;color:var(--accent-2)}
-.stat-label{color:var(--text-dim);font-size:.82rem}
-.stat-item-wide{grid-column:span 1}
-.stat-chip{
-  margin-top:4px;padding:6px 14px;border-radius:999px;background:var(--panel);
-  border:1px solid var(--border);font-size:.82rem;color:var(--text);
-  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 30px;border-radius:999px;font-weight:500;font-size:.95rem;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .2s,border-color .2s;overflow:hidden}
+.btn-primary{background:var(--accent-grad);color:#060810;box-shadow:0 8px 30px -10px rgba(110,91,255,.8)}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px -10px rgba(0,212,255,.6)}
+.btn-primary:hover::after{transform:translateX(120%)}
+.btn-ghost{border:1px solid var(--border-strong);color:var(--text);background:rgba(255,255,255,.03);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:var(--panel-strong);transform:translateY(-2px)}
+
+.scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--text-faint);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase}
+.scroll-hint i{width:22px;height:36px;border:1px solid var(--border-strong);border-radius:12px;position:relative}
+.scroll-hint i::after{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:var(--accent-2);animation:wheel 1.8s var(--ease) infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(14px)}}
+
+.hint-3d{position:absolute;right:max(24px,4vw);bottom:30px;font-size:.72rem;color:var(--text-faint);letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.hint-3d::before{content:'';width:5px;height:5px;border-radius:50%;background:#ff5b8c;box-shadow:0 0 8px #ff5b8c}
+@media (max-width:900px){.hint-3d{display:none}}
+
+/* ---------- stats ---------- */
+.stats{padding:60px 24px}
+.stats-inner{max-width:1100px;margin:0 auto;padding:30px 34px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
+  border-radius:var(--radius-l);border:1px solid var(--border);
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+.stat-item{display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:-10px;top:12%;bottom:12%;width:1px;background:var(--border)}
+.stat-num{font-family:'Space Grotesk';font-size:2.6rem;font-weight:600;line-height:1;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat-label{color:var(--text-dim);font-size:.82rem;letter-spacing:.03em}
+.stat-chip{margin-top:2px;padding:7px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--border);font-size:.84rem;color:var(--text);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:720px){
-  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .stats-inner{grid-template-columns:repeat(2,1fr);padding:24px 20px}
+  .stat-item:nth-child(3)::before{display:none}
 }
 
-/* ===========================================================
-   SECTIONS / CARDS
-   =========================================================== */
-.sections{max-width:1280px;margin:0 auto;padding:90px 24px 40px}
-.sections-head{text-align:center;max-width:560px;margin:0 auto 36px}
-.sections-head h2{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:10px}
-.sections-head p{color:var(--text-dim)}
+/* ---------- sections / cards ---------- */
+.sections{max-width:1280px;margin:0 auto;padding:110px 24px 60px}
+.sections-head{text-align:center;max-width:640px;margin:0 auto 38px}
+.kicker{display:inline-block;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-2);margin-bottom:14px}
+.sections-head h2{font-size:clamp(2.2rem,5.2vw,3.6rem);line-height:1.02;letter-spacing:-.03em;margin-bottom:14px;
+  background:linear-gradient(135deg,#fff 30%,#b9c6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sections-head p{color:var(--text-dim);font-size:1.02rem}
 
-.filters{
-  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:40px;
-}
-.filter-chip{
-  padding:9px 18px;border-radius:999px;border:1px solid var(--border);
-  color:var(--text-dim);font-size:.86rem;
-  display:inline-flex;align-items:center;gap:6px;
-  transition:background .2s,color .2s,border-color .2s;
-}
-.filter-chip:hover{color:var(--text);border-color:var(--border-strong)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:44px}
+.filter-chip{padding:9px 18px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);backdrop-filter:blur(10px);
+  color:var(--text-dim);font-size:.86rem;display:inline-flex;align-items:center;gap:6px;transition:background .2s,color .2s,border-color .2s,transform .2s var(--ease)}
+.filter-chip:hover{color:var(--text);border-color:var(--border-strong);transform:translateY(-1px)}
 .filter-chip.is-active{background:var(--accent-grad);color:#060810;border-color:transparent;font-weight:500}
 .filter-chip-fav.is-active{background:linear-gradient(135deg,#ff5b8c,#ff9a5b)}
+.results-empty{text-align:center;color:var(--text-dim);padding:60px 0}
 
-.results-empty{text-align:center;color:var(--text-dim);padding:60px 0;font-size:1rem}
-
-.card-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;perspective:1400px}
 @media (max-width:980px){.card-grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:560px){.card-grid{grid-template-columns:1fr}}
+@media (max-width:600px){.card-grid{grid-template-columns:1fr}}
 
-.card{
-  position:relative;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:var(--radius-l);
-  padding:26px;
-  display:flex;flex-direction:column;gap:14px;
-  overflow:hidden;
-  transition:transform .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease);
-  animation: card-in .5s var(--ease) both;
-}
-.card::before{
-  content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
-  background:linear-gradient(135deg,var(--card-accent,var(--accent-1)),transparent 60%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  opacity:0;transition:opacity .25s var(--ease);
-  pointer-events:none;
-}
-.card:hover{transform:translateY(-4px);border-color:transparent;background:var(--panel-strong)}
-.card:hover::before{opacity:1}
-@keyframes card-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@media (prefers-reduced-motion: reduce){.card{animation:none}}
+.card{position:relative;border-radius:var(--radius-l);padding:26px 26px 22px;display:flex;flex-direction:column;gap:14px;overflow:hidden;min-height:250px;
+  background:linear-gradient(160deg,rgba(18,22,40,.62),rgba(8,10,20,.5) 60%);
+  border:1px solid var(--border);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);
+  box-shadow:0 24px 60px -30px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.07);
+  transform:translateY(40px) scale(.97);opacity:0;
+  transition:opacity .8s var(--ease),transform .8s var(--ease),border-color .3s,box-shadow .3s;
+  transition-delay:var(--d,0s);will-change:transform}
+.card.in{opacity:1;transform:translateY(0) scale(1)}
+.card.is-tilting{transition:opacity .8s var(--ease),border-color .3s,box-shadow .3s;transition-delay:0s}
+.card::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.5px;
+  background:linear-gradient(135deg,var(--card-accent,var(--accent-1)),transparent 55%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .3s var(--ease);pointer-events:none}
+.card::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(380px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--card-accent,var(--accent-1)) 26%,transparent),transparent 65%)}
+.card:hover{border-color:transparent;box-shadow:0 40px 80px -30px color-mix(in srgb,var(--card-accent,var(--accent-1)) 45%,#000),inset 0 1px 0 rgba(255,255,255,.1)}
+.card:hover::before,.card:hover::after{opacity:1}
+.card-num{position:absolute;right:20px;bottom:-14px;font-family:'Space Grotesk';font-weight:700;font-size:6.5rem;line-height:1;letter-spacing:-.05em;color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,.06);pointer-events:none;transition:-webkit-text-stroke-color .3s}
+.card:hover .card-num{-webkit-text-stroke-color:color-mix(in srgb,var(--card-accent,var(--accent-1)) 40%,transparent)}
 
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.card-icon{
-  width:46px;height:46px;border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  background:color-mix(in srgb, var(--card-accent,var(--accent-1)) 18%, transparent);
-  color:var(--card-accent,var(--accent-1));
-  flex:none;
-}
-.card-fav{
-  width:36px;height:36px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--text-faint);
-  transition:color .2s,background .2s,transform .2s;
-}
-.card-fav:hover{background:var(--panel);color:var(--text)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative;z-index:2}
+.card-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--card-accent,var(--accent-1)) 16%,transparent);
+  border:1px solid color-mix(in srgb,var(--card-accent,var(--accent-1)) 35%,transparent);
+  color:var(--card-accent,var(--accent-1));flex:none;box-shadow:0 0 30px -8px var(--card-accent,var(--accent-1));
+  transition:transform .4s var(--ease)}
+.card:hover .card-icon{transform:translateZ(30px) scale(1.08) rotate(-4deg)}
+.card-fav{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--text-faint);position:relative;z-index:3;transition:color .2s,background .2s,transform .2s}
+.card-fav:hover{background:var(--panel-strong);color:var(--text)}
 .card-fav.is-fav{color:#ff5b8c}
 .card-fav.is-fav svg{fill:currentColor}
-.card-fav:active{transform:scale(.85)}
+.card-fav:active{transform:scale(.8)}
 
-.card h3{font-size:1.08rem;font-weight:600}
-.card p{color:var(--text-dim);font-size:.9rem;flex:1}
-.card-cat{
-  font-size:.72rem;color:var(--card-accent,var(--accent-2));
-  letter-spacing:.02em;
-}
-.card-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:4px;padding-top:14px;border-top:1px solid var(--border);
-}
-.card-enter{display:inline-flex;align-items:center;gap:6px;font-size:.86rem;color:var(--text);font-weight:500}
-.card-enter svg{transition:transform .2s var(--ease)}
-.card:hover .card-enter svg{transform:translateX(4px)}
-.card-ext{font-size:.72rem;color:var(--text-faint)}
-.card-link{position:absolute;inset:0;border-radius:inherit}
+.card h3{font-size:1.3rem;font-weight:600;position:relative;z-index:2}
+.card p{color:var(--text-dim);font-size:.92rem;flex:1;position:relative;z-index:2}
+.card-cat{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--card-accent,var(--accent-2));position:relative;z-index:2}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:2px;padding-top:14px;border-top:1px solid var(--border);position:relative;z-index:2}
+.card-enter{display:inline-flex;align-items:center;gap:8px;font-size:.88rem;color:var(--text);font-weight:500}
+.card-enter svg{transition:transform .3s var(--ease)}
+.card:hover .card-enter svg{transform:translateX(6px)}
+.card-ext{font-size:.7rem;color:var(--text-faint);padding:3px 9px;border:1px solid var(--border);border-radius:999px}
+.card-link{position:absolute;inset:0;border-radius:inherit;z-index:2}
+.card-fav{z-index:4}
 .card.is-hidden{display:none}
 
-/* ===========================================================
-   ABOUT / CONTACT
-   =========================================================== */
-.about,.contact{
-  max-width:860px;margin:0 auto;padding:60px 24px;text-align:center;
+/* ---------- about / contact ---------- */
+.about,.contact{max-width:1280px;margin:0 auto;padding:110px 24px;min-height:80svh;display:flex;align-items:center}
+.panel{max-width:560px;padding:40px 38px;border-radius:var(--radius-l);border:1px solid var(--border);
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+.panel h2{font-size:clamp(2rem,4vw,2.9rem);line-height:1.05;letter-spacing:-.03em;margin-bottom:16px}
+.panel p{color:var(--text-dim);margin-bottom:26px}
+.pillars{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.pillars span{font-size:.78rem;padding:6px 14px;border-radius:999px;border:1px solid rgba(0,212,255,.25);color:var(--accent-2);background:rgba(0,212,255,.06)}
+.link-arrow{display:inline-flex;align-items:center;gap:8px;color:var(--accent-2);font-weight:500}
+.link-arrow svg{transition:transform .3s var(--ease)}
+.link-arrow:hover svg{transform:translateX(6px)}
+.contact .panel{margin-left:0}
+@media (max-width:900px){
+  .about,.contact{align-items:flex-end;min-height:90svh;padding:60px 18px}
+  .panel{padding:30px 24px;max-width:none;width:100%}
 }
-.about h2,.contact h2{font-size:clamp(1.6rem,3.6vw,2.1rem);margin-bottom:14px}
-.about p,.contact p{color:var(--text-dim);max-width:560px;margin:0 auto 22px}
-.link-arrow{color:var(--accent-2);font-weight:500;border-bottom:1px solid transparent;transition:border-color .2s}
-.link-arrow:hover{border-color:var(--accent-2)}
 
-/* ===========================================================
-   BACK TO TOP / TOAST
-   =========================================================== */
-.back-to-top{
-  position:fixed;right:24px;bottom:96px;z-index:60;
-  width:46px;height:46px;border-radius:50%;
-  background:var(--panel-strong);border:1px solid var(--border-strong);
-  backdrop-filter:blur(10px);
-  color:var(--text);display:flex;align-items:center;justify-content:center;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .25s var(--ease),transform .25s var(--ease),background .2s;
-}
-.back-to-top.is-visible{opacity:1;transform:translateY(0)}
+/* ---------- back to top / toast ---------- */
+.back-to-top{position:fixed;right:24px;bottom:30px;z-index:60;width:46px;height:46px;border-radius:50%;background:var(--panel-strong);border:1px solid var(--border-strong);backdrop-filter:blur(10px);
+  color:var(--text);display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease),background .2s}
+.back-to-top.is-visible{opacity:1;transform:none;pointer-events:auto}
 .back-to-top:hover{background:var(--accent-grad);color:#060810}
-@media (max-width:720px){.back-to-top{bottom:104px}}
+@media (max-width:720px){.back-to-top{bottom:96px;right:16px}}
 
-.toast{
-  position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:150;
-  background:var(--bg-elev);border:1px solid var(--border-strong);
-  padding:12px 20px;border-radius:999px;font-size:.86rem;
-  box-shadow:0 10px 30px -10px rgba(0,0,0,.6);
-  animation: toast-in .25s var(--ease);
-}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:150;background:rgba(11,15,27,.92);backdrop-filter:blur(14px);border:1px solid var(--border-strong);padding:12px 22px;border-radius:999px;font-size:.86rem;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);animation:toast-in .25s var(--ease)}
 @keyframes toast-in{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 
-/* ===========================================================
-   FOOTER
-   =========================================================== */
-.footer{border-top:1px solid var(--border);background:var(--bg-elev);padding:40px 24px calc(40px + env(safe-area-inset-bottom,0px))}
-.footer-inner{
-  max-width:1280px;margin:0 auto;
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;
-}
+/* ---------- footer ---------- */
+.footer{border-top:1px solid var(--border);background:rgba(5,7,13,.85);backdrop-filter:blur(14px);padding:40px 24px calc(40px + env(safe-area-inset-bottom,0px))}
+.footer-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
 .footer-brand{display:flex;align-items:center;gap:10px}
 .footer-links{display:flex;gap:22px}
 .footer-links a{color:var(--text-dim);font-size:.9rem}
 .footer-links a:hover{color:var(--text)}
 .footer-copy{color:var(--text-faint);font-size:.82rem;width:100%;text-align:center;margin-top:10px}
 
-/* ===========================================================
-   MOBILE BOTTOM NAV
-   =========================================================== */
+/* ---------- bottom nav (mobile) ---------- */
 .bottom-nav{display:none}
 @media (max-width:720px){
-  body{padding-bottom: calc(68px + env(safe-area-inset-bottom,0px))}
-  .bottom-nav{
-    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:100;
-    background:rgba(8,11,20,.92);backdrop-filter:blur(18px);
-    border-top:1px solid var(--border);
-    padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));
-  }
-  .bottom-nav-item{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:6px 2px;border-radius:12px;color:var(--text-faint);font-size:.68rem;
-    transition:color .2s;
-  }
-  .bottom-nav-item.is-active,.bottom-nav-item:active{color:var(--accent-2)}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+  .bottom-nav{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:100;border-radius:22px;
+    background:rgba(8,11,20,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border-strong);padding:7px 6px;box-shadow:0 20px 40px -10px rgba(0,0,0,.7)}
+  .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:14px;color:var(--text-faint);font-size:.68rem;transition:color .2s,background .2s}
+  .bottom-nav-item.is-active,.bottom-nav-item:active{color:var(--accent-2);background:rgba(0,212,255,.08)}
 }
+@media (max-width:860px){.nav-links{display:none}.menu-toggle{display:flex}}
+@media (min-width:861px){.mobile-menu{display:none}}
+@media (max-width:900px){
+  .hero{align-items:flex-end;padding-bottom:110px;text-align:center}
+  .hero-content{margin:0 auto;max-width:none}
+  .hero-desc{margin-left:auto;margin-right:auto}
+  .hero-actions,.hero-tags{justify-content:center}
+  .hero-title{font-size:clamp(3.2rem,16vw,5rem)}
+  .scroll-hint{display:none}
+}
+@media (max-width:380px){.navbar-inner{padding:0 16px}.sections{padding-left:16px;padding-right:16px}}
 
-/* ===========================================================
-   RESPONSIVE: NAV
-   =========================================================== */
-@media (max-width:860px){
-  .nav-links{display:none}
-  .menu-toggle{display:flex}
-}
-@media (min-width:861px){
-  .mobile-menu{display:none}
-}
-
-/* small phones */
-@media (max-width:380px){
-  .hero{padding-top:calc(var(--nav-h) + 24px)}
-  .navbar-inner{padding:0 16px}
-  .sections,.about,.contact{padding-left:16px;padding-right:16px}
-}
+/* ---------- PORTAL (bo'limga kirish effekti) ---------- */
+#portal{position:fixed;inset:0;z-index:800;pointer-events:none;visibility:hidden;opacity:0;
+  background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--pa,#6e5bff) 55%,#05070d) 0%,#05070d 62%);
+  display:flex;align-items:center;justify-content:center;transition:opacity .55s var(--ease)}
+#portal.on{visibility:visible;opacity:1;pointer-events:auto}
+.portal-core{text-align:center;transform:scale(.7);opacity:0;transition:transform .8s var(--ease) .2s,opacity .6s var(--ease) .25s}
+#portal.on .portal-core{transform:none;opacity:1}
+.portal-icon{position:relative;width:96px;height:96px;margin:0 auto 22px;border-radius:28px;display:flex;align-items:center;justify-content:center;color:var(--pa,#6e5bff);
+  background:color-mix(in srgb,var(--pa,#6e5bff) 18%,transparent);border:1px solid color-mix(in srgb,var(--pa,#6e5bff) 55%,transparent);box-shadow:0 0 80px -6px var(--pa,#6e5bff)}
+.portal-icon::before,.portal-icon::after{content:'';position:absolute;inset:-14px;border-radius:38px;border:1px solid color-mix(in srgb,var(--pa,#6e5bff) 40%,transparent);animation:portal-ring 1.6s ease-out infinite}
+.portal-icon::after{animation-delay:.8s}
+@keyframes portal-ring{from{transform:scale(.85);opacity:1}to{transform:scale(1.5);opacity:0}}
+.portal-kicker{font-size:.74rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.portal-title{font-size:clamp(2rem,6vw,3.2rem);letter-spacing:-.03em}
+.portal-bar{width:220px;height:2px;background:rgba(255,255,255,.12);border-radius:2px;margin:22px auto 0;overflow:hidden}
+.portal-bar i{display:block;height:100%;width:0;background:var(--pa,#6e5bff);box-shadow:0 0 14px var(--pa,#6e5bff)}
+#portal.on .portal-bar i{animation:portal-load 1.1s var(--ease) forwards}
+@keyframes portal-load{to{width:100%}}
 </style>
 </head>
-<body>
+<body class="is-loading">
 
-<!-- INTRO / KIRISH ANIMATSIYASI -->
-<div id="intro" aria-hidden="true">
-  <canvas id="intro-particles"></canvas>
-  <div class="intro-content">
-    <div class="intro-logo">
-      <span class="intro-ring"></span>
-      <h1>YMT<span>HUB</span></h1>
-    </div>
-    <p class="intro-tagline">Barcha imkoniyatlar — bitta platformada</p>
+<!-- LOADER -->
+<div id="loader" aria-live="polite">
+  <div class="loader-inner">
+    <div class="loader-orbit"><i></i><i></i><b></b></div>
+    <div class="loader-logo">YMT<span>HUB</span></div>
+    <div class="loader-bar"><i id="loader-fill"></i></div>
+    <p class="loader-text">Koinot yuklanmoqda · <b id="loader-pct">0%</b></p>
   </div>
 </div>
+
+<!-- PORTAL (bo'limga kirish) -->
+<div id="portal" aria-hidden="true">
+  <div class="portal-core">
+    <div class="portal-icon"><svg id="portal-svg" viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg></div>
+    <p class="portal-kicker">Kirilmoqda</p>
+    <h2 class="portal-title" id="portal-title">YMT HUB</h2>
+    <div class="portal-bar"><i></i></div>
+  </div>
+</div>
+
+<!-- 3D SAHNA -->
+<div id="stage" aria-hidden="true"></div>
+<div id="dim"></div>
+<div id="vignette"></div>
 
 <a class="skip-link" href="#main">Asosiy kontentga o'tish</a>
 
@@ -509,7 +405,6 @@ ul{list-style:none}
     </div>
   </div>
 
-  <!-- SEARCH PANEL -->
   <div id="search-panel" class="search-panel" hidden>
     <div class="search-panel-inner">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -519,7 +414,6 @@ ul{list-style:none}
   </div>
 </header>
 
-<!-- MOBILE MENU -->
 <div id="mobile-menu" class="mobile-menu" hidden>
   <nav aria-label="Mobil navigatsiya">
     <a href="#top">Bosh sahifa</a>
@@ -531,37 +425,38 @@ ul{list-style:none}
 
 <div id="scroll-progress" class="scroll-progress"></div>
 
+<!-- SAHNA NAVIGATSIYASI -->
+<nav class="scene-nav" id="scene-nav" aria-label="Sahifa bo'limlari">
+  <a class="scene-dot is-active" href="#top"><span>Bosh sahifa</span><i></i></a>
+  <a class="scene-dot" href="#stats"><span>Ko'rsatkichlar</span><i></i></a>
+  <a class="scene-dot" href="#sections"><span>Bo'limlar</span><i></i></a>
+  <a class="scene-dot" href="#about"><span>Biz haqimizda</span><i></i></a>
+  <a class="scene-dot" href="#contact"><span>Aloqa</span><i></i></a>
+</nav>
+
 <main id="main">
   <!-- HERO -->
   <section id="top" class="hero">
-    <div class="hero-bg" aria-hidden="true">
-      <div class="hero-glow hero-glow-a"></div>
-      <div class="hero-glow hero-glow-b"></div>
-      <svg class="hero-grid" width="100%" height="100%" aria-hidden="true">
-        <defs>
-          <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-            <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)"/>
-      </svg>
-    </div>
-
-    <div class="hero-content">
-      <p class="hero-eyebrow">Yagona raqamli markaz</p>
-      <h1 class="hero-title">YMT HUB</h1>
-      <p class="hero-subtitle">Bilim. Texnologiya. Ijod. Kelajak.</p>
-      <p class="hero-desc">Ta'lim, sun'iy intellekt, musiqa, o'yinlar va kundalik hayot uchun foydali xizmatlar — yagona raqamli makonda.</p>
-      <div class="hero-actions">
-        <a href="regist.html" class="btn btn-primary">ro'yhatdan o'tish</a>
-        <a href="#about" class="btn btn-ghost">Biz haqimizda</a>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <p class="hero-eyebrow reveal" style="--d:.1s">Yagona raqamli markaz</p>
+        <h1 class="hero-title reveal" style="--d:.25s">YMT HUB</h1>
+        <p class="hero-subtitle reveal" style="--d:.4s">Bilim. Texnologiya. Ijod. Kelajak.</p>
+        <p class="hero-desc reveal" style="--d:.5s">Ta'lim, sun'iy intellekt, musiqa, o'yinlar va kundalik hayot uchun foydali xizmatlar — yagona raqamli makonda.</p>
+        <div class="hero-actions reveal" style="--d:.65s">
+          <a href="regist.html" class="btn btn-primary" data-portal="Ro'yxatdan o'tish">ro'yhatdan o'tish</a>
+          <a href="#about" class="btn btn-ghost">Biz haqimizda</a>
+        </div>
+        <div class="hero-tags reveal" style="--d:.8s"><span>Ta'lim</span><span>Sun'iy intellekt</span><span>Musiqa</span><span>O'yinlar</span></div>
       </div>
     </div>
+    <div class="scroll-hint" aria-hidden="true"><i></i>Pastga</div>
+    <div class="hint-3d" aria-hidden="true">Kosmonavtni bosing — u salom beradi</div>
   </section>
 
   <!-- STATS -->
-  <section class="stats" aria-label="Platforma statistikasi">
-    <div class="stats-inner">
+  <section id="stats" class="stats" aria-label="Platforma statistikasi">
+    <div class="stats-inner reveal">
       <div class="stat-item">
         <span class="stat-num" data-count="15">0</span>
         <span class="stat-label">Bo'lim</span>
@@ -574,7 +469,7 @@ ul{list-style:none}
         <span class="stat-num" id="fav-count">0</span>
         <span class="stat-label">Sevimli</span>
       </div>
-      <div class="stat-item stat-item-wide" id="most-used-box">
+      <div class="stat-item" id="most-used-box">
         <span class="stat-label">Eng ko'p ishlatiladigan</span>
         <span class="stat-chip" id="most-used-name">Hali yo'q</span>
       </div>
@@ -583,12 +478,13 @@ ul{list-style:none}
 
   <!-- SECTIONS -->
   <section id="sections" class="sections">
-    <div class="sections-head">
+    <div class="sections-head reveal">
+      <span class="kicker">Kashf eting</span>
       <h2>Barcha bo'limlar</h2>
       <p>Kerakli bo'limni qidiring yoki kategoriya bo'yicha filtrlang.</p>
     </div>
 
-    <div class="filters" role="group" aria-label="Kategoriya filtrlari">
+    <div class="filters reveal" role="group" aria-label="Kategoriya filtrlari">
       <button class="filter-chip is-active" data-filter="all">Barchasi</button>
       <button class="filter-chip" data-filter="talim">Ta'lim</button>
       <button class="filter-chip" data-filter="tex">Texnologiya</button>
@@ -602,30 +498,34 @@ ul{list-style:none}
     </div>
 
     <p id="results-empty" class="results-empty" hidden>Hech qanday bo'lim topilmadi</p>
-
     <div id="card-grid" class="card-grid"></div>
   </section>
 
   <!-- ABOUT -->
   <section id="about" class="about">
-    <div class="about-inner">
+    <div class="panel reveal">
+      <span class="kicker">YMT HUB</span>
       <h2>Biz haqimizda</h2>
       <p>YMT HUB — turli loyihalar va xizmatlarni bitta joyda jamlovchi markaziy portal. Maqsadimiz — ta'lim, texnologiya va kundalik foydali vositalarni qulay va tezkor tarzda bir manzilda taqdim etish.</p>
-      <a href="biz.html" class="link-arrow">To'liq ma'lumot</a>
+      <div class="pillars"><span>Ta'lim</span><span>Texnologiya</span><span>Ijod</span></div>
+      <a href="biz.html" class="link-arrow" data-portal="Biz haqimizda">To'liq ma'lumot
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section id="contact" class="contact">
-    <div class="contact-inner">
-      <h2>Aloqa</h2>
+    <div class="panel reveal">
+      <span class="kicker">Aloqa</span>
+      <h2>Biz bilan bog'laning</h2>
       <p>Savol, taklif yoki murojaatingiz bormi? Biz bilan bog'laning.</p>
-      <a href="aloqa.html" class="btn btn-primary">Bog'lanish</a>
+      <a href="aloqa.html" class="btn btn-primary" data-portal="Aloqa">Bog'lanish</a>
     </div>
   </section>
 </main>
 
-<button id="back-to-top" class="back-to-top" aria-label="Sahifa boshiga qaytish" hidden>
+<button id="back-to-top" class="back-to-top" aria-label="Sahifa boshiga qaytish">
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
 </button>
 
@@ -640,13 +540,12 @@ ul{list-style:none}
     <nav class="footer-links" aria-label="Footer navigatsiya">
       <a href="#sections">Bo'limlar</a>
       <a href="#about">Biz haqimizda</a>
-      <a href="aloqa.html">Aloqa</a>
+      <a href="aloqa.html" data-portal="Aloqa">Aloqa</a>
     </nav>
     <p class="footer-copy">&copy; <span id="footer-year"></span> YMT HUB. Barcha huquqlar himoyalangan.</p>
   </div>
 </footer>
 
-<!-- MOBILE BOTTOM NAV -->
 <nav class="bottom-nav" aria-label="Mobil pastki navigatsiya">
   <a href="#top" class="bottom-nav-item is-active" data-nav="home">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
@@ -666,20 +565,17 @@ ul{list-style:none}
   </button>
 </nav>
 
+<!-- ===========================================================
+     UI (oddiy skript — 3D yuklanmasa ham sayt ishlaydi)
+     =========================================================== -->
 <script>
-  /* ===========================================================
-   YMT HUB — script.js
-   =========================================================== */
 (() => {
   'use strict';
-
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (id) => document.getElementById(id);
 
-  /* ---------------------------------------------------------
-     DATA — barcha 15 bo'lim
-  --------------------------------------------------------- */
   const SECTIONS = [
-    { id:'ustoz-ai',  title:'Ustoz AI',        desc:'Sun\u2019iy intellekt yordamida ta\u2019lim olish va o\u2019rganish.', href:'sinf.html', cat:'talim', accent:'#6e5bff',
+    { id:'ustoz-ai',  title:'Ustoz AI',        desc:'Sun’iy intellekt yordamida ta’lim olish va o’rganish.', href:'sinf.html', cat:'talim', accent:'#6e5bff',
       icon:'<path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/><path d="M5 16l.9 2.1L8 19l-2.1.9L5 22l-.9-2.1L2 19l2.1-.9L5 16z"/>' },
     { id:'kasblar',   title:'Kasblar',          desc:'Kasblar, mutaxassisliklar va kelajakdagi imkoniyatlar.', href:'kasblar.html', cat:'talim', accent:'#00b894',
       icon:'<path d="M3 7h18v12H3z"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>' },
@@ -687,405 +583,834 @@ ul{list-style:none}
       icon:'<path d="M9 11l3 3 7-7"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>' },
     { id:'coremusic', title:'CoreMusic',        desc:'Musiqa tinglash va musiqiy platforma.', href:'https://sinov16.vercel.app/', cat:'kongil', accent:'#ff5b9c', external:true,
       icon:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>' },
-    { id:'oyinlar',   title:'O\u2019yinlar',        desc:'O\u2019yinlar va interaktiv tajribalar.', href:'game.html', cat:'kongil', accent:'#ff9f43',
+    { id:'oyinlar',   title:'O’yinlar',        desc:'O’yinlar va interaktiv tajribalar.', href:'game.html', cat:'kongil', accent:'#ff9f43',
       icon:'<rect x="2" y="7" width="20" height="10" rx="5"/><line x1="7" y1="12" x2="7" y2="12.01"/><line x1="10" y1="9" x2="10" y2="9.01"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/>' },
     { id:'maslahat',  title:'Maslahatlar',      desc:'Foydali tavsiyalar va kundalik hayot uchun maslahatlar.', href:'maslahat.html', cat:'hayot', accent:'#fdd835',
       icon:'<path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 2z"/>' },
-    { id:'bayroq',    title:'Bayroqlar',        desc:'Davlatlar bayroqlari va ular haqidagi ma\u2019lumotlar.', href:'bayroq.html', cat:'boshqa', accent:'#ff6b6b',
+    { id:'bayroq',    title:'Bayroqlar',        desc:'Davlatlar bayroqlari va ular haqidagi ma’lumotlar.', href:'bayroq.html', cat:'boshqa', accent:'#ff6b6b',
       icon:'<path d="M5 3v18"/><path d="M5 4h13l-2.5 4L18 12H5"/>' },
-    { id:'galati',    title:'G\u2019alati',         desc:'Qiziqarli, noodatiy va hayratlanarli ma\u2019lumotlar.', href:'galati.html', cat:'kongil', accent:'#be4bdb',
+    { id:'galati',    title:'G’alati',         desc:'Qiziqarli, noodatiy va hayratlanarli ma’lumotlar.', href:'galati.html', cat:'kongil', accent:'#be4bdb',
       icon:'<circle cx="12" cy="12" r="9"/><path d="M9 9c0-1.5 1.3-2.5 3-2.5s3 1 3 2.5c0 1.5-1.5 2-2.5 3"/><line x1="12" y1="17" x2="12" y2="17.01"/>' },
     { id:'biz',       title:'Biz haqimizda',    desc:'YMT HUB loyihasi, maqsadi va jamoasi.', href:'biz.html', cat:'boshqa', accent:'#74c0fc',
       icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>' },
-    { id:'aloqa',     title:'Aloqa',            desc:'Biz bilan bog\u2019lanish va murojaat yuborish.', href:'aloqa.html', cat:'boshqa', accent:'#51cf66',
+    { id:'aloqa',     title:'Aloqa',            desc:'Biz bilan bog’lanish va murojaat yuborish.', href:'aloqa.html', cat:'boshqa', accent:'#51cf66',
       icon:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>' },
-    { id:'ichu',      title:'ICHU bo\u2019limi',    desc:'ICHU bo\u2019limiga kirish.', href:'sinov3.html', cat:'boshqa', accent:'#22d3ee',
+    { id:'ichu',      title:'ICHU bo’limi',    desc:'ICHU bo’limiga kirish.', href:'sinov3.html', cat:'boshqa', accent:'#22d3ee',
       icon:'<path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7l8.7 5 8.7-5"/><path d="M12 22V12"/>' },
-    { id:'uzb',       title:'O\u2019zbekiston',     desc:'O\u2019zbekiston, uning tarixi, madaniyati va qadriyatlari.', href:'uzb.html', cat:'hayot', accent:'#4dabf7',
+    { id:'uzb',       title:'O’zbekiston',     desc:'O’zbekiston, uning tarixi, madaniyati va qadriyatlari.', href:'uzb.html', cat:'hayot', accent:'#4dabf7',
       icon:'<path d="M3 11l18-7-7 18-2-8-9-3z"/>' },
-    { id:'kokmak',    title:'Yashil makon',     desc:'Tabiatni asrash, ko\u2019kalamzorlashtirish va ekologiya.', href:'kokmak.html', cat:'hayot', accent:'#2fb344',
+    { id:'kokmak',    title:'Yashil makon',     desc:'Tabiatni asrash, ko’kalamzorlashtirish va ekologiya.', href:'kokmak.html', cat:'hayot', accent:'#2fb344',
       icon:'<path d="M12 22V12"/><path d="M12 12C7 12 4 9 4 5c4 0 7 2 8 5 1-3 4-5 8-5 0 4-3 7-8 7z"/>' },
     { id:'kitob',     title:'Kutubxona',        desc:'Kitoblar va bilimlar olami.', href:'kitob.html', cat:'talim', accent:'#e8a33d',
       icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' },
-    { id:'yol',       title:'Yo\u2019l qoidalari',  desc:'Yo\u2019l harakati qoidalari va xavfsiz harakatlanish.', href:'yolhar.html', cat:'hayot', accent:'#ff5252',
+    { id:'yol',       title:'Yo’l qoidalari',  desc:'Yo’l harakati qoidalari va xavfsiz harakatlanish.', href:'yolhar.html', cat:'hayot', accent:'#ff5252',
       icon:'<rect x="9" y="2" width="6" height="20" rx="3"/><circle cx="12" cy="7" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="17" r="1"/>' },
   ];
+  const CAT_LABEL = { talim:'Ta’lim', tex:'Texnologiya', kongil:'Ko’ngilochar', hayot:'Hayot va jamiyat', boshqa:'Boshqa' };
 
-  const CAT_LABEL = { talim:'Ta\u2019lim', tex:'Texnologiya', kongil:'Ko\u2019ngilochar', hayot:'Hayot va jamiyat', boshqa:'Boshqa' };
-
-  const LS_FAV = 'ymthub_favorites';
-  const LS_USAGE = 'ymthub_usage';
-
+  const LS_FAV = 'ymthub_favorites', LS_USAGE = 'ymthub_usage';
   const getFavs = () => { try { return JSON.parse(localStorage.getItem(LS_FAV)) || []; } catch { return []; } };
-  const setFavs = (arr) => { try { localStorage.setItem(LS_FAV, JSON.stringify(arr)); } catch {} };
+  const setFavs = (a) => { try { localStorage.setItem(LS_FAV, JSON.stringify(a)); } catch {} };
   const getUsage = () => { try { return JSON.parse(localStorage.getItem(LS_USAGE)) || {}; } catch { return {}; } };
-  const setUsage = (obj) => { try { localStorage.setItem(LS_USAGE, JSON.stringify(obj)); } catch {} };
+  const setUsage = (o) => { try { localStorage.setItem(LS_USAGE, JSON.stringify(o)); } catch {} };
 
-  /* ---------------------------------------------------------
-     INTRO ANIMATION
-  --------------------------------------------------------- */
-  function initIntro(){
-    const intro = document.getElementById('intro');
-    const canvas = document.getElementById('intro-particles');
-    const seen = sessionStorage.getItem('ymthub_intro_seen');
-
-    if (seen || reduceMotion){
-      intro.classList.add('hide');
-      setTimeout(() => intro.remove(), 50);
-      return;
-    }
-
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-    function resize(){
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    const count = w < 600 ? 40 : 80;
-    for (let i = 0; i < count; i++){
-      particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        r: Math.random() * 1.6 + 0.4,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        a: Math.random() * 0.6 + 0.2,
-      });
-    }
-
-    let raf;
-    function draw(){
-      ctx.clearRect(0, 0, w, h);
-      particles.forEach(p => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
-        if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(110,91,255,${p.a})`;
-        ctx.fill();
-      });
-      raf = requestAnimationFrame(draw);
-    }
-    draw();
-
-    sessionStorage.setItem('ymthub_intro_seen', '1');
+  /* ---------- LOADER ---------- */
+  const loader = $('loader'), fill = $('loader-fill'), pct = $('loader-pct');
+  let loaderDone = false;
+  const t0 = performance.now();
+  window.addEventListener('ymt:progress', (e) => {
+    const p = Math.round(e.detail * 100);
+    fill.style.width = p + '%'; pct.textContent = p + '%';
+  });
+  function finishLoader(){
+    if (loaderDone) return; loaderDone = true;
+    fill.style.width = '100%'; pct.textContent = '100%';
+    const wait = Math.max(0, 1100 - (performance.now() - t0));
     setTimeout(() => {
-      intro.classList.add('hide');
-      setTimeout(() => { cancelAnimationFrame(raf); intro.remove(); }, 650);
-    }, 1900);
+      loader.classList.add('hide');
+      document.body.classList.remove('is-loading');
+      window.dispatchEvent(new CustomEvent('ymt:start'));
+      setTimeout(() => loader.remove(), 1000);
+      revealHero();
+    }, wait);
+  }
+  window.addEventListener('ymt:ready', finishLoader);
+  // 3D yuklanmasa ham sayt ochilsin
+  setTimeout(() => { if (!window.__ymt) document.body.classList.add('no-webgl'); finishLoader(); }, 12000);
+
+  function revealHero(){
+    document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('in'));
   }
 
-  /* ---------------------------------------------------------
-     NAVBAR / SCROLL PROGRESS / BACK TO TOP
-  --------------------------------------------------------- */
-  function initScrollEffects(){
-    const navbar = document.getElementById('navbar');
-    const progress = document.getElementById('scroll-progress');
-    const backTop = document.getElementById('back-to-top');
+  /* ---------- REVEAL ON SCROLL ---------- */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => { if (!el.closest('.hero')) io.observe(el); });
 
+  /* ---------- NAV / SCROLL ---------- */
+  function initScroll(){
+    const navbar = $('navbar'), progress = $('scroll-progress'), backTop = $('back-to-top');
+    const sceneDots = [...document.querySelectorAll('.scene-dot')];
+    const sceneIds = ['top','stats','sections','about','contact'];
+    const bn = { home: document.querySelector('[data-nav="home"]'), sections: document.querySelector('[data-nav="sections"]') };
+    let ticking = false;
     function onScroll(){
-      const y = window.scrollY || document.documentElement.scrollTop;
+      const y = window.scrollY;
       navbar.classList.toggle('is-scrolled', y > 10);
-      backTop.hidden = y < 500;
-      backTop.classList.toggle('is-visible', y > 500);
-
+      backTop.classList.toggle('is-visible', y > 600);
       const docH = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = docH > 0 ? (y / docH) * 100 : 0;
-      progress.style.width = pct + '%';
+      progress.style.width = (docH > 0 ? (y / docH) * 100 : 0) + '%';
+      const mid = window.innerHeight * .45;
+      let idx = 0;
+      sceneIds.forEach((id, i) => { const el = $(id); if (el && el.getBoundingClientRect().top <= mid) idx = i; });
+      sceneDots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+      bn.home?.classList.toggle('is-active', idx < 2);
+      bn.sections?.classList.toggle('is-active', idx >= 2);
+      ticking = false;
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(onScroll); } }, { passive:true });
     onScroll();
-
-    backTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-    });
+    backTop.addEventListener('click', () => window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' }));
   }
 
-  /* ---------------------------------------------------------
-     MENU / SEARCH TOGGLES
-  --------------------------------------------------------- */
   function initToggles(){
-    const menuBtn = document.getElementById('menu-toggle');
-    const menu = document.getElementById('mobile-menu');
-    const searchBtn = document.getElementById('search-toggle');
-    const searchPanel = document.getElementById('search-panel');
-    const searchInput = document.getElementById('search-input');
-    const bottomSearch = document.getElementById('bottom-search');
-
-    function closeMenu(){
-      menu.classList.remove('is-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      setTimeout(() => { menu.hidden = true; }, 350);
-    }
-    function openMenu(){
-      menu.hidden = false;
-      requestAnimationFrame(() => menu.classList.add('is-open'));
-      menuBtn.setAttribute('aria-expanded', 'true');
-    }
-    menuBtn.addEventListener('click', () => {
-      const open = menuBtn.getAttribute('aria-expanded') === 'true';
-      open ? closeMenu() : openMenu();
-    });
+    const menuBtn = $('menu-toggle'), menu = $('mobile-menu');
+    const searchBtn = $('search-toggle'), searchPanel = $('search-panel'), searchInput = $('search-input');
+    function closeMenu(){ menu.classList.remove('is-open'); menuBtn.setAttribute('aria-expanded','false'); setTimeout(() => { if (!menu.classList.contains('is-open')) menu.hidden = true; }, 350); }
+    function openMenu(){ menu.hidden = false; requestAnimationFrame(() => menu.classList.add('is-open')); menuBtn.setAttribute('aria-expanded','true'); }
+    menuBtn.addEventListener('click', () => menuBtn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu());
     menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-
-    function openSearch(){
-      searchPanel.hidden = false;
-      searchBtn.setAttribute('aria-expanded', 'true');
-      setTimeout(() => searchInput.focus(), 50);
-    }
-    function closeSearch(){
-      searchPanel.hidden = true;
-      searchBtn.setAttribute('aria-expanded', 'false');
-    }
-    searchBtn.addEventListener('click', () => {
-      const open = searchBtn.getAttribute('aria-expanded') === 'true';
-      open ? closeSearch() : openSearch();
-    });
-    bottomSearch.addEventListener('click', () => {
-      document.getElementById('sections').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-      openSearch();
-    });
-
+    function openSearch(){ searchPanel.hidden = false; searchBtn.setAttribute('aria-expanded','true'); setTimeout(() => searchInput.focus(), 50); }
+    function closeSearch(){ searchPanel.hidden = true; searchBtn.setAttribute('aria-expanded','false'); }
+    searchBtn.addEventListener('click', () => searchBtn.getAttribute('aria-expanded') === 'true' ? closeSearch() : openSearch());
+    $('bottom-search').addEventListener('click', () => { $('sections').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); openSearch(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape'){ closeSearch(); closeMenu(); }
-      if ((e.key === '/' ) && document.activeElement.tagName !== 'INPUT'){
-        e.preventDefault(); openSearch();
+      if (e.key === '/' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){ e.preventDefault(); openSearch(); }
+    });
+  }
+
+  /* ---------- CARDS ---------- */
+  function normalize(str){
+    return str.toLowerCase()
+      .replace(/[‘’ʻʼʽ`']/g, '')
+      .trim();
+  }
+  const canHover = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  function buildCard(s, i){
+    const isFav = getFavs().includes(s.id);
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.id = s.id; card.dataset.cat = s.cat; card.dataset.title = normalize(s.title);
+    card.style.setProperty('--card-accent', s.accent);
+    card.innerHTML = `
+      <span class="card-num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+      <div class="card-top">
+        <div class="card-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg></div>
+        <button class="card-fav ${isFav ? 'is-fav' : ''}" aria-pressed="${isFav}" aria-label="Sevimlilarga qo’shish">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.6-10-9.1C.5 8.4 2.3 5 5.8 5c2 0 3.4 1.1 4.2 2.4C10.8 6.1 12.2 5 14.2 5c3.5 0 5.3 3.4 3.8 6.9C19.5 16.4 12 21 12 21z"/></svg>
+        </button>
+      </div>
+      <span class="card-cat">${CAT_LABEL[s.cat]}</span>
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <div class="card-foot">
+        <span class="card-enter">Bo’limga kirish
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+        ${s.external ? '<span class="card-ext">Tashqi sayt</span>' : ''}
+      </div>
+      <a class="card-link" href="${s.href}" ${s.external ? 'target="_blank" rel="noopener noreferrer"' : ''} aria-label="${s.title} bo’limini ochish"></a>`;
+
+    const favBtn = card.querySelector('.card-fav');
+    favBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleFav(s.id, favBtn); });
+
+    const link = card.querySelector('.card-link');
+    link.addEventListener('click', (e) => {
+      trackUsage(s.id);
+      if (s.external) return;
+      goPortal(e, s.href, s.title, s.accent, s.icon);
+    });
+
+    if (canHover && !reduceMotion){
+      let raf = 0;
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--mx', (px * 100) + '%'); card.style.setProperty('--my', (py * 100) + '%');
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          card.classList.add('is-tilting');
+          card.style.transform = `rotateX(${(.5 - py) * 9}deg) rotateY(${(px - .5) * 11}deg) translateY(-6px) scale(1.015)`;
+        });
+      });
+      card.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); card.classList.remove('is-tilting'); card.style.transform = ''; });
+    }
+    return card;
+  }
+
+  function trackUsage(id){ const u = getUsage(); u[id] = (u[id] || 0) + 1; setUsage(u); }
+  function toggleFav(id, btn){
+    let favs = getFavs(); const was = favs.includes(id);
+    favs = was ? favs.filter(f => f !== id) : [...favs, id];
+    setFavs(favs);
+    btn.classList.toggle('is-fav', !was); btn.setAttribute('aria-pressed', String(!was));
+    updateFavCount();
+    showToast(was ? 'Sevimlilardan olib tashlandi' : 'Sevimlilarga qo’shildi');
+    applyFilters();
+  }
+  function updateFavCount(){ $('fav-count').textContent = getFavs().length; }
+  function updateMostUsed(){
+    const entries = Object.entries(getUsage()); const box = $('most-used-name');
+    if (!entries.length){ box.textContent = 'Hali yo’q'; return; }
+    entries.sort((a, b) => b[1] - a[1]);
+    const top = SECTIONS.find(s => s.id === entries[0][0]);
+    box.textContent = top ? top.title : 'Hali yo’q';
+  }
+
+  let toastTimer;
+  function showToast(msg){
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+  }
+  window.addEventListener('ymt:toast', (e) => showToast(e.detail));
+
+  /* ---------- SEARCH + FILTERS ---------- */
+  let activeFilter = 'all', searchQuery = '';
+  function applyFilters(){
+    const favs = getFavs(); let visible = 0;
+    $('card-grid').querySelectorAll('.card').forEach(card => {
+      const okS = !searchQuery || card.dataset.title.includes(searchQuery);
+      let okF = true;
+      if (activeFilter === 'fav') okF = favs.includes(card.dataset.id);
+      else if (activeFilter !== 'all') okF = card.dataset.cat === activeFilter;
+      const show = okS && okF;
+      card.classList.toggle('is-hidden', !show);
+      if (show){ visible++; observeCard(card); }
+    });
+    $('results-empty').hidden = visible !== 0;
+  }
+  const cardIO = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); cardIO.unobserve(en.target); } });
+  }, { threshold: .08, rootMargin: '0px 0px -4% 0px' });
+  function observeCard(c){ if (!c.classList.contains('in')) cardIO.observe(c); }
+
+  function initSearchAndFilters(){
+    const input = $('search-input'), clearBtn = $('search-clear');
+    input.addEventListener('input', () => { searchQuery = normalize(input.value); clearBtn.hidden = !input.value.length; applyFilters(); });
+    clearBtn.addEventListener('click', () => { input.value = ''; searchQuery = ''; clearBtn.hidden = true; applyFilters(); input.focus(); });
+    document.querySelectorAll('.filter-chip').forEach(chip => chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('is-active'));
+      chip.classList.add('is-active'); activeFilter = chip.dataset.filter; applyFilters();
+    }));
+    $('bottom-fav').addEventListener('click', () => {
+      document.querySelector('.filter-chip-fav').click();
+      $('sections').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  }
+
+  function initCounters(){
+    const nums = document.querySelectorAll('.stat-num[data-count]');
+    if (reduceMotion){ nums.forEach(n => n.textContent = n.dataset.count); return; }
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const el = en.target, target = parseInt(el.dataset.count, 10); let cur = 0;
+        const step = Math.max(1, Math.round(target / 30));
+        const timer = setInterval(() => { cur += step; if (cur >= target){ cur = target; clearInterval(timer); } el.textContent = cur; }, 30);
+        obs.unobserve(el);
+      });
+    }, { threshold: .4 });
+    nums.forEach(n => obs.observe(n));
+  }
+
+  /* ---------- PORTAL: bo'limga kirish ---------- */
+  const portal = $('portal');
+  let portalTimer = 0;
+  function goPortal(e, href, title, accent, iconSvg){
+    if (e.defaultPrevented) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (portal.classList.contains('on')) return;
+    portal.style.setProperty('--pa', accent || '#6e5bff');
+    $('portal-title').textContent = title || 'YMT HUB';
+    $('portal-svg').innerHTML = iconSvg || '<path d="M12 2l1.8 4.6L18 8l-4.2 1.4L12 14l-1.8-4.6L6 8l4.2-1.4L12 2z"/>';
+    window.__ymt?.warp?.(accent);
+    const delay = reduceMotion ? 150 : 1150;
+    setTimeout(() => portal.classList.add('on'), reduceMotion ? 0 : 520);
+    portalTimer = setTimeout(() => { window.location.href = href; }, delay);
+  }
+  // ichki sahifalarga boshqa havolalar (CTA, footer ...)
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-portal]');
+    if (a) goPortal(e, a.getAttribute('href'), a.dataset.portal, '#6e5bff');
+  });
+  // orqaga qaytilganda (bfcache) holatni tiklash
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted){ clearTimeout(portalTimer); portal.classList.remove('on'); window.__ymt?.resetWarp?.(); }
+  });
+
+  /* ---------- INIT ---------- */
+  function init(){
+    $('footer-year').textContent = new Date().getFullYear();
+    const grid = $('card-grid');
+    SECTIONS.forEach((s, i) => {
+      const c = buildCard(s, i);
+      c.style.setProperty('--d', ((i % 3) * 0.08) + 's');
+      grid.appendChild(c);
+    });
+    updateFavCount(); updateMostUsed(); applyFilters();
+    initScroll(); initToggles(); initSearchAndFilters(); initCounters();
+  }
+  init();
+})();
+</script>
+
+<!-- ===========================================================
+     3D SAHNA (three.js)
+     =========================================================== -->
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const stage = document.getElementById('stage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = matchMedia('(hover:none)').matches;
+const isSmall = () => innerWidth < 760;
+const MOBILE = isSmall() || isTouch;
+const emit = (n, d) => window.dispatchEvent(new CustomEvent(n, { detail: d }));
+const DEBUG = new URLSearchParams(location.search).has('debug3d');
+
+/* ------------------------------------------------------------------
+   Renderer
+------------------------------------------------------------------ */
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: !MOBILE, powerPreference: 'high-performance' });
+} catch (err) {
+  console.warn('WebGL mavjud emas:', err);
+  document.body.classList.add('no-webgl');
+  emit('ymt:ready');
+}
+if (renderer) boot();
+
+function boot(){
+  renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.5 : 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stage.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x05070d);
+  scene.fog = new THREE.FogExp2(0x05070d, 0.0042);
+
+  const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 1200);
+  scene.add(camera);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  /* ---------------- yorug'lik ---------------- */
+  const sun = new THREE.DirectionalLight(0xfff1e0, 3.2);
+  sun.position.set(-14, 10, 18);
+  scene.add(sun);
+  const rimA = new THREE.DirectionalLight(0x4cc9ff, 2.4); rimA.position.set(14, 4, -12); scene.add(rimA);
+  const rimB = new THREE.DirectionalLight(0x8a5bff, 2.0); rimB.position.set(-10, -6, -14); scene.add(rimB);
+  scene.add(new THREE.HemisphereLight(0x8aa0ff, 0x1a0f33, 0.55));
+
+  /* ------------------------------------------------------------------
+     Yulduzlar, chang, tumanliklar
+  ------------------------------------------------------------------ */
+  const uPR = { value: Math.min(devicePixelRatio, 2) };
+  const starUniforms = { uTime: { value: 0 }, uPR };
+
+  function makeStars(count, rMin, rMax, sizeMin, sizeMax){
+    const pos = new Float32Array(count * 3), col = new Float32Array(count * 3), size = new Float32Array(count), ph = new Float32Array(count);
+    const palette = [new THREE.Color(0xffffff), new THREE.Color(0xbcd0ff), new THREE.Color(0xd7c4ff), new THREE.Color(0xa8ecff), new THREE.Color(0xffe3c4)];
+    for (let i = 0; i < count; i++){
+      const r = rMin + Math.random() * (rMax - rMin);
+      const th = Math.random() * Math.PI * 2, u = Math.random() * 2 - 1, s = Math.sqrt(1 - u * u);
+      pos.set([r * s * Math.cos(th), r * u, r * s * Math.sin(th)], i * 3);
+      const c = palette[(Math.random() * palette.length) | 0];
+      col.set([c.r, c.g, c.b], i * 3);
+      size[i] = sizeMin + Math.pow(Math.random(), 3) * (sizeMax - sizeMin);
+      ph[i] = Math.random() * 6.28;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+    g.setAttribute('aPhase', new THREE.BufferAttribute(ph, 1));
+    const m = new THREE.ShaderMaterial({
+      uniforms: starUniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+      vertexShader: `
+        attribute vec3 aColor; attribute float aSize; attribute float aPhase;
+        uniform float uTime; uniform float uPR; varying vec3 vC; varying float vT;
+        void main(){
+          vC = aColor; vT = 0.65 + 0.35 * sin(uTime * 1.4 + aPhase);
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = aSize * uPR * (0.85 + 0.3 * vT);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        varying vec3 vC; varying float vT;
+        void main(){
+          float d = length(gl_PointCoord - 0.5);
+          float a = smoothstep(0.5, 0.0, d); a *= a;
+          gl_FragColor = vec4(vC * (0.8 + 0.8 * vT), a * vT);
+        }`
+    });
+    const p = new THREE.Points(g, m); p.frustumCulled = false; return p;
+  }
+  const stars = makeStars(MOBILE ? 1800 : 4200, 300, 700, 1.4, 5.2);
+  scene.add(stars);
+
+  // yaqin chang (parallaks uchun)
+  function makeDust(count){
+    const pos = new Float32Array(count * 3), size = new Float32Array(count);
+    for (let i = 0; i < count; i++){
+      pos.set([(Math.random() - .5) * 120, (Math.random() - .5) * 50, 20 - Math.random() * 110], i * 3);
+      size[i] = Math.random() * 2 + .6;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+    const m = new THREE.ShaderMaterial({
+      uniforms: { uTime: starUniforms.uTime, uPR }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: `
+        attribute float aSize; uniform float uPR; uniform float uTime; varying float vF;
+        void main(){
+          vec3 p = position; p.y += sin(uTime * .25 + position.x) * .6; p.x += cos(uTime * .2 + position.z) * .5;
+          vec4 mv = modelViewMatrix * vec4(p, 1.0);
+          gl_PointSize = aSize * uPR * (42.0 / -mv.z);
+          vF = smoothstep(90.0, 10.0, -mv.z) * smoothstep(0.5, 4.0, -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        varying float vF;
+        void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., d); gl_FragColor = vec4(.62,.72,1., a * a * .55 * vF); }`
+    });
+    const p = new THREE.Points(g, m); p.frustumCulled = false; return p;
+  }
+  scene.add(makeDust(MOBILE ? 220 : 520));
+
+  function glowTexture(inner, outer){
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    gr.addColorStop(0, inner); gr.addColorStop(.35, outer); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  function nebula(color, opacity, scale, x, y, z){
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture(color.replace('A', opacity), color.replace('A', opacity * .35)),
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false
+    }));
+    s.scale.set(scale, scale, 1); s.position.set(x, y, z); scene.add(s); return s;
+  }
+  const nebulae = [
+    nebula('rgba(110,70,255,A)', .55, 260, -90, 40, -190),
+    nebula('rgba(0,190,255,A)', .38, 240, 110, -20, -230),
+    nebula('rgba(255,70,160,A)', .26, 200, 10, 70, -260),
+    nebula('rgba(90,60,255,A)', .30, 220, -60, -50, -120),
+  ];
+
+  /* ------------------------------------------------------------------
+     Warp (bo'limga kirishdagi tunnel)
+  ------------------------------------------------------------------ */
+  const warpU = { uPhase: { value: 0 }, uWarp: { value: 0 }, uC1: { value: new THREE.Color(0x6e5bff) }, uC2: { value: new THREE.Color(0x00d4ff) } };
+  const warp = (() => {
+    const N = MOBILE ? 380 : 800, pos = new Float32Array(N * 6), end = new Float32Array(N * 2), spd = new Float32Array(N * 2), len = new Float32Array(N * 2), mix = new Float32Array(N * 2);
+    for (let i = 0; i < N; i++){
+      const a = Math.random() * Math.PI * 2, r = 1.4 + Math.pow(Math.random(), .8) * 16, z = Math.random() * 140;
+      const x = Math.cos(a) * r, y = Math.sin(a) * r, s = .6 + Math.random() * .8, l = .4 + Math.random() * 1.2, m = Math.random();
+      for (let k = 0; k < 2; k++){
+        pos.set([x, y, z], (i * 2 + k) * 3); end[i * 2 + k] = k; spd[i * 2 + k] = s; len[i * 2 + k] = l; mix[i * 2 + k] = m;
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aEnd', new THREE.BufferAttribute(end, 1));
+    g.setAttribute('aSpd', new THREE.BufferAttribute(spd, 1));
+    g.setAttribute('aLen', new THREE.BufferAttribute(len, 1));
+    g.setAttribute('aMix', new THREE.BufferAttribute(mix, 1));
+    const m = new THREE.ShaderMaterial({
+      uniforms: warpU, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false,
+      vertexShader: `
+        attribute float aEnd; attribute float aSpd; attribute float aLen; attribute float aMix;
+        uniform float uPhase; uniform float uWarp; varying float vA; varying float vM;
+        void main(){
+          float z = mod(position.z - uPhase * aSpd, 140.0);
+          float zz = -z - aEnd * aLen * (0.4 + uWarp * 16.0);
+          vec4 mv = modelViewMatrix * vec4(position.x, position.y, zz, 1.0);
+          gl_Position = projectionMatrix * mv;
+          vA = mix(1.0, 0.15, aEnd) * smoothstep(140.0, 30.0, z) * smoothstep(0.5, 5.0, z); vM = aMix;
+        }`,
+      fragmentShader: `
+        uniform float uWarp; uniform vec3 uC1; uniform vec3 uC2; varying float vA; varying float vM;
+        void main(){ gl_FragColor = vec4(mix(uC1, uC2, vM) * 1.6, vA * uWarp); }`
+    });
+    const l = new THREE.LineSegments(g, m); l.frustumCulled = false; l.renderOrder = 10; l.visible = false; camera.add(l); return l;
+  })();
+
+  /* ------------------------------------------------------------------
+     Modellar
+  ------------------------------------------------------------------ */
+  const PLANET_POS = new THREE.Vector3(18, 6, -52);
+  const PLANET_SCALE = 9;
+
+  const world = new THREE.Group(); scene.add(world);
+  const astro = new THREE.Group(); world.add(astro);       // kosmonavt
+  const shipRoot = new THREE.Group(); world.add(shipRoot); // kema
+  const planetRoot = new THREE.Group(); world.add(planetRoot);
+  planetRoot.position.copy(PLANET_POS);
+
+  // fallback (modellar yuklanmasa)
+  let mixer = null, actions = {}, curAction = null, planetMesh = null, shipModel = null, astroModel = null;
+  const clickable = [];
+
+  const manager = new THREE.LoadingManager();
+  const loader = new GLTFLoader(manager);
+  const prog = { odam: 0, sayyora: 0, kema: 0 };
+  const sendProg = () => emit('ymt:progress', Math.min(.98, (prog.odam + prog.sayyora + prog.kema) / 3));
+  const load = (name) => new Promise((res) => {
+    loader.load(`${name}.glb`, (g) => res(g), (e) => { if (e.total) { prog[name] = e.loaded / e.total; sendProg(); } },
+      (err) => { console.warn(name + '.glb yuklanmadi', err); res(null); });
+  });
+
+  function fit(obj, targetSize, axis){
+    const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3());
+    const s = targetSize / (axis ? size[axis] : Math.max(size.x, size.y, size.z));
+    obj.scale.multiplyScalar(s);
+    const b2 = new THREE.Box3().setFromObject(obj), c = b2.getCenter(new THREE.Vector3());
+    return { box: b2, center: c };
+  }
+  function tuneMaterials(root, env){
+    root.traverse(o => {
+      if (o.isMesh){
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(m => { if (m && 'envMapIntensity' in m) m.envMapIntensity = env; });
+        o.frustumCulled = false;
       }
     });
   }
 
-  /* ---------------------------------------------------------
-     CARD RENDERING
-  --------------------------------------------------------- */
-  function normalize(str){
-    return str
-      .toLowerCase()
-      .replace(/[\u2018\u2019\u02bb\u02bc\u02bd`']/g, '\u2019') // normalize apostrophes
-      .replace(/[\u2019]/g, '') // strip apostrophes entirely for matching
-      .replace(/o\u2019|o'|oʻ/g, 'o')
-      .replace(/g\u2019|g'|gʻ/g, 'g')
-      .trim();
-  }
-
-  function buildCard(section){
-    const favs = getFavs();
-    const isFav = favs.includes(section.id);
-
-    const card = document.createElement('article');
-    card.className = 'card';
-    card.dataset.id = section.id;
-    card.dataset.cat = section.cat;
-    card.dataset.title = normalize(section.title);
-    card.style.setProperty('--card-accent', section.accent);
-
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-icon">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${section.icon}</svg>
-        </div>
-        <button class="card-fav ${isFav ? 'is-fav' : ''}" aria-pressed="${isFav}" aria-label="Sevimlilarga qo\u2019shish">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.6-10-9.1C.5 8.4 2.3 5 5.8 5c2 0 3.4 1.1 4.2 2.4C10.8 6.1 12.2 5 14.2 5c3.5 0 5.3 3.4 3.8 6.9C19.5 16.4 12 21 12 21z"/></svg>
-        </button>
-      </div>
-      <h3>${section.title}</h3>
-      <p>${section.desc}</p>
-      <span class="card-cat">${CAT_LABEL[section.cat]}</span>
-      <div class="card-foot">
-        <span class="card-enter">Bo\u2019limga kirish
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </span>
-        ${section.external ? '<span class="card-ext">Tashqi sayt</span>' : ''}
-      </div>
-      <a class="card-link" href="${section.href}" ${section.external ? 'target="_blank" rel="noopener noreferrer"' : ''} aria-label="${section.title} bo\u2019limini ochish"></a>
-    `;
-
-    card.querySelector('.card-fav').addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      toggleFav(section.id, card.querySelector('.card-fav'));
-    });
-    card.querySelector('.card-link').addEventListener('click', () => trackUsage(section.id));
-
-    return card;
-  }
-
-  function trackUsage(id){
-    const usage = getUsage();
-    usage[id] = (usage[id] || 0) + 1;
-    setUsage(usage);
-  }
-
-  function toggleFav(id, btn){
-    let favs = getFavs();
-    const isFav = favs.includes(id);
-    favs = isFav ? favs.filter(f => f !== id) : [...favs, id];
-    setFavs(favs);
-    btn.classList.toggle('is-fav', !isFav);
-    btn.setAttribute('aria-pressed', String(!isFav));
-    updateFavCount();
-    showToast(isFav ? 'Sevimlilardan olib tashlandi' : 'Sevimlilarga qo\u2019shildi');
-    applyFilters();
-  }
-
-  function updateFavCount(){
-    document.getElementById('fav-count').textContent = getFavs().length;
-  }
-
-  function updateMostUsed(){
-    const usage = getUsage();
-    const entries = Object.entries(usage);
-    const box = document.getElementById('most-used-name');
-    if (!entries.length){ box.textContent = 'Hali yo\u2019q'; return; }
-    entries.sort((a, b) => b[1] - a[1]);
-    const top = SECTIONS.find(s => s.id === entries[0][0]);
-    box.textContent = top ? top.title : 'Hali yo\u2019q';
-  }
-
-  /* ---------------------------------------------------------
-     TOAST
-  --------------------------------------------------------- */
-  let toastTimer;
-  function showToast(msg){
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.hidden = false;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
-  }
-
-  /* ---------------------------------------------------------
-     SEARCH + FILTERS
-  --------------------------------------------------------- */
-  let activeFilter = 'all';
-  let searchQuery = '';
-
-  function applyFilters(){
-    const grid = document.getElementById('card-grid');
-    const empty = document.getElementById('results-empty');
-    const favs = getFavs();
-    let visible = 0;
-
-    grid.querySelectorAll('.card').forEach(card => {
-      const matchesSearch = !searchQuery || card.dataset.title.includes(searchQuery);
-      let matchesFilter = true;
-      if (activeFilter === 'fav') matchesFilter = favs.includes(card.dataset.id);
-      else if (activeFilter !== 'all') matchesFilter = card.dataset.cat === activeFilter;
-
-      const show = matchesSearch && matchesFilter;
-      card.classList.toggle('is-hidden', !show);
-      if (show) visible++;
-    });
-
-    empty.hidden = visible !== 0;
-  }
-
-  function initSearchAndFilters(){
-    const input = document.getElementById('search-input');
-    const clearBtn = document.getElementById('search-clear');
-
-    input.addEventListener('input', () => {
-      searchQuery = normalize(input.value);
-      clearBtn.hidden = input.value.length === 0;
-      applyFilters();
-    });
-    clearBtn.addEventListener('click', () => {
-      input.value = ''; searchQuery = ''; clearBtn.hidden = true;
-      applyFilters(); input.focus();
-    });
-
-    document.querySelectorAll('.filter-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('is-active'));
-        chip.classList.add('is-active');
-        activeFilter = chip.dataset.filter;
-        applyFilters();
-      });
-    });
-
-    document.getElementById('bottom-fav').addEventListener('click', () => {
-      document.querySelector('.filter-chip-fav').click();
-      document.getElementById('sections').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-    });
-  }
-
-  /* ---------------------------------------------------------
-     STAT COUNTERS (on-view animation)
-  --------------------------------------------------------- */
-  function initCounters(){
-    const nums = document.querySelectorAll('.stat-num[data-count]');
-    if (reduceMotion){
-      nums.forEach(n => n.textContent = n.dataset.count);
-      return;
+  const engineGlows = [];
+  Promise.all([load('odam'), load('sayyora'), load('kema')]).then(([gOdam, gSay, gKema]) => {
+    /* --- kosmonavt --- */
+    if (gOdam){
+      astroModel = gOdam.scene;
+      // Skinned model: Box3 ishonchsiz, shuning uchun model asl o'lchamida (~1.85 birlik) ishlatiladi
+      astroModel.scale.multiplyScalar(ASTRO_SCALE);
+      astroModel.position.y = -0.93 * ASTRO_SCALE;            // oyoq ostini tekislash, markaz ~0
+      tuneMaterials(astroModel, .9);
+      astro.add(astroModel);
+      astroModel.traverse(o => { if (o.isMesh) clickable.push(o); });
+      mixer = new THREE.AnimationMixer(astroModel);
+      gOdam.animations.forEach(c => { actions[c.name.split('|').pop()] = mixer.clipAction(c); });
+      playAnim('Idle', 0);
     }
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const target = parseInt(el.dataset.count, 10);
-        let cur = 0;
-        const step = Math.max(1, Math.round(target / 30));
-        const timer = setInterval(() => {
-          cur += step;
-          if (cur >= target){ cur = target; clearInterval(timer); }
-          el.textContent = cur;
-        }, 30);
-        observer.unobserve(el);
+    /* --- sayyora --- */
+    if (gSay){
+      planetMesh = gSay.scene;
+      const box0 = new THREE.Box3().setFromObject(planetMesh);
+      const bodyR = box0.max.y;                       // sfera radiusi (halqa XZ tekisligida)
+      planetMesh.scale.multiplyScalar(PLANET_SCALE / 1.0 * 1.0);
+      tuneMaterials(planetMesh, .55);
+      planetRoot.add(planetMesh);
+      // atmosfera yaltirashi
+      const atm = new THREE.Mesh(
+        new THREE.SphereGeometry(bodyR * PLANET_SCALE * 1.12, 64, 48),
+        new THREE.ShaderMaterial({
+          transparent: true, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false,
+          uniforms: { uC: { value: new THREE.Color(0x7a6bff) } },
+          vertexShader: `varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
+          fragmentShader: `uniform vec3 uC; varying vec3 vN; void main(){ float i = pow(max(0., .64 - dot(vN, vec3(0.,0.,1.))), 3.6); gl_FragColor = vec4(uC * 1.3, i * .8); }`
+        })
+      );
+      planetRoot.add(atm);
+      planetRoot.rotation.set(0.42, 0, -0.32);      // halqa qiyaligi
+      planetRoot.userData.atm = atm;
+    }
+    /* --- kema --- */
+    if (gKema){
+      shipModel = gKema.scene;
+      const holder = new THREE.Group();
+      const { box } = fit(shipModel, SHIP_LEN, 'z');
+      shipModel.position.sub(box.getCenter(new THREE.Vector3()));
+      tuneMaterials(shipModel, 1.0);
+      holder.add(shipModel);
+      holder.rotation.y = SHIP_YAW;
+      shipRoot.add(holder);
+      // dvigatel yaltirashi (orqa tomonda)
+      const gl = glowTexture('rgba(120,220,255,1)', 'rgba(70,120,255,.55)');
+      const sz = (box.max.z - box.min.z);
+      [[0, 0.25, 1.9], [0, 0.25, 1.1]].forEach(([x, y, k]) => {
+        const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: gl, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+        s.scale.set(k, k, 1); s.userData.k = k;
+        s.position.set(x, y, sz * .5 + .35);
+        holder.add(s); engineGlows.push(s);
       });
-    }, { threshold: 0.4 });
-    nums.forEach(n => observer.observe(n));
+    }
+    emit('ymt:progress', 1);
+    ready = true;
+    emit('ymt:ready');
+  });
+
+  const ASTRO_SCALE = 1.7;
+  const SHIP_LEN = 4.2;    // kema uzunligi (sahna birligida)
+  const SHIP_YAW = Math.PI;       // modelning "old" tomonini +Z ga burish uchun
+  const ENGINE_SIDE = -1;   // orqa tomon (model +Z)
+  let ready = false;
+
+  function playAnim(name, fade = .4){
+    const next = actions[name]; if (!next || next === curAction) return;
+    next.reset().fadeIn(fade).play();
+    if (curAction) curAction.fadeOut(fade);
+    curAction = next;
   }
 
-  /* ---------------------------------------------------------
-     BOTTOM NAV ACTIVE STATE
-  --------------------------------------------------------- */
-  function initBottomNavActive(){
-    const items = document.querySelectorAll('.bottom-nav-item[data-nav="home"], .bottom-nav-item[data-nav="sections"]');
-    const home = document.getElementById('top');
-    const sections = document.getElementById('sections');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        items.forEach(i => i.classList.remove('is-active'));
-        const target = entry.target === home ? '[data-nav="home"]' : '[data-nav="sections"]';
-        document.querySelector(`.bottom-nav-item${target}`)?.classList.add('is-active');
-      });
-    }, { threshold: 0.3 });
-    observer.observe(home); observer.observe(sections);
+  /* ------------------------------------------------------------------
+     Kamera yo'li (har bir sahna uchun kalit kadr)
+  ------------------------------------------------------------------ */
+  // cam/tgt: kamera va nishon · astro: kosmonavt pozitsiyasi · ay: burilish
+  // ship: kema · orb: kema sayyora atrofida aylanishi (0..1) · fov · ox/oy: ob'yektni ekranda siljitish · dim: orqa fon qorong'iligi
+  const KF = [
+    /* 0 Bosh sahifa */  { cam:[0.4,0.5,7.0],  tgt:[0,0.05,0],     astro:[0,-0.1,0],     ay:-0.45, ship:[-13,6.5,-24], orb:0, fov:46, ox:.21, oy:0,  dim:0,    mox:0, moy:-.25 },
+    /* 1 Ko'rsatkichlar */{ cam:[-2.5,1.2,3],  tgt:[3,0.2,-9],     astro:[-9,2.5,-4],   ay:.9,   ship:[3.2,-.2,-9],    orb:0, fov:52, ox:0,   oy:0,  dim:.12,  mox:0, moy:0 },
+    /* 2 Bo'limlar (boshi) */{ cam:[3,7,-3],   tgt:[18,6,-52],    astro:[8,3.2,-20],   ay:-.6,  ship:[0,0,0],        orb:1, fov:50, ox:0,   oy:0,  dim:.62,  mox:0, moy:0 },
+    /* 3 Bo'limlar (oxiri) */{ cam:[44,16,-14], tgt:[18,6,-52],  astro:[32,9,-30],    ay:.5,   ship:[0,0,0],        orb:1, fov:50, ox:0,   oy:0,  dim:.66,  mox:0, moy:0 },
+    /* 4 Biz haqimizda */{ cam:[8,1.8,-6],    tgt:[2,0.2,-16],   astro:[6.5,-1.3,-10],  ay:-.55,   ship:[3,0,-16],      orb:0, fov:50, ox:.22, oy:0,  dim:.25,  mox:0, moy:-.22 },
+    /* 5 Aloqa */        { cam:[0.4,0.3,6.6],  tgt:[0,-0.1,0],    astro:[0,-0.1,0],    ay:.35,  ship:[-14,5,-26],    orb:0, fov:46, ox:.21, oy:0,  dim:.1,   mox:0, moy:-.25 },
+  ];
+  const N = KF.length;
+  const V = (a) => new THREE.Vector3(...a);
+  const curve = (key) => new THREE.CatmullRomCurve3(KF.map(k => V(k[key])), false, 'centripetal', .5);
+  const cCam = curve('cam'), cTgt = curve('tgt'), cAstro = curve('astro'), cShip = curve('ship');
+  const sm = (t) => t * t * (3 - 2 * t);
+  const scal = (key, u) => { const i = Math.min(N - 2, Math.floor(u)), f = sm(u - i); return KF[i][key] * (1 - f) + KF[i + 1][key] * f; };
+
+  /* ------------------------------------------------------------------
+     Scroll -> parametr u
+  ------------------------------------------------------------------ */
+  const els = { hero: document.getElementById('top'), stats: document.getElementById('stats'), sections: document.getElementById('sections'), about: document.getElementById('about'), contact: document.getElementById('contact') };
+  function anchors(){
+    const y0 = scrollY, vh = innerHeight, mid = vh / 2;
+    const top = (el) => el.getBoundingClientRect().top + y0;
+    const h = (el) => el.getBoundingClientRect().height;
+    const maxC = document.documentElement.scrollHeight - vh / 2;
+    let a = [
+      top(els.hero) + h(els.hero) / 2,
+      top(els.stats) + h(els.stats) / 2,
+      top(els.sections) + vh * .3,
+      top(els.sections) + h(els.sections) - vh * .4,
+      top(els.about) + h(els.about) / 2,
+      Math.min(top(els.contact) + h(els.contact) / 2, maxC),
+    ];
+    for (let i = 1; i < a.length; i++) if (a[i] <= a[i - 1] + 40) a[i] = a[i - 1] + 40;
+    return a;
+  }
+  function scrollU(){
+    const c = scrollY + innerHeight / 2, a = anchors();
+    if (c <= a[0]) return 0;
+    for (let i = 0; i < a.length - 1; i++){
+      if (c < a[i + 1]) return i + (c - a[i]) / (a[i + 1] - a[i]);
+    }
+    return a.length - 1;
   }
 
-  /* ---------------------------------------------------------
-     INIT
-  --------------------------------------------------------- */
-  function init(){
-    document.getElementById('footer-year').textContent = new Date().getFullYear();
+  /* ------------------------------------------------------------------
+     Pointer, resize, interaktivlik
+  ------------------------------------------------------------------ */
+  const ptr = { x: 0, y: 0, sx: 0, sy: 0 };
+  addEventListener('pointermove', (e) => { ptr.x = e.clientX / innerWidth * 2 - 1; ptr.y = e.clientY / innerHeight * 2 - 1; }, { passive: true });
 
-    const grid = document.getElementById('card-grid');
-    SECTIONS.forEach((s, i) => {
-      const card = buildCard(s);
-      card.style.animationDelay = reduceMotion ? '0s' : `${Math.min(i * 0.04, 0.4)}s`;
-      grid.appendChild(card);
-    });
-
-    updateFavCount();
-    updateMostUsed();
-    applyFilters();
-
-    initIntro();
-    initScrollEffects();
-    initToggles();
-    initSearchAndFilters();
-    initCounters();
-    initBottomNavActive();
+  let W = innerWidth, H = innerHeight;
+  function resize(){
+    const nw = innerWidth, nh = innerHeight;
+    if (nw === W && Math.abs(nh - H) < 140 && nh !== H && MOBILE) return;   // mobil manzil satri
+    W = nw; H = nh;
+    renderer.setSize(W, H); camera.aspect = W / H; camera.updateProjectionMatrix();
+    uPR.value = Math.min(devicePixelRatio, MOBILE ? 1.5 : 2);
   }
+  addEventListener('resize', resize);
 
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  // kosmonavtni bosish
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let waveUntil = 0;
+  function pickAstro(e){
+    if (!astroModel) return false;
+    ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    return ray.intersectObjects(clickable, false).length > 0;
   }
-})();
+  const clickCatcher = (e) => {
+    if (e.target.closest('a,button,input,.card,.panel,.stats-inner,.filters,.navbar')) return;
+    if (pickAstro(e)){
+      waveUntil = performance.now() + 2600;
+      emit('ymt:toast', 'Salom! Men YMT HUB kosmonavtiman \u{1F44B}');
+    }
+  };
+  addEventListener('click', clickCatcher);
+  addEventListener('pointermove', (e) => {
+    if (!canHoverPick || e.target.closest('a,button,input,.card,.panel,.stats-inner,.filters,.navbar')) { document.body.style.cursor = ''; return; }
+    document.body.style.cursor = pickAstro(e) ? 'pointer' : '';
+  }, { passive: true });
+  const canHoverPick = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  /* ------------------------------------------------------------------
+     Warp API
+  ------------------------------------------------------------------ */
+  let warpT = 0, warping = false;
+  window.__ymt = {
+    warp(accent){
+      if (reduce) return;
+      warping = true;
+      if (accent) warpU.uC1.value.set(accent);
+      playAnimSafe('Run');
+    },
+    resetWarp(){ warping = false; warpT = 0; warpU.uWarp.value = 0; warp.visible = false; camera.fov = baseFov; camera.updateProjectionMatrix(); }
+  };
+  function playAnimSafe(n){ try { playAnim(n, .25); } catch {} }
+  let baseFov = 46;
+
+  /* ------------------------------------------------------------------
+     Kirish animatsiyasi + asosiy sikl
+  ------------------------------------------------------------------ */
+  let started = false, introT = reduce ? 1 : 0;
+  const seen = (() => { try { return sessionStorage.getItem('ymt3d_seen'); } catch { return null; } })();
+  window.addEventListener('ymt:start', () => { started = true; try { sessionStorage.setItem('ymt3d_seen', '1'); } catch {} });
+  const introDur = seen ? 2.2 : 3.6;
+
+  const clock = new THREE.Clock();
+  let uS = 0, firstFrame = true, lastShipPos = new THREE.Vector3(), shipQ = new THREE.Quaternion();
+  const tmpV = new THREE.Vector3(), tmpV2 = new THREE.Vector3(), tmpM = new THREE.Matrix4();
+  const dimEl = document.documentElement;
+  let lastDim = -1;
+
+  function frame(){
+    requestAnimationFrame(frame);
+    const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+    starUniforms.uTime.value = t;
+
+    // --- scroll parametri
+    let uT = scrollU();
+    if (DEBUG && window.__u !== undefined) uT = window.__u;
+    uS = firstFrame ? uT : uS + (uT - uS) * (1 - Math.exp(-dt * 4.2));
+    const u = Math.max(0, Math.min(N - 1, uS));
+    const f = u / (N - 1);
+
+    // --- intro
+    if (started && introT < 1) introT = Math.min(1, introT + dt / introDur);
+    const ie = 1 - Math.pow(1 - introT, 3.2);
+
+    // --- kosmonavt
+    const aPos = cAstro.getPoint(f);
+    const bob = Math.sin(t * .9) * .09;
+    astro.position.set(aPos.x, aPos.y + bob, aPos.z);
+    const ay = scal('ay', u);
+    astro.rotation.y = ay + ptr.sx * .35 + Math.sin(t * .5) * .08;
+    astro.rotation.x = -ptr.sy * .08 + Math.sin(t * .7) * .03;
+    astro.rotation.z = Math.sin(t * .6) * .05;
+    if (mixer){
+      mixer.update(dt);
+      const nearEnd = u > N - 1.9;
+      const wantWave = performance.now() < waveUntil || nearEnd;
+      if (!warping) playAnimSafe(wantWave ? 'Wave' : 'Idle');
+    }
+
+    // --- sayyora
+    planetRoot.rotation.y += dt * .012;
+    if (planetMesh) planetMesh.rotation.y += dt * .02;
+
+    // --- kema
+    const orbW = scal('orb', u);
+    const kShip = cShip.getPoint(f);
+    const ang = t * .16 + 1.2;
+    const orbP = tmpV.set(Math.cos(ang) * 22, Math.sin(ang * 1.3) * 3.4, Math.sin(ang) * 22 * .62).add(PLANET_POS);
+    // sayyora atrofidagi orbitani sayyora qiyaligiga moslab aylantiramiz
+    const target = tmpV2.copy(kShip).lerp(orbP, orbW);
+    target.y += Math.sin(t * .7) * .12;
+    const prev = shipRoot.position.clone();
+    shipRoot.position.lerp(target, firstFrame ? 1 : 1 - Math.exp(-dt * 6));
+    const vel = shipRoot.position.clone().sub(prev);
+    let dir;
+    if (orbW > .5){
+      // orbita bo'ylab harakat yo'nalishi
+      const a2 = ang + .05;
+      const nxt = new THREE.Vector3(Math.cos(a2) * 22, Math.sin(a2 * 1.3) * 3.4, Math.sin(a2) * 22 * .62).add(PLANET_POS);
+      dir = nxt.sub(orbP);
+    } else {
+      dir = vel.lengthSq() > 1e-7 ? vel : new THREE.Vector3(1, 0, 0.3);
+      // sahnalarda kema burni doim kameraga tomon biroz burilgan
+      if (vel.lengthSq() < 1e-6) dir = new THREE.Vector3(0.7, 0.05, 0.5);
+    }
+    dir.normalize();
+    tmpM.lookAt(new THREE.Vector3(), dir, new THREE.Vector3(0, 1, 0));
+    const q = new THREE.Quaternion().setFromRotationMatrix(tmpM);
+    // egilish (bank)
+    q.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.sin(t * .5) * .14 + (orbW * -.25))));
+    shipRoot.quaternion.slerp(q, firstFrame ? 1 : 1 - Math.exp(-dt * 2.5));
+    engineGlows.forEach((s, i) => { const k = (1 + Math.sin(t * 24 + i * 2) * .06 + Math.sin(t * 9) * .08) * s.userData.k; s.scale.set(k, k, 1); });
+
+    // --- kamera
+    const pos = cCam.getPoint(f), tgt = cTgt.getPoint(f);
+    const portrait = camera.aspect < .85;
+    if (portrait) pos.sub(tgt).multiplyScalar(1.85).add(tgt);
+    // intro: uzoqdan uchib kirish
+    if (introT < 1){
+      const k = 1 - ie;
+      pos.x += k * -10; pos.y += k * 7; pos.z += k * 46;
+    }
+    ptr.sx += (ptr.x - ptr.sx) * (1 - Math.exp(-dt * 3)); ptr.sy += (ptr.y - ptr.sy) * (1 - Math.exp(-dt * 3));
+    if (!isTouch && !reduce){ pos.x += ptr.sx * .55; pos.y += -ptr.sy * .35; }
+
+    baseFov = scal('fov', u) + (introT < 1 ? (1 - ie) * 18 : 0);
+    // warp
+    if (warping){
+      warpT = Math.min(1, warpT + dt / 1.0);
+      const e = warpT * warpT * (3 - 2 * warpT);
+      warpU.uWarp.value = e; warp.visible = true;
+      warpU.uPhase.value += dt * (10 + e * 520);
+      camera.fov = baseFov + e * 58;
+      const fwd = tmpV.copy(tgt).sub(pos).normalize();
+      pos.addScaledVector(fwd, e * 9);
+    } else {
+      if (warpT > 0){ warpT = Math.max(0, warpT - dt * 2); warpU.uWarp.value = warpT; if (warpT === 0) warp.visible = false; }
+      warpU.uPhase.value += dt * 10;
+      camera.fov = baseFov;
+    }
+    camera.position.copy(pos);
+    camera.lookAt(tgt);
+    camera.rotateZ(Math.sin(t * .3) * .008 + (warping ? warpT * .35 : 0));
+    camera.updateProjectionMatrix();
+
+    // ekranda siljitish (ob'yekt matn yonida turishi uchun)
+    const wide = camera.aspect >= .85;
+    const ox = wide ? scal('ox', u) : scal('mox', u), oy = wide ? 0 : scal('moy', u);
+    if (ox || oy) camera.setViewOffset(W, H, -ox * W, -oy * H, W, H); else camera.clearViewOffset();
+
+    // orqa fon qorong'iligi
+    const dim = scal('dim', u);
+    if (Math.abs(dim - lastDim) > .004){ dimEl.style.setProperty('--dim', dim.toFixed(3)); lastDim = dim; }
+
+    // tumanliklar sekin siljiydi
+    nebulae.forEach((n, i) => { n.position.x += Math.sin(t * .05 + i) * .01; });
+    stars.rotation.y = t * .0035;
+
+    renderer.render(scene, camera);
+    firstFrame = false;
+  }
+  frame();
+
+  if (DEBUG){ window.__dbg = { camera, KF, scene, astro, shipRoot, planetRoot, THREE }; }
+}
 </script>
 </body>
 </html>
